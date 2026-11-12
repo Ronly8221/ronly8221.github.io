@@ -7255,6 +7255,30 @@
          pauses the emulator (watched via the view's .open class, the
          same signal every navigation path in the shell toggles). -->
     <script>
+      /* GitHub Pages variant (built 2026-11-12 at Ryuichi's direction):
+         on the public github.io copy the retro game library is removed -
+         the 8,647-title catalogue, the bundled quick titles and the
+         Google Drive shelf are hidden and their network fetches are
+         blocked, because library downloads fail there (HTTP 503).
+         The load-your-own-file player below stays fully functional.
+         The in-app (Library) build keeps the full library. */
+      (function () {
+        if (!/(^|\.)github\.io$/i.test(location.hostname)) return;
+        var of = window.fetch;
+        window.fetch = function (input) {
+          var u = "";
+          try { u = typeof input === "string" ? input : (input && input.url) || ""; } catch (e) {}
+          if (/retro-catalog|bundled-roms|googleapis\.com\/drive|drive\.google\.com/.test(u)) {
+            return Promise.reject(new TypeError("retro library is not available on this copy"));
+          }
+          return of.apply(this, arguments);
+        };
+        var st = document.createElement("style");
+        st.textContent = "#retroLib,#retroQuick,.retro-drive,#retroView .lead{display:none!important}";
+        (document.head || document.documentElement).appendChild(st);
+      })();
+    </script>
+    <script>
       (function () {
         // EmulatorJS 4.2.3 runtime + cores are BUNDLED in the artifact
         // (https://cdn.emulatorjs.org/stable/data/, office task #106): loader.js, emulator.min.*,
