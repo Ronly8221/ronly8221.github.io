@@ -33356,7 +33356,9 @@ PATTERNS.push(
          that host even by accident; (2) corrects the retro genre
          count in the lobby, since the hidden retro tile no longer
          counts; (3) adds the bug-report / request pill at the
-         bottom right. The pill's label and form follow the app's
+         bottom right of the lobby only — it hides while any game /
+         library / retro view is open so it never covers a game's
+         controls, and returns when the lobby does. The pill's label and form follow the app's
          current language (arcade-lang) — the same per-language
          forms the GitHub copy used to receive by hand after every
          export — and update live on a language switch: the i18n
@@ -33416,9 +33418,29 @@ PATTERNS.push(
           pill.href = f.url;
           if (pill.textContent !== f.btn) pill.textContent = f.btn;
         }
+        // Lobby-only visibility: the pill belongs to the home screen.
+        // While a game / library / retro view is open it would sit on
+        // top of that view's controls (Kart GP's pedals, Blackjack's
+        // action buttons), so it hides then and returns with the
+        // lobby. The shell signals every view switch two ways —
+        // #homeView's inline display and the .open class on the
+        // .gameview / .subview elements — and both are watched below.
+        var homeViewEl = document.getElementById("homeView");
+        function syncPillVisibility() {
+          var lobbyShown = !!homeViewEl && homeViewEl.style.display !== "none" &&
+            !document.querySelector(".gameview.open, .subview.open");
+          pill.style.display = lobbyShown ? "inline-flex" : "none";
+        }
         updatePill();
+        syncPillVisibility();
         if (window.MutationObserver) {
           new MutationObserver(updatePill).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+          var viewObserver = new MutationObserver(syncPillVisibility);
+          if (homeViewEl) viewObserver.observe(homeViewEl, { attributes: true, attributeFilter: ["style"] });
+          var viewEls = document.querySelectorAll(".gameview, .subview");
+          for (var vi = 0; vi < viewEls.length; vi++) {
+            viewObserver.observe(viewEls[vi], { attributes: true, attributeFilter: ["class"] });
+          }
         }
       })();
     </script>
