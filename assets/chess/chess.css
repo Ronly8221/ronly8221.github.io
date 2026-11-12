@@ -1,0 +1,149 @@
+#chessRoot {
+        color-scheme: dark;
+        /* Palette echoed from the user's own DeluxeChess program: deep navy
+           room, slate surfaces, cyan accent. */
+        --bg: #0b0f19;
+        --surface: #131c2e;
+        --text: #e2e8f0;
+        --dim: #94a3b8;
+        --border: #26334d;
+        --accent: #38bdf8;
+      }#chessRoot, #chessRoot * { box-sizing: border-box; }#chessRoot, #chessRoot { margin: 0; padding: 0; }#chessRoot {
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }#chessRoot button { font-family: inherit; }#chessRoot .font-display {
+        font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+      }#chessRoot main { max-width: 560px; margin: 0 auto; padding: 0 16px 40px; width: 100%; }/* Top controls */
+#chessRoot .topbar { display: flex; align-items: stretch; gap: 8px; padding-top: 16px; }#chessRoot .seg-group {
+        display: flex; flex: 1; border-radius: 12px; border: 1px solid var(--border);
+        background: var(--surface); padding: 4px; gap: 2px;
+      }#chessRoot .seg-btn {
+        flex: 1; border: 0; border-radius: 8px; padding: 10px 8px; font-size: 15px;
+        font-weight: 700; background: transparent; color: var(--dim); cursor: pointer;
+        transition: all 100ms; -webkit-tap-highlight-color: transparent;
+      }#chessRoot .seg-btn.active { background: var(--accent); color: #082f49; }#chessRoot .seg-btn:active { transform: scale(0.95); }#chessRoot .seg-btn.small { font-size: 14px; padding: 8px 4px; }#chessRoot .mute-btn {
+        border-radius: 12px; border: 1px solid var(--border); background: var(--surface);
+        padding: 0 12px; font-size: 14px; font-weight: 700; color: var(--text);
+        cursor: pointer; transition: transform 100ms; -webkit-tap-highlight-color: transparent;
+      }#chessRoot .mute-btn:active { transform: scale(0.95); }/* Board */
+#chessRoot .board-wrap {
+        position: relative; width: 100%; overflow: hidden; border-radius: 12px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.5), 0 0 0 1px #26334d;
+        touch-action: manipulation;
+      }#chessRoot .board-grid { display: grid; grid-template-columns: repeat(8, 1fr); }#chessRoot .cell {
+        position: relative; display: flex; align-items: center; justify-content: center;
+        aspect-ratio: 1; border: 0; padding: 0; margin: 0; cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }#chessRoot .cell:disabled { cursor: default; }#chessRoot .cell .lastmove { position: absolute; inset: 0; background: rgba(250,204,21,0.32); pointer-events: none; }#chessRoot .cell .checkpulse {
+        position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(circle, rgba(244,63,94,0.75) 0%, rgba(244,63,94,0.15) 70%);
+        animation: chess-pulse 1s ease-in-out infinite;
+      }
+      @keyframes chess-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }#chessRoot .coord {
+        position: absolute; z-index: 10; font-weight: 700; pointer-events: none;
+        font-size: clamp(9px, 2.6vw, 13px);
+      }#chessRoot .coord.rank { top: 3%; left: 5%; }#chessRoot .coord.file { right: 5%; bottom: 3%; }#chessRoot .piece-holder { position: relative; z-index: 10; display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; pointer-events: none; }#chessRoot .piece-holder > span { display: flex; align-items: center; justify-content: center; width: 92%; height: 92%; }#chessRoot .dot {
+        position: absolute; z-index: 20; border-radius: 9999px; width: 30%; height: 30%;
+        background: rgba(52,211,153,0.9); box-shadow: 0 0 6px rgba(52,211,153,0.7); pointer-events: none;
+      }#chessRoot .capring {
+        position: absolute; z-index: 20; border-radius: 9999px; inset: 4%;
+        border: 4px solid rgba(244,63,94,0.85); pointer-events: none;
+      }#chessRoot .burst-ring-el {
+        position: absolute; z-index: 30; border-radius: 9999px; inset: 8%;
+        border: 3px solid rgba(251,191,36,0.95); pointer-events: none;
+      }#chessRoot .glide-el {
+        position: absolute; z-index: 40; display: flex; align-items: center; justify-content: center;
+        width: 12.5%; height: 12.5%; left: 0; top: 0; pointer-events: none;
+        transition: transform 230ms cubic-bezier(.25,.8,.3,1);
+      }#chessRoot .glide-el > span { display: flex; align-items: center; justify-content: center; width: 92%; height: 92%; }/* Animations */
+#chessRoot @keyframes chess-board-shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-3px); }
+      }#chessRoot .board-shake { animation: chess-board-shake 0.32s ease-in-out; }
+      @keyframes chess-dot-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }#chessRoot .dot-in { animation: chess-dot-in 0.16s ease-out both; }
+      @keyframes chess-ring-in {
+        0% { transform: scale(0.7); opacity: 0; }
+        60% { transform: scale(1.06); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }#chessRoot .ring-in { animation: chess-ring-in 0.2s ease-out both; }
+      @keyframes chess-burst-ring { from { transform: scale(0.55); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }#chessRoot .burst-ring { animation: chess-burst-ring 0.45s ease-out both; }
+      @keyframes chess-panel-in { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }#chessRoot .panel-in { animation: chess-panel-in 0.35s ease-out both; }
+      @keyframes chess-pop-in {
+        0% { transform: scale(0.8); opacity: 0; }
+        60% { transform: scale(1.06); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }#chessRoot .pop-in { animation: chess-pop-in 0.35s ease-out both; display: inline-block; }
+      @keyframes chess-confetti-fall {
+        0% { transform: translateY(-4vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(105vh) rotate(680deg); opacity: 0.9; }
+      }#chessRoot .confetti-piece {
+        animation-name: chess-confetti-fall;
+        animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1);
+        animation-fill-mode: both;
+      }
+      @media (prefers-reduced-motion: reduce) {#chessRoot .board-shake, #chessRoot .dot-in, #chessRoot .ring-in, #chessRoot .burst-ring, #chessRoot .panel-in, #chessRoot .pop-in, #chessRoot .confetti-piece { animation: none; }#chessRoot .confetti-piece { display: none; }#chessRoot .cell .checkpulse { animation: none; }#chessRoot .glide-el { transition: none; }
+      }/* 2D/3D board toggle + 3D viewport */
+#chessRoot .board-tools { display: flex; align-items: center; gap: 10px; margin-top: 16px; }#chessRoot .board-tools-label { font-size: 12px; font-weight: 700; color: var(--dim); white-space: nowrap; }#chessRoot .view-seg { flex: 0 0 auto; width: 132px; }#chessRoot .board3d-wrap {
+        position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 12px;
+        background: radial-gradient(120% 90% at 50% 0%, #1b2942 0%, #0b0f19 70%);
+        touch-action: none;
+      }#chessRoot .board3d-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }#chessRoot .board3d-canvas:active { cursor: grabbing; }#chessRoot .board3d-loading[hidden] { display: none; }#chessRoot .board3d-loading {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        padding: 20px; text-align: center; font-size: 14px; font-weight: 700; color: var(--dim);
+      }/* Chips, messages, buttons */
+#chessRoot .chip-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }#chessRoot .chip {
+        border-radius: 9999px; background: var(--surface); padding: 4px 12px; font-size: 12px;
+        font-weight: 700; border: 1px solid var(--border);
+      }#chessRoot .chip.accent { color: var(--accent); }#chessRoot .chip.dim { color: var(--dim); }#chessRoot .chip.solved { background: rgba(16,185,129,0.15); color: #6ee7b7; border-color: rgba(16,185,129,0.4); }#chessRoot .puzzle-chip {
+        border-radius: 9999px; border: 1px solid var(--border); background: var(--surface);
+        color: var(--text); padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+        transition: all 100ms; -webkit-tap-highlight-color: transparent;
+      }#chessRoot .puzzle-chip:active { transform: scale(0.95); }#chessRoot .puzzle-chip.active { background: var(--accent); color: #082f49; border-color: transparent; }#chessRoot .msg {
+        margin-top: 16px; min-height: 52px; border-radius: 12px; border: 1px solid var(--border);
+        background: var(--surface); color: var(--text); padding: 12px 16px; font-size: 15px; line-height: 1.6;
+      }#chessRoot .msg.solved { border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.10); color: #a7f3d0; }#chessRoot .msg.wrong { border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.10); color: #fde68a; }#chessRoot .msg.bold { font-weight: 700; }#chessRoot .btn {
+        border-radius: 12px; border: 1px solid var(--border); background: var(--surface);
+        padding: 12px; font-size: 14px; font-weight: 700; color: var(--text); cursor: pointer;
+        transition: transform 100ms; -webkit-tap-highlight-color: transparent; width: 100%;
+      }#chessRoot .btn:active { transform: scale(0.95); }#chessRoot .btn:disabled { opacity: 0.4; }#chessRoot .btn:disabled:active { transform: none; }#chessRoot .btn.primary { background: var(--accent); color: #082f49; border-color: transparent; }#chessRoot .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }#chessRoot .hint-item {
+        border-radius: 12px; border: 1px solid var(--border); background: var(--surface);
+        padding: 12px 16px; font-size: 14px; line-height: 1.65;
+      }#chessRoot .hint-item b { color: var(--accent); }#chessRoot .panel {
+        border-radius: 16px; border: 1px solid var(--border); background: var(--surface); padding: 20px;
+      }#chessRoot .movelist {
+        margin-top: 16px; max-height: 128px; overflow-y: auto; border-radius: 12px;
+        border: 1px solid var(--border); background: var(--surface); padding: 12px 16px;
+      }#chessRoot .movelist-grid { display: grid; grid-template-columns: 2.2rem 1fr 1fr; row-gap: 4px; font-size: 14px; }#chessRoot .promo-overlay {
+        position: absolute; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+        background: rgba(11,15,25,0.7); padding: 16px; border-radius: 12px;
+      }#chessRoot .promo-card {
+        width: 100%; max-width: 300px; border-radius: 16px; border: 1px solid var(--border);
+        background: var(--surface); padding: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      }#chessRoot .promo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }#chessRoot .promo-btn {
+        display: flex; aspect-ratio: 1; align-items: center; justify-content: center; border-radius: 12px;
+        border: 1px solid var(--border); background: #0b0f19; padding: 6px; cursor: pointer;
+        transition: transform 100ms; -webkit-tap-highlight-color: transparent;
+      }#chessRoot .promo-btn:active { transform: scale(0.9); }#chessRoot .confetti-layer { pointer-events: none; position: fixed; inset: 0; z-index: 60; overflow: hidden; }#chessRoot .confetti-piece { position: absolute; top: 0; }#chessRoot .thinking-dots::after { content: "…"; }/* Key sentence (quiz) + live commentary (versus) */
+#chessRoot .keyline { margin-top: 16px; border-radius: 12px; background: rgba(56,189,248,0.13); padding: 16px; }#chessRoot .keyline-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); margin: 0; }#chessRoot .keyline-text { margin-top: 4px; font-size: 18px; font-weight: 700; line-height: 1.45; }#chessRoot .commentary {
+        margin-top: 12px; border-radius: 12px; border: 1px solid var(--border);
+        background: var(--surface); padding: 12px 16px;
+      }#chessRoot .commentary-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); margin: 0; }#chessRoot .commentary-text { margin-top: 4px; font-size: 15px; line-height: 1.65; }
+    
+/* Settings controls: dark Neumorphism. The control panels (mode /
+   colour / strength / view segment groups and the sound button) share
+   the room's navy as a single surface colour; depth comes only from a
+   light+dark shadow pair, and the active segment is pressed in. The
+   boards themselves are deliberately untouched. */
+#chessRoot .seg-group { border-color: transparent; box-shadow: 6px 6px 14px #05080f, -6px -6px 14px #1e2c47; }
+#chessRoot .seg-btn.active { box-shadow: inset 3px 3px 7px rgba(4, 24, 43, 0.5), inset -3px -3px 7px rgba(255, 255, 255, 0.28); }
+#chessRoot .mute-btn { border-color: transparent; box-shadow: 6px 6px 14px #05080f, -6px -6px 14px #1e2c47; }
+#chessRoot .mute-btn:active { box-shadow: inset 4px 4px 9px #05080f, inset -4px -4px 9px #1e2c47; transform: none; }
+/* Promotion dialog: Claymorphism, matching the menu cards — pastel,
+   inflated, with the clay inner+outer shadow pair. */
+#chessRoot .promo-card { background: #fdfaff; border: none; border-radius: 28px; color: #3d2c5a; box-shadow: 0 22px 34px rgba(24, 12, 54, 0.45), inset 0 -8px 14px rgba(179, 157, 255, 0.35), inset 0 8px 12px rgba(255, 255, 255, 0.9); }
+#chessRoot .promo-card #promoCancel { color: #7a68a6 !important; }
+#chessRoot .promo-btn { background: #efe7fd; border: none; box-shadow: 0 6px 12px rgba(139, 92, 246, 0.3), inset 0 -3px 6px rgba(122, 90, 200, 0.3), inset 0 3px 5px rgba(255, 255, 255, 0.9); }
