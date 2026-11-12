@@ -7256,7 +7256,7 @@
          same signal every navigation path in the shell toggles). -->
     <script>
       /* GitHub Pages variant (built 2026-11-12 at Ryuichi's direction):
-         on the public github.io copy the retro game library is removed -
+         on the public github.io copy the retro game is removed completely (tile, screen and library) -
          the 8,647-title catalogue, the bundled quick titles and the
          Google Drive shelf are hidden and their network fetches are
          blocked, because library downloads fail there (HTTP 503).
@@ -7274,7 +7274,7 @@
           return of.apply(this, arguments);
         };
         var st = document.createElement("style");
-        st.textContent = "#retroLib,#retroQuick,.retro-drive,#retroView .lead{display:none!important}";
+        st.textContent = "#retroLib,#retroQuick,.retro-drive,#retroView,.game-tile:has(#openRetroGenre),.game-tile[aria-label=\"\u30ec\u30c8\u30ed\u30b2\u30fc\u30e0\"],.game-tile[aria-label=\"Retro Games\"]{display:none!important}";
         (document.head || document.documentElement).appendChild(st);
       })();
     </script>
