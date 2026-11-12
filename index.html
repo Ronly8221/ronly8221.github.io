@@ -5728,7 +5728,7 @@
     <script>
       (function () {
         // EmulatorJS 4.2.3 runtime + cores are BUNDLED in the artifact
-        // (assets/ejs/data/, office task #106): loader.js, emulator.min.*,
+        // (https://cdn.emulatorjs.org/stable/data/, office task #106): loader.js, emulator.min.*,
         // compression helpers, and the wasm + legacy-wasm core builds for
         // fceumm / nestopia / gambatte / mgba / snes9x / picodrive /
         // genesis_plus_gx / desmume2015 (the default + settings-selectable
@@ -5737,7 +5737,7 @@
         // never fetches code or cores from cdn.emulatorjs.org, so a game
         // whose ROM is on the device (built-in or played cache) boots
         // with no network beyond loading this page itself.
-        var EJS_DATA = "assets/ejs/data/";
+        var EJS_DATA = "https://cdn.emulatorjs.org/stable/data/";
         var CORES = {
           nes: { core: "nes", label: "ファミコン" },
           smc: { core: "snes", label: "スーパーファミコン" },
