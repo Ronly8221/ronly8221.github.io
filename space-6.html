@@ -26167,7 +26167,7 @@
   function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
   function rankIdxFor(pts) { var i = 0; for (var k = 0; k < RANK_AT.length; k++) if (pts >= RANK_AT[k]) i = k; return i; }
   function rankJa(pts) { return RANK_JA[rankIdxFor(pts)]; }
-  function rankName(pts) { var tr = RANK_TR[lang()]; return tr ? tr[rankIdxFor(pts)] : rankJa(pts); }
+  function rankName(pts) { if (lang() === "ja") return rankJa(pts); var tr = RANK_TR[lang()] || RANK_TR.en; return tr[rankIdxFor(pts)]; }
   function lifetime() {
     try { var st = window.ARCADE_points && window.ARCADE_points.getState(); return st ? Math.max(0, st.lifetime | 0) : 0; } catch (e) { return 0; }
   }
@@ -27928,6 +27928,7 @@ PATTERNS.push(
   "名人": ["Master", "명인", "名人", "名人", "Maestro", "Maître", "Meister", "Mestre", "Maestro"],
   "伝説": ["Legend", "전설", "传说", "傳說", "Leyenda", "Légende", "Legende", "Lenda", "Leggenda"],
   "ランキング": ["Leaderboard", "랭킹", "排行榜", "排行榜", "Clasificación", "Classement", "Rangliste", "Ranking", "Classifica"],
+  "🏆 ランキング": ["🏆 Leaderboard", "🏆 랭킹", "🏆 排行榜", "🏆 排行榜", "🏆 Clasificación", "🏆 Classement", "🏆 Rangliste", "🏆 Ranking", "🏆 Classifica"],
   "ランキング画面": ["Leaderboard screen", "랭킹 화면", "排行榜画面", "排行榜畫面", "Pantalla de clasificación", "Écran du classement", "Ranglisten-Bildschirm", "Tela de ranking", "Schermata classifica"],
   "共通ランキング": ["Shared Leaderboard", "공통 랭킹", "共享排行榜", "共享排行榜", "Clasificación compartida", "Classement partagé", "Gemeinsame Rangliste", "Ranking compartilhado", "Classifica condivisa"],
   "みんなの累計ポイントで競うランキング": ["A leaderboard ranked by everyone's lifetime points", "모두의 누적 포인트로 겨루는 랭킹", "以大家的累计积分竞争的排行榜", "以大家的累計積分競爭的排行榜", "Un ranking con los puntos acumulados de todos", "Un classement avec les points cumulés de tous", "Eine Rangliste mit den Gesamtpunkten aller", "Um ranking com os pontos acumulados de todos", "Una classifica con i punti totali di tutti"],
@@ -27981,6 +27982,7 @@ PATTERNS.push(
   "麻雀 最終順位": ["Mahjong Final Placement", "마작 최종 순위", "麻将最终名次", "麻雀最終名次", "Posición final en mahjong", "Classement final au mahjong", "Mahjong-Endplatzierung", "Colocação final no mahjong", "Piazzamento finale a mahjong"],
   "カートGP 完走": ["Kart GP Finish", "카트 GP 완주", "卡丁车GP完赛", "卡丁車GP完賽", "Kart GP completado", "Kart GP terminé", "Kart GP beendet", "Kart GP concluído", "Kart GP completato"],
   "本日の初ボーナス": ["First Earn of the Day Bonus", "오늘의 첫 적립 보너스", "今日首次获得奖励", "今日首次獲得獎勵", "Bono del primer logro del día", "Bonus du premier gain du jour", "Bonus für den ersten Verdienst des Tages", "Bônus do primeiro ganho do dia", "Bonus del primo guadagno del giorno"],
+  "本日の初ボーナス +20 pt": ["First Earn of the Day Bonus +20 pt", "오늘의 첫 적립 보너스 +20 pt", "今日首次获得奖励 +20 pt", "今日首次獲得獎勵 +20 pt", "Bono del primer logro del día +20 pt", "Bonus du premier gain du jour +20 pt", "Bonus für den ersten Verdienst des Tages +20 pt", "Bônus do primeiro ganho do dia +20 pt", "Bonus del primo guadagno del giorno +20 pt"],
   "やさしい": ["Easy", "쉬움", "简单", "簡單", "Fácil", "Facile", "Leicht", "Fácil", "Facile"],
   "ふつう": ["Normal", "보통", "普通", "普通", "Normal", "Normal", "Normal", "Normal", "Normale"],
   "むずかしい": ["Hard", "어려움", "困难", "困難", "Difícil", "Difficile", "Schwer", "Difícil", "Difficile"],
