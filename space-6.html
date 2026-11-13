@@ -2774,6 +2774,55 @@
     .kart-pad-btn.drift { width: auto; border-radius: 999px; padding: 0 20px; font-size: 15px; letter-spacing: 0.06em; }
     .kart-pad-btn.held { background: rgba(242, 183, 5, 0.75); color: #17203a; transform: scale(0.94); }
     #kartView.remote-display .kart-touch { display: none; }
+    /* --- Kart GP upgrade (2026-11-13): tower / lap times / drift gauge /
+       speed lines / hint / pause / difficulty / control card --- */
+    .kart-tower { position: absolute; top: 64px; left: 12px; display: flex; flex-direction: column; gap: 2px; min-width: 148px; }
+    .kart-tower-row { display: flex; align-items: center; gap: 6px; background: rgba(13, 18, 32, 0.45); border-radius: 8px; padding: 2px 8px 2px 6px; color: #fff; font-size: 12px; font-weight: 700; line-height: 1.5; }
+    .kart-tower-row.me { background: rgba(242, 183, 5, 0.88); color: #17203a; }
+    .kart-tower-pos { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; width: 14px; text-align: right; }
+    .kart-tower-dot { width: 10px; height: 10px; border-radius: 3px; flex: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+    .kart-tower-name { flex: 1; text-align: left; white-space: nowrap; }
+    .kart-tower-gap { font-variant-numeric: tabular-nums; opacity: 0.9; font-size: 11px; }
+    .kart-hud-laptime { font-size: 12.5px; font-variant-numeric: tabular-nums; opacity: 0.95; margin-top: 2px; line-height: 1.45; white-space: nowrap; }
+    .kart-drift { position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); width: min(300px, 62vw); opacity: 0; transition: opacity 0.18s ease; pointer-events: none; }
+    .kart-drift.on { opacity: 1; }
+    .kart-drift-top { display: flex; justify-content: space-between; align-items: baseline; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-shadow: 0 1px 6px rgba(10, 20, 40, 0.6); margin-bottom: 3px; }
+    .kart-drift-state { letter-spacing: 0.02em; font-size: 11.5px; color: #ffd94d; }
+    .kart-drift.lv2 .kart-drift-state { color: #59d8ff; }
+    .kart-drift-bar { height: 10px; border-radius: 999px; background: rgba(13, 18, 32, 0.55); border: 1px solid rgba(255, 255, 255, 0.35); overflow: hidden; }
+    .kart-drift-fill { height: 100%; width: 0%; border-radius: 999px; background: #8ea2c0; transition: width 0.06s linear, background 0.15s ease; }
+    .kart-drift.lv1 .kart-drift-fill { background: #ff9f1a; }
+    .kart-drift.lv2 .kart-drift-fill { background: #29b6f6; box-shadow: 0 0 12px rgba(41, 182, 246, 0.9); }
+    .kart-speedfx { position: absolute; inset: 0; pointer-events: none; z-index: 4; opacity: 0; transition: opacity 0.25s ease;
+      background: repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 7deg, rgba(255,255,255,0.13) 7deg 8deg, transparent 8deg 15deg);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 54%, black 82%); mask-image: radial-gradient(circle at 50% 50%, transparent 54%, black 82%); }
+    .kart-speedfx.on { opacity: 1; animation: kartSpeedPulse 0.5s ease-in-out infinite alternate; }
+    @keyframes kartSpeedPulse { from { transform: scale(1); } to { transform: scale(1.06); } }
+    .kart-hint { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); background: rgba(242, 183, 5, 0.94); color: #17203a; font-weight: 800; font-size: 15px; padding: 9px 18px; border-radius: 999px; z-index: 6; pointer-events: none; white-space: nowrap; box-shadow: 0 8px 22px rgba(10, 20, 40, 0.35); animation: kartHintBob 1.6s ease-in-out infinite; }
+    .kart-hint[hidden] { display: none; }
+    @keyframes kartHintBob { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
+    .kart-pause-btn { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 6; pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(13, 18, 32, 0.5); color: #fff; font-size: 16px; backdrop-filter: blur(6px); cursor: pointer; opacity: 0; transition: opacity 0.3s ease; }
+    #kartStage.is-racing .kart-pause-btn { opacity: 1; }
+    .kart-pause-btn:active { transform: translateX(-50%) scale(0.92); }
+    .kart-diff-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; pointer-events: auto; }
+    .kart-diff-label { color: rgba(255,255,255,0.9); font-weight: 800; font-size: 13px; margin-right: 2px; }
+    .kart-diff-btn { font-size: 13.5px; font-weight: 800; color: #fff; background: rgba(13, 18, 32, 0.55); border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 999px; padding: 8px 16px; cursor: pointer; backdrop-filter: blur(6px); }
+    .kart-diff-btn.on { background: linear-gradient(180deg, #ffd94d, #f2b705); color: #17203a; border-color: rgba(255,255,255,0.6); box-shadow: 0 3px 0 #b97f04; }
+    .kart-diff-btn:active { transform: scale(0.96); }
+    .kart-diff-note { color: #ffd94d; font-size: 12.5px; font-weight: 700; text-shadow: 0 1px 6px rgba(10,20,40,0.6); }
+    .kart-controls-card { pointer-events: none; display: flex; flex-direction: column; gap: 5px; background: rgba(13, 18, 32, 0.55); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 16px; padding: 10px 14px; width: min(430px, 94%); backdrop-filter: blur(6px); }
+    .kart-cc-row { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; font-weight: 700; text-align: left; line-height: 1.45; }
+    .kart-cc-ico { flex: none; min-width: 58px; text-align: center; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 12px; letter-spacing: 0.04em; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px; padding: 4px 6px; }
+    .kart-pad-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; line-height: 1.1; }
+    .kart-pad-btn small { font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; opacity: 0.85; }
+    .kart-pad-btn.brake { width: auto; border-radius: 999px; padding: 0 16px; font-size: 14px; letter-spacing: 0.05em; height: 64px; }
+    @media (max-width: 560px) {
+      .kart-tower { top: 56px; min-width: 118px; }
+      .kart-tower-row { font-size: 10.5px; padding: 1px 6px 1px 5px; gap: 4px; }
+      .kart-drift { bottom: 192px; width: min(280px, 58vw); }
+      .kart-hint { font-size: 12.5px; bottom: 138px; max-width: 92vw; white-space: normal; text-align: center; }
+      .kart-pad-btn.brake { height: 58px; }
+    }
     @media (max-width: 560px) {
       .kart-hud-pos { font-size: 34px; }
       #kartMini { width: 84px; height: 84px; }
@@ -4170,11 +4219,39 @@
     </style>
   <style>
     /* ---------- ARCADE points: chip / toast / shop / cosmetics ---------- */
-    .glyph-pts { background: linear-gradient(145deg, #ffe98a, #ffb03a); font-size: 30px; display: flex; align-items: center; justify-content: center; }
+    .glyph-pts { background: radial-gradient(circle at 32% 28%, #ffffff, #d9e2ec 48%, #a9bccd 100%); font-size: 30px; display: flex; align-items: center; justify-content: center; }
+    /* Half-dollar coin (points symbol): one reusable SVG component.
+       The artwork lives once in the hidden <symbol id="hd-coin-symbol">
+       right after <body>; every points readout renders it through
+       <svg class="hd-coin"><use href="#hd-coin-symbol"/></svg> and it
+       scales with the width/height set by the size modifier or the
+       host context below — clean from ~14px inline to shop-header
+       size, with the metallic shine baked into the symbol. */
+    .hd-coin { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.3em; flex: 0 0 auto; filter: drop-shadow(0 1px 1.5px rgba(30, 41, 59, 0.35)); }
+    .hd-coin--sm { width: 15px; height: 15px; }
+    .hd-coin--md { width: 22px; height: 22px; }
+    .hd-coin--lg { width: 46px; height: 46px; vertical-align: middle; }
+    .hd-coin--xl { width: 58px; height: 58px; vertical-align: middle; }
+    .glyph-pts .hd-coin { width: 44px; height: 44px; vertical-align: middle; }
+    .points-chip .hd-coin { width: 22px; height: 22px; vertical-align: middle; }
+    #pointsView .subbar .hd-coin { width: 23px; height: 23px; vertical-align: -0.34em; margin-right: 5px; }
+    .pts-stat-val.pts-stat-val--coin { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .pts-stat-val .hd-coin { width: 21px; height: 21px; vertical-align: middle; }
+    .pts-item-price { display: inline-flex; align-items: center; gap: 5px; }
+    .pts-hero { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px 0 12px; }
+    .pts-toast-main { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .pts-toast-main .hd-coin { width: 27px; height: 27px; vertical-align: middle; }
+    .pts-guide li .hd-coin { width: 16px; height: 16px; }
+    .kart-hud-coins { display: inline-flex; align-items: center; gap: 6px; }
+    .kart-hud-coins .hd-coin { width: 17px; height: 17px; vertical-align: middle; }
+    /* Earn flip: fired on the chip coin and the toast coin whenever
+       points land and the balance ticks up. */
+    .hd-coin.spin { animation: hdCoinFlip 720ms cubic-bezier(0.3, 0.7, 0.3, 1); transform-origin: 50% 50%; }
+    @keyframes hdCoinFlip { 0% { transform: rotateY(0deg) scale(1); } 30% { transform: rotateY(180deg) scale(1.22); } 62% { transform: rotateY(430deg) scale(1.1); } 100% { transform: rotateY(720deg) scale(1); } }
     .play-btn.pts { background: linear-gradient(180deg, #ffd94d, #ffb03a); color: #37220a; }
     .points-chip { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; border: 2px solid #2e2456; background: linear-gradient(180deg, #3b2f6e, #2a2150); color: #fff7e0; border-radius: 999px; padding: 7px 14px 9px; font-size: 13.5px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(46, 36, 86, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25); -webkit-tap-highlight-color: transparent; max-width: 100%; }
     .points-chip:active { transform: scale(0.97); }
-    .points-chip .pts-coin { font-size: 15px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+    .points-chip .pts-coin { line-height: 0; }
     .points-chip.pop { animation: ptsPop 480ms cubic-bezier(0.3, 1.6, 0.5, 1); }
     @keyframes ptsPop { 0% { transform: scale(1); } 35% { transform: scale(1.13) rotate(-1.5deg); } 100% { transform: scale(1); } }
     .pts-chip-main { white-space: nowrap; }
@@ -4209,7 +4286,7 @@
     .pts-item { display: flex; align-items: center; gap: 10px; background: #ffffff; border: 1px solid #e3d9fa; border-radius: 16px; padding: 12px 14px; box-shadow: 0 5px 14px rgba(101, 74, 168, 0.08); }
     .pts-item-info { flex: 1 1 auto; min-width: 0; }
     .pts-item-name { display: block; font-size: 15px; font-weight: 800; color: #37246b; }
-    .pts-item-price { display: block; font-size: 12.5px; font-weight: 700; color: #a08cc9; margin-top: 1px; font-variant-numeric: tabular-nums; }
+    .pts-item-price { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700; color: #a08cc9; margin-top: 1px; font-variant-numeric: tabular-nums; }
     .pts-item-price.owned { color: #0f9d63; }
     .pts-btn { flex: 0 0 auto; border: 2px solid #2e2456; background: #ffd94d; color: #37220a; font-size: 13.5px; font-weight: 900; border-radius: 999px; padding: 8px 15px; cursor: pointer; box-shadow: 0 3px 0 #2e2456; min-height: 40px; -webkit-tap-highlight-color: transparent; }
     .pts-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2e2456; }
@@ -4220,6 +4297,36 @@
     .pts-guide li { font-size: 14px; font-weight: 600; color: #463763; padding: 7px 2px; border-bottom: 1px dashed #e3d9fa; line-height: 1.6; }
     .pts-guide li:last-child { border-bottom: none; }
     .pts-note { font-size: 13px; line-height: 1.8; color: #6d5a94; margin: 10px 2px 0; font-weight: 600; }
+    /* ---------- Shared leaderboard (共通ランキング) ---------- */
+    .glyph-lb { background: #fff3cf; color: #b8860b; font-size: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 18px rgba(217, 164, 65, 0.35), inset 0 -5px 8px rgba(190, 140, 30, 0.30), inset 0 5px 8px rgba(255, 255, 255, 0.95); }
+    .play-btn.lb { background: linear-gradient(180deg, #ffd94d, #ffb03a); color: #37220a; }
+    .lb-refresh { margin-left: auto; border: 1px solid #d9ccf5; background: #ffffff; color: #3d2c5a; border-radius: 10px; padding: 8px 13px; font-size: 13.5px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(147, 112, 219, 0.18); white-space: nowrap; }
+    .lb-refresh:active { transform: scale(0.95); }
+    .lb-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .lb-form input { flex: 1 1 170px; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 2px solid #d9ccf5; font: inherit; font-size: 15px; font-weight: 700; color: #37246b; background: #fdfaff; }
+    .lb-form input:focus { outline: 3px solid rgba(245, 158, 11, 0.45); border-color: #f59e0b; }
+    .lb-msg { font-size: 13.5px; font-weight: 700; color: #c2331f; margin: 10px 2px 0; line-height: 1.6; }
+    .lb-msg:empty { display: none; }
+    .lb-status { font-size: 13px; font-weight: 700; color: #8a76b8; margin: 4px 2px 12px; line-height: 1.6; }
+    .lb-status:empty { display: none; }
+    .lb-own-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .lb-own-pos { font-family: var(--font-display); font-size: 30px; font-weight: 800; color: #b8860b; font-variant-numeric: tabular-nums; }
+    .lb-own-label { font-size: 13px; font-weight: 800; color: #8a76b8; }
+    .lb-gap { font-size: 14px; font-weight: 700; color: #6d5a94; margin: 8px 2px 0; line-height: 1.7; }
+    .lb-row { display: flex; align-items: center; gap: 10px; background: #ffffff; border: 1px solid #e3d9fa; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(101, 74, 168, 0.07); }
+    .lb-row.me { border-color: #f5b93e; background: #fff8e6; box-shadow: 0 6px 14px rgba(217, 164, 65, 0.22); }
+    .lb-pos { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #6d5a94; background: #f1ebfd; font-variant-numeric: tabular-nums; }
+    .lb-row.medal-1 .lb-pos { background: linear-gradient(180deg, #ffe98a, #f5b93e); color: #5c3d05; box-shadow: 0 3px 8px rgba(217, 164, 65, 0.5); }
+    .lb-row.medal-2 .lb-pos { background: linear-gradient(180deg, #f4f7fb, #c7d0dd); color: #43536b; box-shadow: 0 3px 8px rgba(120, 135, 160, 0.45); }
+    .lb-row.medal-3 .lb-pos { background: linear-gradient(180deg, #f3c48f, #cd8a4a); color: #5c3410; box-shadow: 0 3px 8px rgba(180, 110, 50, 0.45); }
+    .lb-name { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 800; color: #37246b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-you { flex: 0 0 auto; font-size: 11px; font-weight: 900; color: #7c4a03; background: #ffd94d; border-radius: 999px; padding: 2px 8px; }
+    .lb-rankchip { flex: 0 0 auto; }
+    .lb-pts { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 14.5px; font-weight: 900; color: #37246b; font-variant-numeric: tabular-nums; }
+    .lb-pts .hd-coin { width: 17px; height: 17px; }
+    .lb-pin-note { font-size: 12px; font-weight: 700; color: #a08cc9; text-align: center; margin: 2px 0 8px; }
+    .lb-empty { font-size: 14px; font-weight: 600; color: #6d5a94; line-height: 1.8; text-align: center; padding: 18px 8px; }
+    @media (max-width: 480px) { .lb-rankchip { display: none; } }
     /* Lobby themes (shop cosmetics): re-skin the living sky backdrop. */
     #homeView[data-lobbytheme="lobby-neon"] .sky-layer { background: linear-gradient(180deg, #070b2e 0%, #2b1055 52%, #6d1b7a 82%, #93337d 100%); opacity: 1; }
     #homeView[data-lobbytheme="lobby-neon"] .sky-stars { opacity: 0.95; }
@@ -4242,10 +4349,47 @@
     #mahjongView[data-mjback="mj-sakura"] .tiles3d-root { background: radial-gradient(ellipse 120% 90% at 50% 30%, #8a2b45 0%, #5f1a30 55%, #36060f 100%) !important; box-shadow: inset 0 0 60px rgba(0,0,0,0.55), inset 0 0 0 3px rgba(255, 183, 213, 0.55), inset 0 0 34px rgba(244, 114, 182, 0.35) !important; }
     #mahjongView[data-mjback="mj-nami"] .tiles3d-root { background: radial-gradient(ellipse 120% 90% at 50% 30%, #144a6e 0%, #0d3050 55%, #04182e 100%) !important; box-shadow: inset 0 0 60px rgba(0,0,0,0.55), inset 0 0 0 3px rgba(125, 211, 252, 0.5), inset 0 0 34px rgba(56, 189, 248, 0.3) !important; }
     #mahjongView[data-mjback="mj-gold"] .tiles3d-root { background: radial-gradient(ellipse 120% 90% at 50% 30%, #6e5210 0%, #4a3808 55%, #241a02 100%) !important; box-shadow: inset 0 0 60px rgba(0,0,0,0.55), inset 0 0 0 3px rgba(255, 217, 77, 0.65), inset 0 0 34px rgba(255, 190, 40, 0.4) !important; }
-    @media (prefers-reduced-motion: reduce) { .points-chip.pop { animation: none; } #ptsToast { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .points-chip.pop { animation: none; } #ptsToast { transition: none; } .hd-coin.spin { animation: none; } }
   </style>
   </head>
   <body>
+    <!-- Half-dollar coin artwork: the single source for the points
+         symbol. A stylised silver US half dollar — reeded edge (the
+         dashed outer ring), raised inner rim, a Kennedy-style profile
+         bust facing left, a soft metallic shine, and tiny LIBERTY /
+         HALF DOLLAR / 50 lettering as decoration. Rendered everywhere
+         via <svg class="hd-coin"><use href="#hd-coin-symbol"/></svg>. -->
+    <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="hdSilver" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fdfeff"/><stop offset="0.28" stop-color="#dde6ef"/>
+          <stop offset="0.52" stop-color="#a3b5c9"/><stop offset="0.74" stop-color="#e9eff6"/>
+          <stop offset="1" stop-color="#8ca1b7"/>
+        </linearGradient>
+        <radialGradient id="hdFace" cx="0.36" cy="0.3" r="0.95">
+          <stop offset="0" stop-color="#f4f8fc"/><stop offset="0.55" stop-color="#ccd8e4"/>
+          <stop offset="1" stop-color="#9db1c6"/>
+        </radialGradient>
+        <linearGradient id="hdProfile" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c3d2e2"/><stop offset="0.6" stop-color="#93a9bf"/>
+          <stop offset="1" stop-color="#7e97b1"/>
+        </linearGradient>
+      </defs>
+      <symbol id="hd-coin-symbol" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="url(#hdSilver)" stroke="#5d7189" stroke-width="1.6"/>
+        <circle cx="50" cy="50" r="46.6" fill="none" stroke="#71879f" stroke-width="3.2" stroke-dasharray="2.05 2.28" opacity="0.9"/>
+        <circle cx="50" cy="50" r="43.4" fill="url(#hdFace)" stroke="#f9fcff" stroke-width="1"/>
+        <circle cx="50" cy="50" r="41.2" fill="none" stroke="#7e93ab" stroke-width="0.8" opacity="0.75"/>
+        <path d="M66.6 79.6 L47.4 79.6 C46.1 73.4 45.2 68.8 43.1 65 C39.6 61.9 37.9 59 37.3 55.4 C35.3 54 34.7 52.1 35.5 50.3 C33.9 48.9 33.5 47.6 34.5 46.2 C31.6 44.9 29.9 43.8 30.7 41.8 C28.3 39.5 27.5 37.1 29.1 34.5 C30.5 30.8 33.5 26.7 38.1 23.9 C43.1 19.4 50.6 17.7 57.6 20.1 C65.1 22.5 69.9 29.4 70.3 38.4 C70.6 45.9 68.9 53 66.9 59.5 C65.9 66 66.1 72.7 66.6 79.6 Z" fill="url(#hdProfile)" stroke="#5b6e86" stroke-width="1.1" stroke-linejoin="round"/>
+        <path d="M38.5 24.5 C46 19.8 56.5 19.6 63.5 24.8" fill="none" stroke="#e8f0f8" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
+        <path d="M35.2 38.6 L40.4 38.2" fill="none" stroke="#5b6e86" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M55.5 41.5 C58 42.8 58.2 45.8 56.2 47.4" fill="none" stroke="#5b6e86" stroke-width="1.1" stroke-linecap="round" opacity="0.8"/>
+        <text x="50" y="14.6" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="7" font-weight="700" letter-spacing="2.2" fill="#5d7189">LIBERTY</text>
+        <text x="50" y="91.5" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="6.4" font-weight="700" letter-spacing="1.4" fill="#5d7189">HALF DOLLAR</text>
+        <text x="76.5" y="66" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="10" font-weight="700" fill="#5d7189" opacity="0.85">50</text>
+        <ellipse cx="33" cy="25" rx="19" ry="9" fill="#ffffff" opacity="0.35" transform="rotate(-24 33 25)"/>
+      </symbol>
+    </svg>
     <div class="app">
       <!-- Home / game picker -->
       <div class="home" id="homeView">
@@ -4262,7 +4406,7 @@
           <div class="lobby-topbar">
             <button type="button" class="remote-chip" id="openRemoteHub" aria-label="リモコンを開く（スマホでつなぐ共通リモコン）"><svg width="13" height="13" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="11" y="3" width="12" height="28" rx="3"/><path d="M15.5 26h3"/></svg>リモコン</button>
             <button type="button" class="lang-chip" id="openLangPicker" aria-haspopup="dialog" aria-label="Language"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.6 3.9 5.7 3.9 9S14.5 18.4 12 21c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg><span id="langChipLabel">English</span></button>
-            <button type="button" class="points-chip" id="pointsChip" aria-label="ポイントショップを開く"><span class="pts-coin" aria-hidden="true">🪙</span><span class="pts-chip-main"><span class="pts-chip-label">残高</span> <b id="ptsBalNum">0</b> pt <span class="pts-chip-sep">・</span> <span class="pts-rank" id="ptsRankName">見習い</span></span><span class="pts-chip-track"><span class="pts-chip-fill" id="ptsProgFill"></span></span></button>
+            <button type="button" class="points-chip" id="pointsChip" aria-label="ポイントショップを開く"><span class="pts-coin" aria-hidden="true"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg></span><span class="pts-chip-main"><span class="pts-chip-label">残高</span> <b id="ptsBalNum">0</b> pt <span class="pts-chip-sep">・</span> <span class="pts-rank" id="ptsRankName">見習い</span></span><span class="pts-chip-track"><span class="pts-chip-fill" id="ptsProgFill"></span></span></button>
           </div>
           <h1 class="masthead"><span class="logo-game">GAME<span class="dot">.</span></span><span class="logo-arcade">ARCADE</span></h1>
           <p class="sky-line"><span class="sky-greet" id="skyGreet"></span><span class="sky-phrase" id="skyPhrase"></span><span class="sky-clock" id="skyClock"></span></p>
@@ -4462,7 +4606,7 @@
             </div>
           </section>
           <section class="genre-group" data-genre="learn">
-            <h2 class="genre-head"><span class="genre-name">まなぶ</span><span class="genre-count">4</span></h2>
+            <h2 class="genre-head"><span class="genre-name">まなぶ</span><span class="genre-count">5</span></h2>
             <div class="tile-grid" data-genre-grid="learn">
   <section class="game-tile" aria-label="線画あそび" style="--i:6">
               <div class="glyph glyph-hl" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M17 3 30 10.5v13L17 31 4 23.5v-13Z"/><path d="M4 10.5 17 18l13-7.5"/><path d="M17 18v13"/></svg></div>
@@ -4486,11 +4630,18 @@
               <button type="button" class="play-btn lib" id="openLibrary">知識ライブラリを開く</button>
             </section>
   <section class="game-tile" aria-label="ポイントショップ" style="--i:23">
-              <div class="glyph glyph-pts" aria-hidden="true">🪙</div>
+              <div class="glyph glyph-pts" aria-hidden="true"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg></div>
               <h2>ポイントショップ</h2>
               <p class="sub">勝って貯めたポイントでテーマやデザインと交換</p>
               <span class="tile-count" data-count-for="points" hidden></span>
               <button type="button" class="play-btn pts" id="openPoints">ポイントショップを開く</button>
+            </section>
+  <section class="game-tile" aria-label="共通ランキング" style="--i:24">
+              <div class="glyph glyph-lb" aria-hidden="true">🏆</div>
+              <h2>共通ランキング</h2>
+              <p class="sub">みんなの累計ポイントで競うランキング</p>
+              <span class="tile-count" data-count-for="ranking" hidden></span>
+              <button type="button" class="play-btn lb" id="openRanking">ランキングを開く</button>
             </section>
             </div>
           </section>
@@ -5044,6 +5195,9 @@
               <button type="button" data-kart-hold="drift">ドリフト</button>
               <button type="button" data-kart-hold="right" aria-label="右">▶</button>
             </div>
+            <div class="hub-pad-actions">
+              <button type="button" class="hub-act-btn" data-kart-hold="brake">ブレーキ（押している間）</button>
+            </div>
           </section>
             <section class="hub-pad" id="hubPadIdle" aria-label="リモコン待機中" hidden>
               <p class="hub-pad-title">📺 接続中</p>
@@ -5359,28 +5513,60 @@
         </div>
         <div class="stage" id="kartStage">
           <div id="kartMount"></div>
+          <div class="kart-speedfx" id="kartSpeedFx" aria-hidden="true"></div>
           <div class="kart-hud" aria-hidden="true">
             <div class="kart-hud-pos" id="kartHudPos">8<span class="kart-hud-sub">/8 位</span></div>
+            <div class="kart-tower" id="kartTower"></div>
             <div class="kart-hud-right">
               <div class="kart-hud-lap" id="kartHudLap">LAP 1/3</div>
-              <div class="kart-hud-time" id="kartHudTime">0:00.000</div><br>
-              <span class="kart-hud-coins" id="kartHudCoins">🪙 0</span>
+              <div class="kart-hud-time" id="kartHudTime">0:00.000</div>
+              <div class="kart-hud-laptime" id="kartHudLapTime">LAP TIME 0:00.000</div>
+              <span class="kart-hud-coins" id="kartHudCoins"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg><span id="kartHudCoinsNum">0</span></span>
             </div>
             <canvas id="kartMini" width="208" height="208"></canvas>
+            <div class="kart-drift" id="kartDrift"><div class="kart-drift-top"><span>ドリフト</span><span class="kart-drift-state" id="kartDriftState"></span></div><div class="kart-drift-bar"><div class="kart-drift-fill" id="kartDriftFill"></div></div></div>
             <div class="kart-boost" id="kartBoost">BOOST!</div>
           </div>
+          <button type="button" class="kart-pause-btn" id="kartPauseBtn" aria-label="一時停止">⏸</button>
+          <div class="kart-hint" id="kartHint" hidden>カーブでドリフトを長押し → 離してブースト！</div>
           <div class="kart-toast" id="kartToast" role="status"></div>
           <div class="kart-count" id="kartCount" hidden>3</div>
           <div class="kart-panel" id="kartTitle">
             <div class="kart-logo">カート<span class="kart-logo-accent">GP</span></div>
             <div class="kart-tagline">スタジアムサーキット ／ 3ラップ ／ 8台バトル</div>
+            <div class="kart-diff-row" role="group" aria-label="難易度">
+              <span class="kart-diff-label">難易度</span>
+              <button type="button" class="kart-diff-btn" data-kart-diff="easy">やさしい</button>
+              <button type="button" class="kart-diff-btn on" data-kart-diff="normal">ふつう</button>
+              <button type="button" class="kart-diff-btn" data-kart-diff="hard">むずかしい</button>
+            </div>
+            <div class="kart-diff-note" id="kartDiffNote">ふつう： 標準の速さ ／ 獲得ポイント ×1.0</div>
             <button type="button" class="kart-big-btn" id="kartStartBtn">レーススタート</button>
             <div class="kart-best" id="kartBestLine">記録はまだありません。まずは完走しよう！</div>
+            <div class="kart-controls-card">
+              <div class="kart-cc-row"><span class="kart-cc-ico">◀ ▶</span><span>ステアリング（←→キー／ボタン）</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">DRIFT</span><span>カーブでドリフトを長押しして溜める → 離すとブースト</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">BRAKE</span><span>ブレーキ（↓キー）きついカーブの手前で減速</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">⚠</span><span>路肩や壁は大きく減速。コインで最高速が少しアップ</span></div>
+            </div>
             <div class="kart-set-btns">
               <button type="button" class="kart-set-btn" id="kartAutoBtn">オートアクセル：ON</button>
               <button type="button" class="kart-set-btn" id="kartQualBtn">画質：自動</button>
             </div>
-            <div class="kart-howto">◀ ▶ ／ ←→キー：ステアリング（スマホのリモコンでも操作できます）<br>ドリフト長押し→離す：ブースト ／ コインを集めよう</div>
+          </div>
+          <div class="kart-panel" id="kartPause" hidden>
+            <div class="kart-result-title">一時停止</div>
+            <div class="kart-controls-card">
+              <div class="kart-cc-row"><span class="kart-cc-ico">◀ ▶</span><span>ステアリング（←→キー／ボタン）</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">DRIFT</span><span>カーブでドリフトを長押しして溜める → 離すとブースト</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">BRAKE</span><span>ブレーキ（↓キー）きついカーブの手前で減速</span></div>
+              <div class="kart-cc-row"><span class="kart-cc-ico">⚠</span><span>路肩や壁は大きく減速。コインで最高速が少しアップ</span></div>
+            </div>
+            <div class="kart-result-btns">
+              <button type="button" class="kart-big-btn" id="kartResumeBtn">再開</button>
+              <button type="button" class="kart-ghost-btn" id="kartRestartBtn">最初から</button>
+              <button type="button" class="kart-ghost-btn" id="kartQuitBtn">タイトルへ</button>
+            </div>
           </div>
           <div class="kart-panel" id="kartResult" hidden>
             <div class="kart-result-title">結果発表</div>
@@ -5393,10 +5579,11 @@
           </div>
           <div class="kart-touch">
             <div class="kart-touch-group">
-              <button type="button" class="kart-pad-btn" id="kartBtnLeft" aria-label="左">◀</button>
-              <button type="button" class="kart-pad-btn" id="kartBtnRight" aria-label="右">▶</button>
+              <button type="button" class="kart-pad-btn" id="kartBtnLeft" aria-label="左"><span>◀</span><small>左</small></button>
+              <button type="button" class="kart-pad-btn" id="kartBtnRight" aria-label="右"><span>▶</span><small>右</small></button>
             </div>
             <div class="kart-touch-group">
+              <button type="button" class="kart-pad-btn brake" id="kartBtnBrake">ブレーキ</button>
               <button type="button" class="kart-pad-btn drift" id="kartBtnDrift">ドリフト</button>
             </div>
           </div>
@@ -6152,18 +6339,24 @@
       <div class="subview" id="pointsView" aria-label="ポイントショップ画面">
         <div class="subbar">
           <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
-          <span class="gname">ポイントショップ</span>
+          <span class="gname"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg>ポイントショップ</span>
         </div>
         <div class="subscroll">
           <div class="pts-wrap">
             <section class="pts-card" aria-label="ポイントの状態">
+              <div class="pts-hero" aria-hidden="true"><svg class="hd-coin hd-coin--xl" focusable="false"><use href="#hd-coin-symbol"></use></svg></div>
               <div class="pts-stat-row">
-                <div class="pts-stat"><span class="pts-stat-label">残高</span><span class="pts-stat-val"><b id="ptsShopBal">0</b> pt</span></div>
-                <div class="pts-stat"><span class="pts-stat-label">累計</span><span class="pts-stat-val"><b id="ptsShopLife">0</b> pt</span></div>
+                <div class="pts-stat"><span class="pts-stat-label">残高</span><span class="pts-stat-val pts-stat-val--coin"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg><span><b id="ptsShopBal">0</b> pt</span></span></div>
+                <div class="pts-stat"><span class="pts-stat-label">累計</span><span class="pts-stat-val pts-stat-val--coin"><svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg><span><b id="ptsShopLife">0</b> pt</span></span></div>
                 <div class="pts-stat"><span class="pts-stat-label">ランク</span><span class="pts-stat-val"><span class="pts-rank" id="ptsShopRank">見習い</span></span></div>
               </div>
               <p class="pts-next" id="ptsNextLine"></p>
               <div class="pts-track"><div class="pts-fill" id="ptsShopProg"></div></div>
+            </section>
+            <section class="pts-card">
+              <h3 class="pts-h">共通ランキング</h3>
+              <p class="pts-note">全員の累計ポイント順ランキングを見られます。</p>
+              <div class="lb-form"><button type="button" class="pts-btn" id="ptsGoRanking">ランキングを開く</button></div>
             </section>
             <div id="ptsShopList"></div>
             <section class="pts-card">
@@ -6173,6 +6366,51 @@
               <p class="pts-note">毎日の最初の獲得で +20 pt の初ボーナスが付きます。</p>
               <p class="pts-note">勝つ・クリア・完走でポイントが貯まります。使っても累計とランクは減りません。</p>
             </section>
+          </div>
+        </div>
+      </div>
+      <!-- Shared leaderboard: ONE ranking for the app build and the
+           GitHub Pages build alike (Firebase RTDB over REST; see the
+           leaderboard module). Opt-in: nothing leaves the device
+           until the player joins with a name. -->
+      <div class="subview" id="rankingView" aria-label="ランキング画面">
+        <div class="subbar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">🏆 ランキング</span>
+          <button type="button" class="lb-refresh" id="lbRefreshBtn">更新する</button>
+        </div>
+        <div class="subscroll">
+          <div class="pts-wrap">
+            <p class="lead">アプリ版・GitHub版みんな同じ、共通ランキングです。</p>
+            <div id="lbOwnCard"></div>
+            <section class="pts-card" id="lbJoinBox">
+              <h3 class="pts-h">ランキングに参加</h3>
+              <p class="pts-note">プレイヤー名を作って参加すると、あなたの累計ポイントが全員のランキングに載ります。</p>
+              <p class="pts-note">参加すると、名前・累計ポイント・ランクだけが全員に公開されます。</p>
+              <div class="lb-form">
+                <input type="text" id="lbNameInput" maxlength="20" autocomplete="off" placeholder="名前（1〜20文字）" aria-label="プレイヤー名">
+                <button type="button" class="pts-btn" id="lbJoinBtn">ランキングに参加する</button>
+              </div>
+              <p class="lb-msg" id="lbJoinMsg"></p>
+            </section>
+            <section class="pts-card" id="lbManageBox" hidden>
+              <h3 class="pts-h">名前の変更・退会</h3>
+              <div class="lb-form">
+                <input type="text" id="lbRenameInput" maxlength="20" autocomplete="off" placeholder="名前（1〜20文字）" aria-label="プレイヤー名">
+                <button type="button" class="pts-btn equip" id="lbRenameBtn">名前を変更する</button>
+                <button type="button" class="pts-btn unequip" id="lbLeaveBtn">ランキングから抜ける</button>
+              </div>
+              <div id="lbLeaveBox" hidden>
+                <p class="pts-note" id="lbLeaveText"></p>
+                <div class="lb-form">
+                  <button type="button" class="pts-btn" id="lbLeaveYes"></button>
+                  <button type="button" class="pts-btn unequip" id="lbLeaveNo"></button>
+                </div>
+              </div>
+              <p class="lb-msg" id="lbManageMsg"></p>
+            </section>
+            <p class="lb-status" id="lbStatus"></p>
+            <div id="lbList"></div>
           </div>
         </div>
       </div>
@@ -7085,7 +7323,8 @@
           retro: document.getElementById("retroView"),
           retroRemote: document.getElementById("retroRemoteView"),
           library: document.getElementById("libraryView"),
-          points: document.getElementById("pointsView")
+          points: document.getElementById("pointsView"),
+          ranking: document.getElementById("rankingView")
         };
         var views = {
           chess: { view: document.getElementById("chessView"), msg: document.getElementById("chessMsg"),
@@ -7652,6 +7891,7 @@
         document.getElementById("openLangQuiz").addEventListener("click", function () { openGame("langquiz"); });
         document.getElementById("openLibrary").addEventListener("click", function () { openGenre("library"); if (window.__libraryOpen) window.__libraryOpen(); });
         document.getElementById("openPoints").addEventListener("click", function () { openGenre("points"); });
+        document.getElementById("openRanking").addEventListener("click", function () { openGenre("ranking"); });
         Array.prototype.forEach.call(document.querySelectorAll("[data-open-game]"), function (btn) {
           btn.addEventListener("click", function () { openGame(btn.getAttribute("data-open-game")); });
         });
@@ -16507,6 +16747,17 @@
       if (st !== cfLastStatus) { cfLastStatus = st; dispSend({ t: 'cfstate', status: st }); }
     }
 
+    /* Kart readout state: phase + live position / lap / coins, so
+       the phone's decision readout can say where the race stands. */
+    var kartLastState = '';
+    function kartPollState() {
+      if (!window.__kart || !window.__kart.state) return;
+      var s0 = window.__kart.state();
+      var st = { phase: s0.phase, pos: s0.pos, lap: s0.lap, coins: s0.coins, finished: s0.finished };
+      var s = JSON.stringify(st);
+      if (s !== kartLastState) { kartLastState = s; dispSend({ t: 'kartstate', kart: st }); }
+    }
+
     /* ---------------- generic scene mirror (round 2) ------------
        The phone mirrors the display's CURRENT main buttons and can
        press them — one generic mechanism, not per-game code:
@@ -16594,6 +16845,14 @@
         var mc = sceneCollect($('mahjongView'), true);
         if (mc.els.length) return { kind: 'buttons', els: mc.els, labels: mc.labels };
       }
+      /* Selection sub-screens (points shop, shared leaderboard,
+         library…): the D-pad focus walks their visible buttons the
+         same way, and the phone readout names the focused action. */
+      var openSub = document.querySelector('.subview.open');
+      if (openSub) {
+        var sub = sceneCollect(openSub, false);
+        if (sub.els.length) return { kind: 'buttons', els: sub.els, labels: sub.labels };
+      }
       return { kind: 'none', els: [], labels: [] };
     }
     function clearSceneFocus() {
@@ -16601,7 +16860,7 @@
     }
     /* D-pad focus model (2026-11-13): the display owns the focus
        index; the phone only sends moves ({t:'ui',a:'nav'}) and the
-       confirm ({t:'ui',a:'confirm'}). Every focus change is
+       OK action ({t:'ui',a:'confirm'}). Every focus change is
        broadcast back ({t:'scenefocus'}) so the phone's readout can
        name the focused item and what 決定 will do with it. */
     var sceneFocusIdx = 0;
@@ -16766,7 +17025,7 @@
       var g = activeGame();
       if (conn && (g !== lastGame || !wasConnected)) {
         dispSend({ t: 'game', game: g });
-        if (g !== lastGame) { mjCursor = 0; mjSelected = -1; mjLastState = ''; cfLastStatus = ''; }
+        if (g !== lastGame) { mjCursor = 0; mjSelected = -1; mjLastState = ''; cfLastStatus = ''; kartLastState = ''; }
         lastGame = g;
       }
       if (!conn) lastGame = null;
@@ -16788,6 +17047,7 @@
       if (conn && g === 'mahjong' && typeof window.__mjSetRotation === 'function' && window.__mjRotation && window.__mjRotation() !== 0) window.__mjSetRotation(0);
       if (conn && g === 'mahjong' && tick % 2 === 0) mjPollState();
       if (conn && g === 'cubefall' && tick % 3 === 0) cfPollState();
+      if (conn && g === 'kart' && tick % 2 === 0) kartPollState();
       if (conn) { scenePoll(); sceneEnsureFocus(); }
     }
     setInterval(mainLoop, 350);
@@ -16955,6 +17215,17 @@
         if (b) b.textContent = msg.status === 'playing' ? '⏸ 一時停止' : '▶ スタート／再開';
         if (msg.status === 'playing') setRo('roCf1', '選択中：プレイ中', 'roCf2', '「ハード落下」で一番下まで落とします');
         else setRo('roCf1', '選択中：停止中', 'roCf2', 'スタートボタンで始まります');
+      } else if (msg.t === 'kartstate' && msg.kart) {
+        var ks = msg.kart;
+        if (ks.phase === 'race' || ks.phase === 'finish') {
+          setRo('roKart1', '現在の順位：' + ks.pos + '/8 位', 'roKart2', 'LAP ' + Math.min(ks.lap, 3) + '/3 ／ コイン ' + ks.coins + '枚');
+        } else if (ks.phase === 'count') {
+          setRo('roKart1', '選択中：スタート直前', 'roKart2', 'GOで発進します。◀▶の準備を');
+        } else if (ks.phase === 'result') {
+          setRo('roKart1', '結果：' + ks.pos + '/8 位', 'roKart2', 'レーススタートでもう一度走れます');
+        } else {
+          setRo('roKart1', '選択中：ステアリング', 'roKart2', '◀▶で曲がります。ドリフトは長押し→離してブースト');
+        }
       }
     };
     var lastRemoteConn = false;
@@ -17146,8 +17417,19 @@
     var SET_KEY = 'arcade-kart-settings-v1';
     var records = { bestTotal: 0, bestLap: 0 };
     try { var rr = JSON.parse(localStorage.getItem(REC_KEY) || 'null'); if (rr) records = rr; } catch (e) {}
-    var settings = { autoAccel: true, quality: 'auto', muted: true }; // muted by default (ARCADE policy: first open is silent)
+    var settings = { autoAccel: true, quality: 'auto', muted: true, difficulty: 'normal' }; // muted by default (ARCADE policy: first open is silent)
+    // Difficulty (2026-11-13): scales AI top speed + line precision.
+    // Points earned pass this through as easy/normal/hard so the
+    // points module applies its unified ×0.5 / ×1.0 / ×1.5.
+    var DIFFS = {
+      easy:   { aiTop: 0.90, aiNoise: 2.4, note: 'やさしい： AIは控えめ ／ 獲得ポイント ×0.5' },
+      normal: { aiTop: 1.00, aiNoise: 1.4, note: 'ふつう： 標準の速さ ／ 獲得ポイント ×1.0' },
+      hard:   { aiTop: 1.055, aiNoise: 0.6, note: 'むずかしい： AI最速 ／ 獲得ポイント ×1.5' }
+    };
+    var hintDone = false;
+    try { hintDone = localStorage.getItem('arcade-kart-hint-v1') === 'done'; } catch (e) {}
     try { var ss = JSON.parse(localStorage.getItem(SET_KEY) || 'null'); if (ss) settings = Object.assign(settings, ss); } catch (e) {}
+    if (!DIFFS[settings.difficulty]) settings.difficulty = 'normal';
     function saveSettings() { try { localStorage.setItem(SET_KEY, JSON.stringify(settings)); } catch (e) {} }
     function saveRecords() { try { localStorage.setItem(REC_KEY, JSON.stringify(records)); } catch (e) {} }
     function fmtTime(ms) {
@@ -17159,7 +17441,7 @@
     /* ---------------- input (one inlet) ---------------- */
     var input = { steer: 0, drift: false, accel: false, brake: false };
     var keyState = { left: false, right: false, drift: false, accel: false, brake: false };
-    var touchState = { left: false, right: false, drift: false };
+    var touchState = { left: false, right: false, drift: false, brake: false };
     var remoteState = { steer: 0, drift: false, accel: false, brake: false };
     function mergeInput() {
       var s = 0;
@@ -17171,7 +17453,7 @@
       input.steer = Math.max(-1, Math.min(1, s));
       input.drift = !!(keyState.drift || touchState.drift || remoteState.drift);
       input.accel = !!(keyState.accel || remoteState.accel);
-      input.brake = !!keyState.brake;
+      input.brake = !!(keyState.brake || touchState.brake || remoteState.brake);
     }
     window.addEventListener('keydown', function (ev) {
       if (!view.classList.contains('open')) return;
@@ -17182,7 +17464,8 @@
       else if (k === 'ArrowUp' || k === 'w' || k === 'W') keyState.accel = true;
       else if (k === 'ArrowDown' || k === 's' || k === 'S') keyState.brake = true;
       else if (k === ' ' || k === 'Shift') keyState.drift = true;
-      else if (k === 'Enter') { if (phase === 'title') startRace(); else if (phase === 'result') toTitle(); }
+      else if (k === 'Escape' || k === 'p' || k === 'P') { togglePause(); }
+      else if (k === 'Enter') { if (paused) setPaused(false); else if (phase === 'title') startRace(); else if (phase === 'result') toTitle(); }
       else used = false;
       if (used) { ev.preventDefault(); mergeInput(); }
     });
@@ -17237,6 +17520,7 @@
     bindHold($('kartBtnLeft'), function () { touchState.left = true; }, function () { touchState.left = false; });
     bindHold($('kartBtnRight'), function () { touchState.right = true; }, function () { touchState.right = false; });
     bindHold($('kartBtnDrift'), function () { touchState.drift = true; }, function () { touchState.drift = false; });
+    bindHold($('kartBtnBrake'), function () { touchState.brake = true; }, function () { touchState.brake = false; });
 
     /* ---------------- audio (WebAudio synth, queued feel) ---------------- */
     var AC = null, masterGain = null, engineNodes = null;
@@ -17353,6 +17637,7 @@
     /* ---------------- three.js scene ---------------- */
     var renderer = null, scene = null, camera = null, built = false;
     var kartObjs = [], coinObjs = [], sparkSys = null, flameMesh = null, crowdMesh = null;
+    var smokeSys = null, startLightMats = [];
     var lightSun = null, lightTarget = null;
     var KART_COLORS = [0xd2362c, 0x2b6cb0, 0x2f9e44, 0xf08c00, 0x7048b6, 0x0ca678, 0xe64980, 0xf2b705];
     // Points-shop paint: the player's kart wears the special colour
@@ -17398,10 +17683,18 @@
       scene.add(lightTarget);
       lightSun.target = lightTarget;
       scene.add(lightSun);
-      // Ground
+      // Ground (grass: speckled two-tone texture so the infield reads
+      // as turf at speed instead of one flat colour)
+      var grassTex = canvasTexture(function (g, w, h) {
+        g.fillStyle = '#63a84f'; g.fillRect(0, 0, w, h);
+        for (var gi = 0; gi < 2600; gi++) {
+          g.fillStyle = Math.random() < 0.5 ? 'rgba(46,110,38,0.35)' : 'rgba(140,200,105,0.30)';
+          g.fillRect(Math.random() * w, Math.random() * h, 3, 5);
+        }
+      }, 256, 256, 26, 26);
       var ground = new THREE.Mesh(
         new THREE.CircleGeometry(340, 48),
-        new THREE.MeshStandardMaterial({ color: 0x63a84f, roughness: 1 })
+        new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 })
       );
       ground.rotation.x = -Math.PI / 2; ground.position.y = -0.06; ground.receiveShadow = true;
       scene.add(ground);
@@ -17443,6 +17736,7 @@
       buildScenery();
       buildCoins();
       buildSparks();
+      buildSmoke();
       // Karts
       kartObjs = [];
       for (var i = 0; i < 8; i++) {
@@ -17496,7 +17790,31 @@
       banner.position.copy(fr.p); banner.position.y = 9.6;
       banner.rotation.y = Math.atan2(fr.nor.x, fr.nor.z);
       grp.add(banner);
+      // Start lights: three lamps under the banner, facing the grid.
+      // setStartLights() drives them through the countdown.
+      startLightMats = [];
+      var housing = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.0, 0.5),
+        new THREE.MeshStandardMaterial({ color: 0x14161c, roughness: 0.6 }));
+      housing.position.copy(fr.p).addScaledVector(fr.tan, -1.2);
+      housing.position.y = 7.9;
+      housing.rotation.y = Math.atan2(fr.nor.x, fr.nor.z);
+      grp.add(housing);
+      for (var li2 = 0; li2 < 3; li2++) {
+        var lm = new THREE.MeshBasicMaterial({ color: 0x3a1512 });
+        var lamp2 = new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 10), lm);
+        var off = new THREE.Vector3().copy(fr.p)
+          .addScaledVector(fr.nor, (li2 - 1) * 1.05)
+          .addScaledVector(fr.tan, -1.55);
+        lamp2.position.set(off.x, 7.9, off.z);
+        grp.add(lamp2);
+        startLightMats.push(lm);
+      }
       scene.add(grp);
+    }
+    function setStartLights(redCount, green) {
+      for (var i = 0; i < startLightMats.length; i++) {
+        startLightMats[i].color.setHex(green ? 0x2eff6a : (i < redCount ? 0xff2a1e : 0x3a1512));
+      }
     }
     function buildStands(fr) {
       // Grandstand along the start straight, outside the track.
@@ -17600,6 +17918,25 @@
         cloud.position.set((Math.random() - 0.5) * 480, 55 + Math.random() * 30, (Math.random() - 0.5) * 480);
         scene.add(cloud);
       }
+      // Trackside sponsor boards along the straights.
+      var boardTexs = [0xd2362c, 0x2b6cb0, 0xf2b705].map(function (col) {
+        return canvasTexture(function (g, w, h) {
+          g.fillStyle = '#' + col.toString(16).padStart(6, '0'); g.fillRect(0, 0, w, h);
+          g.fillStyle = 'rgba(255,255,255,0.92)';
+          g.font = '900 44px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+          g.fillText('ARCADE GP', w / 2, h / 2 + 2);
+        }, 512, 80, 1, 1);
+      });
+      [0.06, 0.2, 0.33, 0.47, 0.58, 0.72, 0.83, 0.95].forEach(function (u, bi) {
+        var bfr = frameAt(u * trackLen);
+        var board = new THREE.Mesh(new THREE.BoxGeometry(11, 1.7, 0.35),
+          new THREE.MeshStandardMaterial({ map: boardTexs[bi % 3], roughness: 0.8 }));
+        var bp = bfr.p.clone().addScaledVector(bfr.nor, (bi % 2 ? -1 : 1) * (HALF_W + 4.6));
+        board.position.set(bp.x, 0.95, bp.z);
+        board.rotation.y = Math.atan2(bfr.tan.x, bfr.tan.z) + Math.PI / 2 + (bi % 2 ? Math.PI : 0);
+        board.castShadow = true;
+        scene.add(board);
+      });
       // Floodlight poles at four spots.
       var poleM = new THREE.MeshStandardMaterial({ color: 0x39404e, roughness: 0.6, metalness: 0.4 });
       var lampM = new THREE.MeshStandardMaterial({ color: 0xfff6c9, emissive: 0xffedb0, emissiveIntensity: 0.7 });
@@ -17643,22 +17980,50 @@
       var visor = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 0.1), darkM);
       visor.position.set(0, 1.64, -0.2);
       grp.add(visor);
+      // Steering wheel in the driver's hands + roll bar + exhausts:
+      // small parts, but they break up the toy-box silhouette.
+      var swheel = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.05, 8, 18), darkM);
+      swheel.position.set(0, 1.0, 0.12); swheel.rotation.x = -0.6;
+      grp.add(swheel);
+      var roll = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.06, 8, 14, Math.PI), darkM);
+      roll.position.set(0, 0.85, -1.05);
+      grp.add(roll);
+      var exhM = new THREE.MeshStandardMaterial({ color: 0x8f97a5, roughness: 0.35, metalness: 0.7 });
+      [-0.35, 0.35].forEach(function (ex) {
+        var exh = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.5, 8), exhM);
+        exh.rotation.x = Math.PI / 2;
+        exh.position.set(ex, 0.38, -1.62);
+        grp.add(exh);
+      });
+      // Soft blob shadow under the kart: grounds it even when the
+      // shadow map is on its low quality tier.
+      var blob = new THREE.Mesh(new THREE.CircleGeometry(1.55, 18),
+        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.26, depthWrite: false }));
+      blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03;
+      blob.scale.set(0.85, 1.25, 1);
+      grp.add(blob);
       var wheelG = new THREE.CylinderGeometry(0.34, 0.34, 0.26, 14);
       var hubG = new THREE.CylinderGeometry(0.15, 0.15, 0.28, 10);
       var hubM = new THREE.MeshStandardMaterial({ color: 0xb9c0cc, roughness: 0.4, metalness: 0.5 });
       grp.userData.wheels = [];
-      [[-0.88, 1.05], [0.88, 1.05], [-0.88, -1.05], [0.88, -1.05]].forEach(function (wp) {
-        var w = new THREE.Group();
+      [[-0.88, 1.05], [0.88, 1.05], [-0.88, -1.05], [0.88, -1.05]].forEach(function (wp, wi) {
+        // steer group (yaw, front wheels only) wrapping a spin group
+        // (roll) wrapping the tyre — separate axes, no Euler fighting.
+        var steerG = new THREE.Group();
+        var spinG = new THREE.Group();
         var tire = new THREE.Mesh(wheelG, darkM);
         tire.rotation.z = Math.PI / 2;
+        tire.castShadow = true;
         var hub = new THREE.Mesh(hubG, hubM);
         hub.rotation.z = Math.PI / 2;
-        w.add(tire); w.add(hub);
-        w.position.set(wp[0], 0.34, wp[1]);
-        grp.add(w);
-        grp.userData.wheels.push(w);
+        spinG.add(tire); spinG.add(hub);
+        steerG.add(spinG);
+        steerG.position.set(wp[0], 0.34, wp[1]);
+        grp.add(steerG);
+        grp.userData.wheels.push({ steer: steerG, spin: spinG, front: wi < 2 });
       });
       grp.userData.body = body;
+      grp.userData.paintMat = bodyM;
       return grp;
     }
     function buildFlame() {
@@ -17733,10 +18098,61 @@
       }
       sparkSys.points.geometry.attributes.position.needsUpdate = true;
     }
+    /* Drift smoke: one Points cloud of soft sprites, pooled like the
+       sparks. Puffs are born at the rear tyres, drift backward and
+       rise; a dead puff parks under the ground until reused. */
+    function buildSmoke() {
+      var N = 150;
+      var tex = canvasTexture(function (g, w, h) {
+        var grad = g.createRadialGradient(w / 2, h / 2, 2, w / 2, h / 2, w / 2);
+        grad.addColorStop(0, 'rgba(255,255,255,0.85)');
+        grad.addColorStop(0.55, 'rgba(255,255,255,0.38)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad; g.fillRect(0, 0, w, h);
+      }, 64, 64, 1, 1);
+      var geo = new THREE.BufferGeometry();
+      var arr = new Float32Array(N * 3);
+      for (var i0 = 0; i0 < N; i0++) arr[i0 * 3 + 1] = -10;
+      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+      var mat = new THREE.PointsMaterial({ size: 2.3, map: tex, transparent: true, opacity: 0.34, color: 0xe8ecf1, depthWrite: false, sizeAttenuation: true });
+      var points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      scene.add(points);
+      var pool = [];
+      for (var i = 0; i < N; i++) pool.push({ life: 0, max: 1, vx: 0, vy: 0, vz: 0, x: 0, y: -10, z: 0 });
+      smokeSys = { points: points, pool: pool, cursor: 0, arr: arr };
+    }
+    function emitSmoke(x, y, z, bx, bz) {
+      if (!smokeSys) return;
+      var p = smokeSys.pool[smokeSys.cursor];
+      smokeSys.cursor = (smokeSys.cursor + 1) % smokeSys.pool.length;
+      p.max = 0.55 + Math.random() * 0.4;
+      p.life = p.max;
+      p.x = x + (Math.random() - 0.5) * 0.7; p.y = y; p.z = z + (Math.random() - 0.5) * 0.7;
+      p.vx = bx + (Math.random() - 0.5) * 1.2;
+      p.vz = bz + (Math.random() - 0.5) * 1.2;
+      p.vy = 1.1 + Math.random() * 0.9;
+    }
+    function stepSmoke(dt) {
+      if (!smokeSys) return;
+      var pool = smokeSys.pool, arr = smokeSys.arr;
+      for (var i = 0; i < pool.length; i++) {
+        var p = pool[i];
+        if (p.life > 0) {
+          p.life -= dt;
+          p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+          p.vx *= (1 - 1.6 * dt); p.vz *= (1 - 1.6 * dt);
+          if (p.life <= 0) p.y = -10;
+        }
+        arr[i * 3] = p.x; arr[i * 3 + 1] = p.y; arr[i * 3 + 2] = p.z;
+      }
+      smokeSys.points.geometry.attributes.position.needsUpdate = true;
+    }
 
     /* ---------------- race state ---------------- */
     var LAPS = 3, MAXS = 33.5, ACCEL = 13.5;
     var phase = 'boot'; // boot | title | count | race | finish | result
+    var paused = false, simulating = false, simMode = '';
     var karts = [], raceTime = 0, countT = 0, lastPos = 1, timeScale = 1, autoDrive = false;
     var camD = 0, fpsAvg = 60, qLevel = 0, qAuto = true, raceAcc = 0, lastTs = 0, running = false;
     function newKart(i) {
@@ -17744,8 +18160,11 @@
         i: i, isPlayer: i === 0, d: 0, lat: 0, speed: 0, headOff: 0,
         lap: 1, totalD: 0, finished: false, finishTime: 0,
         drift: false, driftCharge: 0, boostT: 0, coins: 0,
+        scrapeT: 0,
         lapStart: 0, lastLapMs: 0, bestLapMs: 0,
-        skill: i === 0 ? 1 : 0.90 + Math.random() * 0.13,
+        // Fixed rival personalities: two fast rivals, a midfield and
+        // backmarkers — positions stay readable race to race.
+        skill: i === 0 ? 1 : [0, 0.995, 0.975, 0.95, 0.93, 0.91, 0.88, 0.86][i] + (Math.random() - 0.5) * 0.012,
         latPref: 0, bumpCd: 0, wheelSpin: 0
       };
     }
@@ -17776,8 +18195,10 @@
       obj.position.y = (Math.abs(k.lat) > HALF_W + 0.6 && k.speed > 4) ? Math.abs(Math.sin(raceTime * 31 + k.i * 7)) * 0.07 : 0;
       k.wheelSpin += k.speed * dt / 0.34;
       var wheels = obj.userData.wheels;
-      for (var w = 0; w < wheels.length; w++) wheels[w].rotation.x = k.wheelSpin;
-      if (wheels[0]) wheels[0].rotation.y = wheels[1].rotation.y = k.headOff * 0.9;
+      for (var w = 0; w < wheels.length; w++) {
+        wheels[w].spin.rotation.x = k.wheelSpin;
+        if (wheels[w].front) wheels[w].steer.rotation.y = k.headOff * 0.85;
+      }
     }
     function kartForward(k) {
       var fr = frameAt(k.d);
@@ -17800,26 +18221,27 @@
       return 8;
     }
     function stepPlayer(k, dt) {
-      var steer = autoDrive ? autoSteer(k) : input.steer;
-      var wantDrift = autoDrive ? autoDrift(k) : input.drift;
-      var throttle = settings.autoAccel || autoDrive ? true : input.accel;
-      var kap = Math.abs(frameAt(k.d + 10).kappa);
+      var idle = simulating && simMode === 'idle';
+      var steer = idle ? 0 : (autoDrive ? autoSteer(k) : input.steer);
+      var wantDrift = idle ? false : (autoDrive ? autoDrift(k) : input.drift);
+      var throttle = idle ? settings.autoAccel : (settings.autoAccel || autoDrive ? true : input.accel);
+      var braking = idle ? false : (autoDrive ? autoBrake(k) : input.brake);
       // Start boost: full throttle from the GO instant.
       if (phase === 'race' && raceTime < 0.4 && throttle) k.boostT = Math.max(k.boostT, 0.55);
-      var offroad = Math.abs(k.lat) > HALF_W + 0.6;
       var boosting = k.boostT > 0;
       if (boosting) k.boostT -= dt;
-      var topSpeed = boosting ? 44 : MAXS;
-      if (throttle && !input.brake) {
+      // Coins pay out as a small top-speed bonus (the on-screen tips
+      // have always promised this; now it is true, capped at +1.2).
+      var topSpeed = (boosting ? 44 : MAXS) + Math.min(10, k.coins) * 0.12;
+      if (throttle && !braking) {
         k.speed += ACCEL * (1 - k.speed / (topSpeed * 1.12)) * dt + (boosting ? 15 * dt : 0);
-      } else if (input.brake && !autoDrive) {
+      } else if (braking) {
         k.speed -= (k.speed > 0.5 ? 26 : 0) * dt;
         if (k.speed <= 0.5) k.speed = Math.max(-8, k.speed - 8 * dt);
       } else {
         k.speed -= k.speed * 0.55 * dt + 2.2 * dt;
         if (k.speed < 0) k.speed = 0;
       }
-      if (offroad && k.speed > 13) k.speed -= (k.speed - 13) * 2.4 * dt;
       if (k.speed > topSpeed) k.speed -= (k.speed - topSpeed) * 1.8 * dt;
       // Steering: more authority at speed, extra bite while drifting.
       var sr = Math.min(1, Math.abs(k.speed) / 16 + 0.25);
@@ -17831,64 +18253,157 @@
       k.drift = !!(wantDrift && Math.abs(steer) > 0.25 && k.speed > 13 && phase === 'race');
       if (k.drift) {
         k.driftCharge += dt;
-        if (Math.random() < dt * 26) {
-          var fr = frameAt(k.d);
-          var bx = fr.p.x + fr.nor.x * k.lat, bz = fr.p.z + fr.nor.z * k.lat;
-          emitSpark(bx, 0.15, bz, 2.6, 2.6);
+        var frD = frameAt(k.d);
+        var bx = frD.p.x + frD.nor.x * k.lat, bz = frD.p.z + frD.nor.z * k.lat;
+        if (Math.random() < dt * 26) emitSpark(bx, 0.15, bz, 2.6, 2.6);
+        if (Math.random() < dt * 34) {
+          var fwD = kartForward(k);
+          emitSmoke(bx - fwD.x * 1.6, 0.3, bz - fwD.z * 1.6, -fwD.x * 2.2, -fwD.z * 2.2);
         }
       } else if (wasDrift) {
-        if (k.driftCharge > 1.15) { k.boostT = 1.05; sfxBoost(); flashBoost(); }
-        else if (k.driftCharge > 0.55) { k.boostT = 0.55; sfxBoost(); }
+        if (k.driftCharge > 1.15) { k.boostT = 1.15; if (!simulating) { sfxBoost(); flashBoost(); markHintDone(); } }
+        else if (k.driftCharge > 0.55) { k.boostT = 0.6; if (!simulating) { sfxBoost(); markHintDone(); } }
         k.driftCharge = 0;
       }
       var fw = kartForward(k);
       var latRate = Math.sin(k.headOff) * k.speed * (k.drift ? 1.13 : 1);
       k.lat += latRate * dt * (k.speed < 0 ? -1 : 1);
-      k.d += Math.cos(k.headOff) * k.speed * dt;
-      k.totalD += Math.cos(k.headOff) * k.speed * dt;
+      /* Centrifugal slide — the fix for "win by doing nothing". The
+         kart's position is spline-relative, so an unsteered kart used
+         to be carried around every corner for free. Now cornering
+         force pushes the kart toward the outside wall at v²·κ; the
+         driver must steer (or drift, which grips harder) to hold the
+         line. Above the grip limit the slide grows superlinearly, so
+         boosting into a tight corner without drifting ends in the
+         wall — speed has to be earned corner by corner. */
+      var frC = frameAt(k.d);
+      var kv2 = frC.kappa * k.speed * k.speed;
+      var push = kv2 * 0.085 * (1 + Math.max(0, Math.abs(kv2) - 26) * 0.06);
+      if (k.drift) push *= 0.55;
+      if (k.speed > 0) k.lat += push * dt;
+      var adv = Math.cos(k.headOff) * k.speed * dt;
+      k.d += adv;
+      k.totalD += adv;
+      // Off-track bands: the rumble shoulder slows you, the deep
+      // edge (near the wall) slows you hard.
+      var alat = Math.abs(k.lat);
+      if (alat > HALF_W + 0.4 && k.speed > 0) {
+        var cap = alat > WALL_LAT - 0.9 ? 11 : 17;
+        if (k.speed > cap) k.speed -= (k.speed - cap) * 3.0 * dt;
+        if (Math.random() < dt * 10) {
+          var frO = frameAt(k.d);
+          emitSmoke(frO.p.x + frO.nor.x * k.lat, 0.25, frO.p.z + frO.nor.z * k.lat, -fw.x * 1.5, -fw.z * 1.5);
+        }
+      }
+      if (k.scrapeT > 0) k.scrapeT -= dt;
       if (Math.abs(k.lat) >= WALL_LAT) {
         k.lat = Math.sign(k.lat) * WALL_LAT;
-        if (k.speed > 12 && k.bumpCd <= 0) { sfxBump(); shake(0.16); k.bumpCd = 0.5; }
-        k.speed *= Math.max(0, 1 - 2.2 * dt);
-        k.headOff *= 0.6;
+        // Impact: a real speed cut + bounce, once per contact.
+        if (k.scrapeT <= 0 && k.speed > 13) {
+          k.speed *= 0.7;
+          if (!simulating) { sfxBump(); shake(0.22); }
+          k.scrapeT = 0.4; k.bumpCd = 0.5;
+          var frW = frameAt(k.d);
+          for (var ws = 0; ws < 7; ws++) emitSpark(frW.p.x + frW.nor.x * k.lat, 0.4, frW.p.z + frW.nor.z * k.lat, 3.4, 3.4);
+        }
+        // Grinding along the wall bleeds speed continuously.
+        if (k.speed > 10) k.speed -= (k.speed - 10) * 2.6 * dt;
+        k.headOff *= 0.55;
       }
       if (k.bumpCd > 0) k.bumpCd -= dt;
       stepLap(k);
       stepCoins(k);
       return fw;
     }
+    // Auto-driver braking model (used by the acceptance simulation):
+    // brake when the corner ahead cannot be taken at current speed.
+    function autoBrake(k) {
+      var kap = kappaAhead(k.d, 22 + k.speed * 0.6);
+      // Prefer a drift over the brake pedal in driftable corners;
+      // brake only for the tightest bends or when too fast entirely.
+      if (kap < 0.030 && autoDrift(k)) return false;
+      var cornerV = MAXS * (1 - Math.min(0.45, Math.max(0, kap - 0.008) * 10));
+      return k.speed > cornerV + 1.5 && !k.drift;
+    }
+    function markHintDone() {
+      if (hintDone) return;
+      hintDone = true;
+      try { localStorage.setItem('arcade-kart-hint-v1', 'done'); } catch (e) {}
+      var h = $('kartHint'); if (h) h.hidden = true;
+    }
     function autoSteer(k) {
-      var target = racingLat(k.d) + Math.sin(k.d * 0.011) * 1.1;
-      var err = target - k.lat;
-      return Math.max(-1, Math.min(1, err * 0.24 - k.headOff * 1.15));
-    }
-    function autoDrift(k) {
-      return Math.abs(frameAt(k.d + 16).kappa) > 0.020 && k.speed > 20;
-    }
-    function stepNPC(k, dt) {
-      var kap = kappaAhead(k.d, 24 + k.speed * 0.55);
-      var rb = 1 + Math.max(-0.065, Math.min(0.065, (karts[0].totalD - k.totalD) / 2600));
-      var top = MAXS * k.skill * rb * Math.max(0.55, Math.min(1, 1.22 - kap * 21));
-      if (k.boostT > 0) { k.boostT -= dt; top = 44; }
-      var accel = k.speed < top ? ACCEL * 0.94 : 20;
-      k.speed += Math.max(-20 * dt, Math.min(accel * dt, (top - k.speed)));
-      if (Math.abs(frameAt(k.d + 15).kappa) > 0.021 && k.speed > 21 && Math.random() < dt * 0.5) k.boostT = Math.max(k.boostT, 0.7);
-      var targetLat = racingLat(k.d) + Math.sin(k.d * 0.013 + k.i * 2.4) * 1.5;
-      // Avoid the kart directly ahead.
+      var target = racingLat(k.d) + Math.sin(k.d * 0.011) * 0.6;
+      // Overtake like the NPCs do: swing wide of the kart ahead.
       for (var j = 0; j < karts.length; j++) {
         var o = karts[j];
         if (o === k) continue;
         var dd = o.totalD - k.totalD;
-        if (dd > 0 && dd < 6 && Math.abs(o.lat - k.lat) < 2.2) targetLat = o.lat + (k.lat >= o.lat ? 2.6 : -2.6);
+        if (dd > 0 && dd < 8 && Math.abs(o.lat - k.lat) < 2.6) target = o.lat + (k.lat >= o.lat ? 3.4 : -3.4);
+      }
+      var err = target - k.lat;
+      return Math.max(-1, Math.min(1, err * 0.24 - k.headOff * 1.15));
+    }
+    function autoDrift(k) {
+      return Math.abs(frameAt(k.d + 12).kappa) > 0.018 && k.speed > 19;
+    }
+    function stepNPC(k, dt) {
+      var diff = DIFFS[settings.difficulty] || DIFFS.normal;
+      // Racing brain: read the curvature a braking-distance ahead,
+      // pick the speed that corner can be taken at, brake down to it
+      // or accelerate out toward the (difficulty-scaled) top speed.
+      var kap = kappaAhead(k.d, 20 + k.speed * 0.75);
+      var cornerF = 1 - Math.min(0.42, Math.max(0, kap - 0.008) * 11);
+      // Rubber-banding capped at ±3%: a nudge, never a gift.
+      var rb = 1 + Math.max(-0.03, Math.min(0.03, (karts[0].totalD - k.totalD) / 2600));
+      var top = MAXS * k.skill * diff.aiTop * rb;
+      var target = top * cornerF;
+      if (k.boostT > 0) { k.boostT -= dt; target = 44; }
+      if (k.speed < target) k.speed = Math.min(target, k.speed + ACCEL * 0.96 * dt);
+      else k.speed = Math.max(target, k.speed - 17 * dt);
+      // Skilled rivals drift-boost out of corners: they charge while
+      // the bend is still tight and fire as it opens up.
+      var kapHere = Math.abs(frameAt(k.d).kappa);
+      if (kapHere > 0.020 && k.speed > 20) k.driftCharge += dt;
+      else {
+        if (k.driftCharge > 0.9 && k.skill > 0.92 && kap < 0.012) k.boostT = Math.max(k.boostT, 0.65);
+        k.driftCharge = 0;
+      }
+      var targetLat = racingLat(k.d) + Math.sin(k.d * 0.013 + k.i * 2.4) * diff.aiNoise;
+      // Avoid / follow the kart ahead: swing wide early, and match
+      // a slower kart's pace instead of ramming it from behind.
+      for (var j = 0; j < karts.length; j++) {
+        var o = karts[j];
+        if (o === k) continue;
+        var dd = o.totalD - k.totalD;
+        if (dd > 0 && dd < 9 && Math.abs(o.lat - k.lat) < 2.4) {
+          targetLat = o.lat + (k.lat >= o.lat ? 3.2 : -3.2);
+          if (dd < 6 && o.speed < k.speed) target = Math.min(target, o.speed + 2);
+        }
       }
       var steer = Math.max(-1, Math.min(1, (targetLat - k.lat) * 0.22 - k.headOff * 1.2));
       var sr = Math.min(1, Math.abs(k.speed) / 16 + 0.25);
       k.headOff += (steer * 0.46 * sr - k.headOff) * Math.min(1, 6 * dt);
       k.lat += Math.sin(k.headOff) * k.speed * dt;
-      if (Math.abs(k.lat) > WALL_LAT) { k.lat = Math.sign(k.lat) * WALL_LAT; k.speed *= 0.92; }
+      // Same off-track penalty as the player.
+      var alat = Math.abs(k.lat);
+      if (alat > HALF_W + 0.4 && k.speed > 0) {
+        var cap = alat > WALL_LAT - 0.9 ? 11 : 17;
+        if (k.speed > cap) k.speed -= (k.speed - cap) * 3.0 * dt;
+      }
+      if (Math.abs(k.lat) > WALL_LAT) {
+        k.lat = Math.sign(k.lat) * WALL_LAT;
+        if (k.speed > 10) k.speed -= (k.speed - 10) * 2.6 * dt;
+        k.headOff *= 0.55;
+      }
       var adv = Math.cos(k.headOff) * k.speed * dt;
       k.d += adv; k.totalD += adv;
-      k.drift = Math.abs(frameAt(k.d + 12).kappa) > 0.022 && k.speed > 19;
+      k.drift = kapHere > 0.022 && k.speed > 19;
+      if (k.drift && Math.random() < dt * 22) {
+        var frN = frameAt(k.d);
+        var nx = frN.p.x + frN.nor.x * k.lat, nz = frN.p.z + frN.nor.z * k.lat;
+        var fwN = kartForward(k);
+        emitSmoke(nx - fwN.x * 1.6, 0.3, nz - fwN.z * 1.6, -fwN.x * 2, -fwN.z * 2);
+      }
       stepLap(k);
     }
     function stepLap(k) {
@@ -17939,11 +18454,16 @@
           if (Math.abs(dd) > 3.4) continue;
           var dl = b.lat - a.lat;
           if (Math.abs(dl) > 2.3) continue;
-          var push = (2.3 - Math.abs(dl)) * 3.4 * dt;
+          var push = (2.3 - Math.abs(dl)) * 7 * dt;
           var dir = dl >= 0 ? 1 : -1;
           a.lat -= dir * push * 0.5; b.lat += dir * push * 0.5;
           var avg = (a.speed + b.speed) / 2;
-          a.speed += (avg - a.speed) * 0.35; b.speed += (avg - b.speed) * 0.35;
+          a.speed += (avg - a.speed) * 0.08; b.speed += (avg - b.speed) * 0.08;
+          // Contact costs both karts speed, scaled by overlap depth
+          // (a graze is cheap; a full side-swipe is not) — no free
+          // rides off a rival, but no permanent glue either.
+          var depth = (2.3 - Math.abs(dl)) / 2.3;
+          a.speed -= a.speed * 0.5 * depth * dt; b.speed -= b.speed * 0.5 * depth * dt;
           if ((a.isPlayer || b.isPlayer) && Math.abs(dd) < 2.6 && a.bumpCd <= 0 && b.bumpCd <= 0) {
             sfxBump(); shake(0.13); a.bumpCd = b.bumpCd = 0.45;
           }
@@ -17951,6 +18471,7 @@
       }
     }
     function onPlayerLap() {
+      if (simulating) return;
       var k = karts[0];
       var now = Math.round(raceTime * 1000);
       k.lastLapMs = now - k.lapStart;
@@ -17962,6 +18483,7 @@
       updateHud(true);
     }
     function onPlayerFinish() {
+      if (simulating) return;
       phase = 'finish';
       var k = karts[0];
       var now = Math.round(raceTime * 1000);
@@ -17988,7 +18510,10 @@
     var hudPos = $('kartHudPos'), hudLap = $('kartHudLap'), hudTime = $('kartHudTime'),
         hudCoins = $('kartHudCoins'), toastEl = $('kartToast'), countEl = $('kartCount'),
         titleOv = $('kartTitle'), resultOv = $('kartResult'), resultRows = $('kartResultRows'),
-        resultMeta = $('kartResultMeta'), bestLine = $('kartBestLine'), boostEl = $('kartBoost');
+        resultMeta = $('kartResultMeta'), bestLine = $('kartBestLine'), boostEl = $('kartBoost'),
+        hudLapTime = $('kartHudLapTime'), towerEl = $('kartTower'),
+        driftEl = $('kartDrift'), driftFill = $('kartDriftFill'), driftState = $('kartDriftState'),
+        speedFx = $('kartSpeedFx'), hintEl = $('kartHint'), pauseOv = $('kartPause');
     var toastTimer = 0;
     function toast(text) {
       toastEl.textContent = text;
@@ -17997,7 +18522,10 @@
       toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1900);
     }
     function bumpCoinHud() {
-      hudCoins.textContent = '🪙 ' + karts[0].coins;
+      var coinNumEl = document.getElementById('kartHudCoinsNum');
+      if (coinNumEl) coinNumEl.textContent = String(karts[0].coins); else hudCoins.textContent = String(karts[0].coins);
+      var kartCoin = hudCoins.querySelector('.hd-coin');
+      if (kartCoin) { kartCoin.classList.remove('spin'); void kartCoin.getBoundingClientRect(); kartCoin.classList.add('spin'); }
       hudCoins.classList.remove('pop'); void hudCoins.offsetWidth; hudCoins.classList.add('pop');
     }
     function flashBoost() {
@@ -18017,6 +18545,46 @@
       }
       hudLap.textContent = 'LAP ' + Math.min(k.lap, LAPS) + '/' + LAPS;
       hudTime.textContent = fmtTime(Math.round(raceTime * 1000));
+      if (hudLapTime) {
+        var curLapMs = Math.max(0, Math.round(raceTime * 1000) - k.lapStart);
+        var lt = 'LAP TIME ' + (curLapMs > 0 ? fmtTime(curLapMs) : '0:00.000');
+        if (k.lastLapMs) lt += '<br>LAST ' + fmtTime(k.lastLapMs);
+        if (k.bestLapMs) lt += ' ／ BEST ' + fmtTime(k.bestLapMs);
+        if (hudLapTime.innerHTML !== lt) hudLapTime.innerHTML = lt;
+      }
+      updateTower();
+      updateDriftGauge(k);
+    }
+    /* Live position tower: all 8 karts, gap to the leader in
+       seconds. Rebuilt only when the rendered signature changes. */
+    var towerSig = '';
+    function updateTower() {
+      if (!towerEl || !karts.length) return;
+      var st = standings();
+      var leader = st[0];
+      var sig = '', html = '';
+      st.forEach(function (k, idx) {
+        var gap = idx === 0 ? 0 : (leader.totalD - k.totalD) / Math.max(14, k.speed || 20);
+        sig += k.i + ':' + Math.round(gap * 4) + ';';
+        var col = '#' + (k.isPlayer ? kartPlayerColor() : KART_COLORS[k.i]).toString(16).padStart(6, '0');
+        html += '<div class="kart-tower-row' + (k.isPlayer ? ' me' : '') + '">' +
+          '<span class="kart-tower-pos">' + (idx + 1) + '</span>' +
+          '<span class="kart-tower-dot" style="background:' + col + '"></span>' +
+          '<span class="kart-tower-name">' + NPC_NAMES[k.i] + '</span>' +
+          '<span class="kart-tower-gap">' + (idx === 0 ? 'LAP ' + Math.min(k.lap, LAPS) : '+' + gap.toFixed(1)) + '</span></div>';
+      });
+      if (sig !== towerSig) { towerSig = sig; towerEl.innerHTML = html; }
+    }
+    function updateDriftGauge(k) {
+      if (!driftEl) return;
+      var ratio = Math.max(0, Math.min(1, k.driftCharge / 1.15));
+      var show = k.drift || k.driftCharge > 0.02;
+      driftEl.classList.toggle('on', !!show);
+      driftEl.classList.toggle('lv1', k.driftCharge >= 0.55 && k.driftCharge < 1.15);
+      driftEl.classList.toggle('lv2', k.driftCharge >= 1.15);
+      driftFill.style.width = Math.round(ratio * 100) + '%';
+      var st = k.driftCharge >= 1.15 ? 'フルブーストOK' : (k.driftCharge >= 0.55 ? 'ミニブーストOK' : '');
+      if (driftState.textContent !== st) driftState.textContent = st;
     }
     var mini = $('kartMini'), miniCtx = mini ? mini.getContext('2d') : null;
     var miniPath = null;
@@ -18071,7 +18639,7 @@
       resultRows.innerHTML = html;
       var k0 = karts[0];
       resultMeta.textContent = 'タイム ' + fmtTime(Math.round(k0.finishTime * 1000)) + ' ／ ベストラップ ' + fmtTime(k0.bestLapMs) + ' ／ コイン ' + k0.coins + '枚';
-      try { if (window.ARCADE_points) { var pIdx = -1; st.forEach(function (k, idx) { if (k.isPlayer) pIdx = idx; }); if (pIdx >= 0) window.ARCADE_points.earnPlace("kartPlace", pIdx + 1); } } catch (e) {}
+      try { if (window.ARCADE_points) { var pIdx = -1; st.forEach(function (k, idx) { if (k.isPlayer) pIdx = idx; }); if (pIdx >= 0) window.ARCADE_points.earnPlace("kartPlace", pIdx + 1, { diff: settings.difficulty }); } } catch (e) {}
       resultOv.hidden = false;
       titleOv.hidden = true;
     }
@@ -18084,31 +18652,79 @@
     /* ---------------- flow ---------------- */
     function startRace() {
       audioInit();
+      setPaused(false);
       gridPlace();
       resetCoins();
-      raceTime = 0; countT = 0; lastPos = 1;
+      // The points-shop paint applies at race start: repaint the
+      // player kart's body material with the equipped colour.
+      if (kartObjs[0] && kartObjs[0].userData.paintMat) {
+        try { kartObjs[0].userData.paintMat.color.setHex(kartPlayerColor()); } catch (e) {}
+      }
+      raceTime = 0; countT = 0; lastPos = 1; towerSig = '';
       karts.forEach(function (k) { k.lapStart = 0; });
       phase = 'count';
       titleOv.hidden = true;
       resultOv.hidden = true;
       countEl.hidden = false;
       countEl.textContent = '3';
+      setStartLights(0, false);
+      if (hintEl) hintEl.hidden = hintDone;
       engineStart();
       updateHud(true);
-      hudCoins.textContent = '🪙 0';
+      var coinNumReset = document.getElementById('kartHudCoinsNum');
+      if (coinNumReset) coinNumReset.textContent = '0'; else hudCoins.textContent = '0';
     }
     function toTitle() {
       phase = 'title';
+      setPaused(false);
       gridPlace();
       resultOv.hidden = true;
       countEl.hidden = true;
+      if (hintEl) hintEl.hidden = true;
       titleOv.hidden = false;
       refreshBestLine();
       engineStop();
     }
+    /* ---------------- pause (control card lives here too) ---------------- */
+    function setPaused(on) {
+      if (on && phase !== 'race' && phase !== 'count' && phase !== 'finish') on = false;
+      paused = !!on;
+      if (pauseOv) pauseOv.hidden = !paused;
+      if (paused) { engineStop(); kartClearLocalInputs(); }
+      else if (phase === 'race' || phase === 'count') { audioInit(); engineStart(); }
+      lastTs = 0;
+    }
+    function togglePause() {
+      if (phase === 'race' || phase === 'count' || phase === 'finish') setPaused(!paused);
+    }
     $('kartStartBtn').addEventListener('click', function () { startRace(); });
     $('kartAgainBtn').addEventListener('click', function () { resultOv.hidden = true; startRace(); });
     $('kartToTitleBtn').addEventListener('click', function () { toTitle(); });
+    var pauseBtnEl = $('kartPauseBtn');
+    if (pauseBtnEl) pauseBtnEl.addEventListener('click', function () { togglePause(); });
+    var resumeBtn = $('kartResumeBtn');
+    if (resumeBtn) resumeBtn.addEventListener('click', function () { setPaused(false); });
+    var restartBtn = $('kartRestartBtn');
+    if (restartBtn) restartBtn.addEventListener('click', function () { setPaused(false); startRace(); });
+    var quitBtn = $('kartQuitBtn');
+    if (quitBtn) quitBtn.addEventListener('click', function () { toTitle(); });
+    /* Difficulty selector (title): persists with the other kart
+       settings; the note under it states the points multiplier. */
+    var diffNote = $('kartDiffNote');
+    var diffBtns = document.querySelectorAll('[data-kart-diff]');
+    function syncDiffButtons() {
+      Array.prototype.forEach.call(diffBtns, function (b) {
+        b.classList.toggle('on', b.getAttribute('data-kart-diff') === settings.difficulty);
+      });
+      if (diffNote) diffNote.textContent = DIFFS[settings.difficulty].note;
+    }
+    Array.prototype.forEach.call(diffBtns, function (b) {
+      b.addEventListener('click', function () {
+        settings.difficulty = b.getAttribute('data-kart-diff');
+        saveSettings(); syncDiffButtons();
+      });
+    });
+    syncDiffButtons();
     var autoBtn = $('kartAutoBtn'), qualBtn = $('kartQualBtn'), muteBtn = $('kartMuteBtn');
     function syncSettingButtons() {
       autoBtn.textContent = 'オートアクセル：' + (settings.autoAccel ? 'ON' : 'OFF');
@@ -18230,17 +18846,24 @@
       lastTs = ts;
       if (dtReal > 0) fpsAvg = fpsAvg * 0.95 + (1 / Math.max(dtReal, 0.001)) * 0.05;
       var dt = dtReal * timeScale;
+      if (paused) {
+        if (renderer && scene && camera) renderer.render(scene, camera);
+        lastTs = ts;
+        return;
+      }
       if (phase === 'count') {
         countT += dtReal;
         var n = 3 - Math.floor(countT);
         if (countT < 3) {
           var label = String(Math.max(1, n));
           if (countEl.textContent !== label) { countEl.textContent = label; beep(440, 0.12, 'square', 0.12); }
+          setStartLights(3 - n + 1, false);
         } else if (phase === 'count') {
           phase = 'race';
           countEl.textContent = 'GO!';
           beep(880, 0.3, 'square', 0.14);
-          setTimeout(function () { countEl.hidden = true; }, 650);
+          setStartLights(0, true);
+          setTimeout(function () { countEl.hidden = true; setStartLights(0, false); }, 650);
           engineStart();
         }
       }
@@ -18284,6 +18907,8 @@
         lightTarget.updateMatrixWorld();
       }
       stepSparks(dt);
+      stepSmoke(dt);
+      if (speedFx && karts[0]) speedFx.classList.toggle('on', phase === 'race' && karts[0].boostT > 0);
       stepCamera(dtReal);
       drawMini();
       renderer.render(scene, camera);
@@ -18351,6 +18976,7 @@
       if (renderer.domElement && renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
       renderer = null; scene = null; camera = null;
       kartObjs = []; coinObjs = []; sparkSys = null; flameMesh = null; crowdMesh = null;
+      smokeSys = null; startLightMats = [];
       lightSun = null; lightTarget = null;
     }
     window.addEventListener('resize', function () { if (view.classList.contains('open')) fit(); });
@@ -18362,9 +18988,82 @@
       else if (msg.a === 'left') remoteState.steer = msg.v ? -1 : (remoteState.steer < 0 ? 0 : remoteState.steer);
       else if (msg.a === 'right') remoteState.steer = msg.v ? 1 : (remoteState.steer > 0 ? 0 : remoteState.steer);
       else if (msg.a === 'drift') remoteState.drift = !!msg.v;
+      else if (msg.a === 'brake') remoteState.brake = !!msg.v;
       else if (msg.a === 'accel') remoteState.accel = !!msg.v;
       else if (msg.a === 'start') { audioInit(); if (phase === 'title') startRace(); else if (phase === 'result') toTitle(); }
       mergeInput();
+    }
+    /* ---------------- acceptance simulation ----------------
+       Headless full-race runs of the real physics (fixed 1/60 steps,
+       no rendering), used to prove the challenge tuning:
+         simTest('normal', 'idle')   — no steering, no drift, no
+           brake for a whole race: the player must finish last.
+         simTest('normal', 'driven') — the auto-driver (racing line
+           + drift boosts + corner braking): must be able to win.
+       Track data is built on demand so this also works before the
+       scene exists; the live race state is saved and restored. */
+    function simTest(diffKey, mode) {
+      if (!window.THREE) return { error: 'THREE unavailable' };
+      if (!samples.length) buildTrackData();
+      var saved = {
+        karts: karts, raceTime: raceTime, phase: phase, autoDrive: autoDrive,
+        difficulty: settings.difficulty, lastPos: lastPos, coins: coinObjs
+      };
+      // Coins matter to the result (pickups raise the player's top
+      // speed). With no scene built there are no coin meshes, so
+      // fabricate data-only coins at buildCoins' exact placements;
+      // with a scene, snapshot the taken flags and restore them.
+      var coinSnapshot = null;
+      if (coinObjs.length) {
+        coinSnapshot = coinObjs.map(function (c) { return c.userData.taken; });
+      } else {
+        coinObjs = [];
+        var lanes = [-3.4, 0, 3.4, 0], li3 = 0;
+        for (var d0 = 34; d0 < trackLen - 16; d0 += 25) {
+          if (li3 % 5 === 4) { [-3.4, 0, 3.4].forEach(function (lat) { coinObjs.push({ userData: { d: d0, lat: lat, taken: false, spin: 0 }, visible: true }); }); }
+          else coinObjs.push({ userData: { d: d0, lat: lanes[li3 % 4], taken: false, spin: 0 }, visible: true });
+          li3++;
+        }
+      }
+      simulating = true; simMode = mode || 'idle';
+      settings.difficulty = DIFFS[diffKey] ? diffKey : 'normal';
+      autoDrive = simMode === 'driven';
+      gridPlace();
+      phase = 'race'; raceTime = 0;
+      karts.forEach(function (k) { k.lapStart = 0; });
+      var SDT = 1 / 60, t = 0, limit = 420, prevLap = 1;
+      while (t < limit) {
+        for (var i = 0; i < karts.length; i++) {
+          if (karts[i].isPlayer) stepPlayer(karts[i], SDT);
+          else stepNPC(karts[i], SDT);
+        }
+        collisions(SDT);
+        // Coins respawn each lap in the real race (onPlayerLap).
+        if (karts[0].lap !== prevLap) { prevLap = karts[0].lap; resetCoins(); }
+        raceTime += SDT; t += SDT;
+        if (karts[0].finished) break;
+        var allNpcDone = true;
+        for (var j = 1; j < karts.length; j++) if (!karts[j].finished) { allNpcDone = false; break; }
+        if (allNpcDone && t > 30) break;
+      }
+      var pos = playerPos();
+      var times = standings().map(function (k) {
+        return { name: NPC_NAMES[k.i], player: k.isPlayer, finished: k.finished,
+                 time: k.finished ? Math.round(k.finishTime * 10) / 10 : null,
+                 totalD: Math.round(k.totalD) };
+      });
+      var result = { diff: settings.difficulty, mode: simMode, playerPos: pos,
+                     playerFinished: karts[0].finished, simSeconds: Math.round(t * 10) / 10,
+                     standings: times };
+      karts = saved.karts; raceTime = saved.raceTime; phase = saved.phase;
+      autoDrive = saved.autoDrive; settings.difficulty = saved.difficulty;
+      lastPos = saved.lastPos;
+      if (coinSnapshot) {
+        saved.coins.forEach(function (c, i2) { c.userData.taken = coinSnapshot[i2]; c.visible = !coinSnapshot[i2]; });
+      }
+      coinObjs = saved.coins;
+      simulating = false; simMode = '';
+      return result;
     }
     window.__kart = {
       enter: enter,
@@ -18379,11 +19078,13 @@
           lap: karts.length ? karts[0].lap : 0,
           coins: karts.length ? karts[0].coins : 0,
           finished: karts.length ? karts[0].finished : false,
+          difficulty: settings.difficulty,
           raceMs: Math.round(raceTime * 1000),
           records: records
         };
       },
       startRace: function () { startRace(); },
+      simTest: simTest,
       debugSet: function (o) {
         if (!o) return;
         if (typeof o.autoDrive === 'boolean') autoDrive = o.autoDrive;
@@ -24679,7 +25380,7 @@
     chessWin: { pts: 50, label: "チェス勝利", diff: true },
     chessDraw: { pts: 15, label: "チェス引き分け", diff: true },
     mahjongPlace: { place: [80, 40, 20, 10], label: "麻雀 {place}位", diff: true },
-    kartPlace: { place: [40, 25, 15], placeDefault: 5, label: "カートGP {place}位", labelDone: "カートGP 完走" },
+    kartPlace: { place: [40, 25, 15], placeDefault: 5, label: "カートGP {place}位", labelDone: "カートGP 完走", diff: true },
     billiardsWin: { pts: 30, label: "ビリヤード勝利", diff: true },
     bjWin: { pts: 5, label: "ブラックジャック勝利" },
     bjBlackjack: { pts: 10, label: "ブラックジャック！" },
@@ -24773,7 +25474,9 @@
   }
 
   /* ---------- chip / toast rendering ---------- */
+  var COIN_HTML = '<svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg>';
   var chip = document.getElementById("pointsChip");
+  var chipCoin = chip ? chip.querySelector(".hd-coin") : null;
   var balNum = document.getElementById("ptsBalNum");
   var rankName = document.getElementById("ptsRankName");
   var progFill = document.getElementById("ptsProgFill");
@@ -24797,13 +25500,14 @@
     };
     step();
     if (chip) { chip.classList.remove("pop"); void chip.offsetWidth; chip.classList.add("pop"); }
+    if (chipCoin) { chipCoin.classList.remove("spin"); void chipCoin.getBoundingClientRect(); chipCoin.classList.add("spin"); }
   }
   var toastEl = null, toastTimer = null;
   function ensureToast() {
     if (toastEl) return toastEl;
     toastEl = document.createElement("div");
     toastEl.id = "ptsToast"; toastEl.setAttribute("role", "status");
-    toastEl.innerHTML = '<div class="pts-toast-main"><span id="ptsToastLabel"></span><b id="ptsToastAmt"></b></div>' +
+    toastEl.innerHTML = '<div class="pts-toast-main">' + COIN_HTML + '<span id="ptsToastLabel"></span><b id="ptsToastAmt"></b></div>' +
       '<div class="pts-toast-sub" id="ptsToastSub" hidden></div><div class="pts-toast-sub" id="ptsToastBonus" hidden></div>';
     document.body.appendChild(toastEl);
     return toastEl;
@@ -24817,6 +25521,8 @@
     sub.hidden = !subText; if (subText) sub.textContent = subText;
     var bon = document.getElementById("ptsToastBonus");
     bon.hidden = !bonusText; if (bonusText) bon.textContent = bonusText;
+    var toastCoin = t.querySelector(".hd-coin");
+    if (toastCoin) { toastCoin.classList.remove("spin"); void toastCoin.getBoundingClientRect(); toastCoin.classList.add("spin"); }
     t.classList.add("show");
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { t.classList.remove("show"); }, rankup ? 3400 : 2600);
@@ -24855,6 +25561,7 @@
     save();
     renderChip(true);
     renderShop();
+    try { if (typeof window.__lbOnEarn === "function") window.__lbOnEarn(); } catch (e) {}
     if (id === "langquiz" && typeof opts.bonus === "number") subText = "完走 10 pt ＋ 正解 " + opts.bonus + " 問";
     showToast(e.label, "+" + fmt(amount + bonus) + " pt", subText, bonusText, false);
     var rankAfter = rankFor(store.lifetime);
@@ -24940,7 +25647,7 @@
         if (item.cat !== cat.id) return;
         var owned = isOwned(item), eq = isEquipped(item);
         html += '<div class="pts-item"><div class="pts-item-info"><span class="pts-item-name">' + item.name + '</span>' +
-          (owned ? '<span class="pts-item-price owned">所有済み' + (eq ? " ・ 装備中" : "") + '</span>' : '<span class="pts-item-price">' + fmt(item.price) + " pt</span>") +
+          (owned ? '<span class="pts-item-price owned">所有済み' + (eq ? " ・ 装備中" : "") + '</span>' : '<span class="pts-item-price">' + COIN_HTML + fmt(item.price) + " pt</span>") +
           '</div>';
         if (!owned) {
           var short = item.price - store.balance;
@@ -24958,7 +25665,7 @@
     list.innerHTML = html;
     var guide = document.getElementById("ptsGuide");
     if (guide && !guide.children.length) {
-      guide.innerHTML = GUIDE.map(function (g) { return "<li>" + g + "</li>"; }).join("");
+      guide.innerHTML = GUIDE.map(function (g) { return "<li>" + COIN_HTML + " " + g + "</li>"; }).join("");
     }
   }
 
@@ -25038,6 +25745,306 @@
   renderShop();
 })();
 </script>
+<!-- ===== Shared leaderboard module (2026-11-13) =====
+     ONE ranking shared by the app build and the GitHub Pages build:
+     Firebase Realtime Database over plain REST (no SDK). Data model
+     players/<playerId> = {name, points (LIFETIME), rank (canonical
+     Japanese title), updatedAt}; the DB rules enforce that shape.
+     Opt-in only: nothing leaves the device until the player joins
+     with a name. Local-first and best-effort: every network call is
+     wrapped, failures fall back to the cached list, and gameplay
+     never blocks on the network. Identity (random hex player ID,
+     name, joined flag, cached list) lives in localStorage
+     "arcade-leaderboard-v1", next to the points store. -->
+<script>
+(function () {
+  "use strict";
+  var DB = "https://arcade-drive-default-rtdb.firebaseio.com";
+  var KEY = "arcade-leaderboard-v1";
+  var RANK_AT = [0, 500, 2000, 5000, 12000, 30000];
+  var RANK_JA = ["見習い", "常連", "中堅", "達人", "名人", "伝説"];
+  var RANK_TR = {
+    en: ["Apprentice", "Regular", "Skilled", "Expert", "Master", "Legend"],
+    ko: ["견습", "단골", "중견", "달인", "명인", "전설"],
+    zh: ["学徒", "常客", "中坚", "达人", "名人", "传说"],
+    zht: ["學徒", "常客", "中堅", "達人", "名人", "傳說"],
+    es: ["Aprendiz", "Habitual", "Veterano", "Experto", "Maestro", "Leyenda"],
+    fr: ["Apprenti", "Habitué", "Confirmé", "Expert", "Maître", "Légende"],
+    de: ["Lehrling", "Stammgast", "Erfahren", "Experte", "Meister", "Legende"],
+    pt: ["Aprendiz", "Frequentador", "Experiente", "Especialista", "Mestre", "Lenda"],
+    it: ["Apprendista", "Abituale", "Esperto", "Esperto", "Maestro", "Leggenda"]
+  };
+  var T = {
+    you: { ja: "あなた", en: "You", ko: "당신", zh: "你", zht: "你", es: "Tú", fr: "Toi", de: "Du", pt: "Você", it: "Tu" },
+    yourPos: { ja: "現在の順位", en: "Your position", ko: "현재 순위", zh: "当前排名", zht: "目前排名", es: "Tu posición", fr: "Ta position", de: "Deine Position", pt: "Sua posição", it: "La tua posizione" },
+    lifetime: { ja: "累計", en: "Lifetime", ko: "누적", zh: "累计", zht: "累計", es: "Total", fr: "Total cumulé", de: "Gesamt", pt: "Total", it: "Totale" },
+    top: { ja: "現在トップです！その調子で守りきろう。", en: "You're #1 right now — keep it up!", ko: "지금 1위입니다! 이대로 지켜내세요.", zh: "你现在是第一名！继续保持。", zht: "你現在是第一名！繼續保持。", es: "¡Vas primero! Sigue así.", fr: "Tu es premier — continue comme ça !", de: "Du bist gerade #1 — weiter so!", pt: "Você está em 1º — continue assim!", it: "Sei primo — continua così!" },
+    gap: { ja: "あと {x} pt で {name} を抜ける", en: "{x} more pt to pass {name}", ko: "{x} pt 더 모으면 {name}을(를) 추월할 수 있어요", zh: "再得 {x} pt 就能超过 {name}", zht: "再得 {x} pt 就能超過 {name}", es: "Te faltan {x} pt para pasar a {name}", fr: "Plus que {x} pt pour dépasser {name}", de: "Noch {x} Pt, um {name} zu überholen", pt: "Faltam {x} pt para passar {name}", it: "Ti mancano {x} pt per superare {name}" },
+    offline: { ja: "オフライン／前回取得", en: "Offline — showing the last fetched list", ko: "오프라인 / 마지막으로 가져온 목록", zh: "离线／上次获取的列表", zht: "離線／上次取得的清單", es: "Sin conexión: última lista obtenida", fr: "Hors ligne — dernière liste récupérée", de: "Offline — zuletzt geladene Liste", pt: "Off-line — última lista carregada", it: "Offline — ultimo elenco caricato" },
+    unavailable: { ja: "ランキングを取得できませんでした。通信環境を確認して「更新する」を押してください。", en: "Couldn't load the leaderboard. Check your connection and tap Refresh.", ko: "랭킹을 불러오지 못했습니다. 연결을 확인하고 '새로고침'을 눌러 주세요.", zh: "无法加载排行榜。请检查网络后点按“刷新”。", zht: "無法載入排行榜。請檢查網路後點按「重新整理」。", es: "No se pudo cargar la clasificación. Revisa tu conexión y pulsa Actualizar.", fr: "Impossible de charger le classement. Vérifie ta connexion et touche Actualiser.", de: "Rangliste konnte nicht geladen werden. Prüfe die Verbindung und tippe auf Aktualisieren.", pt: "Não foi possível carregar o ranking. Verifique a conexão e toque em Atualizar.", it: "Impossibile caricare la classifica. Controlla la connessione e tocca Aggiorna." },
+    loading: { ja: "読み込み中…", en: "Loading…", ko: "불러오는 중…", zh: "加载中…", zht: "載入中…", es: "Cargando…", fr: "Chargement…", de: "Lädt…", pt: "Carregando…", it: "Caricamento…" },
+    empty: { ja: "まだ参加者がいません。最初の参加者になろう！", en: "No players yet — be the first to join!", ko: "아직 참가자가 없습니다. 첫 참가자가 되어 보세요!", zh: "还没有玩家 — 来做第一个！", zht: "還沒有玩家 — 來做第一個！", es: "Aún no hay jugadores. ¡Sé el primero!", fr: "Personne pour l'instant — sois le premier !", de: "Noch keine Spieler — sei der Erste!", pt: "Nenhum jogador ainda — seja o primeiro!", it: "Ancora nessun giocatore — sii il primo!" },
+    nameEmpty: { ja: "名前を入力してください。", en: "Please enter a name.", ko: "이름을 입력해 주세요.", zh: "请输入名字。", zht: "請輸入名稱。", es: "Escribe un nombre.", fr: "Entre un nom.", de: "Bitte gib einen Namen ein.", pt: "Digite um nome.", it: "Inserisci un nome." },
+    nameLong: { ja: "名前は20文字までです。", en: "Names are up to 20 characters.", ko: "이름은 20자까지입니다.", zh: "名字最多 20 个字。", zht: "名稱最多 20 個字。", es: "El nombre admite hasta 20 caracteres.", fr: "20 caractères maximum.", de: "Namen dürfen höchstens 20 Zeichen lang sein.", pt: "O nome pode ter até 20 caracteres.", it: "Il nome può avere al massimo 20 caratteri." },
+    nameNg: { ja: "その名前は使えません。別の名前にしてください。", en: "That name can't be used. Please pick another.", ko: "그 이름은 사용할 수 없습니다. 다른 이름으로 해 주세요.", zh: "这个名字不能用，请换一个。", zht: "這個名稱不能用，請換一個。", es: "Ese nombre no se puede usar. Elige otro.", fr: "Ce nom ne peut pas être utilisé. Choisis-en un autre.", de: "Dieser Name ist nicht erlaubt. Bitte wähle einen anderen.", pt: "Esse nome não pode ser usado. Escolha outro.", it: "Quel nome non può essere usato. Scegline un altro." },
+    joinedAs: { ja: "参加中の名前", en: "Playing as", ko: "참가 중인 이름", zh: "当前名字", zht: "目前名稱", es: "Participas como", fr: "Tu participes comme", de: "Du nimmst teil als", pt: "Participando como", it: "Partecipi come" },
+    leaveAsk: { ja: "ランキングから抜けますか？あなたの記録は削除されます（ポイントは消えません）。", en: "Leave the leaderboard? Your record will be deleted (your points stay).", ko: "랭킹에서 나갈까요? 기록은 삭제됩니다 (포인트는 사라지지 않습니다).", zh: "退出排行榜吗？你的记录将被删除（积分不会消失）。", zht: "退出排行榜嗎？你的紀錄將被刪除（積分不會消失）。", es: "¿Salir de la clasificación? Tu registro se eliminará (tus puntos se quedan).", fr: "Quitter le classement ? Ton entrée sera supprimée (tes points restent).", de: "Rangliste verlassen? Dein Eintrag wird gelöscht (deine Punkte bleiben).", pt: "Sair do ranking? Seu registro será excluído (seus pontos ficam).", it: "Uscire dalla classifica? La tua voce verrà eliminata (i punti restano)." },
+    leaveYes: { ja: "抜ける", en: "Leave", ko: "나가기", zh: "退出", zht: "退出", es: "Salir", fr: "Quitter", de: "Verlassen", pt: "Sair", it: "Esci" },
+    leaveNo: { ja: "やめる", en: "Cancel", ko: "취소", zh: "取消", zht: "取消", es: "Cancelar", fr: "Annuler", de: "Abbrechen", pt: "Cancelar", it: "Annulla" },
+    pinnedNote: { ja: "― あなたの順位 ―", en: "― Your position ―", ko: "― 당신의 순위 ―", zh: "― 你的排名 ―", zht: "― 你的排名 ―", es: "― Tu posición ―", fr: "― Ta position ―", de: "― Deine Position ―", pt: "― Sua posição ―", it: "― La tua posizione ―" }
+  };
+  var NG = ["ばかやろう", "死ね", "しね", "くそやろう", "ちんこ", "まんこ", "おっぱい", "セックス", "うんこ野郎", "fuck", "shit", "bitch", "nigger", "nigga", "porn", "sex", "dick", "pussy", "whore", "slut"];
+
+  function lang() {
+    try { if (typeof window.arcadeLang === "function") return window.arcadeLang(); } catch (e) {}
+    try { return localStorage.getItem("arcade-lang") || "en"; } catch (e) { return "en"; }
+  }
+  function t(k) { var e = T[k]; if (!e) return k; return e[lang()] || e.en || e.ja; }
+  function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function rankIdxFor(pts) { var i = 0; for (var k = 0; k < RANK_AT.length; k++) if (pts >= RANK_AT[k]) i = k; return i; }
+  function rankJa(pts) { return RANK_JA[rankIdxFor(pts)]; }
+  function rankName(pts) { var tr = RANK_TR[lang()]; return tr ? tr[rankIdxFor(pts)] : rankJa(pts); }
+  function lifetime() {
+    try { var st = window.ARCADE_points && window.ARCADE_points.getState(); return st ? Math.max(0, st.lifetime | 0) : 0; } catch (e) { return 0; }
+  }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  /* ---------- identity / cache store ---------- */
+  function load() {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+    if (!s || typeof s !== "object") s = {};
+    return {
+      id: typeof s.id === "string" && /^[0-9a-f]{16,64}$/.test(s.id) ? s.id : "",
+      name: typeof s.name === "string" ? s.name : "",
+      joined: !!s.joined,
+      cache: Array.isArray(s.cache) ? s.cache : null,
+      cacheAt: typeof s.cacheAt === "number" ? s.cacheAt : 0
+    };
+  }
+  var st = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+  function genId() {
+    var hex = "";
+    try {
+      var buf = new Uint8Array(16);
+      (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(buf) : null;
+      for (var i = 0; i < buf.length; i++) hex += ("0" + buf[i].toString(16)).slice(-2);
+    } catch (e) {}
+    if (!hex) { for (var j = 0; j < 32; j++) hex += Math.floor(Math.random() * 16).toString(16); }
+    return hex;
+  }
+
+  /* ---------- name validation ---------- */
+  function cleanName(raw) {
+    return String(raw == null ? "" : raw).replace(/[\u0000-\u001f\u007f]/g, "").replace(/[<>]/g, "").replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
+  }
+  function validateName(raw) {
+    var n = cleanName(raw);
+    if (!n) return { err: t("nameEmpty") };
+    if (n.length > 20) return { err: t("nameLong") };
+    var low = n.toLowerCase();
+    for (var i = 0; i < NG.length; i++) if (low.indexOf(NG[i]) >= 0) return { err: t("nameNg") };
+    return { name: n };
+  }
+
+  /* ---------- network (best-effort, never throws) ---------- */
+  var COIN = '<svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg>';
+  var lastPushAt = 0, pushTimer = null, pushing = false, offline = false, loadedOnce = false;
+  function schedulePush() {
+    if (!st.joined || !st.id) return;
+    if (pushTimer) return;
+    var wait = Math.max(0, 5000 - (Date.now() - lastPushAt));
+    pushTimer = setTimeout(function () { pushTimer = null; doPush(); }, wait);
+  }
+  function doPush() {
+    if (!st.joined || !st.id || pushing || typeof fetch !== "function") return;
+    pushing = true; lastPushAt = Date.now();
+    var pts = lifetime();
+    var body = { name: st.name, points: pts, rank: rankJa(pts), updatedAt: Date.now() };
+    fetch(DB + "/players/" + encodeURIComponent(st.id) + ".json", {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) throw new Error("push");
+      pushing = false;
+      pull();
+    }).catch(function () { pushing = false; });
+  }
+  window.__lbOnEarn = function () { schedulePush(); };
+  function pull() {
+    if (typeof fetch !== "function") { offline = true; render(); return; }
+    fetch(DB + "/players.json").then(function (r) {
+      if (!r.ok) throw new Error("pull");
+      return r.json();
+    }).then(function (data) {
+      var arr = [];
+      if (data && typeof data === "object") {
+        Object.keys(data).forEach(function (id) {
+          var p = data[id];
+          if (p && typeof p.name === "string" && typeof p.points === "number" && isFinite(p.points) && p.points >= 0) {
+            arr.push({ id: id, name: p.name, points: Math.floor(p.points), updatedAt: typeof p.updatedAt === "number" ? p.updatedAt : 0 });
+          }
+        });
+      }
+      arr.sort(cmpPlayers);
+      st.cache = arr; st.cacheAt = Date.now(); save();
+      offline = false; loadedOnce = true;
+      render();
+    }).catch(function () {
+      offline = true; loadedOnce = true;
+      render();
+    });
+  }
+  function cmpPlayers(a, b) {
+    if (b.points !== a.points) return b.points - a.points;
+    if (a.updatedAt !== b.updatedAt) return a.updatedAt - b.updatedAt;
+    return String(a.name) < String(b.name) ? -1 : 1;
+  }
+
+  /* ---------- rendering ---------- */
+  function el(id) { return document.getElementById(id); }
+  function displayList() {
+    var arr = (st.cache || []).slice();
+    if (st.joined && st.id) {
+      var mine = null;
+      for (var i = 0; i < arr.length; i++) if (arr[i].id === st.id) { mine = arr[i]; break; }
+      var pts = lifetime();
+      if (mine) { if (pts > mine.points) mine.points = pts; mine.name = st.name; }
+      else arr.push({ id: st.id, name: st.name, points: pts, updatedAt: Date.now() });
+      arr.sort(cmpPlayers);
+    }
+    return arr;
+  }
+  function rowHtml(p, pos, isMe) {
+    return '<div class="lb-row' + (pos <= 3 ? " medal-" + pos : "") + (isMe ? " me" : "") + '">' +
+      '<span class="lb-pos">' + pos + '</span>' +
+      '<span class="lb-name notranslate">' + esc(p.name) + '</span>' +
+      (isMe ? '<span class="lb-you">' + esc(t("you")) + '</span>' : '') +
+      '<span class="pts-rank lb-rankchip">' + esc(rankName(p.points)) + '</span>' +
+      '<span class="lb-pts">' + COIN + fmt(p.points) + ' pt</span></div>';
+  }
+  function render() {
+    var joinBox = el("lbJoinBox"), manageBox = el("lbManageBox");
+    if (!joinBox) return;
+    joinBox.hidden = st.joined;
+    manageBox.hidden = !st.joined;
+    if (st.joined) {
+      var ri = el("lbRenameInput");
+      if (ri && document.activeElement !== ri) ri.value = st.name;
+    }
+    var list = displayList();
+    var myIdx = -1;
+    if (st.joined && st.id) for (var i = 0; i < list.length; i++) if (list[i].id === st.id) { myIdx = i; break; }
+    /* own card */
+    var own = el("lbOwnCard");
+    if (own) {
+      if (st.joined && myIdx >= 0) {
+        var me = list[myIdx];
+        var gapHtml = "";
+        if (myIdx === 0) gapHtml = '<p class="lb-gap">' + esc(t("top")) + '</p>';
+        else {
+          var above = list[myIdx - 1];
+          var need = above.points - me.points + 1;
+          gapHtml = '<p class="lb-gap">' + esc(t("gap").replace("{x}", fmt(need)).replace("{name}", above.name)) + '</p>';
+        }
+        own.innerHTML = '<section class="pts-card"><div class="lb-own-line">' +
+          '<span class="lb-own-label">' + esc(t("yourPos")) + '</span>' +
+          '<span class="lb-own-pos">' + (myIdx + 1) + '</span>' +
+          '<span class="pts-rank lb-rankchip" style="display:inline-flex">' + esc(rankName(me.points)) + '</span>' +
+          '<span class="lb-pts">' + COIN + fmt(me.points) + ' pt</span></div>' + gapHtml + '</section>';
+      } else own.innerHTML = "";
+    }
+    /* status line */
+    var status = el("lbStatus");
+    if (status) {
+      if (!loadedOnce && !st.cache) status.textContent = t("loading");
+      else if (offline) status.textContent = st.cache ? t("offline") : t("unavailable");
+      else status.textContent = "";
+    }
+    /* list: top 100 + pinned own row */
+    var box = el("lbList");
+    if (box) {
+      if (!list.length) {
+        box.innerHTML = loadedOnce || st.cache ? '<p class="lb-empty">' + esc(t("empty")) + '</p>' : "";
+      } else {
+        var html = "";
+        var top = list.slice(0, 100);
+        for (var j = 0; j < top.length; j++) html += rowHtml(top[j], j + 1, st.joined && top[j].id === st.id);
+        if (st.joined && myIdx >= 100) {
+          html += '<p class="lb-pin-note">' + esc(t("pinnedNote")) + '</p>' + rowHtml(list[myIdx], myIdx + 1, true);
+        }
+        box.innerHTML = html;
+      }
+    }
+    var lt = el("lbLeaveText");
+    if (lt) lt.textContent = t("leaveAsk");
+    var ly = el("lbLeaveYes"); if (ly) ly.textContent = t("leaveYes");
+    var ln = el("lbLeaveNo"); if (ln) ln.textContent = t("leaveNo");
+  }
+
+  /* ---------- actions ---------- */
+  function join() {
+    var v = validateName(el("lbNameInput") ? el("lbNameInput").value : "");
+    var msg = el("lbJoinMsg");
+    if (v.err) { if (msg) msg.textContent = v.err; return; }
+    if (msg) msg.textContent = "";
+    if (!st.id) st.id = genId();
+    st.name = v.name; st.joined = true; save();
+    lastPushAt = 0;
+    render();
+    doPush();
+  }
+  function rename() {
+    var v = validateName(el("lbRenameInput") ? el("lbRenameInput").value : "");
+    var msg = el("lbManageMsg");
+    if (v.err) { if (msg) msg.textContent = v.err; return; }
+    if (msg) msg.textContent = "";
+    st.name = v.name; save();
+    lastPushAt = 0;
+    render();
+    doPush();
+  }
+  function leave() {
+    var id = st.id;
+    st.joined = false; st.name = ""; save();
+    var lb = el("lbLeaveBox"); if (lb) lb.hidden = true;
+    render();
+    if (id && typeof fetch === "function") {
+      fetch(DB + "/players/" + encodeURIComponent(id) + ".json", { method: "DELETE" }).then(function () { pull(); }).catch(function () {});
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  var joinBtn = el("lbJoinBtn"); if (joinBtn) joinBtn.addEventListener("click", join);
+  var nameInput = el("lbNameInput");
+  if (nameInput) nameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
+  var renameBtn = el("lbRenameBtn"); if (renameBtn) renameBtn.addEventListener("click", rename);
+  var renameInput = el("lbRenameInput");
+  if (renameInput) renameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") rename(); });
+  var leaveBtn = el("lbLeaveBtn");
+  if (leaveBtn) leaveBtn.addEventListener("click", function () { var b = el("lbLeaveBox"); if (b) b.hidden = false; });
+  var leaveNo = el("lbLeaveNo");
+  if (leaveNo) leaveNo.addEventListener("click", function () { var b = el("lbLeaveBox"); if (b) b.hidden = true; });
+  var leaveYes = el("lbLeaveYes"); if (leaveYes) leaveYes.addEventListener("click", leave);
+  var refreshBtn = el("lbRefreshBtn"); if (refreshBtn) refreshBtn.addEventListener("click", function () { pull(); });
+  var goBtn = el("ptsGoRanking");
+  if (goBtn) goBtn.addEventListener("click", function () {
+    if (typeof window.__openArcadeView === "function") window.__openArcadeView("ranking");
+  });
+  var view = el("rankingView");
+  if (view && window.MutationObserver) {
+    new MutationObserver(function () {
+      if (view.classList.contains("open")) { render(); pull(); }
+    }).observe(view, { attributes: true, attributeFilter: ["class"] });
+    if (view.classList.contains("open")) { render(); pull(); }
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(function () { render(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  }
+  render();
+})();
+</script>
+
 <!-- ===== i18n layer — 10-language UI (2026-11-11) =====
      Additive only. The page's source strings are Japanese; this layer
      translates rendered DOM text (static and dynamically generated)
@@ -25537,6 +26544,24 @@
   "／ コイン": [" / Coins", " / 코인", " / 金币", " / 金幣", " / Monedas", " / Pièces", " / Münzen", " / Moedas", " / Monete"],
   "／ ベストラップ": [" / Best lap", " / 베스트 랩", " / 最佳圈速", " / 最佳圈速", " / Mejor vuelta", " / Meilleur tour", " / Beste Runde", " / Melhor volta", " / Giro migliore"],
   "カートGP画面": ["Kart GP screen", "카트 GP 화면", "卡丁车GP画面", "卡丁車GP畫面", "Pantalla de Kart GP", "Écran Kart GP", "Kart-GP-Bildschirm", "Tela de Kart GP", "Schermata Kart GP"],
+  "ブレーキ": ["Brake", "브레이크", "刹车", "煞車", "Freno", "Frein", "Bremse", "Freio", "Freno"],
+  "ブレーキ（押している間）": ["Brake (while held)", "브레이크(누르는 동안)", "刹车（按住时）", "煞車（按住時）", "Freno (mientras se mantiene)", "Frein (tant que maintenu)", "Bremse (solange gehalten)", "Freio (enquanto segurar)", "Freno (finché tenuto)"],
+  "ステアリング（←→キー／ボタン）": ["Steering (←→ keys / buttons)", "조향(←→ 키/버튼)", "转向（←→键／按钮）", "轉向（←→鍵／按鈕）", "Dirección (teclas ←→ / botones)", "Direction (touches ←→ / boutons)", "Lenken (←→-Tasten / Buttons)", "Direção (setas ←→ / botões)", "Sterzo (tasti ←→ / pulsanti)"],
+  "カーブでドリフトを長押しして溜める → 離すとブースト": ["Hold DRIFT through a corner to charge → release to boost", "코너에서 드리프트를 길게 눌러 충전 → 떼면 부스트", "在弯道长按漂移蓄力 → 松开即加速", "在彎道長按漂移蓄力 → 放開即加速", "Mantén DERAPE en la curva para cargar → suelta para impulsar", "Maintiens DÉRAPAGE en virage pour charger → relâche pour booster", "In der Kurve DRIFT halten zum Laden → loslassen für Boost", "Segure DERRAPAGEM na curva para carregar → solte para o turbo", "Tieni DRIFT in curva per caricare → rilascia per il boost"],
+  "ブレーキ（↓キー）きついカーブの手前で減速": ["Brake (↓ key) — slow down before tight corners", "브레이크(↓ 키) 급한 코너 앞에서 감속", "刹车（↓键）在急弯前减速", "煞車（↓鍵）在急彎前減速", "Freno (tecla ↓): reduce antes de las curvas cerradas", "Frein (touche ↓) : ralentis avant les virages serrés", "Bremse (↓-Taste): vor engen Kurven abbremsen", "Freio (seta ↓): reduza antes das curvas fechadas", "Freno (tasto ↓): rallenta prima delle curve strette"],
+  "路肩や壁は大きく減速。コインで最高速が少しアップ": ["Shoulders and walls slow you down a lot. Coins raise your top speed a little", "갓길과 벽은 크게 감속. 코인으로 최고 속도가 조금 오릅니다", "路肩和墙壁会大幅减速。金币可略微提高最高速度", "路肩和牆壁會大幅減速。金幣可略微提高最高速度", "Los arcenes y muros frenan mucho. Las monedas suben un poco tu velocidad máxima", "Les bas-côtés et les murs ralentissent beaucoup. Les pièces augmentent un peu ta vitesse max", "Schulter und Wände bremsen stark. Münzen erhöhen leicht deine Höchstgeschwindigkeit", "Acostamentos e muros freiam muito. Moedas aumentam um pouco sua velocidade máxima", "Banchine e muri rallentano molto. Le monete alzano un po' la velocità massima"],
+  "カーブでドリフトを長押し → 離してブースト！": ["Hold DRIFT in corners → release to boost!", "코너에서 드리프트를 길게 누르기 → 떼면 부스트!", "在弯道长按漂移 → 松开加速！", "在彎道長按漂移 → 放開加速！", "¡Mantén DERAPE en las curvas → suelta para impulsar!", "Maintiens DÉRAPAGE en virage → relâche pour booster !", "In Kurven DRIFT halten → loslassen für Boost!", "Segure DERRAPAGEM nas curvas → solte para o turbo!", "Tieni DRIFT in curva → rilascia per il boost!"],
+  "最初から": ["Restart", "처음부터", "重新开始", "重新開始", "Desde el inicio", "Recommencer", "Von vorn", "Do início", "Da capo"],
+  "ミニブーストOK": ["Mini boost ready", "미니 부스트 OK", "迷你加速就绪", "迷你加速就緒", "Mini impulso listo", "Mini boost prêt", "Mini-Boost bereit", "Mini turbo pronto", "Mini boost pronto"],
+  "フルブーストOK": ["FULL BOOST READY", "풀 부스트 OK", "全加速就绪", "全加速就緒", "IMPULSO TOTAL LISTO", "BOOST MAX PRÊT", "VOLLER BOOST BEREIT", "TURBO TOTAL PRONTO", "BOOST TOTALE PRONTO"],
+  "やさしい： AIは控えめ ／ 獲得ポイント ×0.5": ["Easy: gentle AI / Points ×0.5", "쉬움: AI가 온화함 / 획득 포인트 ×0.5", "简单：AI较温和 ／ 获得积分 ×0.5", "簡單：AI較溫和 ／ 獲得積分 ×0.5", "Fácil: IA suave / Puntos ×0.5", "Facile : IA douce / Points ×0.5", "Leicht: sanfte KI / Punkte ×0.5", "Fácil: IA suave / Pontos ×0.5", "Facile: IA dolce / Punti ×0.5"],
+  "ふつう： 標準の速さ ／ 獲得ポイント ×1.0": ["Normal: standard speed / Points ×1.0", "보통: 표준 속도 / 획득 포인트 ×1.0", "普通：标准速度 ／ 获得积分 ×1.0", "普通：標準速度 ／ 獲得積分 ×1.0", "Normal: velocidad estándar / Puntos ×1.0", "Normal : vitesse standard / Points ×1.0", "Normal: Standardtempo / Punkte ×1.0", "Normal: velocidade padrão / Pontos ×1.0", "Normale: velocità standard / Punti ×1.0"],
+  "むずかしい： AI最速 ／ 獲得ポイント ×1.5": ["Hard: fastest AI / Points ×1.5", "어려움: AI 최고 속도 / 획득 포인트 ×1.5", "困难：AI最快 ／ 获得积分 ×1.5", "困難：AI最快 ／ 獲得積分 ×1.5", "Difícil: IA más rápida / Puntos ×1.5", "Difficile : IA la plus rapide / Points ×1.5", "Schwer: schnellste KI / Punkte ×1.5", "Difícil: IA mais rápida / Pontos ×1.5", "Difficile: IA più veloce / Punti ×1.5"],
+  "現在の順位：": ["Current position: ", "현재 순위: ", "当前名次：", "目前名次：", "Posición actual: ", "Position actuelle : ", "Aktuelle Position: ", "Posição atual: ", "Posizione attuale: "],
+  "選択中：スタート直前": ["Selected: About to start", "선택 중: 스타트 직전", "选中：即将开始", "選中：即將開始", "Seleccionado: A punto de empezar", "Sélection : Départ imminent", "Ausgewählt: Gleich geht's los", "Selecionado: Prestes a largar", "Selezionato: Partenza imminente"],
+  "GOで発進します。◀▶の準備を": ["You launch at GO. Get ready on ◀▶", "GO에서 출발합니다. ◀▶ 준비를", "GO时发车。请准备◀▶", "GO時發車。請準備◀▶", "Saldrás en el GO. Prepárate con ◀▶", "Tu pars au GO. Prépare ◀▶", "Bei GO geht's los. ◀▶ bereithalten", "Você larga no GO. Prepare ◀▶", "Parti al GO. Preparati con ◀▶"],
+  "結果：": ["Result: ", "결과: ", "结果：", "結果：", "Resultado: ", "Résultat : ", "Ergebnis: ", "Resultado: ", "Risultato: "],
+  "レーススタートでもう一度走れます": ["You can race again with Race Start", "레이스 스타트로 다시 달릴 수 있습니다", "按比赛开始可以再跑一次", "按比賽開始可以再跑一次", "Puedes correr otra vez con Inicio de la carrera", "Tu peux recourir avec Départ de la course", "Mit Rennstart kannst du noch einmal fahren", "Você pode correr de novo com Largada", "Puoi correre ancora con Partenza"],
   /* ---------- billiards framework ---------- */
   "練習・全ポット": ["Practice · Pot everything", "연습·전부 넣기", "练习・全部入袋", "練習・全部入袋", "Práctica · Embocar todo", "Entraînement · Tout empocher", "Training · Alles versenken", "Treino · Encaçapar tudo", "Allenamento · Imbuca tutto"],
   "練習（コーチ）": ["Practice (Coach)", "연습(코치)", "练习（教练）", "練習（教練）", "Práctica (entrenador)", "Entraînement (coach)", "Training (Coach)", "Treino (treinador)", "Allenamento (coach)"],
@@ -26307,6 +27332,23 @@ PATTERNS.push(
   "達人": ["Expert", "달인", "达人", "達人", "Experto", "Expert", "Experte", "Especialista", "Esperto"],
   "名人": ["Master", "명인", "名人", "名人", "Maestro", "Maître", "Meister", "Mestre", "Maestro"],
   "伝説": ["Legend", "전설", "传说", "傳說", "Leyenda", "Légende", "Legende", "Lenda", "Leggenda"],
+  "ランキング": ["Leaderboard", "랭킹", "排行榜", "排行榜", "Clasificación", "Classement", "Rangliste", "Ranking", "Classifica"],
+  "ランキング画面": ["Leaderboard screen", "랭킹 화면", "排行榜画面", "排行榜畫面", "Pantalla de clasificación", "Écran du classement", "Ranglisten-Bildschirm", "Tela de ranking", "Schermata classifica"],
+  "共通ランキング": ["Shared Leaderboard", "공통 랭킹", "共享排行榜", "共享排行榜", "Clasificación compartida", "Classement partagé", "Gemeinsame Rangliste", "Ranking compartilhado", "Classifica condivisa"],
+  "みんなの累計ポイントで競うランキング": ["A leaderboard ranked by everyone's lifetime points", "모두의 누적 포인트로 겨루는 랭킹", "以大家的累计积分竞争的排行榜", "以大家的累計積分競爭的排行榜", "Un ranking con los puntos acumulados de todos", "Un classement avec les points cumulés de tous", "Eine Rangliste mit den Gesamtpunkten aller", "Um ranking com os pontos acumulados de todos", "Una classifica con i punti totali di tutti"],
+  "ランキングを開く": ["Open Leaderboard", "랭킹 열기", "打开排行榜", "打開排行榜", "Abrir clasificación", "Ouvrir le classement", "Rangliste öffnen", "Abrir ranking", "Apri la classifica"],
+  "アプリ版・GitHub版みんな同じ、共通ランキングです。": ["One shared leaderboard for everyone — the app build and the GitHub build alike.", "앱 버전·GitHub 버전 모두 같은 공통 랭킹입니다.", "应用版和 GitHub 版共用同一个排行榜。", "應用版和 GitHub 版共用同一個排行榜。", "Una clasificación compartida para todos: la app y la versión de GitHub.", "Un classement partagé pour tous — l'app et la version GitHub.", "Eine gemeinsame Rangliste für alle — App-Version und GitHub-Version.", "Um ranking compartilhado para todos — app e versão do GitHub.", "Una classifica condivisa per tutti — app e versione GitHub."],
+  "全員の累計ポイント順ランキングを見られます。": ["See the leaderboard ranked by everyone's lifetime points.", "모두의 누적 포인트 순 랭킹을 볼 수 있습니다.", "可以查看按大家累计积分排名的排行榜。", "可以查看按大家累計積分排名的排行榜。", "Puedes ver la clasificación por puntos acumulados de todos.", "Tu peux voir le classement par points cumulés de tous.", "Du siehst die Rangliste nach Gesamtpunkten aller.", "Você pode ver o ranking pelos pontos acumulados de todos.", "Puoi vedere la classifica per punti totali di tutti."],
+  "ランキングに参加": ["Join the Leaderboard", "랭킹 참가", "加入排行榜", "加入排行榜", "Unirse a la clasificación", "Rejoindre le classement", "Der Rangliste beitreten", "Entrar no ranking", "Partecipa alla classifica"],
+  "プレイヤー名を作って参加すると、あなたの累計ポイントが全員のランキングに載ります。": ["Create a player name and join, and your lifetime points appear on everyone's leaderboard.", "플레이어 이름을 만들고 참가하면 당신의 누적 포인트가 모두의 랭킹에 오릅니다.", "创建玩家名并加入后，你的累计积分会出现在大家的排行榜上。", "建立玩家名稱並加入後，你的累計積分會出現在大家的排行榜上。", "Crea un nombre de jugador y únete: tus puntos acumulados aparecerán en la clasificación de todos.", "Crée un nom de joueur et rejoins le classement : tes points cumulés y apparaîtront pour tout le monde.", "Erstelle einen Spielernamen und tritt bei — deine Gesamtpunkte erscheinen in der Rangliste aller.", "Crie um nome de jogador e participe: seus pontos acumulados aparecem no ranking de todos.", "Crea un nome giocatore e partecipa: i tuoi punti totali appariranno nella classifica di tutti."],
+  "参加すると、名前・累計ポイント・ランクだけが全員に公開されます。": ["When you join, only your name, lifetime points and rank are shown to everyone.", "참가하면 이름·누적 포인트·랭크만 모두에게 공개됩니다.", "加入后，仅你的名字、累计积分和等级会向所有人公开。", "加入後，僅你的名稱、累計積分和等級會向所有人公開。", "Al unirte, solo tu nombre, puntos acumulados y rango se muestran a todos.", "En rejoignant, seuls ton nom, tes points cumulés et ton rang sont visibles par tous.", "Beim Beitritt werden nur dein Name, deine Gesamtpunkte und dein Rang allen gezeigt.", "Ao participar, apenas seu nome, pontos acumulados e patente são mostrados a todos.", "Quando partecipi, solo il tuo nome, i punti totali e il grado sono visibili a tutti."],
+  "プレイヤー名": ["Player name", "플레이어 이름", "玩家名", "玩家名稱", "Nombre de jugador", "Nom de joueur", "Spielername", "Nome de jogador", "Nome giocatore"],
+  "名前（1〜20文字）": ["Name (1–20 characters)", "이름 (1~20자)", "名字（1～20字）", "名稱（1～20字）", "Nombre (1–20 caracteres)", "Nom (1 à 20 caractères)", "Name (1–20 Zeichen)", "Nome (1–20 caracteres)", "Nome (1–20 caratteri)"],
+  "ランキングに参加する": ["Join the Leaderboard", "랭킹에 참가하기", "加入排行榜", "加入排行榜", "Unirse", "Rejoindre", "Beitreten", "Participar", "Partecipa"],
+  "更新する": ["Refresh", "새로고침", "刷新", "重新整理", "Actualizar", "Actualiser", "Aktualisieren", "Atualizar", "Aggiorna"],
+  "名前の変更・退会": ["Rename / Leave", "이름 변경·탈퇴", "改名・退出", "改名・退出", "Cambiar nombre / Salir", "Renommer / Quitter", "Umbenennen / Austreten", "Renomear / Sair", "Rinomina / Esci"],
+  "名前を変更する": ["Rename", "이름 변경하기", "更改名字", "更改名稱", "Cambiar nombre", "Renommer", "Umbenennen", "Renomear", "Rinomina"],
+  "ランキングから抜ける": ["Leave the Leaderboard", "랭킹에서 나가기", "退出排行榜", "退出排行榜", "Salir de la clasificación", "Quitter le classement", "Rangliste verlassen", "Sair do ranking", "Esci dalla classifica"],
   "稼ぎ方ガイド": ["How to Earn", "적립 가이드", "赚取指南", "賺取指南", "Cómo ganar puntos", "Comment gagner", "So verdienst du Punkte", "Como ganhar", "Come guadagnare"],
   "最高ランク到達！": ["Top rank reached!", "최고 랭크 달성!", "已达最高等级！", "已達最高等級！", "¡Rango máximo alcanzado!", "Rang maximum atteint !", "Höchster Rang erreicht!", "Patente máxima alcançada!", "Grado massimo raggiunto!"],
   "チェス勝利": ["Chess Win", "체스 승리", "国际象棋胜利", "國際象棋勝利", "Victoria en ajedrez", "Victoire aux échecs", "Schach-Sieg", "Vitória no xadrez", "Vittoria a scacchi"],
@@ -33837,6 +34879,9 @@ PATTERNS.push(
     { re: /^タイム ([\d:.]+) ／ ベストラップ ([\d:.]+) ／ コイン (\d+)枚$/, t: ["Time {1} / Best lap {2} / Coins {3}", "타임 {1} / 베스트 랩 {2} / 코인 {3}개", "时间 {1} ／ 最佳圈速 {2} ／ 金币 {3}枚", "時間 {1} ／ 最佳圈速 {2} ／ 金幣 {3}枚", "Tiempo {1} / Mejor vuelta {2} / Monedas {3}", "Temps {1} / Meilleur tour {2} / Pièces {3}", "Zeit {1} / Beste Runde {2} / Münzen {3}", "Tempo {1} / Melhor volta {2} / Moedas {3}", "Tempo {1} / Giro migliore {2} / Monete {3}"] },
     { re: /^自己ベスト ([\d:.]+) ／ ベストラップ ([\d:.]+)$/, t: ["Personal best {1} / Best lap {2}", "자기 베스트 {1} / 베스트 랩 {2}", "个人最佳 {1} ／ 最佳圈速 {2}", "個人最佳 {1} ／ 最佳圈速 {2}", "Tu récord {1} / Mejor vuelta {2}", "Ton record {1} / Meilleur tour {2}", "Dein Rekord {1} / Beste Runde {2}", "Seu recorde {1} / Melhor volta {2}", "Tuo record {1} / Giro migliore {2}"] },
     { re: /^ラップ (\d+) \/ (\d+)$/, t: ["Lap {1} / {2}", "랩 {1} / {2}", "第{1}圈 / {2}", "第{1}圈 / {2}", "Vuelta {1} / {2}", "Tour {1} / {2}", "Runde {1} / {2}", "Volta {1} / {2}", "Giro {1} / {2}"] },
+    { re: /^現在の順位：(\d+)\/8 位$/, t: ["Current position: {1} of 8", "현재 순위: {1}/8위", "当前名次：第{1}名／共8名", "目前名次：第{1}名／共8名", "Posición actual: {1} de 8", "Position actuelle : {1} sur 8", "Aktuelle Position: {1} von 8", "Posição atual: {1} de 8", "Posizione attuale: {1} su 8"] },
+    { re: /^結果：(\d+)\/8 位$/, t: ["Result: {1} of 8", "결과: {1}/8위", "结果：第{1}名／共8名", "結果：第{1}名／共8名", "Resultado: {1} de 8", "Résultat : {1} sur 8", "Ergebnis: {1} von 8", "Resultado: {1} de 8", "Risultato: {1} su 8"] },
+    { re: /^LAP (\d+)\/3 ／ コイン (\d+)枚$/, t: ["LAP {1}/3 / Coins {2}", "랩 {1}/3 / 코인 {2}개", "圈 {1}/3 ／ 金币 {2}枚", "圈 {1}/3 ／ 金幣 {2}枚", "Vuelta {1}/3 / Monedas {2}", "Tour {1}/3 / Pièces {2}", "Runde {1}/3 / Münzen {2}", "Volta {1}/3 / Moedas {2}", "Giro {1}/3 / Monete {2}"] },
     /* --- Rubik's Cube --- */
     { re: /^タイム ([\d:.]+) ／ (\d+)手(（シャッフルなしの練習走行のため、ベスト記録には入りません）)?$/, fn: function (m) { var f = { en: "Time {1} / {2} moves", ko: "타임 {1} / {2}수", zh: "时间 {1} ／ {2}步", zht: "時間 {1} ／ {2}步", es: "Tiempo {1} / {2} movimientos", fr: "Temps {1} / {2} coups", de: "Zeit {1} / {2} Züge", pt: "Tempo {1} / {2} movimentos", it: "Tempo {1} / {2} mosse" }[cur]; var out = f.replace("{1}", m[1]).replace("{2}", m[2]); if (m[3]) { var suf = D[m[3]]; if (suf) out += (cur === "zh" || cur === "zht") ? suf[idx()] : " " + suf[idx()]; } return out; } },
     { re: /^ヒント — (.+)$/, fn: function (m) { var s = trString(m[1]) || m[1]; var h = D["ヒント"] ? D["ヒント"][idx()] : "Hint"; return h + " — " + s; } },
