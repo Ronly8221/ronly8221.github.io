@@ -3419,6 +3419,96 @@
         .glyph-snk, .glyph-brk, .glyph-mns, .glyph-g48, .w1-bigbtn, .mns-cell.open, .g48-tile.born .in, .g48-tile.merged .in { animation: none !important; }
         .g48-tile { transition: none; }
       }
+
+      /* ===== Sudoku （数独） — Wave 6 addition, same clay furniture ===== */
+      .game-tile[aria-label="数独"] { box-shadow: 0 16px 26px rgba(13, 148, 136, 0.26), 0 3px 0 rgba(255, 255, 255, 0.9), inset 0 -7px 12px rgba(153, 246, 228, 0.32), inset 0 7px 10px rgba(255, 255, 255, 0.92), inset 0 0 0 1px rgba(178, 242, 230, 0.9); }
+      .glyph-sdk {
+        background: linear-gradient(145deg, #2dd4bf, #0d9488); color: #fff;
+        box-shadow: 0 10px 18px rgba(13, 148, 136, 0.38), inset 0 -5px 8px rgba(7, 80, 72, 0.35), inset 0 4px 6px rgba(255, 255, 255, 0.35);
+        display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2.5px; padding: 9px; box-sizing: border-box;
+        animation-name: glyphFloat; animation-duration: 3.8s; animation-timing-function: ease-in-out; animation-iteration-count: infinite;
+      }
+      .glyph-sdk i { border-radius: 3.5px; background: rgba(255, 255, 255, 0.92); color: #0f766e; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 10.5px; font-style: normal; line-height: 1; }
+      .glyph-sdk i.dim { background: rgba(255, 255, 255, 0.38); color: rgba(255, 255, 255, 0.95); }
+      .play-btn.sdk { background: #0d9488; color: #ffffff; }
+
+      #sudokuView .gamebar { background: rgba(253, 250, 255, 0.95); border-bottom: 1px solid #cdeee8; flex-wrap: wrap; row-gap: 4px; }
+      #sudokuView .gamebar .gname { color: #134e4a; }
+      #sudokuView .gamebar .gtag { color: #5f8f89; }
+      #sudokuView .back-btn { background: #ffffff; color: #134e4a; border: 1px solid #bfe6df; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.18); }
+      #sudokuView .stage { background: #effaf7; }
+      .sdk-root { --acc: #0d9488; --acc-d: #0f766e; background: linear-gradient(168deg, #e2f5f0 0%, #f4fcf9 55%, #eef4ff 100%); }
+
+      .sdk-diffs { flex: 0 0 auto; display: flex; gap: 6px; margin-top: 10px; }
+      .sdk-diff {
+        flex: 1 1 0; border: 1px solid #bfe6df; background: #ffffff; color: #47706b; border-radius: 999px;
+        padding: 8px 6px; font-size: 13px; font-weight: 800; cursor: pointer;
+        box-shadow: 0 4px 9px rgba(13, 148, 136, 0.13), inset 0 -2px 4px rgba(153, 246, 228, 0.25);
+        transition: transform 90ms ease, background 120ms ease, color 120ms ease;
+      }
+      .sdk-diff:active { transform: scale(0.96); }
+      .sdk-diff.on { background: var(--acc); border-color: var(--acc); color: #ffffff; }
+
+      .sdk-wrap { position: relative; width: min(94vw, 430px); margin: 12px auto 0; flex: 0 0 auto; }
+      @media (max-height: 540px) { .sdk-wrap { width: min(94vw, 320px); margin-top: 8px; } }
+      .sdk-board {
+        display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; touch-action: none;
+        background: #9fd8cf; padding: 6px; border-radius: 16px;
+        box-shadow: 0 16px 26px rgba(13, 148, 136, 0.20), inset 0 -6px 10px rgba(7, 80, 72, 0.18), inset 0 4px 8px rgba(255, 255, 255, 0.55);
+      }
+      .sdk-board.win { animation: sdkGlow 1.6s ease-in-out infinite; }
+      @keyframes sdkGlow { 0%, 100% { box-shadow: 0 16px 26px rgba(13, 148, 136, 0.20), 0 0 0 0 rgba(45, 212, 191, 0.0); } 50% { box-shadow: 0 16px 30px rgba(13, 148, 136, 0.30), 0 0 22px 4px rgba(45, 212, 191, 0.45); } }
+      .sdk-cell {
+        aspect-ratio: 1; border: 0; border-radius: 5px; padding: 0; cursor: pointer; position: relative;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-display); font-weight: 800; font-size: clamp(15px, 4.8vw, 23px); line-height: 1;
+        background: #ffffff; color: #2f6fd0;
+        box-shadow: inset 0 -2px 0 rgba(13, 120, 110, 0.10), inset 0 2px 3px rgba(255, 255, 255, 0.9);
+        transition: background 110ms ease, transform 80ms ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .sdk-cell.br { margin-right: 3px; } .sdk-cell.bb { margin-bottom: 3px; }
+      .sdk-cell.given { color: #33304a; background: #eef7f4; cursor: default; font-weight: 900; }
+      .sdk-cell.rel { background: #e6f6f2; }
+      .sdk-cell.same { background: #c9ecec; }
+      .sdk-cell.sel { background: #99e3d8; box-shadow: inset 0 0 0 2.5px #0d9488, inset 0 2px 3px rgba(255, 255, 255, 0.7); }
+      .sdk-cell.err { color: #e0483e; background: #ffe3e0; }
+      .sdk-cell.err.sel { box-shadow: inset 0 0 0 2.5px #e0483e; }
+      .sdk-cell.pop { animation: sdkPop 180ms ease-out; }
+      @keyframes sdkPop { 0% { transform: scale(0.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+      .sdk-cell.shake { animation: sdkShake 260ms ease; }
+      @keyframes sdkShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2.5px); } 75% { transform: translateX(2.5px); } }
+      .sdk-notes { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 2.5px; box-sizing: border-box; pointer-events: none; }
+      .sdk-notes i { display: flex; align-items: center; justify-content: center; font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: clamp(7px, 2.2vw, 10.5px); line-height: 1; color: #7c8da6; }
+
+      .sdk-pad { flex: 0 0 auto; width: min(94vw, 430px); margin: 12px auto 0; }
+      .sdk-digits { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
+      .sdk-digit {
+        border: 1px solid #bfe6df; background: #ffffff; color: #0f766e; border-radius: 12px; cursor: pointer;
+        padding: 7px 0 5px; display: flex; flex-direction: column; align-items: center; gap: 1px; touch-action: none;
+        font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 1;
+        box-shadow: 0 5px 10px rgba(13, 148, 136, 0.15), inset 0 -3px 5px rgba(153, 246, 228, 0.30), inset 0 3px 4px rgba(255, 255, 255, 0.95);
+        transition: transform 80ms ease, background 120ms ease, opacity 150ms ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .sdk-digit small { font-size: 9px; font-weight: 700; color: #8fb8b2; line-height: 1; }
+      .sdk-digit:active { transform: scale(0.92); background: #d9f5ef; }
+      .sdk-digit.done { opacity: 0.35; }
+      .sdk-tools { display: flex; gap: 6px; margin-top: 8px; }
+      .sdk-tool {
+        flex: 1 1 0; border: 1px solid #ddd2f7; background: #ffffff; color: #55497a; border-radius: 999px;
+        padding: 9px 6px; font-size: 13px; font-weight: 800; cursor: pointer; touch-action: none;
+        box-shadow: 0 4px 9px rgba(90, 64, 160, 0.12), inset 0 -2px 4px rgba(179, 157, 255, 0.14);
+        transition: transform 90ms ease, background 120ms ease, color 120ms ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .sdk-tool:active { transform: scale(0.95); }
+      .sdk-tool.on { background: var(--acc); border-color: var(--acc); color: #ffffff; }
+      .sdk-status { background: #e2f5f0; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .glyph-sdk, .sdk-board.win, .sdk-cell.pop, .sdk-cell.shake { animation: none !important; }
+      }
     </style>
     <style>
       /* ===== Wave 2 mini games （リバーシ / 四目ならべ / 神経衰弱 / ブラックジャック) =====
@@ -4541,7 +4631,7 @@
             </div>
           </section>
           <section class="genre-group" data-genre="puzzle">
-            <h2 class="genre-head"><span class="genre-name">パズル</span><span class="genre-count">4</span></h2>
+            <h2 class="genre-head"><span class="genre-name">パズル</span><span class="genre-count">5</span></h2>
             <div class="tile-grid" data-genre-grid="puzzle">
   <section class="game-tile" aria-label="ルービックキューブ" style="--i:4">
               <div class="glyph glyph-rb" aria-hidden="true"><i style="background:#ffd500"></i><i style="background:#009b48"></i><i style="background:#d2362c"></i><i style="background:#0051ba"></i><i style="background:#f5f5f5"></i><i style="background:#fb8c00"></i><i style="background:#d2362c"></i><i style="background:#ffd500"></i><i style="background:#009b48"></i></div>
@@ -4570,6 +4660,13 @@
               <p class="sub">カードの絵柄を当てる 6×4・12ペアの記憶ゲーム</p>
               <span class="tile-count" data-count-for="memory" hidden></span>
               <button type="button" class="play-btn mem" id="openMemory">神経衰弱で遊ぶ</button>
+            </section>
+  <section class="game-tile" aria-label="数独" style="--i:16">
+              <div class="glyph glyph-sdk" aria-hidden="true"><i>5</i><i class="dim">3</i><i>8</i><i class="dim">1</i><i>9</i><i class="dim">4</i><i>7</i><i class="dim">2</i><i>6</i></div>
+              <h2>数独</h2>
+              <p class="sub">解が1つに定まる9×9の数字パズル（メモ・難易度つき）</p>
+              <span class="tile-count" data-count-for="sudoku" hidden></span>
+              <button type="button" class="play-btn sdk" id="openSudoku">数独で遊ぶ</button>
             </section>
             </div>
           </section>
@@ -6072,6 +6169,56 @@
         </div>
       </div>
 
+      <!-- Sudoku game view (Wave 6 mini game) -->
+      <div class="gameview" id="sudokuView" aria-label="数独画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">数独</span>
+          <span class="gtag">9×9・数字パズル</span>
+        </div>
+        <div class="stage">
+          <div class="w1-root sdk-root" id="sudokuRoot">
+            <div class="w1-hud">
+              <span class="w1-chip">タイム <b id="sdkTime">0:00</b></span>
+              <span class="w1-chip">ミス <b id="sdkMiss">0</b></span>
+              <span class="w1-chip">ベスト <b id="sdkBest">―</b></span>
+              <span class="w1-chip sdk-status" id="sdkStatus">難易度を選んでスタート</span>
+              <span class="w1-flex"></span>
+              <button type="button" class="w1-hbtn" id="sdkSound" aria-pressed="false">音 OFF</button>
+              <button type="button" class="w1-hbtn" id="sdkPause" aria-pressed="false">一時停止</button>
+              <button type="button" class="w1-hbtn" id="sdkNew">新しい問題</button>
+            </div>
+            <div class="sdk-diffs" role="group" aria-label="難易度">
+              <button type="button" class="sdk-diff" data-sdk-diff="easy">やさしい</button>
+              <button type="button" class="sdk-diff on" data-sdk-diff="normal">ふつう</button>
+              <button type="button" class="sdk-diff" data-sdk-diff="hard">むずかしい</button>
+            </div>
+            <div class="sdk-wrap">
+              <div class="sdk-board" id="sdkBoard" role="grid" aria-label="数独の盤面"></div>
+              <div class="w1-overlay" id="sdkOverlay">
+                <div class="w1-ov-card">
+                  <h3 id="sdkOvTitle">数独</h3>
+                  <p id="sdkOvText">縦・横・3×3のブロックに、1〜9を1つずつ入れよう。問題の解は1つだけに定まっています。</p>
+                  <button type="button" class="w1-bigbtn" id="sdkOvBtn">スタート</button>
+                </div>
+              </div>
+            </div>
+            <div class="sdk-pad">
+              <div class="sdk-digits" id="sdkDigits" aria-label="数字パッド"></div>
+              <div class="sdk-tools">
+                <button type="button" class="sdk-tool" id="sdkNote" aria-pressed="false">メモ OFF</button>
+                <button type="button" class="sdk-tool" id="sdkErase">消す</button>
+              </div>
+            </div>
+            <p class="w1-note">マスを選んで下の数字をタップ。メモモードでは候補数字を小さく書き込めます。間違えた数字は赤くなり、ミスに数えられます。</p>
+          </div>
+          <div class="stage-msg" id="sudokuMsg" role="alert">
+            <span>数独を読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
+            <button type="button" class="reload-btn" data-reload>再読み込み</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Blackjack game view (Wave 2 mini games) -->
       <div class="gameview" id="blackjackView" aria-label="ブラックジャック画面">
         <div class="gamebar">
@@ -7462,6 +7609,8 @@
                    ready: function () { return !!window.__connect4; } },
           memory: { view: document.getElementById("memoryView"), msg: document.getElementById("memoryMsg"),
                    ready: function () { return !!window.__memory; } },
+          sudoku: { view: document.getElementById("sudokuView"), msg: document.getElementById("sudokuMsg"),
+                   ready: function () { return !!window.__sudoku; } },
           blackjack: { view: document.getElementById("blackjackView"), msg: document.getElementById("blackjackMsg"),
                    ready: function () { return !!window.__blackjack; } },
           mole: { view: document.getElementById("moleView"), msg: document.getElementById("moleMsg"),
@@ -7893,6 +8042,7 @@
           if (key === "reversi" && window.__reversi) window.__reversi.enter();
           if (key === "connect4" && window.__connect4) window.__connect4.enter();
           if (key === "memory" && window.__memory) window.__memory.enter();
+          if (key === "sudoku" && window.__sudoku) window.__sudoku.enter();
           if (key === "blackjack" && window.__blackjack) window.__blackjack.enter();
           if (key === "mole" && window.__mole) window.__mole.enter();
           if (key === "simon" && window.__simon) window.__simon.enter();
@@ -7992,6 +8142,7 @@
         document.getElementById("openReversi").addEventListener("click", function () { openGame("reversi"); });
         document.getElementById("openConnect4").addEventListener("click", function () { openGame("connect4"); });
         document.getElementById("openMemory").addEventListener("click", function () { openGame("memory"); });
+        document.getElementById("openSudoku").addEventListener("click", function () { openGame("sudoku"); });
         document.getElementById("openBlackjack").addEventListener("click", function () { openGame("blackjack"); });
         document.getElementById("openMole").addEventListener("click", function () { openGame("mole"); });
         document.getElementById("openSimon").addEventListener("click", function () { openGame("simon"); });
@@ -24243,6 +24394,412 @@
   })();
   </script>
   <script>
+  /* ===== Sudoku （数独） — Wave 6 mini game =====
+     One self-contained classic script in the shell's ES5 style, like
+     Waves 1–3: its own tiny WebAudio SFX, per-game state, and a 250ms
+     watcher that auto-pauses when the view loses .open. Two settings
+     are this game's alone and persist in localStorage, per the brief:
+     its sound toggle (default OFF on first open) and its best time
+     per difficulty. Puzzles are generated fresh each time: a full
+     solution is built by randomized backtracking, then cells are dug
+     out (180°-symmetric pairs first) while a solution counter —
+     capped at 2 — proves the answer is still unique, so every dealt
+     puzzle has exactly one solution. */
+  (function () {
+    "use strict";
+
+    var view = document.getElementById("sudokuView");
+    var boardEl = document.getElementById("sdkBoard");
+    var digitsEl = document.getElementById("sdkDigits");
+    var timeEl = document.getElementById("sdkTime"), missEl = document.getElementById("sdkMiss"), bestEl = document.getElementById("sdkBest"), statusEl = document.getElementById("sdkStatus");
+    var overlay = document.getElementById("sdkOverlay"), ovTitle = document.getElementById("sdkOvTitle"), ovText = document.getElementById("sdkOvText"), ovBtn = document.getElementById("sdkOvBtn");
+    var pauseBtn = document.getElementById("sdkPause"), noteBtn = document.getElementById("sdkNote"), soundBtn = document.getElementById("sdkSound");
+    var diffBtns = Array.prototype.slice.call(document.querySelectorAll("[data-sdk-diff]"));
+
+    var CLUES = { easy: 40, normal: 33, hard: 28 };
+    var DIFF_JA = { easy: "やさしい", normal: "ふつう", hard: "むずかしい" };
+    var BEST_KEY = "arcade-sudoku-best-v1", SOUND_KEY = "arcade-sudoku-sound-v1", DIFF_KEY = "arcade-sudoku-diff-v1";
+
+    /* ---------- this game's own sound (off by default, persisted) ---------- */
+    var muted = true;
+    try { muted = localStorage.getItem(SOUND_KEY) !== "on"; } catch (e) {}
+    var AC = null;
+    function ac() {
+      if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } }
+      if (AC && AC.state === "suspended") { try { AC.resume(); } catch (e) {} }
+      return AC;
+    }
+    function tone(freq, dur, type, vol, delay, slideTo) {
+      if (muted) return;
+      var c = ac(); if (!c) return;
+      var t = c.currentTime + (delay || 0);
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = type || "sine";
+      o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30, slideTo), t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(c.destination);
+      o.start(t); o.stop(t + dur + 0.05);
+    }
+    function sfx(name) {
+      if (muted) return;
+      switch (name) {
+        case "tap": tone(640, 0.06, "triangle", 0.07); break;
+        case "place": tone(523, 0.07, "triangle", 0.08); tone(784, 0.09, "triangle", 0.06, 0.05); break;
+        case "note": tone(880, 0.045, "sine", 0.05); break;
+        case "erase": tone(330, 0.06, "triangle", 0.05, 0, 220); break;
+        case "error": tone(196, 0.16, "sawtooth", 0.055); tone(147, 0.18, "sawtooth", 0.05, 0.07); break;
+        case "win": [523, 659, 784, 1047, 1319, 1568].forEach(function (f, i) { tone(f, 0.17, "triangle", 0.075, i * 0.085); }); break;
+      }
+    }
+    function syncSound() {
+      soundBtn.textContent = muted ? "音 OFF" : "音 ON";
+      soundBtn.setAttribute("aria-pressed", muted ? "false" : "true");
+    }
+    soundBtn.addEventListener("click", function () {
+      muted = !muted;
+      try { localStorage.setItem(SOUND_KEY, muted ? "off" : "on"); } catch (e) {}
+      syncSound(); if (!muted) sfx("tap");
+    });
+    syncSound();
+
+    /* ---------- best times (per difficulty, persisted) ---------- */
+    function readBest() { try { return JSON.parse(localStorage.getItem(BEST_KEY) || "{}") || {}; } catch (e) { return {}; } }
+    function saveBest(b) { try { localStorage.setItem(BEST_KEY, JSON.stringify(b)); } catch (e) {} }
+
+    /* ---------- puzzle generation (unique solution guaranteed) ---------- */
+    function shuffle(a) {
+      for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    }
+    function canPlace(g, i, n) {
+      var r = (i / 9) | 0, c = i % 9, k;
+      for (k = 0; k < 9; k++) { if (g[r * 9 + k] === n || g[k * 9 + c] === n) return false; }
+      var br = ((r / 3) | 0) * 3, bc = ((c / 3) | 0) * 3, dr, dc;
+      for (dr = 0; dr < 3; dr++) for (dc = 0; dc < 3; dc++) if (g[(br + dr) * 9 + bc + dc] === n) return false;
+      return true;
+    }
+    function genSolution() {
+      var g = [], i;
+      for (i = 0; i < 81; i++) g.push(0);
+      (function fill(pos) {
+        if (pos >= 81) return true;
+        var nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        for (var k = 0; k < 9; k++) {
+          if (canPlace(g, pos, nums[k])) { g[pos] = nums[k]; if (fill(pos + 1)) return true; g[pos] = 0; }
+        }
+        return false;
+      })(0);
+      return g;
+    }
+    // Count solutions of a partial grid, stopping at `limit` (MRV order,
+    // so near-complete and sparse grids both stay fast).
+    function countSolutions(grid, limit) {
+      var g = grid.slice(), count = 0;
+      function bestCell() {
+        var bi = -1, bmask = 0, bcnt = 10, i, k;
+        for (i = 0; i < 81; i++) {
+          if (g[i]) continue;
+          var r = (i / 9) | 0, c = i % 9, mask = 0;
+          for (k = 0; k < 9; k++) {
+            if (g[r * 9 + k]) mask |= 1 << g[r * 9 + k];
+            if (g[k * 9 + c]) mask |= 1 << g[k * 9 + c];
+          }
+          var br = ((r / 3) | 0) * 3, bc = ((c / 3) | 0) * 3, dr, dc;
+          for (dr = 0; dr < 3; dr++) for (dc = 0; dc < 3; dc++) { var v = g[(br + dr) * 9 + bc + dc]; if (v) mask |= 1 << v; }
+          var cnt = 0;
+          for (k = 1; k <= 9; k++) if (!(mask & (1 << k))) cnt++;
+          if (cnt === 0) return { i: i, mask: mask, cnt: 0 };
+          if (cnt < bcnt) { bcnt = cnt; bi = i; bmask = mask; if (cnt === 1) break; }
+        }
+        return { i: bi, mask: bmask, cnt: bcnt };
+      }
+      (function bt() {
+        if (count >= limit) return;
+        var s = bestCell();
+        if (s.i < 0) { count++; return; }
+        if (s.cnt === 0) return;
+        for (var n = 1; n <= 9; n++) {
+          if (s.mask & (1 << n)) continue;
+          g[s.i] = n; bt(); g[s.i] = 0;
+          if (count >= limit) return;
+        }
+      })();
+      return count;
+    }
+    function makePuzzle(sol, target) {
+      var puz = sol.slice(), clues = 81, i;
+      // A removal that breaks uniqueness can never succeed later
+      // (digging only adds solutions), so one pass per shape is enough.
+      var pairs = [];
+      for (i = 0; i < 41; i++) pairs.push(i);
+      shuffle(pairs);
+      for (i = 0; i < pairs.length && clues > target; i++) {
+        var a = pairs[i], b = 80 - a, savedA = puz[a], savedB = puz[b];
+        puz[a] = 0; if (b !== a) puz[b] = 0;
+        if (countSolutions(puz, 2) !== 1) { puz[a] = savedA; puz[b] = savedB; }
+        else clues -= (b === a ? 1 : 2);
+      }
+      if (clues > target) {
+        var singles = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80]);
+        for (i = 0; i < singles.length && clues > target; i++) {
+          var s = singles[i];
+          if (!puz[s]) continue;
+          var sv = puz[s]; puz[s] = 0;
+          if (countSolutions(puz, 2) !== 1) puz[s] = sv; else clues--;
+        }
+      }
+      return puz;
+    }
+
+    /* ---------- game state ---------- */
+    var diff = "normal";
+    try { var sd = localStorage.getItem(DIFF_KEY); if (sd && CLUES[sd]) diff = sd; } catch (e) {}
+    var solution = [], given = [], value = [], notes = []; // notes[i] = bitmask of candidates
+    var cellEls = [], padEls = [];
+    var sel = -1, noteMode = false, mistakes = 0, seconds = 0, lastTick = 0;
+    var state = "idle"; // idle | playing | paused | cleared
+    var ovMode = "start";
+
+    function fmt(s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
+    function isOpen() { return !!(view && view.classList.contains("open")); }
+    function celebrate() { try { if (window.celebrateBurst) window.celebrateBurst(); } catch (e) {} }
+    function peers(i) {
+      var r = (i / 9) | 0, c = i % 9, out = {}, k;
+      for (k = 0; k < 9; k++) { out[r * 9 + k] = 1; out[k * 9 + c] = 1; }
+      var br = ((r / 3) | 0) * 3, bc = ((c / 3) | 0) * 3, dr, dc;
+      for (dr = 0; dr < 3; dr++) for (dc = 0; dc < 3; dc++) out[(br + dr) * 9 + bc + dc] = 1;
+      return out;
+    }
+    function correctCount() {
+      var n = 0, i;
+      for (i = 0; i < 81; i++) if (value[i] && value[i] === solution[i]) n++;
+      return n;
+    }
+    function blanksTotal() {
+      var n = 0, i;
+      for (i = 0; i < 81; i++) if (!given[i]) n++;
+      return n;
+    }
+
+    function buildBoard() {
+      boardEl.innerHTML = ""; cellEls = [];
+      for (var i = 0; i < 81; i++) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "sdk-cell"; b.setAttribute("role", "gridcell");
+        b.setAttribute("aria-label", (((i / 9) | 0) + 1) + "行目" + ((i % 9) + 1) + "列目");
+        if (i % 9 === 2 || i % 9 === 5) b.classList.add("br");
+        if (((i / 9) | 0) === 2 || ((i / 9) | 0) === 5) b.classList.add("bb");
+        (function (btn, k) {
+          var lastPointer = 0;
+          btn.addEventListener("pointerdown", function (e) { lastPointer = Date.now(); if (e && e.preventDefault) e.preventDefault(); selectCell(k); });
+          btn.addEventListener("click", function () { if (Date.now() - lastPointer < 700) return; selectCell(k); });
+        })(b, i);
+        boardEl.appendChild(b); cellEls.push(b);
+      }
+      digitsEl.innerHTML = ""; padEls = [];
+      for (var n = 1; n <= 9; n++) {
+        var d = document.createElement("button");
+        d.type = "button"; d.className = "sdk-digit";
+        d.setAttribute("aria-label", "数字" + n);
+        d.innerHTML = "<span>" + n + "</span><small></small>";
+        (function (btn, num) {
+          var lastPointer = 0;
+          btn.addEventListener("pointerdown", function (e) { lastPointer = Date.now(); if (e && e.preventDefault) e.preventDefault(); inputNumber(num); });
+          btn.addEventListener("click", function () { if (Date.now() - lastPointer < 700) return; inputNumber(num); });
+        })(d, n);
+        digitsEl.appendChild(d); padEls.push(d);
+      }
+    }
+    function notesHtml(mask) {
+      var s = '<span class="sdk-notes">';
+      for (var n = 1; n <= 9; n++) s += "<i>" + ((mask & (1 << n)) ? n : "") + "</i>";
+      return s + "</span>";
+    }
+    function paint(popIdx) {
+      var rel = sel >= 0 ? peers(sel) : {};
+      var selVal = sel >= 0 ? value[sel] : 0;
+      for (var i = 0; i < 81; i++) {
+        var el = cellEls[i], cls = "sdk-cell";
+        if (i % 9 === 2 || i % 9 === 5) cls += " br";
+        if (((i / 9) | 0) === 2 || ((i / 9) | 0) === 5) cls += " bb";
+        if (given[i]) cls += " given";
+        else if (value[i] && value[i] !== solution[i]) cls += " err";
+        if (sel >= 0 && i !== sel) {
+          if (selVal && value[i] === selVal) cls += " same";
+          else if (rel[i]) cls += " rel";
+        }
+        if (i === sel) cls += " sel";
+        if (i === popIdx) cls += " pop";
+        el.className = cls;
+        if (value[i]) el.textContent = value[i];
+        else if (notes[i]) el.innerHTML = notesHtml(notes[i]);
+        else el.textContent = "";
+      }
+      for (var n = 1; n <= 9; n++) {
+        var placed = 0, i2;
+        for (i2 = 0; i2 < 81; i2++) if (value[i2] === n && value[i2] === solution[i2]) placed++;
+        var left = 9 - placed;
+        padEls[n - 1].querySelector("small").textContent = left > 0 ? "あと" + left : "";
+        padEls[n - 1].classList.toggle("done", left <= 0);
+      }
+      hud();
+    }
+    function hud() {
+      timeEl.textContent = fmt(seconds);
+      missEl.textContent = mistakes;
+      var b = readBest()[diff];
+      bestEl.textContent = b ? fmt(b) : "―";
+    }
+    function setStatus(t) { statusEl.textContent = t; }
+    function syncDiff() {
+      diffBtns.forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-sdk-diff") === diff); });
+    }
+    function syncNote() {
+      noteBtn.textContent = noteMode ? "メモ ON" : "メモ OFF";
+      noteBtn.setAttribute("aria-pressed", noteMode ? "true" : "false");
+      noteBtn.classList.toggle("on", noteMode);
+    }
+    function syncPause() {
+      var on = state === "paused";
+      pauseBtn.textContent = on ? "再開" : "一時停止";
+      pauseBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      pauseBtn.classList.toggle("on", on);
+    }
+    function showOverlay(mode, title, text, btnText) {
+      ovMode = mode;
+      ovTitle.textContent = title; ovText.textContent = text; ovBtn.textContent = btnText;
+      overlay.style.background = mode === "pause" ? "rgba(240,253,250,0.94)" : "";
+      overlay.classList.remove("off");
+    }
+    function hideOverlay() { overlay.classList.add("off"); }
+
+    function newGame(d) {
+      if (d && CLUES[d]) { diff = d; try { localStorage.setItem(DIFF_KEY, diff); } catch (e) {} }
+      solution = genSolution();
+      var puz = makePuzzle(solution, CLUES[diff]);
+      given = []; value = []; notes = [];
+      for (var i = 0; i < 81; i++) { given.push(puz[i] !== 0); value.push(puz[i]); notes.push(0); }
+      sel = -1; mistakes = 0; seconds = 0; lastTick = 0;
+      state = "playing";
+      boardEl.classList.remove("win");
+      syncDiff(); syncNote(); syncPause(); hideOverlay();
+      paint(-1);
+      setStatus(DIFF_JA[diff] + "・空き " + blanksTotal() + " マス");
+      sfx("tap");
+    }
+    function selectCell(i) {
+      if (state !== "playing") return;
+      sel = i; paint(-1); sfx("tap");
+    }
+    function inputNumber(n) {
+      if (state !== "playing" || sel < 0 || given[sel]) return;
+      var i = sel;
+      if (noteMode) {
+        if (value[i]) return;
+        notes[i] = notes[i] ^ (1 << n);
+        sfx("note"); paint(-1);
+        return;
+      }
+      if (value[i] === n) return;
+      value[i] = n; notes[i] = 0;
+      if (n === solution[i]) {
+        var rel = peers(i);
+        for (var k = 0; k < 81; k++) if (rel[k] && notes[k]) notes[k] = notes[k] & ~(1 << n);
+        sfx("place"); paint(i);
+        var left = blanksTotal() - correctCount();
+        setStatus("あと " + left + " マス");
+        if (left <= 0) winGame();
+      } else {
+        mistakes++;
+        sfx("error"); paint(-1);
+        cellEls[i].classList.add("shake");
+        setStatus("ちがいます… ミス " + mistakes + " 回");
+        hud();
+      }
+    }
+    function eraseCell() {
+      if (state !== "playing" || sel < 0 || given[sel]) return;
+      if (!value[sel] && !notes[sel]) return;
+      value[sel] = 0; notes[sel] = 0;
+      sfx("erase"); paint(-1);
+    }
+    function winGame() {
+      state = "cleared";
+      boardEl.classList.add("win");
+      sfx("win"); celebrate();
+      var best = readBest(), prev = best[diff], isNew = !prev || seconds < prev;
+      if (isNew) { best[diff] = seconds; saveBest(best); }
+      if (window.ARCADE_points) { try { window.ARCADE_points.earn("sudokuClear", { diff: diff }); } catch (e) {} }
+      setStatus("クリア！");
+      hud(); syncPause();
+      showOverlay("end", "クリア！", "タイム " + fmt(seconds) + "・ミス " + mistakes + " 回で " + DIFF_JA[diff] + " を制覇。" + (isNew ? "ベストタイム更新です！" : "ベストは " + fmt(best[diff]) + " です。"), "次の問題");
+    }
+    function setPaused(p) {
+      if (p) {
+        if (state !== "playing") return;
+        state = "paused";
+        showOverlay("pause", "一時停止中", "盤面は隠れています。再開するとタイマーがつづきます。", "再開する");
+      } else {
+        if (state !== "paused") return;
+        state = "playing"; hideOverlay();
+      }
+      syncPause();
+    }
+
+    diffBtns.forEach(function (b) {
+      b.addEventListener("click", function () { newGame(b.getAttribute("data-sdk-diff")); });
+    });
+    noteBtn.addEventListener("click", function () { noteMode = !noteMode; syncNote(); sfx("tap"); });
+    document.getElementById("sdkErase").addEventListener("click", eraseCell);
+    document.getElementById("sdkNew").addEventListener("click", function () { newGame(diff); });
+    pauseBtn.addEventListener("click", function () { if (state === "paused") setPaused(false); else setPaused(true); });
+    ovBtn.addEventListener("click", function () {
+      if (ovMode === "pause") setPaused(false);
+      else newGame(diff);
+    });
+    function guardTouch(el) { if (el) el.addEventListener("touchmove", function (e) { e.preventDefault(); }, { passive: false }); }
+    guardTouch(boardEl); guardTouch(digitsEl);
+    document.addEventListener("keydown", function (e) {
+      if (!isOpen() || state !== "playing") return;
+      var k = e.key;
+      if (k >= "1" && k <= "9") { inputNumber(parseInt(k, 10)); return; }
+      if (k === "Backspace" || k === "Delete" || k === "0") { eraseCell(); e.preventDefault(); return; }
+      if (k === "n" || k === "N") { noteMode = !noteMode; syncNote(); return; }
+      var d = null;
+      if (k === "ArrowLeft") d = -1; else if (k === "ArrowRight") d = 1;
+      else if (k === "ArrowUp") d = -9; else if (k === "ArrowDown") d = 9;
+      if (d !== null) {
+        e.preventDefault();
+        if (sel < 0) { sel = 0; paint(-1); return; }
+        var nr = ((sel / 9) | 0) + (d === -9 ? -1 : d === 9 ? 1 : 0);
+        var nc = (sel % 9) + (d === -1 ? -1 : d === 1 ? 1 : 0);
+        if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) { sel = nr * 9 + nc; paint(-1); }
+      }
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && state === "playing") setPaused(true);
+    });
+    setInterval(function () {
+      var now = Date.now();
+      if (!isOpen()) { if (state === "playing") setPaused(true); lastTick = 0; return; }
+      if (state !== "playing") { lastTick = 0; return; }
+      if (!lastTick) { lastTick = now; return; }
+      var add = Math.floor((now - lastTick) / 1000);
+      if (add > 0) { seconds += add; lastTick += add * 1000; timeEl.textContent = fmt(seconds); }
+    }, 250);
+
+    buildBoard();
+    given = []; value = []; notes = [];
+    for (var i0 = 0; i0 < 81; i0++) { given.push(false); value.push(0); notes.push(0); }
+    solution = value.slice();
+    syncDiff(); syncNote(); syncPause(); hud();
+    window.__sudoku = { enter: function () {} };
+  })();
+  </script>
+  <script>
   /* ===== Wave 4 shell layer: living sky, resume, daily pick, juice =====
      Additive only. It reads the existing play counters
      (localStorage "arcade-play-counts", written by the shell) and
@@ -25679,6 +26236,7 @@
     g2048Reach: { pts: 60, label: "2048達成" },
     minesWin: { pts: 20, label: "マインスイーパー クリア" },
     memoryClear: { pts: 20, label: "神経衰弱 クリア" },
+    sudokuClear: { pts: 20, label: "数独 クリア", diff: true },
     reversiWin: { pts: 30, label: "リバーシ勝利" },
     connect4Win: { pts: 30, label: "四目ならべ勝利" },
     langquiz: { pts: 10, perBonus: 1, label: "語学クイズ完走" },
@@ -25723,6 +26281,7 @@
     "2048達成： 60 pt",
     "マインスイーパー クリア： 20 pt",
     "神経衰弱 クリア： 20 pt",
+    "数独 クリア： 20 pt",
     "リバーシ勝利： 30 pt",
     "四目ならべ勝利： 30 pt",
     "語学クイズ： 完走 10 pt ＋ 正解1問 1 pt",
@@ -26823,6 +27382,22 @@
   "りんごを食べて長くなる定番スネーク": ["The classic snake that grows by eating apples", "사과를 먹고 길어지는 클래식 스네이크", "吃苹果变长的经典贪吃蛇", "吃蘋果變長的經典貪食蛇", "La clásica serpiente que crece comiendo manzanas", "Le serpent classique qui grandit en mangeant des pommes", "Die klassische Schlange, die durch Äpfel wächst", "A cobrinha clássica que cresce comendo maçãs", "Il classico serpente che cresce mangiando mele"],
   "パドルでボールを跳ね返す全消しアクション": ["Bounce the ball with the paddle and clear every block", "패들로 공을 튕겨 블록을 전부 없애는 액션", "用球拍反弹球、消掉全部方块的动作游戏", "用球拍反彈球、消掉全部方塊的動作遊戲", "Rebota la pelota con la paleta y elimina todos los bloques", "Rebondis la balle avec la raquette et détruis tous les blocs", "Lass den Ball mit dem Schläger springen und räume alle Blöcke ab", "Rebata a bola com a raquete e elimine todos os blocos", "Rimbalza la palla con la racchetta ed elimina tutti i blocchi"],
   "地雷を避けてマスを開く初級9×9パズル": ["A beginner 9×9 puzzle: open cells, avoid the mines", "지뢰를 피하며 칸을 여는 초급 9×9 퍼즐", "避开地雷打开格子的初级9×9拼图", "避開地雷打開格子的初級9×9拼圖", "Un puzle 9×9 para principiantes: abre casillas y evita las minas", "Un puzzle 9×9 débutant : ouvre les cases, évite les mines", "Ein 9×9-Puzzle für Einsteiger: Felder öffnen, Minen vermeiden", "Um quebra-cabeça 9×9 iniciante: abra as casas e evite as minas", "Un puzzle 9×9 per principianti: apri le caselle, evita le mine"],
+  "数独": ["Sudoku", "스도쿠", "数独", "數獨", "Sudoku", "Sudoku", "Sudoku", "Sudoku", "Sudoku"],
+  "数独で遊ぶ": ["Play Sudoku", "스도쿠 하기", "玩数独", "玩數獨", "Jugar al Sudoku", "Jouer au Sudoku", "Sudoku spielen", "Jogar Sudoku", "Gioca a Sudoku"],
+  "数独画面": ["Sudoku screen", "스도쿠 화면", "数独画面", "數獨畫面", "Pantalla de Sudoku", "Écran de Sudoku", "Sudoku-Bildschirm", "Tela de Sudoku", "Schermata Sudoku"],
+  "解が1つに定まる9×9の数字パズル（メモ・難易度つき）": ["A 9×9 number puzzle with one unique solution (notes & difficulty included)", "해가 하나로 정해지는 9×9 숫자 퍼즐 (메모·난이도 포함)", "解唯一确定的9×9数字拼图（带笔记·难度）", "解唯一確定的9×9數字拼圖（帶筆記·難度）", "Un puzle de números 9×9 con una única solución (con notas y dificultad)", "Un puzzle de chiffres 9×9 à solution unique (notes et difficulté incluses)", "Ein 9×9-Zahlenrätsel mit genau einer Lösung (mit Notizen & Schwierigkeit)", "Um quebra-cabeça de números 9×9 com solução única (com notas e dificuldade)", "Un puzzle numerico 9×9 con un'unica soluzione (con note e difficoltà)"],
+  "9×9・数字パズル": ["9×9 number puzzle", "9×9 숫자 퍼즐", "9×9数字拼图", "9×9數字拼圖", "Puzle de números 9×9", "Puzzle de chiffres 9×9", "9×9-Zahlenrätsel", "Quebra-cabeça de números 9×9", "Puzzle numerico 9×9"],
+  "難易度を選んでスタート": ["Pick a difficulty and start", "난이도를 골라 시작", "选好难度开始", "選好難度開始", "Elige dificultad y empieza", "Choisis une difficulté et commence", "Schwierigkeit wählen und starten", "Escolha a dificuldade e comece", "Scegli la difficoltà e inizia"],
+  "メモ ON": ["Notes ON", "메모 ON", "笔记 ON", "筆記 ON", "Notas ON", "Notes ON", "Notizen AN", "Notas ON", "Note ON"],
+  "メモ OFF": ["Notes OFF", "메모 OFF", "笔记 OFF", "筆記 OFF", "Notas OFF", "Notes OFF", "Notizen AUS", "Notas OFF", "Note OFF"],
+  "消す": ["Erase", "지우기", "清除", "清除", "Borrar", "Effacer", "Löschen", "Apagar", "Cancella"],
+  "新しい問題": ["New puzzle", "새 문제", "新题目", "新題目", "Nuevo puzle", "Nouveau puzzle", "Neues Rätsel", "Novo quebra-cabeça", "Nuovo puzzle"],
+  "次の問題": ["Next puzzle", "다음 문제", "下一题", "下一題", "Siguiente puzle", "Puzzle suivant", "Nächstes Rätsel", "Próximo quebra-cabeça", "Prossimo puzzle"],
+  "数独の盤面": ["Sudoku board", "스도쿠 보드", "数独棋盘", "數獨棋盤", "Tablero de Sudoku", "Grille de Sudoku", "Sudoku-Spielfeld", "Tabuleiro de Sudoku", "Griglia del Sudoku"],
+  "数字パッド": ["Number pad", "숫자 패드", "数字键盘", "數字鍵盤", "Teclado numérico", "Pavé numérique", "Ziffernblock", "Teclado numérico", "Tastierino numerico"],
+  "縦・横・3×3のブロックに、1〜9を1つずつ入れよう。問題の解は1つだけに定まっています。": ["Fill each row, column and 3×3 box with the numbers 1–9, once each. Every puzzle has exactly one solution.", "세로·가로·3×3 블록에 1~9를 하나씩 넣으세요. 문제의 해는 하나뿐입니다.", "在纵列、横行和3×3宫格中各填入1〜9各一个。本题的解只有一个。", "在縱列、橫行和3×3宮格中各填入1〜9各一個。本題的解只有一個。", "Coloca los números del 1 al 9 una vez en cada fila, columna y bloque de 3×3. El puzle tiene una única solución.", "Place les chiffres de 1 à 9 une fois dans chaque ligne, colonne et bloc de 3×3. Le puzzle n'a qu'une seule solution.", "Trage 1–9 je einmal in jede Zeile, Spalte und jeden 3×3-Block ein. Das Rätsel hat genau eine Lösung.", "Coloque os números de 1 a 9 uma vez em cada linha, coluna e bloco 3×3. O quebra-cabeça tem uma única solução.", "Inserisci i numeri da 1 a 9 una sola volta in ogni riga, colonna e blocco 3×3. Il puzzle ha una sola soluzione."],
+  "マスを選んで下の数字をタップ。メモモードでは候補数字を小さく書き込めます。間違えた数字は赤くなり、ミスに数えられます。": ["Tap a cell, then a number below. In Notes mode you can pencil in small candidate numbers. A wrong number turns red and counts as a mistake.", "칸을 고르고 아래 숫자를 탭하세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있습니다. 틀린 숫자는 빨갛게 표시되고 미스로 셉니다.", "选一个格子，再点下面的数字。笔记模式下可以小字写下候选数字。填错的数字会变红并计为失误。", "選一個格子，再點下面的數字。筆記模式下可以小字寫下候選數字。填錯的數字會變紅並計為失誤。", "Toca una casilla y luego un número de abajo. En modo Notas puedes anotar candidatos en pequeño. Un número equivocado se pone rojo y cuenta como error.", "Touche une case, puis un chiffre en bas. En mode Notes, tu peux écrire les candidats en petit. Un chiffre faux devient rouge et compte comme une erreur.", "Tippe ein Feld und dann eine Zahl unten an. Im Notizmodus kannst du Kandidaten klein eintragen. Eine falsche Zahl wird rot und zählt als Fehler.", "Toque em uma casa e depois em um número abaixo. No modo Notas, você pode anotar candidatos em tamanho pequeno. Um número errado fica vermelho e conta como erro.", "Tocca una casella e poi un numero in basso. In modalità Note puoi scrivere i candidati in piccolo. Un numero sbagliato diventa rosso e conta come errore."],
+  "数独を読み込めませんでした。通信状態を確認して、再読み込みしてください。": ["Couldn't load Sudoku. Check your connection and reload.", "스도쿠를 불러오지 못했습니다. 연결을 확인하고 새로고침해 주세요.", "无法加载数独。请检查网络后重新加载。", "無法載入數獨。請檢查網路後重新載入。", "No se pudo cargar el Sudoku. Revisa tu conexión y recarga.", "Impossible de charger le Sudoku. Vérifie ta connexion et recharge.", "Sudoku konnte nicht geladen werden. Prüfe die Verbindung und lade neu.", "Não foi possível carregar o Sudoku. Verifique a conexão e recarregue.", "Impossibile caricare il Sudoku. Controlla la connessione e ricarica."],
   "スワイプで数字タイルを合体させるパズル": ["Swipe to merge number tiles", "스와이프로 숫자 타일을 합치는 퍼즐", "滑动合并数字方块的拼图", "滑動合併數字方塊的拼圖", "Desliza para fusionar fichas de números", "Glisse pour fusionner les tuiles de chiffres", "Wische, um Zahlenkacheln zu vereinen", "Deslize para fundir peças de números", "Scorri per unire le tessere numeriche"],
   "石を挟んでひっくり返す CPU対戦ボードゲーム": ["A board game vs. the CPU: flank stones to flip them", "돌을 끼워 뒤집는 CPU 대결 보드게임", "夹住棋子翻转的CPU对战棋盘游戏", "夾住棋子翻轉的CPU對戰棋盤遊戲", "Juego de mesa contra la CPU: rodea fichas para voltearlas", "Jeu de plateau contre l'ordinateur : encadre les pions pour les retourner", "Brettspiel gegen die CPU: Steine einschließen und umdrehen", "Jogo de tabuleiro contra a CPU: cerque peças para virá-las", "Gioco da tavolo contro la CPU: intrappola le pedine per girarle"],
   "列に石を落として4つ並べる CPU対戦": ["Drop stones into columns and line up four vs. the CPU", "열에 돌을 떨어뜨려 4개를 나열하는 CPU 대결", "把棋子落入列中连成四个的CPU对战", "把棋子落入列中連成四個的CPU對戰", "Deja caer fichas en columnas y alinea cuatro contra la CPU", "Laisse tomber les pions dans les colonnes et alignes-en quatre contre l'ordinateur", "Lass Steine in Spalten fallen und bringe vier in eine Reihe gegen die CPU", "Solte peças nas colunas e alinhe quatro contra a CPU", "Fai cadere le pedine nelle colonne e allineane quattro contro la CPU"],
