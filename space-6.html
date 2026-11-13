@@ -4306,6 +4306,8 @@
     .lb-form input { flex: 1 1 170px; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 2px solid #d9ccf5; font: inherit; font-size: 15px; font-weight: 700; color: #37246b; background: #fdfaff; }
     .lb-form input:focus { outline: 3px solid rgba(245, 158, 11, 0.45); border-color: #f59e0b; }
     .lb-msg { font-size: 13.5px; font-weight: 700; color: #c2331f; margin: 10px 2px 0; line-height: 1.6; }
+    .lb-msg.ok { color: #0f7a44; }
+    .lb-code { align-self: center; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 17px; font-weight: 800; letter-spacing: 0.14em; color: #37246b; background: #f3efff; border: 2px dashed #c9b8f2; border-radius: 12px; padding: 10px 16px; }
     .lb-msg:empty { display: none; }
     .lb-status { font-size: 13px; font-weight: 700; color: #8a76b8; margin: 4px 2px 12px; line-height: 1.6; }
     .lb-status:empty { display: none; }
@@ -6460,9 +6462,26 @@
               <p class="pts-note">参加すると、名前・累計ポイント・ランクだけが全員に公開されます。</p>
               <div class="lb-form">
                 <input type="text" id="lbNameInput" maxlength="20" autocomplete="off" placeholder="名前（1〜20文字）" aria-label="プレイヤー名">
+              </div>
+              <p class="pts-note">引き継ぎコードも自分で決めてください。別のデバイスでこのコードを入れると、名前・ポイント・買ったアイテムまで全部そのまま引き継げます。</p>
+              <div class="lb-form">
+                <input type="text" id="lbCodeInput" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="引き継ぎコード（4〜20文字）" aria-label="引き継ぎコード">
+                <button type="button" class="pts-btn equip" id="lbCodeDice">🎲 ランダムで作る</button>
+              </div>
+              <p class="pts-note">コードは英字・数字・ハイフン・アンダースコア（4〜20文字）が使えます。このコードが、他のデバイスであなたになるための鍵です。推測されにくいものを選んで、他人には教えないでください。</p>
+              <div class="lb-form">
                 <button type="button" class="pts-btn" id="lbJoinBtn">ランキングに参加する</button>
               </div>
               <p class="lb-msg" id="lbJoinMsg"></p>
+            </section>
+            <section class="pts-card" id="lbLoginBox">
+              <h3 class="pts-h">コードでログイン</h3>
+              <p class="pts-note">別のデバイスで作った引き継ぎコードを入れると、そのプレイヤーとしてこのデバイスでも遊べます。ポイントやアイテムは、両方のデバイスの分が合わさります。</p>
+              <div class="lb-form">
+                <input type="text" id="lbLoginInput" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="引き継ぎコード" aria-label="引き継ぎコードでログイン">
+                <button type="button" class="pts-btn" id="lbLoginBtn">ログインする</button>
+              </div>
+              <p class="lb-msg" id="lbLoginMsg"></p>
             </section>
             <section class="pts-card" id="lbManageBox" hidden>
               <h3 class="pts-h">名前の変更・退会</h3>
@@ -6470,6 +6489,25 @@
                 <input type="text" id="lbRenameInput" maxlength="20" autocomplete="off" placeholder="名前（1〜20文字）" aria-label="プレイヤー名">
                 <button type="button" class="pts-btn equip" id="lbRenameBtn">名前を変更する</button>
                 <button type="button" class="pts-btn unequip" id="lbLeaveBtn">ランキングから抜ける</button>
+              </div>
+              <h3 class="pts-h">引き継ぎコード</h3>
+              <p class="pts-note">別のデバイスの「コードでログイン」でこのコードを入れると、同じプレイヤーで遊べます。</p>
+              <div class="lb-form">
+                <span class="lb-code notranslate" id="lbCodeText">••••••••</span>
+                <button type="button" class="pts-btn equip" id="lbCodeReveal">表示する</button>
+                <button type="button" class="pts-btn equip" id="lbCodeCopy">コピー</button>
+              </div>
+              <div id="lbRecoverBox" hidden>
+                <p class="pts-note">この端末にコードが保存されていません。サーバー側などで設定した今のコードを入力すると、この端末でも表示・変更できるようになります。</p>
+                <div class="lb-form">
+                  <input type="text" id="lbCodeRecoverInput" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="引き継ぎコード" aria-label="現在のコード">
+                  <button type="button" class="pts-btn" id="lbCodeRecoverBtn">コードを確認</button>
+                </div>
+              </div>
+              <div class="lb-form">
+                <input type="text" id="lbCodeNewInput" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="新しいコード（4〜20文字）" aria-label="新しい引き継ぎコード">
+                <button type="button" class="pts-btn equip" id="lbCodeNewDice">🎲 ランダムで作る</button>
+                <button type="button" class="pts-btn" id="lbCodeChangeBtn">コードを変更</button>
               </div>
               <div id="lbLeaveBox" hidden>
                 <p class="pts-note" id="lbLeaveText"></p>
@@ -25877,12 +25915,14 @@
     store.owned.push(item.id);
     store.equipped[item.cat] = item.id === "lobby-default" ? null : item.id;
     save(); applyCosmetics(); renderChip(false); renderShop();
+    try { if (typeof window.__lbOnEarn === "function") window.__lbOnEarn(); } catch (e) {}
   }
   function equip(id) {
     var item = shopItemById(id); if (!item || !isOwned(item)) return;
     if (isEquipped(item)) store.equipped[item.cat] = null;
     else store.equipped[item.cat] = item.id === "lobby-default" ? null : item.id;
     save(); applyCosmetics(); renderShop();
+    try { if (typeof window.__lbOnEarn === "function") window.__lbOnEarn(); } catch (e) {}
   }
   function renderShop() {
     var list = document.getElementById("ptsShopList");
@@ -25996,6 +26036,40 @@
     earn: earn, earnScore: earnScore, earnPlace: earnPlace,
     buy: buy, equip: equip, renderShop: renderShop,
     getState: function () { return { balance: store.balance, lifetime: store.lifetime, rank: rankFor(store.lifetime) }; },
+    /* Cloud sync surface for the leaderboard module: a plain
+       snapshot for the shared record, and a merge that never loses
+       local progress — lifetime/balance take the max, owned unions,
+       equipped comes from the cloud record when it carries any. */
+    syncSnapshot: function () {
+      var owned = {}, eq = {};
+      store.owned.forEach(function (id) { owned[id] = true; });
+      Object.keys(store.equipped).forEach(function (cat) {
+        if (typeof store.equipped[cat] === "string" && store.equipped[cat]) eq[cat] = store.equipped[cat];
+      });
+      return { balance: store.balance, lifetime: store.lifetime, owned: owned, equipped: eq };
+    },
+    applySync: function (cloud) {
+      if (!cloud || typeof cloud !== "object") return false;
+      var changed = false;
+      var lt = Math.max(0, cloud.points | 0), bal = Math.max(0, cloud.balance | 0);
+      if (lt > store.lifetime) { store.lifetime = lt; changed = true; }
+      if (bal > store.balance) { store.balance = bal; changed = true; }
+      if (cloud.owned && typeof cloud.owned === "object") {
+        Object.keys(cloud.owned).forEach(function (id) {
+          if (cloud.owned[id] && shopItemById(id) && store.owned.indexOf(id) < 0) { store.owned.push(id); changed = true; }
+        });
+      }
+      if (cloud.equipped && typeof cloud.equipped === "object" && Object.keys(cloud.equipped).length) {
+        CATS.forEach(function (cat) {
+          var v = cloud.equipped[cat.id];
+          var item = typeof v === "string" ? shopItemById(v) : null;
+          var nv = item && item.cat === cat.id ? v : null;
+          if (store.equipped[cat.id] !== nv) { store.equipped[cat.id] = nv; changed = true; }
+        });
+      }
+      if (changed) { save(); applyCosmetics(); renderChip(false); renderShop(); }
+      return changed;
+    },
     EARN: EARN, RANKS: RANKS, SHOP: SHOP
   };
   applyCosmetics();
@@ -26007,13 +26081,27 @@
      ONE ranking shared by the app build and the GitHub Pages build:
      Firebase Realtime Database over plain REST (no SDK). Data model
      players/<playerId> = {name, points (LIFETIME), rank (canonical
-     Japanese title), updatedAt}; the DB rules enforce that shape.
+     Japanese title), updatedAt, balance, owned (itemId -> true),
+     equipped (category -> itemId)}; the client always writes the
+     FULL record. codes/<CODE> = playerId maps the player-chosen
+     transfer code (4-20 chars of A-Z 0-9 - _, key stored UPPERCASE)
+     to the player, so any device can log in with the code and pick
+     up the same name, points, balance and items; merges never lose
+     progress (lifetime/balance take the max, owned unions). A code
+     is a login credential: codes/ is only ever addressed one code
+     at a time, never listed, and nothing about the code (not even
+     a hash — a short player-chosen code would be brute-forced
+     offline) is stored at a path keyed by a public identifier.
+     A device with no local code adopts a server-set code only by
+     typing it in and having the codes index confirm it maps to
+     this player; the code itself is never downloaded.
      Opt-in only: nothing leaves the device until the player joins
      with a name. Local-first and best-effort: every network call is
      wrapped, failures fall back to the cached list, and gameplay
      never blocks on the network. Identity (random hex player ID,
-     name, joined flag, cached list) lives in localStorage
-     "arcade-leaderboard-v1", next to the points store. -->
+     name, joined flag, transfer code, last-sync stamp, cached list)
+     lives in localStorage "arcade-leaderboard-v1", next to the
+     points store. -->
 <script>
 (function () {
   "use strict";
@@ -26046,10 +26134,28 @@
     nameLong: { ja: "名前は20文字までです。", en: "Names are up to 20 characters.", ko: "이름은 20자까지입니다.", zh: "名字最多 20 个字。", zht: "名稱最多 20 個字。", es: "El nombre admite hasta 20 caracteres.", fr: "20 caractères maximum.", de: "Namen dürfen höchstens 20 Zeichen lang sein.", pt: "O nome pode ter até 20 caracteres.", it: "Il nome può avere al massimo 20 caratteri." },
     nameNg: { ja: "その名前は使えません。別の名前にしてください。", en: "That name can't be used. Please pick another.", ko: "그 이름은 사용할 수 없습니다. 다른 이름으로 해 주세요.", zh: "这个名字不能用，请换一个。", zht: "這個名稱不能用，請換一個。", es: "Ese nombre no se puede usar. Elige otro.", fr: "Ce nom ne peut pas être utilisé. Choisis-en un autre.", de: "Dieser Name ist nicht erlaubt. Bitte wähle einen anderen.", pt: "Esse nome não pode ser usado. Escolha outro.", it: "Quel nome non può essere usato. Scegline un altro." },
     joinedAs: { ja: "参加中の名前", en: "Playing as", ko: "참가 중인 이름", zh: "当前名字", zht: "目前名稱", es: "Participas como", fr: "Tu participes comme", de: "Du nimmst teil als", pt: "Participando como", it: "Partecipi come" },
-    leaveAsk: { ja: "ランキングから抜けますか？あなたの記録は削除されます（ポイントは消えません）。", en: "Leave the leaderboard? Your record will be deleted (your points stay).", ko: "랭킹에서 나갈까요? 기록은 삭제됩니다 (포인트는 사라지지 않습니다).", zh: "退出排行榜吗？你的记录将被删除（积分不会消失）。", zht: "退出排行榜嗎？你的紀錄將被刪除（積分不會消失）。", es: "¿Salir de la clasificación? Tu registro se eliminará (tus puntos se quedan).", fr: "Quitter le classement ? Ton entrée sera supprimée (tes points restent).", de: "Rangliste verlassen? Dein Eintrag wird gelöscht (deine Punkte bleiben).", pt: "Sair do ranking? Seu registro será excluído (seus pontos ficam).", it: "Uscire dalla classifica? La tua voce verrà eliminata (i punti restano)." },
+    leaveAsk: { ja: "ランキングから抜けますか？あなたの記録と引き継ぎコードは削除されます（ポイントは消えません）。", en: "Leave the leaderboard? Your record and transfer code will be deleted (your points stay).", ko: "랭킹에서 나갈까요? 기록과 인계 코드가 삭제됩니다 (포인트는 사라지지 않습니다).", zh: "退出排行榜吗？你的记录和转移代码将被删除（积分不会消失）。", zht: "退出排行榜嗎？你的紀錄和轉移代碼將被刪除（積分不會消失）。", es: "¿Salir de la clasificación? Tu registro y tu código de transferencia se eliminarán (tus puntos se quedan).", fr: "Quitter le classement ? Ton entrée et ton code de transfert seront supprimés (tes points restent).", de: "Rangliste verlassen? Dein Eintrag und dein Übertragungscode werden gelöscht (deine Punkte bleiben).", pt: "Sair do ranking? Seu registro e código de transferência serão excluídos (seus pontos ficam).", it: "Uscire dalla classifica? La tua voce e il tuo codice di trasferimento verranno eliminati (i punti restano)." },
     leaveYes: { ja: "抜ける", en: "Leave", ko: "나가기", zh: "退出", zht: "退出", es: "Salir", fr: "Quitter", de: "Verlassen", pt: "Sair", it: "Esci" },
     leaveNo: { ja: "やめる", en: "Cancel", ko: "취소", zh: "取消", zht: "取消", es: "Cancelar", fr: "Annuler", de: "Abbrechen", pt: "Cancelar", it: "Annulla" },
-    pinnedNote: { ja: "― あなたの順位 ―", en: "― Your position ―", ko: "― 당신의 순위 ―", zh: "― 你的排名 ―", zht: "― 你的排名 ―", es: "― Tu posición ―", fr: "― Ta position ―", de: "― Deine Position ―", pt: "― Sua posição ―", it: "― La tua posizione ―" }
+    pinnedNote: { ja: "― あなたの順位 ―", en: "― Your position ―", ko: "― 당신의 순위 ―", zh: "― 你的排名 ―", zht: "― 你的排名 ―", es: "― Tu posición ―", fr: "― Ta position ―", de: "― Deine Position ―", pt: "― Sua posição ―", it: "― La tua posizione ―" },
+    checking: { ja: "確認中…", en: "Checking…", ko: "확인 중…", zh: "确认中…", zht: "確認中…", es: "Comprobando…", fr: "Vérification…", de: "Prüfe…", pt: "Verificando…", it: "Verifica…" },
+    netErr: { ja: "通信できませんでした。接続を確認して、もう一度お試しください。", en: "Couldn't reach the server. Check your connection and try again.", ko: "서버에 연결할 수 없습니다. 연결을 확인하고 다시 시도해 주세요.", zh: "无法连接服务器。请检查网络后重试。", zht: "無法連線到伺服器。請檢查網路後重試。", es: "No se pudo contactar el servidor. Revisa tu conexión e inténtalo de nuevo.", fr: "Serveur injoignable. Vérifie ta connexion et réessaie.", de: "Server nicht erreichbar. Prüfe die Verbindung und versuch es erneut.", pt: "Não foi possível contatar o servidor. Verifique a conexão e tente de novo.", it: "Server non raggiungibile. Controlla la connessione e riprova." },
+    codeEmpty: { ja: "引き継ぎコードを入力してください。", en: "Please enter a transfer code.", ko: "인계 코드를 입력해 주세요.", zh: "请输入转移代码。", zht: "請輸入轉移代碼。", es: "Escribe un código de transferencia.", fr: "Entre un code de transfert.", de: "Bitte gib einen Übertragungscode ein.", pt: "Digite um código de transferência.", it: "Inserisci un codice di trasferimento." },
+    codeShort: { ja: "コードは4文字以上で入力してください。", en: "Codes are at least 4 characters.", ko: "코드는 4자 이상이어야 합니다.", zh: "代码至少需要 4 个字符。", zht: "代碼至少需要 4 個字元。", es: "El código debe tener al menos 4 caracteres.", fr: "Le code doit faire au moins 4 caractères.", de: "Codes brauchen mindestens 4 Zeichen.", pt: "O código precisa de pelo menos 4 caracteres.", it: "Il codice deve avere almeno 4 caratteri." },
+    codeLong: { ja: "コードは20文字までです。", en: "Codes are up to 20 characters.", ko: "코드는 20자까지입니다.", zh: "代码最多 20 个字符。", zht: "代碼最多 20 個字元。", es: "El código admite hasta 20 caracteres.", fr: "20 caractères maximum pour le code.", de: "Codes dürfen höchstens 20 Zeichen lang sein.", pt: "O código pode ter até 20 caracteres.", it: "Il codice può avere al massimo 20 caratteri." },
+    codeChars: { ja: "コードに使えるのは英字・数字・ハイフン・アンダースコアだけです。", en: "Codes can only use letters, digits, hyphens and underscores.", ko: "코드에는 영문자·숫자·하이픈·밑줄만 사용할 수 있습니다.", zh: "代码只能使用字母、数字、连字符和下划线。", zht: "代碼只能使用字母、數字、連字號和底線。", es: "El código solo puede usar letras, dígitos, guiones y guiones bajos.", fr: "Le code n'accepte que lettres, chiffres, tirets et tirets bas.", de: "Codes dürfen nur Buchstaben, Ziffern, Bindestriche und Unterstriche enthalten.", pt: "O código só pode usar letras, dígitos, hífens e sublinhados.", it: "Il codice può usare solo lettere, cifre, trattini e trattini bassi." },
+    codeTaken: { ja: "そのコードは使われています", en: "That code is already in use.", ko: "그 코드는 이미 사용 중입니다.", zh: "该代码已被使用。", zht: "該代碼已被使用。", es: "Ese código ya está en uso.", fr: "Ce code est déjà utilisé.", de: "Dieser Code wird bereits verwendet.", pt: "Esse código já está em uso.", it: "Quel codice è già in uso." },
+    codeSame: { ja: "今のコードと同じです。別のコードにしてください。", en: "That's your current code — pick a different one.", ko: "현재 코드와 같습니다. 다른 코드로 해 주세요.", zh: "这就是你现在的代码，请换一个。", zht: "這就是你現在的代碼，請換一個。", es: "Es tu código actual: elige otro.", fr: "C'est ton code actuel — choisis-en un autre.", de: "Das ist dein aktueller Code — wähle einen anderen.", pt: "Esse é o seu código atual — escolha outro.", it: "È il tuo codice attuale: scegline un altro." },
+    codeChanged: { ja: "コードを変更しました。", en: "Your code has been changed.", ko: "코드를 변경했습니다.", zh: "代码已更改。", zht: "代碼已變更。", es: "Tu código ha cambiado.", fr: "Ton code a été modifié.", de: "Dein Code wurde geändert.", pt: "Seu código foi alterado.", it: "Il tuo codice è stato modificato." },
+    noCode: { ja: "（未設定）", en: "(not set)", ko: "(미설정)", zh: "(未设置)", zht: "(未設定)", es: "(sin definir)", fr: "(non défini)", de: "(nicht festgelegt)", pt: "(não definido)", it: "(non impostato)" },
+    showCode: { ja: "表示する", en: "Show", ko: "표시", zh: "显示", zht: "顯示", es: "Mostrar", fr: "Afficher", de: "Zeigen", pt: "Mostrar", it: "Mostra" },
+    hideCode: { ja: "隠す", en: "Hide", ko: "숨기기", zh: "隐藏", zht: "隱藏", es: "Ocultar", fr: "Masquer", de: "Verbergen", pt: "Ocultar", it: "Nascondi" },
+    copyCode: { ja: "コピー", en: "Copy", ko: "복사", zh: "复制", zht: "複製", es: "Copiar", fr: "Copier", de: "Kopieren", pt: "Copiar", it: "Copia" },
+    copied: { ja: "コピーしました", en: "Copied", ko: "복사했습니다", zh: "已复制", zht: "已複製", es: "Copiado", fr: "Copié", de: "Kopiert", pt: "Copiado", it: "Copiato" },
+    loginBad: { ja: "そのコードは見つかりませんでした。入力を確認してください。", en: "That code wasn't found. Please check what you entered.", ko: "그 코드를 찾을 수 없습니다. 입력을 확인해 주세요.", zh: "找不到该代码。请检查输入。", zht: "找不到該代碼。請檢查輸入。", es: "No se encontró ese código. Revisa lo que escribiste.", fr: "Code introuvable. Vérifie ta saisie.", de: "Dieser Code wurde nicht gefunden. Prüfe deine Eingabe.", pt: "Esse código não foi encontrado. Verifique o que digitou.", it: "Codice non trovato. Controlla l'inserimento." },
+    loginOk: { ja: "{name} としてログインしました。", en: "Logged in as {name}.", ko: "{name}(으)로 로그인했습니다.", zh: "已以 {name} 登录。", zht: "已以 {name} 登入。", es: "Sesión iniciada como {name}.", fr: "Connecté en tant que {name}.", de: "Angemeldet als {name}.", pt: "Você entrou como {name}.", it: "Accesso come {name}." },
+    recoverOk: { ja: "コードを確認しました。この端末でも表示・変更できます。", en: "Code confirmed — you can now view and change it on this device.", ko: "코드를 확인했습니다. 이 기기에서도 표시·변경할 수 있습니다.", zh: "代码已确认。现在也可以在此设备上查看和更改。", zht: "代碼已確認。現在也可以在此裝置上檢視和變更。", es: "Código confirmado: ahora puedes verlo y cambiarlo en este dispositivo.", fr: "Code confirmé — tu peux maintenant l'afficher et le modifier sur cet appareil.", de: "Code bestätigt — du kannst ihn jetzt auf diesem Gerät ansehen und ändern.", pt: "Código confirmado — agora você pode vê-lo e alterá-lo neste dispositivo.", it: "Codice confermato: ora puoi vederlo e modificarlo su questo dispositivo." },
+    recoverBad: { ja: "そのコードはあなたのものではありませんでした。入力を確認してください。", en: "That code doesn't belong to your account. Please check what you entered.", ko: "그 코드는 당신의 것이 아닙니다. 입력을 확인해 주세요.", zh: "该代码不属于你的账号。请检查输入。", zht: "該代碼不屬於你的帳號。請檢查輸入。", es: "Ese código no pertenece a tu cuenta. Revisa lo que escribiste.", fr: "Ce code n'appartient pas à ton compte. Vérifie ta saisie.", de: "Dieser Code gehört nicht zu deinem Konto. Prüfe deine Eingabe.", pt: "Esse código não pertence à sua conta. Verifique o que digitou.", it: "Quel codice non appartiene al tuo account. Controlla l'inserimento." }
   };
   var NG = ["ばかやろう", "死ね", "しね", "くそやろう", "ちんこ", "まんこ", "おっぱい", "セックス", "うんこ野郎", "fuck", "shit", "bitch", "nigger", "nigga", "porn", "sex", "dick", "pussy", "whore", "slut"];
 
@@ -26076,6 +26182,8 @@
       id: typeof s.id === "string" && /^[0-9a-f]{16,64}$/.test(s.id) ? s.id : "",
       name: typeof s.name === "string" ? s.name : "",
       joined: !!s.joined,
+      code: typeof s.code === "string" ? s.code : "",
+      lastSync: typeof s.lastSync === "number" ? s.lastSync : 0,
       cache: Array.isArray(s.cache) ? s.cache : null,
       cacheAt: typeof s.cacheAt === "number" ? s.cacheAt : 0
     };
@@ -26106,6 +26214,30 @@
     return { name: n };
   }
 
+  /* ---------- transfer code ---------- */
+  function normCode(raw) { return String(raw == null ? "" : raw).replace(/\s+/g, "").toUpperCase(); }
+  function validateCode(raw) {
+    var c = normCode(raw);
+    if (!c) return { err: t("codeEmpty") };
+    if (c.length < 4) return { err: t("codeShort") };
+    if (c.length > 20) return { err: t("codeLong") };
+    if (!/^[A-Z0-9_-]+$/.test(c)) return { err: t("codeChars") };
+    return { code: c };
+  }
+  var CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  function genCode() {
+    var out = "", i;
+    try {
+      var buf = new Uint8Array(10);
+      window.crypto.getRandomValues(buf);
+      for (i = 0; i < 10; i++) out += CODE_ALPHABET[buf[i] % CODE_ALPHABET.length];
+    } catch (e) {
+      out = "";
+      for (i = 0; i < 10; i++) out += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+    }
+    return out;
+  }
+
   /* ---------- network (best-effort, never throws) ---------- */
   var COIN = '<svg class="hd-coin" aria-hidden="true" focusable="false"><use href="#hd-coin-symbol"></use></svg>';
   var lastPushAt = 0, pushTimer = null, pushing = false, offline = false, loadedOnce = false;
@@ -26115,20 +26247,114 @@
     var wait = Math.max(0, 5000 - (Date.now() - lastPushAt));
     pushTimer = setTimeout(function () { pushTimer = null; doPush(); }, wait);
   }
+  function fetchJson(url, opts) {
+    return fetch(url, opts).then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); });
+  }
+  function getCodeOwner(code) { return fetchJson(DB + "/codes/" + encodeURIComponent(code) + ".json"); }
+  function getPlayer(id) { return fetchJson(DB + "/players/" + encodeURIComponent(id) + ".json"); }
+  function putCode(code, id) {
+    return fetch(DB + "/codes/" + encodeURIComponent(code) + ".json", {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(id)
+    }).then(function (r) { if (!r.ok) throw new Error("claim"); });
+  }
+  function deleteCode(code) {
+    return fetch(DB + "/codes/" + encodeURIComponent(code) + ".json", { method: "DELETE" }).catch(function () {});
+  }
+
+  /* ---------- full-record sync ---------- */
+  function snapshot() {
+    try { var s = window.ARCADE_points && window.ARCADE_points.syncSnapshot(); if (s) return s; } catch (e) {}
+    return { balance: 0, lifetime: lifetime(), owned: {}, equipped: {} };
+  }
+  function fullRecord(ts) {
+    var s = snapshot();
+    return { name: st.name, points: s.lifetime, rank: rankJa(s.lifetime), updatedAt: ts, balance: s.balance, owned: s.owned, equipped: s.equipped };
+  }
   function doPush() {
     if (!st.joined || !st.id || pushing || typeof fetch !== "function") return;
     pushing = true; lastPushAt = Date.now();
-    var pts = lifetime();
-    var body = { name: st.name, points: pts, rank: rankJa(pts), updatedAt: Date.now() };
+    var ts = Date.now();
+    var body = fullRecord(ts);
     fetch(DB + "/players/" + encodeURIComponent(st.id) + ".json", {
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
     }).then(function (r) {
       if (!r.ok) throw new Error("push");
       pushing = false;
+      st.lastSync = ts; save();
       pull();
     }).catch(function () { pushing = false; });
   }
   window.__lbOnEarn = function () { schedulePush(); };
+  /* Compare the local merged state against a cloud record: true when
+     a push would change anything (used after merges). */
+  function recordDiffers(rec) {
+    if (!rec || typeof rec !== "object") return true;
+    var s = snapshot();
+    if ((rec.points | 0) !== s.lifetime) return true;
+    if ((rec.balance | 0) !== s.balance) return true;
+    var ro = rec.owned && typeof rec.owned === "object" ? Object.keys(rec.owned).filter(function (k) { return rec.owned[k]; }).sort().join(",") : "";
+    if (ro !== Object.keys(s.owned).sort().join(",")) return true;
+    var re = rec.equipped && typeof rec.equipped === "object" ? rec.equipped : {};
+    var rk = Object.keys(re).sort();
+    if (rk.join(",") !== Object.keys(s.equipped).sort().join(",")) return true;
+    for (var i = 0; i < rk.length; i++) if (re[rk[i]] !== s.equipped[rk[i]]) return true;
+    if (typeof rec.name === "string" && rec.name !== st.name) return true;
+    return false;
+  }
+  function mergeRecord(rec) {
+    if (!rec || typeof rec !== "object") return;
+    if (typeof rec.name === "string" && rec.name) st.name = rec.name;
+    try { if (window.ARCADE_points && window.ARCADE_points.applySync) window.ARCADE_points.applySync(rec); } catch (e) {}
+    save();
+  }
+  /* A code is a login credential: the plaintext lives ONLY in the
+     owning device's localStorage and as the key of codes/<CODE>.
+     Nothing about the code — not even a hash, which a short
+     player-chosen code would let anyone brute-force offline — is
+     ever stored at a path keyed by a public identifier (player IDs
+     are enumerable through the leaderboard). The codes index is
+     only ever addressed one code at a time, never listed. */
+  /* A device joined with no local code (e.g. the code was set
+     server-side) can adopt that code by typing it in: it is adopted
+     only when the codes index — keyed by the code itself — maps it
+     to this player. The code is never downloaded or looked up by
+     playerId. */
+  var recoverBusy = false;
+  function adoptCode(code) {
+    st.code = code; save();
+    codeRevealed = false;
+    var ri = el("lbCodeRecoverInput"); if (ri) ri.value = "";
+    render();
+    setMsg(el("lbManageMsg"), t("recoverOk"), true);
+  }
+  function recoverCode() {
+    if (recoverBusy) return;
+    var msg = el("lbManageMsg");
+    var cv = validateCode(el("lbCodeRecoverInput") ? el("lbCodeRecoverInput").value : "");
+    if (cv.err) { setMsg(msg, cv.err); return; }
+    if (typeof fetch !== "function") { setMsg(msg, t("netErr")); return; }
+    recoverBusy = true; setMsg(msg, t("checking"));
+    getCodeOwner(cv.code).then(function (owner) {
+      recoverBusy = false;
+      if (owner === st.id) adoptCode(cv.code);
+      else setMsg(msg, t("recoverBad"));
+    }).catch(function () { recoverBusy = false; setMsg(msg, t("netErr")); });
+  }
+  var syncing = false;
+  function syncPull() {
+    if (!st.joined || !st.id || syncing || typeof fetch !== "function") return;
+    syncing = true;
+    getPlayer(st.id).then(function (rec) {
+      syncing = false;
+      if (!rec) { lastPushAt = 0; doPush(); return; }
+      if (typeof rec.updatedAt === "number" && rec.updatedAt > st.lastSync) {
+        mergeRecord(rec);
+        st.lastSync = rec.updatedAt; save();
+        render();
+      }
+      if (recordDiffers(rec)) { lastPushAt = 0; doPush(); }
+    }).catch(function () { syncing = false; });
+  }
   function pull() {
     if (typeof fetch !== "function") { offline = true; render(); return; }
     fetch(DB + "/players.json").then(function (r) {
@@ -26160,6 +26386,7 @@
   }
 
   /* ---------- rendering ---------- */
+  var codeRevealed = false, copyMsgUntil = 0;
   function el(id) { return document.getElementById(id); }
   function displayList() {
     var arr = (st.cache || []).slice();
@@ -26182,13 +26409,19 @@
       '<span class="lb-pts">' + COIN + fmt(p.points) + ' pt</span></div>';
   }
   function render() {
-    var joinBox = el("lbJoinBox"), manageBox = el("lbManageBox");
+    var joinBox = el("lbJoinBox"), manageBox = el("lbManageBox"), loginBox = el("lbLoginBox");
     if (!joinBox) return;
     joinBox.hidden = st.joined;
     manageBox.hidden = !st.joined;
+    if (loginBox) loginBox.hidden = st.joined;
     if (st.joined) {
       var ri = el("lbRenameInput");
       if (ri && document.activeElement !== ri) ri.value = st.name;
+      var ct = el("lbCodeText");
+      if (ct) ct.textContent = st.code ? (codeRevealed ? st.code : "••••••••") : t("noCode");
+      var rv = el("lbCodeReveal"); if (rv) rv.textContent = codeRevealed ? t("hideCode") : t("showCode");
+      var cp = el("lbCodeCopy"); if (cp) cp.textContent = Date.now() < copyMsgUntil ? t("copied") : t("copyCode");
+      var rb = el("lbRecoverBox"); if (rb) rb.hidden = !!st.code;
     }
     var list = displayList();
     var myIdx = -1;
@@ -26241,34 +26474,103 @@
   }
 
   /* ---------- actions ---------- */
+  function setMsg(elm, text, ok) {
+    if (!elm) return;
+    elm.className = ok ? "lb-msg ok" : "lb-msg";
+    elm.textContent = text;
+  }
+  var joinBusy = false;
   function join() {
-    var v = validateName(el("lbNameInput") ? el("lbNameInput").value : "");
+    if (joinBusy) return;
     var msg = el("lbJoinMsg");
-    if (v.err) { if (msg) msg.textContent = v.err; return; }
-    if (msg) msg.textContent = "";
+    var v = validateName(el("lbNameInput") ? el("lbNameInput").value : "");
+    if (v.err) { setMsg(msg, v.err); return; }
+    var cv = validateCode(el("lbCodeInput") ? el("lbCodeInput").value : "");
+    if (cv.err) { setMsg(msg, cv.err); return; }
+    if (typeof fetch !== "function") { setMsg(msg, t("netErr")); return; }
     if (!st.id) st.id = genId();
-    st.name = v.name; st.joined = true; save();
-    lastPushAt = 0;
-    render();
-    doPush();
+    var myId = st.id;
+    joinBusy = true; setMsg(msg, t("checking"));
+    getCodeOwner(cv.code).then(function (owner) {
+      if (owner && owner !== myId) { joinBusy = false; setMsg(msg, t("codeTaken")); return; }
+      putCode(cv.code, myId).then(function () {
+        joinBusy = false;
+        st.name = v.name; st.code = cv.code; st.joined = true; save();
+        setMsg(msg, "");
+        lastPushAt = 0;
+        render();
+        doPush();
+      }).catch(function () { joinBusy = false; setMsg(msg, t("netErr")); });
+    }).catch(function () { joinBusy = false; setMsg(msg, t("netErr")); });
+  }
+  var loginBusy = false;
+  function login() {
+    if (loginBusy) return;
+    var msg = el("lbLoginMsg");
+    var cv = validateCode(el("lbLoginInput") ? el("lbLoginInput").value : "");
+    if (cv.err) { setMsg(msg, cv.err); return; }
+    if (typeof fetch !== "function") { setMsg(msg, t("netErr")); return; }
+    loginBusy = true; setMsg(msg, t("checking"));
+    getCodeOwner(cv.code).then(function (owner) {
+      if (typeof owner !== "string" || !owner) { loginBusy = false; setMsg(msg, t("loginBad")); return; }
+      getPlayer(owner).then(function (rec) {
+        loginBusy = false;
+        if (!rec || typeof rec !== "object") { setMsg(msg, t("loginBad")); return; }
+        st.id = owner; st.code = cv.code; st.joined = true;
+        mergeRecord(rec);
+        st.lastSync = typeof rec.updatedAt === "number" ? rec.updatedAt : 0;
+        save();
+        var li = el("lbLoginInput"); if (li) li.value = "";
+        render();
+        setMsg(el("lbManageMsg"), t("loginOk").replace("{name}", st.name), true);
+        if (recordDiffers(rec)) { lastPushAt = 0; doPush(); }
+        pull();
+      }).catch(function () { loginBusy = false; setMsg(msg, t("netErr")); });
+    }).catch(function () { loginBusy = false; setMsg(msg, t("netErr")); });
   }
   function rename() {
     var v = validateName(el("lbRenameInput") ? el("lbRenameInput").value : "");
     var msg = el("lbManageMsg");
-    if (v.err) { if (msg) msg.textContent = v.err; return; }
-    if (msg) msg.textContent = "";
+    if (v.err) { setMsg(msg, v.err); return; }
+    setMsg(msg, "");
     st.name = v.name; save();
     lastPushAt = 0;
     render();
     doPush();
   }
+  var codeBusy = false;
+  function changeCode() {
+    if (codeBusy) return;
+    var msg = el("lbManageMsg");
+    var cv = validateCode(el("lbCodeNewInput") ? el("lbCodeNewInput").value : "");
+    if (cv.err) { setMsg(msg, cv.err); return; }
+    if (st.code && cv.code === st.code) { setMsg(msg, t("codeSame")); return; }
+    if (typeof fetch !== "function") { setMsg(msg, t("netErr")); return; }
+    var oldCode = st.code;
+    codeBusy = true; setMsg(msg, t("checking"));
+    getCodeOwner(cv.code).then(function (owner) {
+      if (owner && owner !== st.id) { codeBusy = false; setMsg(msg, t("codeTaken")); return; }
+      putCode(cv.code, st.id).then(function () {
+        codeBusy = false;
+        st.code = cv.code; save();
+        var ni = el("lbCodeNewInput"); if (ni) ni.value = "";
+        codeRevealed = false;
+        render();
+        setMsg(el("lbManageMsg"), t("codeChanged"), true);
+        lastPushAt = 0; doPush();
+        if (oldCode && oldCode !== cv.code) deleteCode(oldCode);
+      }).catch(function () { codeBusy = false; setMsg(msg, t("netErr")); });
+    }).catch(function () { codeBusy = false; setMsg(msg, t("netErr")); });
+  }
   function leave() {
-    var id = st.id;
-    st.joined = false; st.name = ""; save();
+    var id = st.id, code = st.code;
+    st.joined = false; st.name = ""; st.code = ""; st.lastSync = 0; save();
+    codeRevealed = false;
     var lb = el("lbLeaveBox"); if (lb) lb.hidden = true;
     render();
-    if (id && typeof fetch === "function") {
-      fetch(DB + "/players/" + encodeURIComponent(id) + ".json", { method: "DELETE" }).then(function () { pull(); }).catch(function () {});
+    if (typeof fetch === "function") {
+      if (id) fetch(DB + "/players/" + encodeURIComponent(id) + ".json", { method: "DELETE" }).then(function () { pull(); }).catch(function () {});
+      if (code) deleteCode(code);
     }
   }
 
@@ -26276,6 +26578,38 @@
   var joinBtn = el("lbJoinBtn"); if (joinBtn) joinBtn.addEventListener("click", join);
   var nameInput = el("lbNameInput");
   if (nameInput) nameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
+  var codeInput = el("lbCodeInput");
+  if (codeInput) codeInput.addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
+  var diceBtn = el("lbCodeDice");
+  if (diceBtn) diceBtn.addEventListener("click", function () {
+    var i = el("lbCodeInput"); if (i) { i.value = genCode(); try { i.focus(); } catch (e) {} }
+    setMsg(el("lbJoinMsg"), "");
+  });
+  var loginBtn = el("lbLoginBtn"); if (loginBtn) loginBtn.addEventListener("click", login);
+  var loginInput = el("lbLoginInput");
+  if (loginInput) loginInput.addEventListener("keydown", function (e) { if (e.key === "Enter") login(); });
+  var revealBtn = el("lbCodeReveal");
+  if (revealBtn) revealBtn.addEventListener("click", function () { codeRevealed = !codeRevealed; render(); });
+  var copyBtn = el("lbCodeCopy");
+  if (copyBtn) copyBtn.addEventListener("click", function () {
+    if (!st.code) return;
+    codeRevealed = true;
+    var done = function () { copyMsgUntil = Date.now() + 1600; render(); setTimeout(render, 1700); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(st.code).then(done, done);
+      else done();
+    } catch (e) { done(); }
+  });
+  var newDiceBtn = el("lbCodeNewDice");
+  if (newDiceBtn) newDiceBtn.addEventListener("click", function () {
+    var i = el("lbCodeNewInput"); if (i) { i.value = genCode(); try { i.focus(); } catch (e) {} }
+  });
+  var recoverBtn = el("lbCodeRecoverBtn"); if (recoverBtn) recoverBtn.addEventListener("click", recoverCode);
+  var recoverInput = el("lbCodeRecoverInput");
+  if (recoverInput) recoverInput.addEventListener("keydown", function (e) { if (e.key === "Enter") recoverCode(); });
+  var changeBtn = el("lbCodeChangeBtn"); if (changeBtn) changeBtn.addEventListener("click", changeCode);
+  var newCodeInput = el("lbCodeNewInput");
+  if (newCodeInput) newCodeInput.addEventListener("keydown", function (e) { if (e.key === "Enter") changeCode(); });
   var renameBtn = el("lbRenameBtn"); if (renameBtn) renameBtn.addEventListener("click", rename);
   var renameInput = el("lbRenameInput");
   if (renameInput) renameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") rename(); });
@@ -26292,14 +26626,17 @@
   var view = el("rankingView");
   if (view && window.MutationObserver) {
     new MutationObserver(function () {
-      if (view.classList.contains("open")) { render(); pull(); }
+      if (view.classList.contains("open")) { render(); pull(); syncPull(); }
     }).observe(view, { attributes: true, attributeFilter: ["class"] });
-    if (view.classList.contains("open")) { render(); pull(); }
+    if (view.classList.contains("open")) { render(); pull(); syncPull(); }
   }
   if (window.MutationObserver) {
     new MutationObserver(function () { render(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   }
   render();
+  if (st.joined) {
+    syncPull();
+  }
 })();
 </script>
 
@@ -27607,6 +27944,26 @@ PATTERNS.push(
   "名前の変更・退会": ["Rename / Leave", "이름 변경·탈퇴", "改名・退出", "改名・退出", "Cambiar nombre / Salir", "Renommer / Quitter", "Umbenennen / Austreten", "Renomear / Sair", "Rinomina / Esci"],
   "名前を変更する": ["Rename", "이름 변경하기", "更改名字", "更改名稱", "Cambiar nombre", "Renommer", "Umbenennen", "Renomear", "Rinomina"],
   "ランキングから抜ける": ["Leave the Leaderboard", "랭킹에서 나가기", "退出排行榜", "退出排行榜", "Salir de la clasificación", "Quitter le classement", "Rangliste verlassen", "Sair do ranking", "Esci dalla classifica"],
+  "引き継ぎコード": ["Transfer Code", "인계 코드", "转移代码", "轉移代碼", "Código de transferencia", "Code de transfert", "Übertragungscode", "Código de transferência", "Codice di trasferimento"],
+  "引き継ぎコードも自分で決めてください。別のデバイスでこのコードを入れると、名前・ポイント・買ったアイテムまで全部そのまま引き継げます。": ["Choose your own transfer code too. Enter it on another device and your name, points and purchased items all carry over, just as they are.", "인계 코드도 직접 정해 주세요. 다른 기기에서 이 코드를 입력하면 이름·포인트·구매한 아이템까지 전부 그대로 이어집니다.", "也请自己设定转移代码。在其他设备上输入此代码，名字、积分和购买的物品都会原样转移过来。", "也請自己設定轉移代碼。在其他裝置上輸入此代碼，名稱、積分和購買的物品都會原樣轉移過來。", "Elige también tu propio código de transferencia. Introdúcelo en otro dispositivo y tu nombre, puntos y artículos comprados se transfieren tal cual.", "Choisis aussi ton propre code de transfert. Saisis-le sur un autre appareil et ton nom, tes points et tes articles achetés sont transférés tels quels.", "Wähle auch deinen eigenen Übertragungscode. Gib ihn auf einem anderen Gerät ein, und Name, Punkte und gekaufte Gegenstände werden genau so übernommen.", "Escolha também seu próprio código de transferência. Digite-o em outro dispositivo e seu nome, pontos e itens comprados são transferidos exatamente como estão.", "Scegli anche il tuo codice di trasferimento. Inseriscilo su un altro dispositivo e nome, punti e articoli acquistati si trasferiscono così come sono."],
+  "引き継ぎコード（4〜20文字）": ["Transfer code (4–20 characters)", "인계 코드 (4~20자)", "转移代码（4～20字）", "轉移代碼（4～20字）", "Código de transferencia (4–20 caracteres)", "Code de transfert (4 à 20 caractères)", "Übertragungscode (4–20 Zeichen)", "Código de transferência (4–20 caracteres)", "Codice di trasferimento (4–20 caratteri)"],
+  "🎲 ランダムで作る": ["🎲 Make one for me", "🎲 랜덤으로 만들기", "🎲 随机生成", "🎲 隨機產生", "🎲 Generar uno", "🎲 Générer pour moi", "🎲 Zufällig erstellen", "🎲 Gerar um", "🎲 Generane uno"],
+  "コードは英字・数字・ハイフン・アンダースコア（4〜20文字）が使えます。このコードが、他のデバイスであなたになるための鍵です。推測されにくいものを選んで、他人には教えないでください。": ["Codes use letters, digits, hyphens and underscores (4–20 characters). This code is the key to being you on other devices — pick something hard to guess, and don't tell anyone.", "코드는 영문자·숫자·하이픈·밑줄(4~20자)을 사용할 수 있습니다. 이 코드는 다른 기기에서 당신이 되기 위한 열쇠입니다. 추측하기 어려운 것을 골라, 다른 사람에게 알려주지 마세요.", "代码可以使用字母、数字、连字符和下划线（4～20个字符）。此代码是在其他设备上成为你的钥匙，请选择难以猜到的内容，不要告诉任何人。", "代碼可以使用字母、數字、連字號和底線（4～20個字元）。此代碼是在其他裝置上成為你的鑰匙，請選擇難以猜到的內容，不要告訴任何人。", "El código puede usar letras, dígitos, guiones y guiones bajos (4–20 caracteres). Este código es la llave para ser tú en otros dispositivos: elige algo difícil de adivinar y no se lo digas a nadie.", "Le code peut utiliser lettres, chiffres, tirets et tirets bas (4 à 20 caractères). Ce code est la clé pour être toi sur d'autres appareils : choisis quelque chose de difficile à deviner et ne le dis à personne.", "Codes dürfen Buchstaben, Ziffern, Bindestriche und Unterstriche enthalten (4–20 Zeichen). Dieser Code ist der Schlüssel, um auf anderen Geräten du zu sein — wähle etwas Schwererratbares und verrate ihn niemandem.", "O código pode usar letras, dígitos, hífens e sublinhados (4–20 caracteres). Este código é a chave para ser você em outros dispositivos: escolha algo difícil de adivinhar e não conte a ninguém.", "Il codice può usare lettere, cifre, trattini e trattini bassi (4–20 caratteri). Questo codice è la chiave per essere te su altri dispositivi: scegli qualcosa di difficile da indovinare e non dirlo a nessuno."],
+  "コードでログイン": ["Log In with a Code", "코드로 로그인", "用代码登录", "用代碼登入", "Iniciar sesión con un código", "Se connecter avec un code", "Mit Code anmelden", "Entrar com um código", "Accedi con un codice"],
+  "別のデバイスで作った引き継ぎコードを入れると、そのプレイヤーとしてこのデバイスでも遊べます。ポイントやアイテムは、両方のデバイスの分が合わさります。": ["Enter the transfer code you made on another device, and you can play as that player on this device too. Points and items from both devices are combined.", "다른 기기에서 만든 인계 코드를 입력하면 그 플레이어로 이 기기에서도 플레이할 수 있습니다. 포인트와 아이템은 양쪽 기기의 분이 합쳐집니다.", "输入在其他设备上创建的转移代码，即可在此设备上以该玩家身份游玩。积分和物品会将两个设备的合并计算。", "輸入在其他裝置上建立的轉移代碼，即可在此裝置上以該玩家身分遊玩。積分和物品會將兩個裝置的合併計算。", "Introduce el código de transferencia que creaste en otro dispositivo y podrás jugar como ese jugador también en este. Los puntos y artículos de ambos dispositivos se combinan.", "Saisis le code de transfert créé sur un autre appareil et tu pourras jouer en tant que ce joueur sur celui-ci aussi. Les points et articles des deux appareils se combinent.", "Gib den Übertragungscode ein, den du auf einem anderen Gerät erstellt hast, und du kannst auch auf diesem Gerät als dieser Spieler spielen. Punkte und Gegenstände beider Geräte werden zusammengeführt.", "Digite o código de transferência que você criou em outro dispositivo e poderá jogar como esse jogador neste dispositivo também. Pontos e itens dos dois dispositivos são combinados.", "Inserisci il codice di trasferimento creato su un altro dispositivo e potrai giocare come quel giocatore anche su questo. Punti e articoli di entrambi i dispositivi si combinano."],
+  "引き継ぎコードでログイン": ["Log in with a transfer code", "인계 코드로 로그인", "用转移代码登录", "用轉移代碼登入", "Iniciar sesión con código de transferencia", "Se connecter avec un code de transfert", "Mit Übertragungscode anmelden", "Entrar com código de transferência", "Accedi con codice di trasferimento"],
+  "ログインする": ["Log In", "로그인", "登录", "登入", "Iniciar sesión", "Se connecter", "Anmelden", "Entrar", "Accedi"],
+  "別のデバイスの「コードでログイン」でこのコードを入れると、同じプレイヤーで遊べます。": ["Enter this code under “Log In with a Code” on another device to play as the same player.", "다른 기기의 '코드로 로그인'에 이 코드를 입력하면 같은 플레이어로 플레이할 수 있습니다.", "在其他设备的“用代码登录”中输入此代码，即可作为同一玩家游玩。", "在其他裝置的「用代碼登入」中輸入此代碼，即可以同一玩家身分遊玩。", "Introduce este código en «Iniciar sesión con un código» en otro dispositivo para jugar como el mismo jugador.", "Saisis ce code dans « Se connecter avec un code » sur un autre appareil pour jouer en tant que même joueur.", "Gib diesen Code auf einem anderen Gerät unter „Mit Code anmelden“ ein, um als derselbe Spieler zu spielen.", "Digite este código em “Entrar com um código” em outro dispositivo para jogar como o mesmo jogador.", "Inserisci questo codice in “Accedi con un codice” su un altro dispositivo per giocare come lo stesso giocatore."],
+  "新しいコード（4〜20文字）": ["New code (4–20 characters)", "새 코드 (4~20자)", "新代码（4～20字）", "新代碼（4～20字）", "Nuevo código (4–20 caracteres)", "Nouveau code (4 à 20 caractères)", "Neuer Code (4–20 Zeichen)", "Novo código (4–20 caracteres)", "Nuovo codice (4–20 caratteri)"],
+  "新しい引き継ぎコード": ["New transfer code", "새 인계 코드", "新转移代码", "新轉移代碼", "Nuevo código de transferencia", "Nouveau code de transfert", "Neuer Übertragungscode", "Novo código de transferência", "Nuovo codice di trasferimento"],
+  "コードを変更": ["Change Code", "코드 변경", "更改代码", "更改代碼", "Cambiar código", "Changer le code", "Code ändern", "Alterar código", "Cambia codice"],
+  "表示する": ["Show", "표시", "显示", "顯示", "Mostrar", "Afficher", "Zeigen", "Mostrar", "Mostra"],
+  "隠す": ["Hide", "숨기기", "隐藏", "隱藏", "Ocultar", "Masquer", "Verbergen", "Ocultar", "Nascondi"],
+  "コピー": ["Copy", "복사", "复制", "複製", "Copiar", "Copier", "Kopieren", "Copiar", "Copia"],
+  "コピーしました": ["Copied", "복사했습니다", "已复制", "已複製", "Copiado", "Copié", "Kopiert", "Copiado", "Copiato"],
+  "この端末にコードが保存されていません。サーバー側などで設定した今のコードを入力すると、この端末でも表示・変更できるようになります。": ["No code is saved on this device. Enter your current code (for example, one set up server-side) and you'll be able to view and change it on this device too.", "이 기기에는 코드가 저장되어 있지 않습니다. 서버 측 등에서 설정한 현재 코드를 입력하면 이 기기에서도 표시·변경할 수 있습니다.", "此设备上没有保存代码。输入你当前的代码（例如在服务器端设置的），即可在此设备上查看和更改。", "此裝置上沒有儲存代碼。輸入你目前的代碼（例如在伺服器端設定的），即可在此裝置上檢視和變更。", "No hay ningún código guardado en este dispositivo. Introduce tu código actual (por ejemplo, uno definido en el servidor) y podrás verlo y cambiarlo también aquí.", "Aucun code n'est enregistré sur cet appareil. Saisis ton code actuel (par exemple défini côté serveur) et tu pourras l'afficher et le modifier ici aussi.", "Auf diesem Gerät ist kein Code gespeichert. Gib deinen aktuellen Code ein (z. B. einen serverseitig festgelegten), und du kannst ihn auch hier ansehen und ändern.", "Nenhum código está salvo neste dispositivo. Digite seu código atual (por exemplo, um definido no servidor) e você poderá vê-lo e alterá-lo aqui também.", "Nessun codice è salvato su questo dispositivo. Inserisci il tuo codice attuale (ad esempio uno impostato lato server) e potrai vederlo e modificarlo anche qui."],
+  "現在のコード": ["Current code", "현재 코드", "当前代码", "目前代碼", "Código actual", "Code actuel", "Aktueller Code", "Código atual", "Codice attuale"],
+  "コードを確認": ["Confirm Code", "코드 확인", "确认代码", "確認代碼", "Confirmar código", "Confirmer le code", "Code bestätigen", "Confirmar código", "Conferma codice"],
   "稼ぎ方ガイド": ["How to Earn", "적립 가이드", "赚取指南", "賺取指南", "Cómo ganar puntos", "Comment gagner", "So verdienst du Punkte", "Como ganhar", "Come guadagnare"],
   "最高ランク到達！": ["Top rank reached!", "최고 랭크 달성!", "已达最高等级！", "已達最高等級！", "¡Rango máximo alcanzado!", "Rang maximum atteint !", "Höchster Rang erreicht!", "Patente máxima alcançada!", "Grado massimo raggiunto!"],
   "チェス勝利": ["Chess Win", "체스 승리", "国际象棋胜利", "國際象棋勝利", "Victoria en ajedrez", "Victoire aux échecs", "Schach-Sieg", "Vitória no xadrez", "Vittoria a scacchi"],
