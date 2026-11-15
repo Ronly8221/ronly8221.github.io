@@ -4920,6 +4920,63 @@
 .fish-dex-item .fd-name { font-size: 11.5px; font-weight: 800; display: block; margin-top: 2px; }
 .fish-dex-item .fd-size { font-size: 10.5px; color: var(--muted, #8a84a0); display: block; }
 .fish-dex-item.rare { border-color: rgba(245, 158, 11, 0.65); }
+.fish-tabs { display: flex; gap: 8px; margin: 10px 0 2px; }
+.fish-tab { flex: 1; border: 1.5px solid rgba(87, 168, 216, 0.5); background: var(--surface); color: var(--text); border-radius: 12px; padding: 10px 16px; font-size: 14.5px; font-weight: 900; cursor: pointer; }
+.fish-tab.on { background: #1f7a8c; border-color: #1f7a8c; color: #fff; }
+#fishCanvas { touch-action: none; }
+.fish-dist-chip { position: absolute; top: 12px; left: 12px; z-index: 2; display: flex; gap: 8px; align-items: baseline; background: rgba(8, 26, 44, 0.72); color: #cfeaff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; pointer-events: none; }
+.fish-dist-chip b { color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; }
+.fish-dist-chip[hidden] { display: none; }
+.fish-fight-hud { position: absolute; top: 12px; right: 12px; z-index: 2; width: min(46%, 380px); display: flex; flex-direction: column; gap: 5px; background: rgba(8, 26, 44, 0.55); border-radius: 12px; padding: 8px 12px; pointer-events: none; }
+.fish-fight-hud[hidden] { display: none; }
+.fish-fh-row { display: flex; align-items: center; gap: 8px; }
+.fish-fh-lab { font-size: 11px; font-weight: 900; color: #eaf4fb; min-width: 74px; }
+.fish-fh-track { position: relative; flex: 1; height: 11px; border-radius: 999px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
+.fish-fh-fill { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; border-radius: 999px; }
+.fish-fh-fill.stam { background: linear-gradient(90deg, #3fbf72, #a8e063); }
+.fish-fh-fill.tens { background: linear-gradient(90deg, #ffd94d, #f59e0b); width: 0%; }
+.fish-fh-fill.tens.hot { background: linear-gradient(90deg, #f59e0b, #e0483e); animation: fishTensPulse 0.4s ease-in-out infinite alternate; }
+@keyframes fishTensPulse { from { filter: brightness(1); } to { filter: brightness(1.5); } }
+.fish-callout { position: absolute; top: 15%; left: 0; right: 0; z-index: 2; text-align: center; pointer-events: none; }
+.fish-callout[hidden] { display: none; }
+.fish-callout-main { font-size: clamp(30px, 7.5vw, 58px); font-weight: 900; font-style: italic; letter-spacing: 0.04em; color: #ffe14d; -webkit-text-stroke: 2px rgba(120, 70, 0, 0.55); text-shadow: 0 3px 0 rgba(120, 70, 0, 0.45), 0 8px 22px rgba(0, 0, 0, 0.35); animation: fishCalloutPop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.fish-callout-sub { font-size: clamp(16px, 3.4vw, 24px); font-weight: 900; color: #fff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55); font-variant-numeric: tabular-nums; }
+@keyframes fishCalloutPop { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.fish-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; background: linear-gradient(180deg, rgba(8, 24, 40, 0.30), transparent 30%, transparent 62%, rgba(8, 24, 40, 0.38)); text-align: center; padding: 14px 14px 0; z-index: 3; }
+.fish-card[hidden] { display: none; }
+.fish-praise { font-size: clamp(22px, 5vw, 36px); font-weight: 900; color: #fff; text-shadow: 0 2px 0 rgba(160, 90, 0, 0.6), 0 6px 18px rgba(0, 0, 0, 0.5); min-height: 1.2em; }
+.fish-card-spacer { flex: 1; }
+.fish-card-panel { background: rgba(8, 22, 38, 0.78); border: 1.5px solid rgba(255, 255, 255, 0.25); border-radius: 16px; padding: 10px 18px 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 92%; }
+.fish-stars { font-size: 21px; letter-spacing: 3px; color: #ffd94d; line-height: 1.1; }
+.fish-stars .off { color: rgba(255, 255, 255, 0.28); }
+.fish-cooler { margin-top: 8px; width: 100%; display: flex; gap: 6px; align-items: center; overflow-x: auto; background: linear-gradient(180deg, #dfe9ee, #b9ccd4); border-top: 3px solid #7fa3b0; padding: 7px 10px; min-height: 44px; }
+.fish-cooler:empty { display: none; }
+.fish-cooler-item { flex: 0 0 auto; display: flex; gap: 5px; align-items: baseline; background: rgba(255, 255, 255, 0.75); border-radius: 8px; padding: 3px 9px; font-size: 12.5px; font-weight: 800; color: #17384a; }
+.fish-cooler-item .fc-emoji { font-size: 16px; }
+.fish-cooler-item .fc-size { color: #5b7a89; font-size: 11.5px; }
+.fish-card-badges { display: flex; gap: 8px; min-height: 24px; }
+.fish-badge { border-radius: 999px; padding: 3px 12px; font-size: 12.5px; font-weight: 900; color: #fff; }
+.fish-badge.first { background: #e07f13; }
+.fish-badge.record { background: #2f9e5f; }
+.fish-badge[hidden] { display: none; }
+.fish-card-name { font-size: 24px; font-weight: 900; color: #fff; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; justify-content: center; }
+.fish-card-tier { font-size: 13px; font-weight: 900; color: #ffd94d; }
+.fish-ruler { color: #fff; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.35) 0 1px, transparent 1px 14px) bottom left / 100% 10px no-repeat, rgba(255,255,255,0.08); border-radius: 8px; padding: 2px 18px 12px; }
+.fish-ruler-num { font-size: 40px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.fish-ruler-unit { font-size: 15px; font-weight: 800; margin-left: 4px; }
+.fish-card-lines { width: min(320px, 86%); margin-top: 4px; }
+.fish-card-line { display: flex; justify-content: space-between; gap: 16px; color: #eaf4fb; font-size: 14px; font-weight: 700; padding: 3px 2px; }
+.fish-card-line.total { border-top: 1.5px solid rgba(255,255,255,0.35); margin-top: 4px; padding-top: 7px; font-size: 16px; font-weight: 900; color: #fff; }
+.fish-card-line[hidden] { display: none; }
+.fish-sum-list { width: min(360px, 88%); display: flex; flex-direction: column; gap: 4px; max-height: 46%; overflow: auto; }
+.fish-sum-row { display: flex; align-items: baseline; gap: 8px; color: #eaf4fb; font-size: 14.5px; font-weight: 700; background: rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 10px; }
+.fish-sum-row .fs-name { font-weight: 900; color: #fff; }
+.fish-sum-row .fs-pts { margin-left: auto; font-weight: 900; color: #ffd94d; }
+.fish-dex-summary { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+.fish-dex-pct { border: 1.5px solid rgba(87, 168, 216, 0.35); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800; }
+.fish-dex-pct b { color: #2f7fc4; }
+#fishSummary { background: rgba(8, 22, 38, 0.82); justify-content: center; padding: 16px; }
+@media (prefers-reduced-motion: reduce) { .fish-callout-main, .fish-fh-fill.tens.hot { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .gom-stone, .gom-cell.win .gom-stone { animation: none; } }
 /* ===== Shop refresh: two-pane + presets (2026-11-14) ===== */
 .pts-presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 12px; }
@@ -7294,19 +7351,59 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <span class="w1-flex"></span>
               <button type="button" class="w1-hbtn" id="fishNewTrip">新しい釣行</button>
             </div>
-            <div class="fish-spots" id="fishSpots">
-              <button type="button" class="fish-spot-btn on" data-spot="lake">湖</button>
-              <button type="button" class="fish-spot-btn" data-spot="river">川</button>
-              <button type="button" class="fish-spot-btn" data-spot="sea">海</button>
+            <div class="fish-tabs" role="tablist">
+              <button type="button" class="fish-tab on" id="fishTabScene" role="tab">釣り場</button>
+              <button type="button" class="fish-tab" id="fishTabDex" role="tab">図鑑</button>
             </div>
-            <div class="fish-stage-box"><canvas id="fishCanvas" width="420" height="300"></canvas></div>
-            <div class="fish-actions">
-              <button type="button" class="fish-cast-btn" id="fishCastBtn">キャスト</button>
-              <span class="w2-status" id="fishStatus">釣り場を選んでキャストしてください</span>
+            <div id="fishScenePane">
+              <div class="fish-spots" id="fishSpots">
+                <button type="button" class="fish-spot-btn on" data-spot="lake">湖</button>
+                <button type="button" class="fish-spot-btn" data-spot="river">川</button>
+                <button type="button" class="fish-spot-btn" data-spot="sea">海</button>
+              </div>
+              <div class="fish-stage-box">
+                <canvas id="fishCanvas" width="840" height="600"></canvas>
+                <div class="fish-dist-chip" id="fishDistChip" hidden><span>距離</span><b id="fishDistVal">0.0 m</b></div>
+                <div class="fish-fight-hud" id="fishFightHud" hidden>
+                  <div class="fish-fh-row"><span class="fish-fh-lab">魚のスタミナ</span><div class="fish-fh-track"><div class="fish-fh-fill stam" id="fishStamFill"></div></div></div>
+                  <div class="fish-fh-row"><span class="fish-fh-lab">テンション</span><div class="fish-fh-track"><div class="fish-fh-fill tens" id="fishTensFill"></div></div></div>
+                </div>
+                <div class="fish-callout" id="fishCallout" hidden><div class="fish-callout-main" id="fishCalloutMain"></div><div class="fish-callout-sub" id="fishCalloutSub"></div></div>
+                <div class="fish-card" id="fishCard" hidden>
+                  <div class="fish-praise" id="fishCardPraise"></div>
+                  <div class="fish-card-badges"><span class="fish-badge first" id="fishCardFirst" hidden>初ゲット！</span><span class="fish-badge record" id="fishCardRecord" hidden>新記録！</span></div>
+                  <div class="fish-card-spacer"></div>
+                  <div class="fish-card-panel">
+                    <div class="fish-card-name"><span id="fishCardName">？？？</span><span class="fish-card-tier" id="fishCardTier">コモン</span></div>
+                    <div class="fish-ruler"><span class="fish-ruler-num" id="fishCardSize">0.0</span><span class="fish-ruler-unit">cm</span></div>
+                    <div class="fish-stars" id="fishCardStars" aria-hidden="true"></div>
+                    <div class="fish-card-lines">
+                      <div class="fish-card-line"><span>レア度ポイント</span><b id="fishCardBase">+0</b></div>
+                      <div class="fish-card-line" id="fishCardBonusRow" hidden><span>初ゲットボーナス</span><b>+5</b></div>
+                      <div class="fish-card-line total"><span>合計</span><b id="fishCardTotal">+0 コイン</b></div>
+                    </div>
+                    <button type="button" class="fish-cast-btn" id="fishCardBtn">もう一投</button>
+                  </div>
+                  <div class="fish-cooler" id="fishCooler"></div>
+                </div>
+                <div class="fish-card" id="fishSummary" hidden>
+                  <div class="fish-card-name"><span>釣行サマリー</span></div>
+                  <div class="fish-sum-list" id="fishSumList"></div>
+                  <div class="fish-card-line total"><span>合計</span><b id="fishSumTotal">+0 コイン</b></div>
+                  <button type="button" class="fish-cast-btn" id="fishSumBtn">新しい釣行</button>
+                </div>
+              </div>
+              <div class="fish-actions">
+                <button type="button" class="fish-cast-btn" id="fishCastBtn">キャスト</button>
+                <span class="w2-status" id="fishStatus">釣り場を選んでキャストしてください</span>
+              </div>
             </div>
-            <div class="fish-dex" id="fishDex"></div>
-            <p class="w1-note">遊び方： キャストすると魚影が近づきます。「！」が出た瞬間にボタン（または画面タップ）で合わせるとヒット。あとはタイミングよく巻き続けて引き寄せます。1釣行は3キャストまで。釣れた魚のレア度で 2／5／10／20 コイン、初めての種類は +5 コイン、1釣行の上限は 30 コイン です。</p>
-            <p class="w1-note">確率の目安： 釣り場ごとに12種。レア度は コモン（2 コイン）55%／レア（5 コイン）28%／エピック（10 コイン）12%／レジェンド（20 コイン）5%。ファイトを上手くこなすほどレアな魚を逃がしにくくなります。難易度で魚の逃げ足と引きの強さが変わります。</p>
+            <div id="fishDexPane" hidden>
+              <div class="fish-dex-summary" id="fishDexSummary"></div>
+              <div class="fish-dex" id="fishDex"></div>
+            </div>
+            <p class="w1-note">遊び方： ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリ（ウキが沈んで「！」）の瞬間に素早く合わせます。ファイトは押し続けて巻くのが基本。魚が走る予兆が出たら少しゆるめてテンションを逃がし、巻かないでいると距離が戻ってたるむと逃げられます。1釣行は3キャストまで。</p>
+            <p class="w1-note">確率とコイン： レア度の基礎確率は コモン55%／レア28%／エピック12%／レジェンド5%。キャストの質が効くのはここまで（パーフェクトでレジェンド+2・エピック+2、良好でエピック+1）で、合わせの質は確率ではなくファイトの開始条件に効きます。コインはレア度で 2／5／10／20、初ゲット +5、1釣行の上限は 30 コイン です。</p>
           </div>
         </div>
       </div>
@@ -33112,6 +33209,9 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                     sudoku sound + difficulty, hairline intensity,
                     flappy best, cubefall high score + settings,
                     retro virtual-pad + DS layout, rubik best times.
+                    Exception: the fishing dex rides here too but
+                    merges as a per-key max UNION (see mergeS2Dex),
+                    never LWW, so a catch is never erased.
        runs         compact in-progress run saves (arcade-*-run-v1,
                     <= 6000 chars each), per-key LWW.
      Section timestamps live in localStorage "arcade-sync-meta-v1"
@@ -33122,7 +33222,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
      EVERYTHING here is failure-isolated: any throw is swallowed and
      the points sync proceeds exactly as before. */
   var S2_META_KEY = "arcade-sync-meta-v1";
-  var S2_VALUE_KEYS = ["arcade-sudoku-sound-v1", "arcade-sudoku-diff-v1", "game-hairline-intensity", "arcade-flappy-best", "cubefall3d-highscore", "cubefall3d-settings", "game-retro-vpad", "game-retro-ds-layout", "arcade-reversi-diff-v1", "arcade-connect4-diff-v1", "arcade-memory-diff-v1", "arcade-mines-diff-v1", "arcade-g2048-diff-v1", "arcade-snake-diff-v1", "arcade-breakout-diff-v1", "arcade-flappy-diff-v1", "arcade-simon-diff-v1", "arcade-mole-diff-v1", "arcade-shooter-diff-v1", "arcade-cubefall-diff-v1", "arcade-gomoku-diff-v1", "arcade-fishing-diff-v1", "arcade-shop-presets-v1"];
+  var S2_VALUE_KEYS = ["arcade-sudoku-sound-v1", "arcade-sudoku-diff-v1", "game-hairline-intensity", "arcade-flappy-best", "cubefall3d-highscore", "cubefall3d-settings", "game-retro-vpad", "game-retro-ds-layout", "arcade-reversi-diff-v1", "arcade-connect4-diff-v1", "arcade-memory-diff-v1", "arcade-mines-diff-v1", "arcade-g2048-diff-v1", "arcade-snake-diff-v1", "arcade-breakout-diff-v1", "arcade-flappy-diff-v1", "arcade-simon-diff-v1", "arcade-mole-diff-v1", "arcade-shooter-diff-v1", "arcade-cubefall-diff-v1", "arcade-gomoku-diff-v1", "arcade-fishing-diff-v1", "arcade-shop-presets-v1", "arcade-fishing-dex-v1"];
   var S2_RUN_MAX = 6000, S2_TOTAL_MAX = 80000;
   var s2meta = (function () { try { var m = JSON.parse(localStorage.getItem(S2_META_KEY) || "null"); if (m && typeof m === "object") return m; } catch (e) {} return {}; })();
   function saveS2Meta() { try { localStorage.setItem(S2_META_KEY, JSON.stringify(s2meta)); } catch (e) {} }
@@ -33253,6 +33353,36 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     });
     saveS2Meta();
   }
+  /* The fishing dex is cumulative (a per-species best size), so the
+     plain per-key LWW used for settings could erase a fish caught on
+     the other device. It therefore merges as a UNION of per-key
+     maxima before the generic values pass, and the key is removed
+     from the map so LWW never overwrites the union. Union merges are
+     monotonic, so applying one whenever the values differ is safe
+     regardless of section timestamps. */
+  function mergeS2Dex(values) {
+    if (!values || typeof values !== "object") return;
+    var ent = values["arcade-fishing-dex-v1"];
+    if (!ent || typeof ent !== "object" || typeof ent.v !== "string") return;
+    delete values["arcade-fishing-dex-v1"];
+    var localRaw = s2ls("arcade-fishing-dex-v1");
+    if (localRaw === ent.v) return;
+    var cloud = null, local = null;
+    try { cloud = JSON.parse(ent.v); } catch (e) {}
+    try { local = JSON.parse(localRaw || "{}"); } catch (e) {}
+    if (!cloud || typeof cloud !== "object") return;
+    if (!local || typeof local !== "object") local = {};
+    var changed = false;
+    Object.keys(cloud).forEach(function (k) {
+      var v = cloud[k];
+      if (typeof v !== "number" || !isFinite(v) || v <= 0) return;
+      if (!(k in local) || v > local[k]) { local[k] = v; changed = true; }
+    });
+    if (changed) {
+      s2lsSet("arcade-fishing-dex-v1", JSON.stringify(local));
+      if (window.__fishing && typeof window.__fishing.reloadDex === "function") { try { window.__fishing.reloadDex(); } catch (e) {} }
+    }
+  }
   function mergeSync2(sx) {
     if (!sx || typeof sx !== "object") { try { mergeS2Play(null); } catch (e) {} return; }
     try { mergeS2Play(sx.play); } catch (e) {}
@@ -33265,6 +33395,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     try { mergeS2Quiz(sx.quiz); } catch (e) {}
     try { mergeS2GQuiz(sx.gquiz); } catch (e) {}
     try { mergeS2Layout(sx.layout); } catch (e) {}
+    try { mergeS2Dex(sx.values); } catch (e) {}
     try { mergeS2Keyed("val", sx.values); } catch (e) {}
     try { mergeS2Keyed("run", sx.runs); } catch (e) {}
   }
@@ -44332,6 +44463,64 @@ Object.assign(D, {
   "リュウグウノツカイ": ["Oarfish", "산갈치", "皇带鱼", "皇帶魚", "Pez remo", "Poisson-ruban", "Riemenfisch", "Peixe-remo", "Pesce remo"]
 });
 
+/* ---------- supplement 32d: fishing full-loop rebuild UI (2026-11-14) ---------- */
+Object.assign(D, {
+  "釣り場": ["Fishing spot", "낚시터", "钓场", "釣場", "Lugar de pesca", "Lieu de pêche", "Angelplatz", "Local de pesca", "Luogo di pesca"],
+  "図鑑": ["Dex", "도감", "图鉴", "圖鑑", "Registro", "Registre", "Kompendium", "Registro", "Registro"],
+  "距離": ["Distance", "거리", "距离", "距離", "Distancia", "Distance", "Distanz", "Distância", "Distanza"],
+  "テンション": ["Tension", "텐션", "张力", "張力", "Tensión", "Tension", "Spannung", "Tensão", "Tensione"],
+  "魚のスタミナ": ["Fish stamina", "물고기 스태미나", "鱼的体力", "魚的體力", "Resistencia del pez", "Endurance du poisson", "Fisch-Ausdauer", "Resistência do peixe", "Resistenza del pesce"],
+  "コモン": ["Common", "커먼", "普通", "普通", "Común", "Commun", "Gewöhnlich", "Comum", "Comune"],
+  "レア": ["Rare", "레어", "稀有", "稀有", "Raro", "Rare", "Selten", "Raro", "Raro"],
+  "エピック": ["Epic", "에픽", "史诗", "史詩", "Épico", "Épique", "Episch", "Épico", "Epico"],
+  "レジェンド": ["Legend", "레전드", "传说", "傳說", "Leyenda", "Légende", "Legende", "Lenda", "Leggenda"],
+  "初ゲット！": ["First catch!", "첫 획득!", "首次钓到！", "首次釣到！", "¡Primera captura!", "Première prise !", "Erster Fang!", "Primeira captura!", "Prima cattura!"],
+  "新記録！": ["New record!", "신기록!", "新纪录！", "新紀錄！", "¡Nuevo récord!", "Nouveau record !", "Neuer Rekord!", "Novo recorde!", "Nuovo record!"],
+  "もう一投": ["One more cast", "한 번 더 캐스트", "再抛一竿", "再拋一竿", "Un lance más", "Un lancer de plus", "Noch ein Wurf", "Mais um lançamento", "Un altro lancio"],
+  "結果を見る": ["See results", "결과 보기", "查看结果", "查看結果", "Ver resultados", "Voir les résultats", "Ergebnisse ansehen", "Ver resultados", "Vedi i risultati"],
+  "釣行サマリー": ["Trip summary", "출조 요약", "钓行总结", "釣行總結", "Resumen de la salida", "Résumé de la sortie", "Tour-Zusammenfassung", "Resumo da pescaria", "Riepilogo dell'uscita"],
+  "合計": ["Total", "합계", "合计", "合計", "Total", "Total", "Gesamt", "Total", "Totale"],
+  "レア度ポイント": ["Rarity points", "희귀도 포인트", "稀有度点数", "稀有度點數", "Puntos de rareza", "Points de rareté", "Seltenheitspunkte", "Pontos de raridade", "Punti rarità"],
+  "初ゲットボーナス": ["First-catch bonus", "첫 획득 보너스", "首次钓到奖励", "首次釣到獎勵", "Bono de primera captura", "Bonus première prise", "Erstfang-Bonus", "Bônus de primeira captura", "Bonus prima cattura"],
+  "釣果なし": ["No catch", "낚은 것 없음", "没有钓获", "沒有釣獲", "Sin capturas", "Aucune prise", "Kein Fang", "Nenhuma captura", "Nessuna cattura"],
+  "全体": ["Overall", "전체", "整体", "整體", "Total", "Total", "Gesamt", "Geral", "Totale"],
+  "最大": ["Max", "최대", "最大", "最大", "Máx.", "Max", "Max.", "Máx.", "Max"],
+  "湖": ["Lake", "호수", "湖", "湖", "Lago", "Lac", "See", "Lago", "Lago"],
+  "川": ["River", "강", "河", "河", "Río", "Rivière", "Fluss", "Rio", "Fiume"],
+  "海": ["Sea", "바다", "海", "海", "Mar", "Mer", "Meer", "Mar", "Mare"],
+  "残りキャスト": ["Casts left", "남은 캐스트", "剩余抛竿", "剩餘拋竿", "Lances restantes", "Lancers restants", "Würfe übrig", "Lançamentos restantes", "Lanci rimasti"],
+  "今回の釣果": ["This trip", "이번 조과", "本次钓获", "本次釣獲", "Esta salida", "Cette sortie", "Diese Tour", "Esta pescaria", "Questa uscita"],
+  "新しい釣行": ["New trip", "새 출조", "新钓行", "新釣行", "Nueva salida", "Nouvelle sortie", "Neue Tour", "Nova pescaria", "Nuova uscita"],
+  "キャスト": ["Cast", "캐스트", "抛竿", "拋竿", "Lanzar", "Lancer", "Auswerfen", "Lançar", "Lancia"],
+  "離してキャスト！": ["Release to cast!", "놓고 캐스트!", "松手抛竿！", "鬆手拋竿！", "¡Suelta para lanzar!", "Relâchez pour lancer !", "Loslassen zum Werfen!", "Solte para lançar!", "Lascia per lanciare!"],
+  "合わせる！": ["Hook it!", "맞춰라!", "扬竿！", "揚竿！", "¡Engancha!", "Ferrez !", "Anhieb!", "Fisgue!", "Ferra!"],
+  "巻く（押し続ける）": ["Reel (keep holding)", "감기(계속 누르기)", "收线（持续按住）", "收線（持續按住）", "Recoge (mantén pulsado)", "Moulinez (maintenez)", "Kurbeln (gedrückt halten)", "Recolha (segure)", "Recupera (tieni premuto)"],
+  "釣行終了": ["Trip over", "출조 종료", "钓行结束", "釣行結束", "Fin de la salida", "Fin de la sortie", "Tour beendet", "Fim da pescaria", "Uscita finita"],
+  "ウキが浮いた。アタリを待とう": ["The bobber is floating. Wait for a bite", "찌가 떴다. 입질을 기다리자", "浮漂浮起来了。等鱼咬钩", "浮漂浮起來了。等魚咬鉤", "El flotador está flotando. Espera la picada", "Le bouchon flotte. Attendez la touche", "Der Schwimmer treibt. Warten Sie auf den Biss", "A boia está flutuando. Espere a fisgada", "Il galleggiante galleggia. Aspetta l'abboccata"],
+  "！ ヒット！ すぐに合わせて！": ["! Bite! Hook it now!", "! 히트! 지금 맞춰라!", "！上钩了！快扬竿！", "！上鉤了！快揚竿！", "¡Picada! ¡Engancha ya!", "Touche ! Ferrez tout de suite !", "Biss! Jetzt anschlagen!", "Fisgou! Fisgue agora!", "Abboccata! Ferra subito!"],
+  "パーフェクト！ 合わせが決まった": ["Perfect hook set!", "퍼펙트! 맞추기 성공", "完美扬竿！", "完美揚竿！", "¡Enganche perfecto!", "Ferrage parfait !", "Perfekter Anhieb!", "Fisgada perfeita!", "Ferrata perfetta!"],
+  "かかった！ 押し続けて巻き上げよう": ["It's on! Keep holding to reel it in", "걸렸다! 계속 눌러 감아 올리자", "上钩了！持续按住收线", "上鉤了！持續按住收線", "¡Está enganchado! Mantén pulsado para recoger", "C'est ferré ! Maintenez pour mouliner", "Er hängt! Gedrückt halten und einkurbeln", "Fisgou! Segure para recolher", "È agganciato! Tieni premuto per recuperare"],
+  "魚が走っている！ ゆるめて！": ["The fish is running! Ease off!", "물고기가 달리고 있다! 풀어라!", "鱼在冲刺！松一松！", "魚在衝刺！鬆一鬆！", "¡El pez está corriendo! ¡Afloja!", "Le poisson tire ! Donnez du mou !", "Der Fisch zieht ab! Nachgeben!", "O peixe está correndo! Alivie!", "Il pesce sta fuggendo! Allenta!"],
+  "逃げられた… 反応が遅かったようです": ["It got away… too slow on the hook set", "도망갔다… 반응이 늦은 듯합니다", "跑掉了… 反应慢了", "跑掉了… 反應慢了", "Se escapó… reaccionaste tarde", "Il s'est échappé… réaction trop lente", "Entkommen… zu langsam angeschlagen", "Escapou… você demorou a fisgar", "È scappato… reazione troppo lenta"],
+  "糸が切れた！ テンションのかけすぎに注意": ["The line snapped! Watch the tension", "줄이 끊겼다! 텐션을 너무 높이지 마세요", "线断了！注意别让张力太高", "線斷了！注意別讓張力太高", "¡La línea se rompió! Vigila la tensión", "La ligne a cassé ! Surveillez la tension", "Die Schnur ist gerissen! Achte auf die Spannung", "A linha arrebentou! Cuidado com a tensão", "La lenza si è spezzata! Attento alla tensione"],
+  "糸がたるんで逃げられた… 巻き続けよう": ["It slipped off in the slack… keep reeling", "줄이 느슨해져 도망갔다… 계속 감자", "线松了鱼跑了… 要持续收线", "線鬆了魚跑了… 要持續收線", "Se soltó con la línea floja… sigue recogiendo", "Il s'est décroché dans le mou… continuez à mouliner", "In der losen Schnur entkommen… weiter kurbeln", "Escapou com a linha frouxa… continue recolhendo", "È scappato con la lenza lenta… continua a recuperare"],
+  "釣り上げた！": ["Landed it!", "낚아 올렸다!", "钓上来了！", "釣上來了！", "¡Lo sacaste!", "Prise réussie !", "Gelandet!", "Você pescou!", "Preso!"],
+  "パーフェクト！": ["PERFECT!", "퍼펙트!", "完美！", "完美！", "¡PERFECTO!", "PARFAIT !", "PERFEKT!", "PERFEITO!", "PERFETTO!"],
+  "グレート！": ["GREAT!", "그레이트!", "太棒了！", "太棒了！", "¡GENIAL!", "SUPER !", "STARK!", "ÓTIMO!", "GRANDE!"],
+  "グッド！": ["GOOD!", "굿!", "不错！", "不錯！", "¡BIEN!", "BIEN !", "GUT!", "BOM!", "BUONO!"],
+  "特大サイズ！": ["HUGE!", "특대 사이즈!", "特大尺寸！", "特大尺寸！", "¡Enorme!", "Énorme !", "Riesig!", "Enorme!", "Enorme!"],
+  "とても大きい！": ["So big!", "너무 크다!", "好大！", "好大！", "¡Muy grande!", "Très grand !", "So groß!", "Muito grande!", "Grandissimo!"],
+  "大きい！": ["Big!", "크다!", "大！", "大！", "¡Grande!", "Grand !", "Groß!", "Grande!", "Grande!"],
+  "いいサイズ！": ["Nice size!", "좋은 사이즈!", "好尺寸！", "好尺寸！", "¡Buen tamaño!", "Belle taille !", "Schöne Größe!", "Bom tamanho!", "Bella taglia!"],
+  "小さいけど元気！": ["Small but lively!", "작지만 활기차다!", "小巧但有活力！", "小巧但有活力！", "¡Pequeño pero vivaz!", "Petit mais vif !", "Klein, aber lebhaft!", "Pequeno, mas vivaz!", "Piccolo ma vivace!"],
+  "遊び方： ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリ（ウキが沈んで「！」）の瞬間に素早く合わせます。ファイトは押し続けて巻くのが基本。魚が走る予兆が出たら少しゆるめてテンションを逃がし、巻かないでいると距離が戻ってたるむと逃げられます。1釣行は3キャストまで。": ["How to play: hold the button to charge power, release to cast. Small nibbles on the bobber are feints; when the real bite sinks the bobber and '!' appears, hook it fast. In the fight, keep holding to reel. When the fish shows signs of running, ease off a little to bleed tension; stop reeling and the distance grows back until the line goes slack and it escapes. One trip is 3 casts.", "놀는 법: 버튼을 계속 눌러 파워를 모으고, 놓으면 캐스트. 찌에 오는 작은 입질은 페이크이고, 본 입질(찌가 가라앉고 '!' 표시) 순간에 빠르게 맞춥니다. 파이팅은 계속 눌러 감는 것이 기본. 물고기가 달릴 기미가 보이면 조금 풀어 텐션을 빼고, 감지 않으면 거리가 되돌아가 느슨해지면 도망갑니다. 1회 출조는 3캐스트까지.", "玩法：持续按住按钮蓄力，松手抛竿。浮漂上的小啄是假动作，真咬钩（浮漂下沉并出现“！”）的瞬间要快速扬竿。搏鱼时持续按住收线。鱼有冲刺征兆时稍微放松卸掉张力；不收线距离会回涨，线一松鱼就跑了。一次钓行最多 3 竿。", "玩法：持續按住按鈕蓄力，鬆手拋竿。浮漂上的小啄是假動作，真咬鉤（浮漂下沉並出現「！」）的瞬間要快速揚竿。搏魚時持續按住收線。魚有衝刺徵兆時稍微放鬆卸掉張力；不收線距離會回漲，線一鬆魚就跑了。一次釣行最多 3 竿。", "Cómo jugar: mantén pulsado el botón para cargar potencia y suelta para lanzar. Los pequeños toques en el flotador son amagos; cuando la picada real hunde el flotador y aparece '!', engancha rápido. En la lucha, sigue manteniendo pulsado para recoger. Cuando el pez muestre señales de correr, afloja un poco para liberar tensión; si dejas de recoger, la distancia vuelve a crecer hasta que la línea queda floja y se escapa. Un viaje es de 3 lances.", "Comment jouer : maintenez le bouton pour charger la puissance, relâchez pour lancer. Les petites touches sur le bouchon sont des feintes ; quand la vraie touche coule le bouchon et que « ! » apparaît, ferrez vite. Pendant le combat, maintenez pour mouliner. Quand le poisson montre des signes de fuite, relâchez un peu pour laisser filer la tension ; si vous arrêtez de mouliner, la distance revient jusqu'à ce que la ligne se détende et qu'il s'échappe. Une sortie fait 3 lancers.", "So spielt man: Halten Sie den Button gedrückt, um Kraft zu sammeln, und lassen Sie los, um zu werfen. Kleine Zupfer am Schwimmer sind Täuschungen; beim echten Biss (Schwimmer taucht ab und '!' erscheint) schlagen Sie schnell an. Im Kampf halten Sie gedrückt, um einzukurbeln. Zeigt der Fisch Anzeichen abzuziehen, geben Sie etwas nach, um Spannung abzubauen; kurbeln Sie nicht, wächst die Distanz zurück, bis die Schnur durchhängt und er entkommt. Eine Tour sind 3 Würfe.", "Como jogar: segure o botão para carregar a força e solte para lançar. As pequenas beliscadas na boia são falsas; quando a fisgada real afunda a boia e aparece '!', fisgue rápido. Na briga, continue segurando para recolher. Quando o peixe mostrar sinais de correr, alivie um pouco para soltar a tensão; se parar de recolher, a distância volta a crescer até a linha afrouxar e ele escapar. Uma pescaria é de 3 lançamentos.", "Come si gioca: tieni premuto il pulsante per caricare la potenza e rilascia per lanciare. I piccoli tocchi sul galleggiante sono finte; quando l'abboccata vera affonda il galleggiante e compare '!', ferra in fretta. Nel combattimento, continua a tenere premuto per recuperare. Quando il pesce mostra segni di fuga, allenta un po' per scaricare la tensione; se smetti di recuperare, la distanza torna a crescere finché la lenza si allenta e scappa. Un'uscita è di 3 lanci."],
+  "確率とコイン： レア度の基礎確率は コモン55%／レア28%／エピック12%／レジェンド5%。キャストの質が効くのはここまで（パーフェクトでレジェンド+2・エピック+2、良好でエピック+1）で、合わせの質は確率ではなくファイトの開始条件に効きます。コインはレア度で 2／5／10／20、初ゲット +5、1釣行の上限は 30 コイン です。": ["Odds and coins: base rarity odds are Common 55% / Rare 28% / Epic 12% / Legend 5%. Cast quality is all that moves the odds (Perfect: Legend +2, Epic +2; Good: Epic +1), and hook-set quality affects the fight's starting distance and the fish's fatigue, not the odds. Coins pay 2 / 5 / 10 / 20 by rarity, +5 for a first catch, and one trip is capped at 30 coins.", "확률과 코인: 희귀도 기본 확률은 커먼 55% / 레어 28% / 에픽 12% / 레전드 5%. 확률에 영향을 주는 것은 캐스트의 질뿐(퍼펙트에서 레전드 +2·에픽 +2, 양호에서 에픽 +1)이고, 맞추기의 질은 확률이 아니라 파이팅 시작 거리와 물고기의 피로에 영향을 줍니다. 코인은 희귀도로 2/5/10/20, 첫 획득 +5, 1회 출조 상한은 30 코인입니다.", "概率与金币：稀有度基础概率为普通 55%／稀有 28%／史诗 12%／传说 5%。能影响概率的只有抛竿质量（完美时传说 +2、史诗 +2；良好时史诗 +1），扬竿质量影响的不是概率，而是搏鱼的起始距离和鱼的疲劳。金币按稀有度为 2／5／10／20，首次钓到 +5，一次钓行上限 30 金币。", "概率與金幣：稀有度基礎概率為普通 55%／稀有 28%／史詩 12%／傳說 5%。能影響概率的只有拋竿質量（完美時傳說 +2、史詩 +2；良好時史詩 +1），揚竿質量影響的不是概率，而是搏魚的起始距離和魚的疲勞。金幣按稀有度為 2／5／10／20，首次釣到 +5，一次釣行上限 30 金幣。", "Probabilidades y monedas: las probabilidades base de rareza son Común 55 % / Rara 28 % / Épica 12 % / Leyenda 5 %. Lo único que mueve las probabilidades es la calidad del lance (Perfecto: Leyenda +2, Épica +2; Bueno: Épica +1), y la calidad del enganche afecta la distancia inicial de la lucha y la fatiga del pez, no las probabilidades. Las monedas pagan 2 / 5 / 10 / 20 por rareza, +5 por primera captura, y un viaje tiene un tope de 30 monedas.", "Probabilités et pièces : les chances de base sont Commune 55 % / Rare 28 % / Épique 12 % / Légende 5 %. Seule la qualité du lancer déplace les chances (Parfait : Légende +2, Épique +2 ; Bon : Épique +1), et la qualité du ferrage joue sur la distance de départ du combat et la fatigue du poisson, pas sur les chances. Les pièces paient 2 / 5 / 10 / 20 selon la rareté, +5 pour une première prise, et une sortie est plafonnée à 30 pièces.", "Chancen und Münzen: Die Basis-Chancen sind Gewöhnlich 55 % / Selten 28 % / Episch 12 % / Legende 5 %. Nur die Wurfqualität verschiebt die Chancen (Perfekt: Legende +2, Episch +2; Gut: Episch +1), und die Anhieb-Qualität wirkt auf die Startdistanz des Kampfes und die Ermüdung des Fisches, nicht auf die Chancen. Münzen zahlen 2 / 5 / 10 / 20 nach Seltenheit, +5 für einen Erstfang, und eine Tour ist auf 30 Münzen gedeckelt.", "Chances e moedas: as chances base de raridade são Comum 55% / Rara 28% / Épica 12% / Lenda 5%. Só a qualidade do lançamento mexe nas chances (Perfeito: Lenda +2, Épica +2; Bom: Épica +1), e a qualidade da fisgada afeta a distância inicial da briga e a fadiga do peixe, não as chances. As moedas pagam 2 / 5 / 10 / 20 por raridade, +5 por primeira captura, e uma pescaria é limitada a 30 moedas.", "Probabilità e monete: le probabilità base di rarità sono Comune 55% / Rara 28% / Epica 12% / Leggenda 5%. Solo la qualità del lancio sposta le probabilità (Perfetto: Leggenda +2, Epica +2; Buono: Epica +1), e la qualità della ferrata influisce sulla distanza iniziale del combattimento e sulla fatica del pesce, non sulle probabilità. Le monete pagano 2 / 5 / 10 / 20 per rarità, +5 per la prima cattura, e un'uscita è limitata a 30 monete."],
+  "ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリでウキが沈んで「！」が出たら素早くタップして合わせます。ファイト中は押し続けて巻き、魚が走る予兆が出たら少しゆるめてテンションを逃がします。赤いテンションが続くと糸が切れ、巻かないでいると距離が戻って逃げられます。": ["Hold the button to charge power and release to cast. Small nibbles on the bobber are feints; when the real bite sinks the bobber and '!' appears, tap fast to hook it. During the fight, keep holding to reel, and when the fish shows signs of running, ease off a little to bleed tension. Tension held in the red snaps the line, and not reeling lets the distance grow back until it escapes.", "버튼을 계속 눌러 파워를 모으고, 놓으면 캐스트. 찌에 오는 작은 입질은 페이크이고, 본 입질에서 찌가 가라앉고 '!'가 나오면 빠르게 탭해 맞춥니다. 파이팅 중에는 계속 눌러 감고, 물고기가 달릴 기미가 보이면 조금 풀어 텐션을 빼줍니다. 빨간 텐션이 계속되면 줄이 끊기고, 감지 않으면 거리가 되돌아가 도망갑니다.", "持续按住按钮蓄力，松手抛竿。浮漂上的小啄是假动作，真咬钩时浮漂下沉并出现“！”时快速点按扬竿。搏鱼中持续按住收线，鱼有冲刺征兆时稍微放松卸掉张力。张力长时间停在红色区域线会断；不收线距离会回涨，鱼会逃掉。", "持續按住按鈕蓄力，鬆手拋竿。浮漂上的小啄是假動作，真咬鉤時浮漂下沉並出現「！」時快速點按揚竿。搏魚中持續按住收線，魚有衝刺徵兆時稍微放鬆卸掉張力。張力長時間停在紅色區域線會斷；不收線距離會回漲，魚會逃掉。", "Mantén pulsado el botón para cargar potencia y suelta para lanzar. Los pequeños toques en el flotador son amagos; cuando la picada real hunde el flotador y aparece '!', toca rápido para engancharlo. Durante la lucha, sigue manteniendo pulsado para recoger, y cuando el pez muestre señales de correr, afloja un poco para liberar tensión. La tensión mantenida en rojo rompe la línea, y no recoger deja que la distancia vuelva a crecer hasta que se escapa.", "Maintenez le bouton pour charger la puissance et relâchez pour lancer. Les petites touches sur le bouchon sont des feintes ; quand la vraie touche coule le bouchon et que « ! » apparaît, touchez vite pour le ferrer. Pendant le combat, maintenez pour mouliner, et quand le poisson montre des signes de fuite, relâchez un peu pour laisser filer la tension. Une tension maintenue dans le rouge casse la ligne, et ne pas mouliner laisse la distance revenir jusqu'à ce qu'il s'échappe.", "Halten Sie den Button gedrückt, um Kraft zu sammeln, und lassen Sie los, um zu werfen. Kleine Zupfer am Schwimmer sind Täuschungen; beim echten Biss, wenn der Schwimmer abtaucht und '!' erscheint, tippen Sie schnell an. Im Kampf halten Sie gedrückt, um einzukurbeln, und wenn der Fisch Anzeichen abzuziehen zeigt, geben Sie etwas nach, um Spannung abzubauen. Spannung, die im Roten bleibt, reißt die Schnur, und ohne Kurbeln wächst die Distanz zurück, bis er entkommt.", "Segure o botão para carregar a força e solte para lançar. As pequenas beliscadas na boia são falsas; quando a fisgada real afunda a boia e aparece '!', toque rápido para fisgar. Na briga, continue segurando para recolher e, quando o peixe mostrar sinais de correr, alivie um pouco para soltar a tensão. Tensão mantida no vermelho arrebenta a linha, e não recolher deixa a distância voltar a crescer até ele escapar.", "Tieni premuto il pulsante per caricare la potenza e rilascia per lanciare. I piccoli tocchi sul galleggiante sono finte; quando l'abboccata vera affonda il galleggiante e compare '!', tocca in fretta per ferrarlo. Nel combattimento, continua a tenere premuto per recuperare e, quando il pesce mostra segni di fuga, allenta un po' per scaricare la tensione. La tensione tenuta nel rosso spezza la lenza, e non recuperare lascia che la distanza torni a crescere finché scappa."],
+  "基礎確率： コモン55%／レア28%／エピック12%／レジェンド5%。スキルが確率に効くのはキャストの質だけで、最大でレジェンド+2・エピック+2（パーフェクト時、コモンから差し引き）、良好でエピック+1。合わせの質は確率ではなく、ファイト開始時の距離と魚の疲労に効きます。難易度で合わせの猶予（やさしい900ms／ふつう650ms／むずかしい480ms）と魚の強さ・テンションの上がり方・ダッシュの頻度が変わります。": ["Base odds: Common 55% / Rare 28% / Epic 12% / Legend 5%. The only skill that moves the odds is cast quality, at most Legend +2 and Epic +2 (on a Perfect cast, taken from Common), or Epic +1 on a Good cast. Hook-set quality does not change the odds; it changes the fight's starting distance and the fish's starting fatigue. Difficulty changes the hook-set window (Easy 900ms / Normal 650ms / Hard 480ms), fish strength, tension rise and dash frequency.", "기본 확률: 커먼 55% / 레어 28% / 에픽 12% / 레전드 5%. 확률에 영향을 주는 스킬은 캐스트의 질뿐으로, 최대 레전드 +2·에픽 +2(퍼펙트 시, 커먼에서 차감), 양호에서 에픽 +1. 맞추기의 질은 확률이 아니라 파이팅 시작 거리와 물고기의 피로에 영향을 줍니다. 난이도에 따라 맞추기 여유(쉬움 900ms / 보통 650ms / 어려움 480ms)와 물고기의 강함·텐션 상승·대시 빈도가 바뀝니다.", "基础概率：普通 55%／稀有 28%／史诗 12%／传说 5%。能影响概率的技能只有抛竿质量，最多传说 +2、史诗 +2（完美时，从普通中扣除），良好时史诗 +1。扬竿质量影响的不是概率，而是搏鱼开始时的距离和鱼的疲劳。难度会改变扬竿的反应窗口（简单 900ms／普通 650ms／困难 480ms）以及鱼的强度、张力上升速度和冲刺频率。", "基礎概率：普通 55%／稀有 28%／史詩 12%／傳說 5%。能影響概率的技能只有拋竿質量，最多傳說 +2、史詩 +2（完美時，從普通中扣除），良好時史詩 +1。揚竿質量影響的不是概率，而是搏魚開始時的距離和魚的疲勞。難度會改變揚竿的反應窗口（簡單 900ms／普通 650ms／困難 480ms）以及魚的強度、張力上升速度和衝刺頻率。", "Probabilidades base: Común 55 % / Rara 28 % / Épica 12 % / Leyenda 5 %. La única habilidad que mueve las probabilidades es la calidad del lance, como máximo Leyenda +2 y Épica +2 (en un lance Perfecto, restado de Común), o Épica +1 en un lance Bueno. La calidad del enganche no cambia las probabilidades; cambia la distancia inicial de la lucha y la fatiga inicial del pez. La dificultad cambia la ventana de enganche (Fácil 900 ms / Normal 650 ms / Difícil 480 ms), la fuerza del pez, la subida de tensión y la frecuencia de carreras.", "Chances de base : Commune 55 % / Rare 28 % / Épique 12 % / Légende 5 %. La seule compétence qui déplace les chances est la qualité du lancer, au maximum Légende +2 et Épique +2 (sur un lancer Parfait, retiré de Commune), ou Épique +1 sur un Bon lancer. La qualité du ferrage ne change pas les chances ; elle change la distance de départ du combat et la fatigue initiale du poisson. La difficulté change la fenêtre de ferrage (Facile 900 ms / Normal 650 ms / Difficile 480 ms), la force du poisson, la montée de tension et la fréquence des rushes.", "Basis-Chancen: Gewöhnlich 55 % / Selten 28 % / Episch 12 % / Legende 5 %. Die einzige Fähigkeit, die die Chancen verschiebt, ist die Wurfqualität, höchstens Legende +2 und Episch +2 (bei einem perfekten Wurf, von Gewöhnlich abgezogen) oder Episch +1 bei einem guten Wurf. Die Anhieb-Qualität ändert nicht die Chancen; sie ändert die Startdistanz des Kampfes und die Anfangsermüdung des Fisches. Die Schwierigkeit ändert das Anhieb-Fenster (Leicht 900 ms / Normal 650 ms / Schwer 480 ms), Fischstärke, Spannungsanstieg und Fluchtfrequenz.", "Chances base: Comum 55% / Rara 28% / Épica 12% / Lenda 5%. A única habilidade que mexe nas chances é a qualidade do lançamento, no máximo Lenda +2 e Épica +2 (em um lançamento Perfeito, tirado de Comum), ou Épica +1 em um lançamento Bom. A qualidade da fisgada não muda as chances; muda a distância inicial da briga e a fadiga inicial do peixe. A dificuldade muda a janela de fisgada (Fácil 900 ms / Normal 650 ms / Difícil 480 ms), a força do peixe, a subida de tensão e a frequência de corridas.", "Probabilità base: Comune 55% / Rara 28% / Epica 12% / Leggenda 5%. L'unica abilità che sposta le probabilità è la qualità del lancio, al massimo Leggenda +2 ed Epica +2 (in un lancio Perfetto, sottratto da Comune), o Epica +1 in un lancio Buono. La qualità della ferrata non cambia le probabilità; cambia la distanza iniziale del combattimento e la fatica iniziale del pesce. La difficoltà cambia la finestra di ferrata (Facile 900 ms / Normale 650 ms / Difficile 480 ms), la forza del pesce, la salita di tensione e la frequenza delle fughe."],
+  "コインはレア度で 2／5／10／20 コイン、初めての種類は +5 コイン。1釣行（3キャスト）の合計が最大30 コイン入ります。": ["Coins pay 2 / 5 / 10 / 20 by rarity, and a first-time species adds +5 coins. One trip (3 casts) pays up to 30 coins in total.", "코인은 희귀도로 2/5/10/20 코인, 처음인 종류는 +5 코인. 1회 출조(3캐스트) 합계로 최대 30 코인가 들어갑니다.", "金币按稀有度为 2／5／10／20，首次钓到的种类 +5 金币。一次钓行（3 竿）合计最多可得 30 金币。", "金幣按稀有度為 2／5／10／20，首次釣到的種類 +5 金幣。一次釣行（3 竿）合計最多可得 30 金幣。", "Las monedas pagan 2 / 5 / 10 / 20 por rareza, y una especie nueva añade +5 monedas. Un viaje (3 lances) paga hasta 30 monedas en total.", "Les pièces paient 2 / 5 / 10 / 20 selon la rareté, et une espèce nouvelle ajoute +5 pièces. Une sortie (3 lancers) paie jusqu'à 30 pièces au total.", "Münzen zahlen 2 / 5 / 10 / 20 nach Seltenheit, und eine neue Art gibt +5 Münzen. Eine Tour (3 Würfe) zahlt insgesamt bis zu 30 Münzen.", "As moedas pagam 2 / 5 / 10 / 20 por raridade, e uma espécie nova adiciona +5 moedas. Uma pescaria (3 lançamentos) paga até 30 moedas no total.", "Le monete pagano 2 / 5 / 10 / 20 per rarità, e una specie nuova aggiunge +5 monete. Un'uscita (3 lanci) paga fino a 30 monete in totale."]
+});
+PATTERNS.push({ re: /^釣行終了： 合計 ([\d,]+) コインを精算しました$/, t: ["Trip over: {1} coins banked in total", "출조 종료: 합계 {1} 코인을 정산했습니다", "钓行结束：共结算 {1} 金币", "釣行結束：共結算 {1} 金幣", "Fin de la salida: {1} monedas ingresadas en total", "Fin de la sortie : {1} pièces encaissées au total", "Tour beendet: insgesamt {1} Münzen gutgeschrieben", "Fim da pescaria: {1} moedas creditadas no total", "Uscita finita: {1} monete accreditate in totale"] });
+
 /* ---------- supplement 33: rules screens (2026-11-14) ---------- */
 Object.assign(D, {
   "このゲームの表": ["This game's table", "이 게임의 표", "本游戏的表", "本遊戲的表", "Tabla de este juego", "Tableau de ce jeu", "Tabelle dieses Spiels", "Tabela deste jogo", "Tabella di questo gioco"],
@@ -45256,7 +45445,17 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
       window.__gomoku = { enter: function () {}, debug: function () { return { state: state, moves: moves, assist: gomAssist, edu: gomEdu, diff: gomDiff }; } };
     })();
 
-    /* ================= FISHING DEX ================= */
+    /* ================= FISHING DEX =================
+       Full-loop rebuild (2026-11-14): first-person angler POV.
+       Charge-and-release cast with an arc power gauge and quality
+       callouts, bobber wait with nibble feints, a reaction-window
+       hook set, and a hold-to-reel fight with distance / tension /
+       fish stamina, telegraphed dashes and honest fatigue. Catches
+       land as a trophy reveal over the scene. Economy is unchanged:
+       rarity coins 2/5/10/20 + first-catch 5, banked once per trip
+       through earnScore("fishing", ...) (cap 30 on the points side),
+       base tier weights 55/28/12/5 (cast quality shifts them only
+       inside the range stated on the rules screen). */
     (function () {
       var view = document.getElementById("fishingView");
       if (!view) return;
@@ -45265,6 +45464,13 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
       var castsEl = document.getElementById("fishCasts"), tripPtsEl = document.getElementById("fishTripPts"), dexCountEl = document.getElementById("fishDexCount");
       var castBtn = document.getElementById("fishCastBtn");
       var dexEl = document.getElementById("fishDex");
+      var dexSummaryEl = document.getElementById("fishDexSummary");
+      var cardEl = document.getElementById("fishCard"), sumEl = document.getElementById("fishSummary");
+      var distChip = document.getElementById("fishDistChip"), distVal = document.getElementById("fishDistVal");
+      var fightHud = document.getElementById("fishFightHud"), stamFill = document.getElementById("fishStamFill"), tensFill = document.getElementById("fishTensFill");
+      var calloutEl = document.getElementById("fishCallout"), calloutMain = document.getElementById("fishCalloutMain"), calloutSub = document.getElementById("fishCalloutSub");
+      var RM = false;
+      try { RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) {}
       var SPOTS = {
         lake: { name: "湖", fish: [
           ["フナ", "🐟", 0], ["タナゴ", "🐟", 0], ["ウグイ", "🐟", 0], ["ワカサギ", "🐟", 0], ["ドジョウ", "🐟", 0], ["ブルーギル", "🐠", 0],
@@ -45290,193 +45496,956 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
       var dex = {};
       try { dex = JSON.parse(localStorage.getItem(DEX_KEY) || "{}") || {}; } catch (e) {}
       var spot = "lake", casts = 3, tripPts = 0, banked = true;
+      var tripCatches = [];
       var fishDiff = "normal";
       function fishApplyDiff(d) { fishDiff = d; }
       if (window.__mountDiffBar) window.__mountDiffBar(document.getElementById("fishDiffSlot"), "arcade-fishing-diff-v1", fishApplyDiff);
-      var F = { state: "idle", t: 0, shadowX: 60, shadowDir: 1, biteAt: 0, rolled: null, progress: 0, holding: false, surge: 0, nextSurge: 0, raf: 0, lastTs: 0 };
+
+      /* ---------- sound (shared tone() helper + a noise voice) ---------- */
+      function noiseBurst(dur, f0, f1, vol, delay) {
+        try {
+          var AC = window.__arcadeAC || (window.__arcadeAC = new (window.AudioContext || window.webkitAudioContext)());
+          if (AC.state === "suspended") AC.resume();
+          var t = AC.currentTime + (delay || 0), len = Math.max(1, Math.floor(AC.sampleRate * dur));
+          var buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+          for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+          var src = AC.createBufferSource(); src.buffer = buf;
+          var fl = AC.createBiquadFilter(); fl.type = "bandpass"; fl.Q.value = 0.9;
+          fl.frequency.setValueAtTime(f0, t);
+          fl.frequency.exponentialRampToValueAtTime(Math.max(40, f1), t + dur);
+          var g = AC.createGain();
+          g.gain.setValueAtTime(vol || 0.06, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          src.connect(fl); fl.connect(g); g.connect(AC.destination);
+          src.start(t); src.stop(t + dur + 0.05);
+        } catch (e) {}
+      }
+      function sfxSplash(big) { noiseBurst(big ? 0.34 : 0.2, 900, 220, big ? 0.11 : 0.07); tone(big ? 340 : 420, 0.1, "sine", 0.03); }
+      function sfxLand(tier) {
+        var base = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+        var n = 2 + tier;
+        for (var i = 0; i < n; i++) tone(base[i], 0.14, "triangle", 0.055, i * 0.085);
+        if (tier >= 3) tone(1568, 0.3, "triangle", 0.05, n * 0.085);
+      }
+
+      /* ---------- state ---------- */
+      var W = 840, H = 600;
+      var F = {
+        phase: "idle", now: 0, lastTs: 0, raf: 0,
+        power: 0, powerDir: 1, windup: 0, castQ: 0, castMeters: 0,
+        flyT: 0, flyFrom: { x: 420, y: 232 }, flyTo: { x: 420, y: 320 },
+        bobX: 420, bobY: 320, bobScale: 1,
+        nibbles: [], nibbleIdx: 0, biteAt: 0, dipAt: -9,
+        biteStartT: 0, hookQ: 0,
+        rolled: null, dist: 1, tension: 0, danger: 0, fatigue: 0,
+        dashState: "calm", dashT: 0, nextDash: 0, dashDir: 1, fishLat: 0, fishSeed: Math.random() * 9,
+        holding: false, clickT: 0, creakT: 0, reelAng: 0,
+        jumpT: 0, jumpFrom: { x: 420, y: 340 }, lastCatch: null,
+        ripples: [], splashes: [], drift: [], rippleT: 0, driftT: 0,
+        clouds: [{ x: 110, y: 62, s: 1.1, v: 6 }, { x: 470, y: 38, s: 0.8, v: 4 }, { x: 690, y: 98, s: 1.35, v: 7 }],
+        school: []
+      };
+      function horizonY() { return spot === "river" ? 150 : spot === "sea" ? 195 : 205; }
+      function foreTopY() { return spot === "river" ? 512 : spot === "sea" ? 500 : 498; }
+      function variantOf(name) {
+        if (name === "タコ") return "octopus";
+        if (name === "ウナギ" || name === "ドジョウ" || name === "ヌシ" || name === "リュウグウノツカイ") return "long";
+        return "fish";
+      }
+      function buildSchool() {
+        F.school = [];
+        var n = spot === "sea" ? 6 : 3;
+        for (var i = 0; i < n; i++) {
+          var sy = horizonY() + 46 + Math.random() * (foreTopY() - horizonY() - 100);
+          var sx = Math.random() * W;
+          if (spot === "river") {
+            var hw = 30 + (sy - horizonY()) / Math.max(1, foreTopY() - horizonY()) * 285;
+            sx = 420 + (Math.random() * 2 - 1) * Math.max(8, hw - 24);
+          }
+          F.school.push({ x: sx, y: sy, len: 26 + Math.random() * 30, dir: Math.random() < 0.5 ? -1 : 1, sp: 13 + Math.random() * 18, ph: Math.random() * 6 });
+        }
+      }
+      buildSchool();
+
+      /* ---------- dex ---------- */
       function dexCount() { var n = 0; for (var k in dex) if (dex[k]) n++; return n; }
+      function spotCount(sk) { var n = 0; SPOTS[sk].fish.forEach(function (f) { if (dex[sk + ":" + f[0]]) n++; }); return n; }
       function paintDex() {
         dexCountEl.textContent = dexCount() + " / 36";
         castsEl.textContent = casts;
         tripPtsEl.textContent = tripPts;
         var html = "";
         ["lake", "river", "sea"].forEach(function (sk) {
+          var c = spotCount(sk);
+          html += '<span class="fish-dex-pct"><span>' + SPOTS[sk].name + '</span> <b>' + c + " / 12</b> (" + Math.round(c / 12 * 100) + "%)</span>";
+        });
+        html += '<span class="fish-dex-pct"><span>全体</span> <b>' + dexCount() + " / 36</b> (" + Math.round(dexCount() / 36 * 100) + "%)</span>";
+        dexSummaryEl.innerHTML = html;
+        html = "";
+        ["lake", "river", "sea"].forEach(function (sk) {
           SPOTS[sk].fish.forEach(function (f) {
             var rec = dex[sk + ":" + f[0]];
-            html += '<div class="fish-dex-item' + (rec ? "" : " unknown") + (f[2] >= 2 ? " rare" : "") + '"><span class="fd-emoji">' + f[1] + '</span><span class="fd-name">' + (rec ? f[0] : "？？？") + '</span><span class="fd-size">' + (rec ? "最大 " + rec + " cm" : SPOTS[sk].name + "・" + TIER_NAME[f[2]]) + "</span></div>";
+            html += '<div class="fish-dex-item' + (rec ? "" : " unknown") + (f[2] >= 2 ? " rare" : "") + '"><span class="fd-emoji">' + f[1] + '</span><span class="fd-name">' + (rec ? f[0] : "？？？") + '</span><span class="fd-size">' + (rec ? "<span>最大</span> " + rec + " cm" : "<span>" + SPOTS[sk].name + "</span>・<span>" + TIER_NAME[f[2]] + "</span>") + "</span></div>";
           });
         });
         dexEl.innerHTML = html;
       }
-      function saveDex() { try { localStorage.setItem(DEX_KEY, JSON.stringify(dex)); } catch (e) {} }
+      function saveDex() {
+        try {
+          var cur = JSON.parse(localStorage.getItem(DEX_KEY) || "{}") || {};
+          for (var k in cur) if (!(k in dex) || cur[k] > dex[k]) dex[k] = cur[k];
+          localStorage.setItem(DEX_KEY, JSON.stringify(dex));
+        } catch (e) {}
+      }
+      function reloadDex() {
+        try {
+          var cur = JSON.parse(localStorage.getItem(DEX_KEY) || "{}") || {};
+          for (var k in cur) if (!(k in dex) || cur[k] > dex[k]) dex[k] = cur[k];
+        } catch (e) {}
+        paintDex();
+      }
       function rollFish() {
-        var weights = [55, 28, 12, 5], x = Math.random() * 100, tier = 0, acc = 0;
+        var weights = F.castQ === 2 ? [51, 28, 14, 7] : F.castQ === 1 ? [54, 28, 13, 5] : [55, 28, 12, 5];
+        var x = Math.random() * 100, tier = 0, acc = 0;
         for (var i = 0; i < 4; i++) { acc += weights[i]; if (x < acc) { tier = i; break; } }
         var pool = SPOTS[spot].fish.filter(function (f) { return f[2] === tier; });
         var f = pool[Math.floor(Math.random() * pool.length)];
         var size = Math.round((8 + Math.random() * 30 + tier * 18 + Math.random() * tier * 22) * 10) / 10;
         return { name: f[0], emoji: f[1], tier: tier, size: size };
       }
-      function draw(ts) {
-        var W = 420, H = 300;
-        var g = ctx.createLinearGradient(0, 0, 0, H);
-        g.addColorStop(0, "#bfe6ff"); g.addColorStop(0.32, "#7cc0ea"); g.addColorStop(0.36, "#3f8fd2"); g.addColorStop(1, "#1d5a8f");
-        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 2;
-        for (var wi = 0; wi < 3; wi++) {
+
+      /* ---------- fx helpers ---------- */
+      function spawnRipple(x, y, max) { if (F.ripples.length < 16) F.ripples.push({ x: x, y: y, r: 2, max: max || 16 }); }
+      function spawnSplash(x, y, n, power) {
+        if (RM) n = Math.ceil(n / 3);
+        for (var i = 0; i < n; i++) {
+          var a = -Math.PI / 2 + (Math.random() - 0.5) * 1.7, sp = (60 + Math.random() * 130) * (power || 1);
+          F.splashes.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.5 + Math.random() * 0.3 });
+        }
+      }
+      var calloutTimer = 0;
+      function showCallout(main, sub, dur) {
+        calloutMain.textContent = main;
+        calloutSub.textContent = sub || "";
+        calloutEl.hidden = false;
+        if (calloutTimer) clearTimeout(calloutTimer);
+        calloutTimer = setTimeout(function () { calloutEl.hidden = true; }, dur || 1500);
+      }
+      function refreshControls() {
+        var b = castBtn;
+        if (F.phase === "idle") { b.disabled = casts <= 0; b.textContent = casts <= 0 ? "釣行終了" : "キャスト"; }
+        else if (F.phase === "charge") { b.disabled = false; b.textContent = "離してキャスト！"; }
+        else if (F.phase === "fly" || F.phase === "wait") { b.disabled = true; b.textContent = "……"; }
+        else if (F.phase === "bite") { b.disabled = false; b.textContent = "合わせる！"; }
+        else if (F.phase === "fight") { b.disabled = false; b.textContent = "巻く（押し続ける）"; }
+        else { b.disabled = true; b.textContent = "キャスト"; }
+        distChip.hidden = !(F.phase === "wait" || F.phase === "bite" || F.phase === "fight" || F.phase === "jump");
+        fightHud.hidden = F.phase !== "fight";
+      }
+      function setPhase(p) { F.phase = p; refreshControls(); }
+
+      /* ---------- flow ---------- */
+      function biteWindowSec() { return (fishDiff === "easy" ? 900 : fishDiff === "hard" ? 480 : 650) / 1000; }
+      function startCharge() {
+        if (casts <= 0 || F.phase !== "idle") return;
+        cardEl.hidden = true; sumEl.hidden = true;
+        F.power = 0; F.powerDir = 1; F.windup = 0;
+        setPhase("charge");
+      }
+      function releaseCast() {
+        var p = F.power;
+        F.castQ = (p >= 78 && p <= 94) ? 2 : (p >= 55 ? 1 : 0);
+        F.castMeters = Math.round((9 + p * 0.24) * 10) / 10;
+        casts--; banked = false;
+        var dn = p / 100;
+        F.bobY = horizonY() + 48 + (1 - dn) * (foreTopY() - horizonY() - 128);
+        F.bobX = 420 + (Math.random() * 110 - 55);
+        F.bobScale = 0.62 + dn * 0.55;
+        F.flyFrom = rodTip();
+        F.flyTo = { x: F.bobX, y: F.bobY };
+        F.flyT = 0;
+        F.dist = 1; F.tension = 0;
+        noiseBurst(0.22, 500, 1800, 0.05);
+        setPhase("fly");
+        paintDex();
+      }
+      function onSplashdown() {
+        spawnSplash(F.bobX, F.bobY, 14, 1);
+        spawnRipple(F.bobX, F.bobY, 22);
+        sfxSplash(false);
+        showCallout(F.castQ === 2 ? "パーフェクト！" : F.castQ === 1 ? "グレート！" : "グッド！", F.castMeters.toFixed(1) + " m", 1500);
+        var delay = (2.4 + Math.random() * 3.4) * (F.castQ === 2 ? 0.75 : F.castQ === 1 ? 1 : 1.3);
+        var n = 1 + Math.floor(Math.random() * 3);
+        F.nibbles = [];
+        for (var i = 0; i < n; i++) F.nibbles.push(F.now + delay * (0.18 + 0.62 * ((i + 1) / (n + 1))) + Math.random() * 0.25);
+        F.nibbleIdx = 0;
+        F.biteAt = F.now + delay;
+        statusEl.textContent = "ウキが浮いた。アタリを待とう";
+        setPhase("wait");
+      }
+      function startBite() {
+        setPhase("bite");
+        F.biteStartT = F.now;
+        spawnSplash(F.bobX, F.bobY, 10, 0.9);
+        spawnRipple(F.bobX, F.bobY, 20);
+        tone(1180, 0.09, "square", 0.05); tone(1560, 0.13, "square", 0.05, 0.09);
+        statusEl.textContent = "！ ヒット！ すぐに合わせて！";
+      }
+      function bankTrip() {
+        if (banked) return;
+        banked = true;
+        if (tripPts > 0 && window.ARCADE_points) window.ARCADE_points.earnScore("fishing", tripPts, fishDiff);
+      }
+      function escapeCast(msg) {
+        F.holding = false;
+        setPhase("idle");
+        statusEl.textContent = msg;
+        if (casts <= 0) { bankTrip(); showSummary(); }
+        paintDex();
+      }
+      function hookSet() {
+        var win = biteWindowSec();
+        var react = F.now - F.biteStartT;
+        F.hookQ = react <= win * 0.25 ? 2 : react <= win * 0.65 ? 1 : 0;
+        F.rolled = rollFish();
+        F.dist = F.hookQ === 2 ? 0.85 : F.hookQ === 1 ? 0.95 : 1;
+        F.fatigue = F.hookQ === 2 ? 0.3 : F.hookQ === 1 ? 0.12 : 0;
+        F.tension = 8; F.danger = 0;
+        F.dashState = "calm"; F.dashT = 0;
+        F.nextDash = F.now + 1.3 + Math.random() * 0.9;
+        F.fishLat = Math.random() * 0.8 - 0.4;
+        F.holding = false;
+        tone(520, 0.08, "square", 0.045); noiseBurst(0.12, 700, 300, 0.05);
+        statusEl.textContent = F.hookQ === 2 ? "パーフェクト！ 合わせが決まった" : "かかった！ 押し続けて巻き上げよう";
+        setPhase("fight");
+      }
+      function fishPos() {
+        var fy = horizonY() + 60 + (1 - F.dist) * (foreTopY() - horizonY() - 138) + Math.sin(F.now * 7) * (F.dashState === "dash" ? 5 : 2.5);
+        return { x: 420 + F.fishLat * 235, y: fy };
+      }
+      function startJump() {
+        var fp = fishPos();
+        F.jumpFrom = { x: fp.x, y: fp.y };
+        F.jumpT = 0;
+        F.holding = false;
+        spawnSplash(fp.x, foreTopY() - (foreTopY() - fp.y), 12, 1);
+        sfxSplash(true);
+        setPhase("jump");
+        landFish();
+      }
+      function landFish() {
+        var f = F.rolled;
+        var key = spot + ":" + f.name;
+        var first = !dex[key];
+        var record = !first && f.size > dex[key];
+        if (first || f.size > dex[key]) dex[key] = f.size;
+        saveDex();
+        var pts = TIER_PTS[f.tier] + (first ? 5 : 0);
+        tripPts += pts;
+        F.lastCatch = { name: f.name, emoji: f.emoji, tier: f.tier, size: f.size, pts: pts, first: first, record: record };
+        tripCatches.push(F.lastCatch);
+        if (casts <= 0) bankTrip();
+        paintDex();
+      }
+      function showCard() {
+        var c = F.lastCatch;
+        if (!c) return;
+        document.getElementById("fishCardName").textContent = c.name;
+        document.getElementById("fishCardTier").textContent = TIER_NAME[c.tier];
+        document.getElementById("fishCardPraise").textContent = c.size >= 80 ? "特大サイズ！" : c.size >= 55 ? "とても大きい！" : c.size >= 35 ? "大きい！" : c.size >= 20 ? "いいサイズ！" : "小さいけど元気！";
+        document.getElementById("fishCardFirst").hidden = !c.first;
+        document.getElementById("fishCardRecord").hidden = !c.record;
+        var filled = [2, 3, 4, 6][c.tier], stars = "";
+        for (var i = 0; i < 6; i++) stars += i < filled ? "★" : '<span class="off">★</span>';
+        document.getElementById("fishCardStars").innerHTML = stars;
+        document.getElementById("fishCardBase").textContent = "+" + TIER_PTS[c.tier];
+        document.getElementById("fishCardBonusRow").hidden = !c.first;
+        document.getElementById("fishCardTotal").textContent = "+" + c.pts + " コイン";
+        document.getElementById("fishCardBtn").textContent = casts > 0 ? "もう一投" : "結果を見る";
+        var cool = "";
+        tripCatches.forEach(function (t) { cool += '<span class="fish-cooler-item"><span class="fc-emoji">' + t.emoji + '</span><span>' + t.name + '</span><span class="fc-size">' + t.size + " cm</span></span>"; });
+        document.getElementById("fishCooler").innerHTML = cool;
+        cardEl.hidden = false;
+        sfxLand(c.tier);
+        if (c.tier >= 2 || c.first) celebrate();
+        statusEl.textContent = "釣り上げた！";
+        var sizeEl = document.getElementById("fishCardSize");
+        if (RM) { sizeEl.textContent = c.size.toFixed(1); return; }
+        var started = performance.now(), dur = 900;
+        var iv = setInterval(function () {
+          var k = Math.min(1, (performance.now() - started) / dur);
+          sizeEl.textContent = (c.size * (1 - Math.pow(1 - k, 3))).toFixed(1);
+          if (k >= 1) clearInterval(iv);
+        }, 30);
+      }
+      function showSummary() {
+        var html = "";
+        if (!tripCatches.length) html = '<div class="fish-sum-row"><span>釣果なし</span></div>';
+        tripCatches.forEach(function (t) {
+          html += '<div class="fish-sum-row"><span>' + t.emoji + '</span><span class="fs-name">' + t.name + '</span><span>' + t.size + ' cm</span><span class="fs-pts">+' + t.pts + "</span></div>";
+        });
+        document.getElementById("fishSumList").innerHTML = html;
+        document.getElementById("fishSumTotal").textContent = "+" + tripPts + " コイン";
+        sumEl.hidden = false;
+      }
+      function newTrip() {
+        if (!banked && tripPts > 0 && window.ARCADE_points) window.ARCADE_points.earnScore("fishing", tripPts, fishDiff);
+        casts = 3; tripPts = 0; tripCatches = []; banked = true;
+        F.holding = false;
+        cardEl.hidden = true; sumEl.hidden = true;
+        setPhase("idle");
+        statusEl.textContent = "釣り場を選んでキャストしてください";
+        paintDex();
+      }
+
+      /* ---------- per-frame update ---------- */
+      function update(dt) {
+        var i, it;
+        for (i = 0; i < F.clouds.length; i++) { var cl = F.clouds[i]; cl.x += cl.v * dt * (RM ? 0.3 : 1); if (cl.x > W + 130) cl.x = -130; }
+        for (i = 0; i < F.school.length; i++) {
+          it = F.school[i]; it.x += it.dir * it.sp * dt * (RM ? 0.4 : 1);
+          if (spot === "river") {
+            var halfW = 30 + (it.y - horizonY()) / Math.max(1, foreTopY() - horizonY()) * 285;
+            if (it.x > 420 + halfW) { it.x = 420 + halfW; it.dir = -1; }
+            if (it.x < 420 - halfW) { it.x = 420 - halfW; it.dir = 1; }
+          } else {
+            if (it.x > W + 50) { it.x = -50; it.dir = 1; } if (it.x < -50) { it.x = W + 50; it.dir = -1; }
+          }
+        }
+        F.rippleT -= dt;
+        if (F.rippleT <= 0) { F.rippleT = RM ? 1.6 : 0.8; spawnRipple(40 + Math.random() * (W - 80), horizonY() + 26 + Math.random() * (foreTopY() - horizonY() - 40), 13 + Math.random() * 13); }
+        for (i = F.ripples.length - 1; i >= 0; i--) { it = F.ripples[i]; it.r += 15 * dt; if (it.r >= it.max) F.ripples.splice(i, 1); }
+        F.driftT -= dt;
+        if (F.driftT <= 0 && F.drift.length < (RM ? 2 : 6)) {
+          F.driftT = RM ? 3 : 1.6;
+          F.drift.push({ x: 50 + Math.random() * (W - 100), y: horizonY() + 14, vx: (Math.random() - 0.5) * 7, vy: 9 + Math.random() * 9, rot: Math.random() * 6 });
+        }
+        for (i = F.drift.length - 1; i >= 0; i--) { it = F.drift[i]; it.x += it.vx * dt; it.y += it.vy * dt; it.rot += dt * 0.7; if (it.y > foreTopY() - 8) F.drift.splice(i, 1); }
+        for (i = F.splashes.length - 1; i >= 0; i--) { it = F.splashes[i]; it.x += it.vx * dt; it.y += it.vy * dt; it.vy += 880 * dt; it.life -= dt; if (it.life <= 0) F.splashes.splice(i, 1); }
+
+        if (F.phase === "charge") {
+          F.windup = Math.min(1, F.windup + dt * 4.5);
+          F.power += F.powerDir * dt * 92;
+          if (F.power >= 100) { F.power = 100; F.powerDir = -1; }
+          if (F.power <= 0) { F.power = 0; F.powerDir = 1; }
+        } else if (F.phase === "fly") {
+          F.flyT += dt;
+          if (F.flyT >= 0.75) onSplashdown();
+        } else if (F.phase === "wait") {
+          if (F.nibbleIdx < F.nibbles.length && F.now >= F.nibbles[F.nibbleIdx]) {
+            F.nibbleIdx++;
+            F.dipAt = F.now;
+            spawnRipple(F.bobX, F.bobY, 11);
+            tone(1450, 0.05, "sine", 0.018);
+          }
+          if (F.now >= F.biteAt) startBite();
+        } else if (F.phase === "bite") {
+          if (F.now - F.biteStartT > biteWindowSec()) escapeCast("逃げられた… 反応が遅かったようです");
+        } else if (F.phase === "fight") {
+          updateFight(dt);
+        } else if (F.phase === "jump") {
+          F.jumpT += dt;
+          if (F.jumpT >= 0.85) { setPhase("landed"); showCard(); }
+        }
+        if (F.phase === "fight") {
+          stamFill.style.width = Math.round((1 - F.fatigue) * 100) + "%";
+          tensFill.style.width = Math.round(F.tension) + "%";
+          tensFill.classList.toggle("hot", F.tension >= 78);
+        }
+        if (!distChip.hidden) distVal.textContent = (Math.max(0, F.dist * F.castMeters)).toFixed(1) + " m";
+      }
+      function updateFight(dt) {
+        var tier = F.rolled ? F.rolled.tier : 0;
+        var diffStr = fishDiff === "easy" ? 0.85 : fishDiff === "hard" ? 1.2 : 1;
+        var diffFreq = fishDiff === "easy" ? 1.25 : fishDiff === "hard" ? 0.8 : 1;
+        F.fatigue = Math.min(1, F.fatigue + dt / (16 + tier * 8));
+        var dashPow = [0.10, 0.12, 0.145, 0.17][tier] * diffStr * (1 - F.fatigue * 0.5);
+        if (F.dashState === "calm") {
+          F.fishLat += (Math.sin(F.now * 0.9 + F.fishSeed) * 0.75 - F.fishLat) * Math.min(1, dt * 1.6);
+          if (F.now >= F.nextDash) {
+            F.dashState = "tele"; F.dashT = 0;
+            F.dashDir = F.fishLat > 0.2 ? -1 : F.fishLat < -0.2 ? 1 : (Math.random() < 0.5 ? -1 : 1);
+            tone(196, 0.08, "sawtooth", 0.028); tone(196, 0.08, "sawtooth", 0.028, 0.13);
+          }
+        } else if (F.dashState === "tele") {
+          F.dashT += dt;
+          F.fishLat += F.dashDir * dt * 1.1;
+          if (Math.random() < dt * 22) { var fp0 = fishPos(); spawnRipple(fp0.x, fp0.y + 8, 12); }
+          if (F.dashT >= 0.5) { F.dashState = "dash"; F.dashT = 0; statusEl.textContent = "魚が走っている！ ゆるめて！"; }
+        } else if (F.dashState === "dash") {
+          F.dashT += dt;
+          F.dist += dashPow * dt;
+          F.tension += (F.holding ? 38 : 16) * dt;
+          F.fishLat += F.dashDir * dt * 2.1;
+          if (F.fishLat > 1) { F.fishLat = 1; F.dashDir = -1; }
+          if (F.fishLat < -1) { F.fishLat = -1; F.dashDir = 1; }
+          if (Math.random() < dt * 16) { var fp1 = fishPos(); spawnSplash(fp1.x, fp1.y - 4, 2, 0.7); }
+          if (F.dashT >= 0.7 + tier * 0.08) {
+            F.dashState = "calm";
+            F.nextDash = F.now + [2.4, 2.1, 1.8, 1.5][tier] * diffFreq * (1 + F.fatigue * 1.6) * (0.75 + Math.random() * 0.5);
+            statusEl.textContent = "かかった！ 押し続けて巻き上げよう";
+          }
+        }
+        if (F.dashState !== "dash") {
+          if (F.holding) F.tension += 26 * diffStr * (1 + tier * 0.08) * dt;
+          else F.tension -= 36 * dt;
+        }
+        if (F.holding) {
+          var tierFactor = [1, 1.3, 1.7, 2.2][tier];
+          F.dist -= (0.16 / tierFactor) * (0.9 + F.fatigue * 0.35) * dt;
+          F.reelAng += dt * 11;
+          F.clickT -= dt;
+          if (F.clickT <= 0) { F.clickT = 0.085; tone(1750 + Math.random() * 350, 0.018, "square", 0.011); }
+        } else {
+          F.dist += 0.028 * (1 - F.fatigue * 0.5) * dt;
+        }
+        F.tension = Math.max(0, Math.min(100, F.tension));
+        if (F.tension >= 88) F.danger += dt; else F.danger = Math.max(0, F.danger - dt * 1.4);
+        if (F.tension > 45) {
+          F.creakT -= dt;
+          if (F.creakT <= 0) { F.creakT = Math.max(0.15, 0.55 - F.tension * 0.004); tone(120 + F.tension * 3.4 + Math.random() * 24, 0.07, "sawtooth", 0.016); }
+        }
+        if (F.danger >= 0.9) {
+          noiseBurst(0.16, 2600, 500, 0.09); tone(1500, 0.2, "sawtooth", 0.03, 0.02);
+          escapeCast("糸が切れた！ テンションのかけすぎに注意");
+        } else if (F.dist >= 1.18) {
+          tone(392, 0.16, "sine", 0.03); tone(311, 0.22, "sine", 0.03, 0.13);
+          escapeCast("糸がたるんで逃げられた… 巻き続けよう");
+        } else if (F.dist <= 0) {
+          F.dist = 0;
+          startJump();
+        }
+      }
+
+      /* ---------- drawing ---------- */
+      function rodTip() {
+        var tx = 420, ty = 232;
+        if (F.phase === "charge") { ty = 232 + F.windup * 60; tx = 420 + Math.sin(F.power * 0.055) * 5; }
+        else if (F.phase === "fly") { var k = Math.min(1, F.flyT / 0.24); ty = 232 - Math.sin(k * Math.PI) * 48; }
+        else if (F.phase === "fight") { ty = 232 + F.tension * 0.42; tx = 420 + F.fishLat * 58; }
+        else if (F.phase === "wait" || F.phase === "bite") { ty = 232 + Math.sin(F.now * 1.6) * 4; }
+        return { x: tx, y: ty };
+      }
+      function drawFishShape(x, y, len, dirSign, o) {
+        o = o || {};
+        var L = len, wag = Math.sin(F.now * (o.wagSpeed || 6) + (o.ph || 0)) * L * 0.05 * (RM ? 0.4 : 1);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(dirSign || 1, 1);
+        ctx.globalAlpha = o.alpha == null ? 1 : o.alpha;
+        if (o.variant === "long") {
+          ctx.strokeStyle = o.body; ctx.lineWidth = L * 0.15; ctx.lineCap = "round";
           ctx.beginPath();
-          for (var x = 0; x <= W; x += 14) ctx.lineTo(x, 96 + Math.sin(x * 0.05 + ts * 0.0016 + wi * 2) * 3 + wi * 5);
+          for (var s = 0; s <= 10; s++) {
+            var px = -L / 2 + (L * s) / 10, py = Math.sin(s * 1.15 + F.now * 5 + (o.ph || 0)) * L * 0.07 * (RM ? 0.4 : 1);
+            if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+          ctx.fillStyle = o.body;
+          ctx.beginPath(); ctx.moveTo(-L / 2, 0); ctx.lineTo(-L * 0.66, -L * 0.11 + wag * 0.4); ctx.lineTo(-L * 0.66, L * 0.11 + wag * 0.4); ctx.closePath(); ctx.fill();
+          if (o.eye) { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(L * 0.4, -L * 0.03, L * 0.032, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#14232e"; ctx.beginPath(); ctx.arc(L * 0.41, -L * 0.03, L * 0.017, 0, Math.PI * 2); ctx.fill(); }
+          ctx.restore();
+          return;
+        }
+        if (o.variant === "octopus") {
+          ctx.fillStyle = o.body;
+          ctx.beginPath(); ctx.arc(0, -L * 0.08, L * 0.3, Math.PI, 0); ctx.quadraticCurveTo(L * 0.3, L * 0.12, 0, L * 0.12); ctx.quadraticCurveTo(-L * 0.3, L * 0.12, -L * 0.3, -L * 0.08); ctx.fill();
+          ctx.strokeStyle = o.body; ctx.lineWidth = L * 0.07; ctx.lineCap = "round";
+          for (var tI = 0; tI < 5; tI++) {
+            var bx = -L * 0.24 + tI * L * 0.12, sw = Math.sin(F.now * 4 + tI * 1.3 + (o.ph || 0)) * L * 0.07 * (RM ? 0.4 : 1);
+            ctx.beginPath(); ctx.moveTo(bx, L * 0.1); ctx.quadraticCurveTo(bx + sw, L * 0.3, bx + sw * 1.4, L * 0.44); ctx.stroke();
+          }
+          if (o.eye) { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-L * 0.1, -L * 0.08, L * 0.045, 0, Math.PI * 2); ctx.arc(L * 0.1, -L * 0.08, L * 0.045, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#14232e"; ctx.beginPath(); ctx.arc(-L * 0.1, -L * 0.08, L * 0.022, 0, Math.PI * 2); ctx.arc(L * 0.1, -L * 0.08, L * 0.022, 0, Math.PI * 2); ctx.fill(); }
+          ctx.restore();
+          return;
+        }
+        ctx.fillStyle = o.body;
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.5, 0);
+        ctx.lineTo(-L * 0.7, -L * 0.21 + wag);
+        ctx.lineTo(-L * 0.66, 0);
+        ctx.lineTo(-L * 0.7, L * 0.21 + wag);
+        ctx.closePath(); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.5, 0);
+        ctx.bezierCurveTo(-L * 0.26, -L * 0.31, L * 0.2, -L * 0.3, L * 0.5, 0);
+        ctx.bezierCurveTo(L * 0.2, L * 0.25, -L * 0.26, L * 0.25, -L * 0.5, 0);
+        ctx.fill();
+        if (o.belly) {
+          ctx.fillStyle = o.belly;
+          ctx.beginPath();
+          ctx.moveTo(-L * 0.42, L * 0.05);
+          ctx.bezierCurveTo(-L * 0.1, L * 0.24, L * 0.24, L * 0.2, L * 0.46, L * 0.02);
+          ctx.bezierCurveTo(L * 0.2, L * 0.13, -L * 0.12, L * 0.15, -L * 0.42, L * 0.05);
+          ctx.fill();
+        }
+        ctx.fillStyle = o.fin || o.body;
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.06, -L * 0.27);
+        ctx.quadraticCurveTo(L * 0.08, -L * 0.44, L * 0.24, -L * 0.26);
+        ctx.quadraticCurveTo(L * 0.08, -L * 0.2, -L * 0.06, -L * 0.27);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(L * 0.02, L * 0.12);
+        ctx.quadraticCurveTo(L * 0.14, L * 0.3, L * 0.26, L * 0.14);
+        ctx.quadraticCurveTo(L * 0.12, L * 0.08, L * 0.02, L * 0.12);
+        ctx.fill();
+        if (o.eye) {
+          ctx.strokeStyle = "rgba(20,35,46,0.35)"; ctx.lineWidth = Math.max(1, L * 0.012);
+          ctx.beginPath(); ctx.arc(L * 0.26, 0, L * 0.17, -0.9, 0.9); ctx.stroke();
+          ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(L * 0.35, -L * 0.05, L * 0.036, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#14232e"; ctx.beginPath(); ctx.arc(L * 0.36, -L * 0.05, L * 0.019, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+      }
+      function drawCloud(c) {
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y, 44 * c.s, 15 * c.s, 0, 0, Math.PI * 2);
+        ctx.ellipse(c.x - 30 * c.s, c.y + 5 * c.s, 30 * c.s, 11 * c.s, 0, 0, Math.PI * 2);
+        ctx.ellipse(c.x + 32 * c.s, c.y + 4 * c.s, 32 * c.s, 12 * c.s, 0, 0, Math.PI * 2);
+        ctx.ellipse(c.x + 2 * c.s, c.y - 10 * c.s, 28 * c.s, 12 * c.s, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      function drawScene() {
+        var hy = horizonY(), ft = foreTopY(), i, j;
+        var sky = ctx.createLinearGradient(0, 0, 0, hy + 40);
+        if (spot === "sea") { sky.addColorStop(0, "#8fd0ff"); sky.addColorStop(1, "#e6f7ff"); }
+        else if (spot === "river") { sky.addColorStop(0, "#a5dcff"); sky.addColorStop(1, "#eefbe9"); }
+        else { sky.addColorStop(0, "#9fd8ff"); sky.addColorStop(1, "#eafaff"); }
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, W, hy + 2);
+        var sun = ctx.createRadialGradient(120, 52, 6, 120, 52, 90);
+        sun.addColorStop(0, "rgba(255,244,190,0.95)"); sun.addColorStop(0.25, "rgba(255,238,160,0.55)"); sun.addColorStop(1, "rgba(255,238,160,0)");
+        ctx.fillStyle = sun; ctx.fillRect(0, 0, 320, 190);
+        for (i = 0; i < F.clouds.length; i++) drawCloud(F.clouds[i]);
+        if (spot === "lake") {
+          ctx.fillStyle = "#a9c2de";
+          ctx.beginPath(); ctx.moveTo(0, hy); ctx.lineTo(120, hy - 74); ctx.lineTo(250, hy - 30); ctx.lineTo(390, hy - 84); ctx.lineTo(520, hy - 26); ctx.lineTo(660, hy - 66); ctx.lineTo(840, hy - 20); ctx.lineTo(840, hy); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = "#7fa5cc";
+          ctx.beginPath(); ctx.moveTo(0, hy); ctx.lineTo(180, hy - 44); ctx.lineTo(330, hy - 12); ctx.lineTo(500, hy - 52); ctx.lineTo(690, hy - 14); ctx.lineTo(840, hy - 40); ctx.lineTo(840, hy); ctx.closePath(); ctx.fill();
+          for (i = 0; i < 26; i++) {
+            var tx = (i * 67) % 880 - 20, tr = 15 + ((i * 37) % 16);
+            if (tx > 320 && tx < 520) continue;
+            ctx.fillStyle = i % 2 ? "#3e7d46" : "#356b3c";
+            ctx.beginPath(); ctx.arc(tx, hy - 4 - (i % 3) * 3, tr, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.fillStyle = "#8fbf7d"; ctx.fillRect(320, hy - 7, 200, 8);
+        } else if (spot === "river") {
+          ctx.fillStyle = "#bfe3b0"; ctx.beginPath(); ctx.moveTo(330, hy + 4); ctx.lineTo(420, 66); ctx.lineTo(510, hy + 4); ctx.closePath(); ctx.fill();
+          for (i = 0; i < 30; i++) {
+            var side = i % 2 ? 1 : -1, d = (i * 53) % 340, cxp = 420 + side * (52 + d * 0.95), cyp = 66 + d * 0.42, cr = 22 + ((i * 29) % 30) + d * 0.12;
+            ctx.fillStyle = i % 3 ? "#3f7d3a" : "#4c8a42";
+            ctx.beginPath(); ctx.arc(cxp, cyp, cr, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "rgba(46,94,40,0.8)";
+            ctx.fillRect(cxp - 2.5, cyp + cr * 0.5, 5, cr * 0.9);
+          }
+        } else {
+          ctx.fillStyle = "#7d9dbd";
+          ctx.beginPath(); ctx.moveTo(648, hy); ctx.lineTo(706, hy - 26); ctx.lineTo(772, hy - 8); ctx.lineTo(806, hy); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(30,50,80,0.75)"; ctx.lineWidth = 2.4; ctx.lineCap = "round";
+          for (i = 0; i < 2; i++) {
+            var gx = ((F.now * (RM ? 4 : 13) + i * 380) % 980) - 70, gy = 58 + i * 34 + Math.sin(F.now * 2 + i * 2) * 4, gw = Math.sin(F.now * 6 + i) * 5;
+            ctx.beginPath();
+            ctx.moveTo(gx - 11, gy + gw); ctx.quadraticCurveTo(gx - 4, gy - 5, gx, gy);
+            ctx.quadraticCurveTo(gx + 4, gy - 5, gx + 11, gy + gw);
+            ctx.stroke();
+          }
+        }
+        var wg = ctx.createLinearGradient(0, hy, 0, H);
+        if (spot === "lake") { wg.addColorStop(0, "#79cfe4"); wg.addColorStop(0.55, "#35a3c2"); wg.addColorStop(1, "#1d7a9c"); }
+        else if (spot === "river") { wg.addColorStop(0, "#93e2d0"); wg.addColorStop(0.55, "#3cb39b"); wg.addColorStop(1, "#22755f"); }
+        else { wg.addColorStop(0, "#3f8fe0"); wg.addColorStop(0.55, "#1c5da8"); wg.addColorStop(1, "#123f78"); }
+        ctx.fillStyle = wg; ctx.fillRect(0, hy, W, H - hy);
+        if (spot === "river") {
+          ctx.fillStyle = "#5da24e";
+          ctx.beginPath(); ctx.moveTo(0, hy); ctx.lineTo(352, hy); ctx.lineTo(96, ft); ctx.lineTo(0, ft); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(W, hy); ctx.lineTo(488, hy); ctx.lineTo(744, ft); ctx.lineTo(W, ft); ctx.closePath(); ctx.fill();
+          ctx.save();
+          ctx.beginPath(); ctx.moveTo(352, hy); ctx.lineTo(488, hy); ctx.lineTo(744, ft); ctx.lineTo(96, ft); ctx.closePath(); ctx.clip();
+          ctx.fillStyle = wg; ctx.fillRect(90, hy, 660, ft - hy);
+          ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 3; ctx.lineCap = "round";
+          for (i = 0; i < 12; i++) {
+            var sy = hy + 8 + ((F.now * (RM ? 16 : 52) + i * 47) % (ft - hy - 8)), swd = 26 + (sy - hy) * 0.62, sx = 420 + ((i * 173) % 200 - 100) / 100 * swd * 0.4;
+            ctx.beginPath(); ctx.moveTo(sx - 13, sy); ctx.quadraticCurveTo(sx, sy + 4, sx + 13, sy); ctx.stroke();
+          }
+          ctx.restore();
+        }
+        ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1.6;
+        for (i = 0; i < 22; i++) {
+          var shx = (i * 173) % 820 + 10, shy = hy + 16 + ((i * 89) % Math.max(30, ft - hy - 50));
+          if (spot === "river" && (shx < 130 || shx > 710)) continue;
+          var tw = 0.5 + 0.5 * Math.sin(F.now * (RM ? 0.7 : 2.2) + i * 1.7);
+          ctx.globalAlpha = 0.10 + tw * 0.3;
+          ctx.beginPath(); ctx.moveTo(shx, shy); ctx.lineTo(shx + 12 + tw * 10, shy); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        for (i = 0; i < F.school.length; i++) {
+          var sf = F.school[i];
+          if (spot === "sea") drawFishShape(sf.x, sf.y + Math.sin(F.now * 1.4 + sf.ph) * 4, sf.len, sf.dir, { body: "rgba(190,225,255,0.5)", belly: "rgba(230,245,255,0.35)", alpha: 0.75, ph: sf.ph, wagSpeed: 4 });
+          else drawFishShape(sf.x, sf.y, sf.len, sf.dir, { body: "rgba(14,44,66,1)", alpha: spot === "lake" ? 0.16 : 0.2, ph: sf.ph, wagSpeed: 4 });
+        }
+        if (spot === "lake") {
+          var pads = [[168, 356], [648, 330], [556, 428], [238, 452]];
+          for (i = 0; i < pads.length; i++) {
+            var px = pads[i][0] + Math.sin(F.now * 0.5 + i * 2) * (RM ? 1 : 4), py = pads[i][1];
+            ctx.fillStyle = "#3f9e4d";
+            ctx.beginPath(); ctx.ellipse(px, py, 25, 8.5, 0, 0.35, Math.PI * 2 - 0.35); ctx.fill();
+            ctx.fillStyle = "#57b465";
+            ctx.beginPath(); ctx.ellipse(px - 3, py - 1.5, 17, 5.5, 0, 0.35, Math.PI * 2 - 0.35); ctx.fill();
+          }
+          if (F.now % 9 < 5) { ctx.fillStyle = "#f7a8c4"; ctx.beginPath(); ctx.ellipse(648 + Math.sin(F.now * 0.5 + 2) * 4, 322, 5, 3.4, 0, 0, Math.PI * 2); ctx.fill(); }
+          ctx.strokeStyle = "#2e7d43"; ctx.lineWidth = 3; ctx.lineCap = "round";
+          for (i = 0; i < 7; i++) {
+            var rx0 = 14 + i * 7, rh = 44 + ((i * 31) % 30);
+            ctx.beginPath(); ctx.moveTo(rx0, ft - 6); ctx.quadraticCurveTo(rx0 + 4, ft - rh * 0.6, rx0 + 9, ft - rh); ctx.stroke();
+            var rx1 = W - 16 - i * 7;
+            ctx.beginPath(); ctx.moveTo(rx1, ft - 4); ctx.quadraticCurveTo(rx1 - 4, ft - rh * 0.55, rx1 - 8, ft - rh * 0.9); ctx.stroke();
+          }
+        }
+        if (spot === "river") {
+          var rocks = [[300, 356, 30], [520, 300, 20], [452, 428, 38]];
+          for (i = 0; i < rocks.length; i++) {
+            ctx.fillStyle = "#8b98a5";
+            ctx.beginPath(); ctx.ellipse(rocks[i][0], rocks[i][1], rocks[i][2], rocks[i][2] * 0.42, 0, Math.PI, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "rgba(255,255,255,0.35)";
+            ctx.beginPath(); ctx.ellipse(rocks[i][0] - rocks[i][2] * 0.3, rocks[i][1] - rocks[i][2] * 0.2, rocks[i][2] * 0.4, rocks[i][2] * 0.14, -0.4, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(rocks[i][0], rocks[i][1] + 3, rocks[i][2] * 1.25, rocks[i][2] * 0.3, 0, 0.15, Math.PI - 0.15); ctx.stroke();
+          }
+        }
+        if (spot === "sea") {
+          ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 2.4;
+          for (i = 0; i < 7; i++) {
+            var wx = ((i * 211 + F.now * (RM ? 5 : 18)) % 920) - 40, wy = hy + 26 + ((i * 67) % (ft - hy - 60));
+            ctx.beginPath(); ctx.arc(wx, wy, 15 + (i % 3) * 6, Math.PI * 1.12, Math.PI * 1.55); ctx.stroke();
+          }
+        }
+        for (i = 0; i < F.ripples.length; i++) {
+          var rp = F.ripples[i];
+          ctx.strokeStyle = "rgba(255,255,255," + (0.42 * (1 - rp.r / rp.max)).toFixed(3) + ")";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.ellipse(rp.x, rp.y, rp.r, rp.r * 0.3, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+        for (i = 0; i < F.drift.length; i++) {
+          var dr = F.drift[i];
+          ctx.save(); ctx.translate(dr.x, dr.y); ctx.rotate(dr.rot);
+          if (spot === "river") { ctx.fillStyle = "rgba(96,168,74,0.85)"; ctx.beginPath(); ctx.ellipse(0, 0, 7, 3, 0, 0, Math.PI * 2); ctx.fill(); }
+          else if (spot === "sea") { ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.arc(0, 0, 2.6, 0, Math.PI * 2); ctx.fill(); }
+          else { ctx.fillStyle = "rgba(247,168,196,0.9)"; ctx.beginPath(); ctx.ellipse(0, 0, 5.5, 3.2, 0, 0, Math.PI * 2); ctx.fill(); }
+          ctx.restore();
+        }
+      }
+      function drawForeground() {
+        var ft = foreTopY(), i;
+        if (spot === "lake") {
+          ctx.fillStyle = "#a9743f";
+          ctx.beginPath(); ctx.moveTo(96, H); ctx.lineTo(744, H); ctx.lineTo(688, ft); ctx.lineTo(152, ft); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(90,55,20,0.55)"; ctx.lineWidth = 2.4;
+          for (i = 0; i <= 6; i++) {
+            var bx = 152 + i * (688 - 152) / 6, bxb = 96 + i * (744 - 96) / 6;
+            ctx.beginPath(); ctx.moveTo(bx, ft); ctx.lineTo(bxb, H); ctx.stroke();
+          }
+          for (i = 1; i <= 3; i++) {
+            var yy = ft + (H - ft) * i / 3.4;
+            ctx.beginPath(); ctx.moveTo(152 + (96 - 152) * i / 3.4, yy); ctx.lineTo(688 + (744 - 688) * i / 3.4, yy); ctx.stroke();
+          }
+          ctx.fillStyle = "#7c5227";
+          ctx.fillRect(138, ft - 4, 17, 58); ctx.fillRect(685, ft - 4, 17, 58);
+          ctx.fillStyle = "#8a5f30";
+          ctx.fillRect(134, ft - 10, 25, 10); ctx.fillRect(681, ft - 10, 25, 10);
+        } else if (spot === "river") {
+          var gg = ctx.createLinearGradient(0, ft, 0, H);
+          gg.addColorStop(0, "#69a84f"); gg.addColorStop(1, "#3c7031");
+          ctx.fillStyle = gg; ctx.fillRect(0, ft, W, H - ft);
+          ctx.strokeStyle = "rgba(30,80,26,0.7)"; ctx.lineWidth = 2.2; ctx.lineCap = "round";
+          for (i = 0; i < 42; i++) {
+            var gx2 = (i * 61) % 850 - 5, gh = 9 + ((i * 37) % 13);
+            ctx.beginPath(); ctx.moveTo(gx2, H - ((i * 23) % 60)); ctx.quadraticCurveTo(gx2 + 3, H - ((i * 23) % 60) - gh * 0.6, gx2 + 6, H - ((i * 23) % 60) - gh); ctx.stroke();
+          }
+          ctx.fillStyle = "#7e8b96";
+          ctx.beginPath(); ctx.ellipse(118, 552, 52, 20, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(726, 566, 62, 23, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,255,255,0.3)";
+          ctx.beginPath(); ctx.ellipse(102, 545, 22, 7, -0.3, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(706, 558, 26, 8, -0.3, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = "#77828e";
+          ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(0, 512); ctx.lineTo(96, 498); ctx.lineTo(196, 528); ctx.lineTo(238, 566); ctx.lineTo(216, H); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(W, H); ctx.lineTo(W, 506); ctx.lineTo(726, 494); ctx.lineTo(636, 530); ctx.lineTo(606, 572); ctx.lineTo(630, H); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = "rgba(255,255,255,0.28)";
+          ctx.beginPath(); ctx.moveTo(0, 512); ctx.lineTo(96, 498); ctx.lineTo(150, 516); ctx.lineTo(60, 528); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(W, 506); ctx.lineTo(726, 494); ctx.lineTo(676, 514); ctx.lineTo(770, 524); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = "#66727d";
+          ctx.beginPath(); ctx.ellipse(420, 588, 150, 20, 0, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      function drawRodAndLine() {
+        var tip = rodTip();
+        var target = null, slack = 14;
+        if (F.phase === "fly") {
+          var k = Math.min(1, F.flyT / 0.75), e = k;
+          var lx = F.flyFrom.x + (F.flyTo.x - F.flyFrom.x) * e;
+          var ly = F.flyFrom.y + (F.flyTo.y - F.flyFrom.y) * e - Math.sin(e * Math.PI) * 128;
+          target = { x: lx, y: ly };
+          slack = 4;
+        } else if (F.phase === "wait" || F.phase === "bite") {
+          target = { x: F.bobX, y: F.bobY - 4 };
+          slack = 16;
+        } else if (F.phase === "fight" || F.phase === "jump") {
+          target = fishPos();
+          slack = F.tension > 80 ? 1 : 5;
+        }
+        if (target && F.phase !== "idle" && F.phase !== "charge" && F.phase !== "landed") {
+          ctx.strokeStyle = F.phase === "fight" && F.tension >= 88 ? "rgba(255,120,110,0.9)" : "rgba(255,255,255,0.75)";
+          ctx.lineWidth = 1.4;
+          var jx = F.phase === "fight" && F.tension > 80 ? (Math.random() - 0.5) * 2.4 : 0;
+          ctx.beginPath(); ctx.moveTo(tip.x, tip.y);
+          ctx.quadraticCurveTo((tip.x + target.x) / 2 + jx, (tip.y + target.y) / 2 + slack, target.x, target.y);
           ctx.stroke();
         }
-        ctx.fillStyle = "#8a5a2b"; ctx.fillRect(0, 236, 130, 10);
-        ctx.fillStyle = "#6d4420"; ctx.fillRect(16, 246, 8, 40); ctx.fillRect(104, 246, 8, 40);
-        if (F.state !== "idle") {
-          ctx.strokeStyle = "rgba(38,38,46,0.8)"; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(118, 190); ctx.lineTo(210, 108); ctx.stroke();
-          ctx.strokeStyle = "rgba(255,255,255,0.75)"; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(210, 108); ctx.quadraticCurveTo(250, 150, 246, 196); ctx.stroke();
-          ctx.fillStyle = "#e0483e"; ctx.beginPath(); ctx.arc(246, 200, 5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.beginPath(); ctx.arc(246, 200, 2.2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#2b2f36"; ctx.lineCap = "round";
+        ctx.lineWidth = 11;
+        ctx.beginPath(); ctx.moveTo(420, 622);
+        ctx.quadraticCurveTo(420 + (tip.x - 420) * 0.25, (622 + tip.y) / 2, tip.x, tip.y);
+        ctx.stroke();
+        ctx.strokeStyle = "#4a5058"; ctx.lineWidth = 4.5;
+        ctx.beginPath(); ctx.moveTo(420, 622);
+        ctx.quadraticCurveTo(420 + (tip.x - 420) * 0.25, (622 + tip.y) / 2, tip.x, tip.y);
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(200,215,228,0.8)"; ctx.lineWidth = 1.6;
+        for (var gi = 1; gi <= 3; gi++) {
+          var gt = gi / 3.6, gx3 = 420 + (tip.x - 420) * gt, gy3 = 622 + (tip.y - 622) * gt - Math.sin(gt * Math.PI) * 6;
+          ctx.beginPath(); ctx.arc(gx3, gy3, 3.4, 0, Math.PI * 2); ctx.stroke();
         }
-        if (F.state === "wait" || F.state === "bite" || F.state === "fight") {
-          ctx.fillStyle = "rgba(20, 40, 70, 0.5)";
-          ctx.beginPath(); ctx.ellipse(F.shadowX, 218, 26, 8, 0, 0, Math.PI * 2); ctx.fill();
-          ctx.beginPath(); ctx.moveTo(F.shadowX + 24, 218); ctx.lineTo(F.shadowX + 36, 210); ctx.lineTo(F.shadowX + 36, 226); ctx.closePath(); ctx.fill();
+        ctx.save();
+        ctx.translate(458, 552);
+        ctx.fillStyle = "#23272e";
+        ctx.beginPath(); ctx.arc(0, 0, 19, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#9fb2c1";
+        ctx.beginPath(); ctx.arc(0, 0, 11.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#39404a"; ctx.lineWidth = 3.4;
+        var hx = Math.cos(F.reelAng) * 17, hy2 = Math.sin(F.reelAng) * 17;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(hx, hy2); ctx.stroke();
+        ctx.fillStyle = "#e0483e";
+        ctx.beginPath(); ctx.arc(hx, hy2, 4.6, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        if (F.phase === "fly") {
+          ctx.fillStyle = "#ffd94d";
+          ctx.beginPath(); ctx.arc(target.x, target.y, 4.2, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#e0483e";
+          ctx.beginPath(); ctx.arc(target.x, target.y - 5, 3, 0, Math.PI * 2); ctx.fill();
         }
-        if (F.state === "bite") {
+      }
+      function drawBobber() {
+        if (F.phase !== "wait" && F.phase !== "bite") return;
+        var dip = 0;
+        if (F.phase === "wait") {
+          var since = F.now - F.dipAt;
+          if (since < 0.42) dip = Math.sin(since / 0.42 * Math.PI) * 5.5;
+        }
+        var plunge = F.phase === "bite" ? 13 : 0;
+        var by = F.bobY + Math.sin(F.now * 2.1) * 2.6 * (RM ? 0.4 : 1) + dip + plunge;
+        var s = F.bobScale;
+        ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.ellipse(F.bobX, F.bobY + 3, 13 * s + dip * 1.4, 3.6 * s, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = "#f4f6f8";
+        ctx.beginPath(); ctx.ellipse(F.bobX, by, 6.4 * s, 8.6 * s, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#e0483e";
+        ctx.beginPath(); ctx.ellipse(F.bobX, by - 3.4 * s, 6.4 * s, 5 * s, 0, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillRect(F.bobX - 1.1 * s, by - 13.4 * s, 2.2 * s, 5 * s);
+        if (F.phase === "wait") {
+          var near = Math.max(0, 1 - (F.biteAt - F.now) / 6);
+          var sx = F.bobX + Math.cos(F.now * 0.9) * (30 - near * 8), sy = F.bobY + 13 + Math.sin(F.now * 1.3) * 4;
+          drawFishShape(sx, sy, 34 * s + 8, Math.cos(F.now * 0.9) > 0 ? 1 : -1, { body: "rgba(14,44,66,1)", alpha: 0.14 + near * 0.22, wagSpeed: 5 });
+        }
+        if (F.phase === "bite") {
+          var pulse = 1 + Math.sin(F.now * 18) * 0.1;
           ctx.fillStyle = "#ffffff";
-          ctx.beginPath(); ctx.arc(258, 168, 13, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#e0483e"; ctx.font = "900 17px sans-serif"; ctx.textAlign = "center";
-          ctx.fillText("!", 258, 175);
+          ctx.beginPath(); ctx.arc(F.bobX, F.bobY - 52 * s, 17 * pulse, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#e0483e";
+          ctx.font = "900 " + Math.round(21 * pulse) + "px sans-serif";
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("!", F.bobX, F.bobY - 51 * s);
+          ctx.textBaseline = "alphabetic";
         }
-        if (F.state === "fight") {
-          ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillRect(110, 268, 200, 12);
-          ctx.fillStyle = F.progress > 78 ? "#e0483e" : "#ffd94d";
-          ctx.fillRect(110, 268, 200 * Math.min(1, F.progress / 100), 12);
-          ctx.fillStyle = "#ffffff"; ctx.font = "700 11px sans-serif"; ctx.textAlign = "center";
-          ctx.fillText("巻き具合", 210, 262);
-          if (F.rolled) { ctx.font = "30px sans-serif"; ctx.fillText(F.rolled.emoji, F.shadowX, 190 + Math.sin(ts * 0.02) * 3); }
+      }
+      function drawFightFish() {
+        if (F.phase !== "fight") return;
+        var fp = fishPos();
+        var nearK = 1 - F.dist;
+        var len = (46 + nearK * 74) * [0.85, 1, 1.18, 1.38][F.rolled ? F.rolled.tier : 0];
+        var alpha = 0.34 + nearK * 0.6;
+        var dirS = F.dashState === "dash" ? F.dashDir : (F.fishLat > 0.05 ? -1 : 1);
+        drawFishShape(fp.x, fp.y, len, dirS, {
+          body: "rgba(18,48,74,1)", belly: "rgba(160,200,228,0.5)", eye: nearK > 0.45,
+          alpha: alpha, variant: F.rolled ? variantOf(F.rolled.name) : "fish", wagSpeed: F.dashState === "dash" ? 13 : 8
+        });
+        if (F.dist < 0.3 && Math.random() < 0.3) spawnSplash(fp.x + (Math.random() - 0.5) * 30, fp.y - 8, 1, 0.6);
+      }
+      function drawChargeArc() {
+        if (F.phase !== "charge") return;
+        var cx = 648, cy = 466, r = 97, a0 = Math.PI * 0.82, a1 = Math.PI * 2.08;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "rgba(10,30,48,0.55)"; ctx.lineWidth = 17;
+        ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
+        var s0 = a0 + (a1 - a0) * 0.78, s1 = a0 + (a1 - a0) * 0.94;
+        ctx.strokeStyle = "rgba(255,217,77,0.85)"; ctx.lineWidth = 21;
+        ctx.beginPath(); ctx.arc(cx, cy, r, s0, s1); ctx.stroke();
+        var p = F.power / 100;
+        ctx.strokeStyle = "hsl(" + Math.round(115 - p * 115) + ", 85%, 55%)"; ctx.lineWidth = 13;
+        ctx.beginPath(); ctx.arc(cx, cy, r, a0, a0 + (a1 - a0) * Math.max(0.01, p)); ctx.stroke();
+        ctx.fillStyle = "#fff"; ctx.font = "900 15px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("MAX", cx + Math.cos(a1) * r, cy + Math.sin(a1) * r - 12);
+        ctx.font = "900 21px sans-serif";
+        ctx.fillText(Math.round(F.power) + "", cx, cy + 8);
+      }
+      function drawJumpFish() {
+        if (F.phase !== "jump" && F.phase !== "landed") return;
+        var c = F.lastCatch || F.rolled;
+        if (!c) return;
+        var len = Math.max(190, Math.min(400, 165 + c.size * 1.55));
+        var variant = variantOf(c.name);
+        var body = variant === "octopus" ? "#b0563a" : variant === "long" ? "#5d8a4a" : "#7fa8c9";
+        var belly = variant === "fish" ? "#e8f2f8" : null;
+        if (F.phase === "jump") {
+          var p = Math.min(1, F.jumpT / 0.85), e2 = p;
+          var x = F.jumpFrom.x + (420 - F.jumpFrom.x) * e2;
+          var y = F.jumpFrom.y + (292 - F.jumpFrom.y) * e2 - Math.sin(p * Math.PI) * 118;
+          ctx.save(); ctx.translate(x, y); ctx.rotate(-0.5 + p * 0.56);
+          ctx.translate(-x, -y);
+          drawFishShape(x, y, len * (0.55 + p * 0.45), 1, { body: body, belly: belly, eye: true, variant: variant, wagSpeed: 11 });
+          ctx.restore();
+        } else {
+          var sway = Math.sin(F.now * 1.25) * 0.045 * (RM ? 0.3 : 1);
+          ctx.fillStyle = "rgba(10,40,66,0.25)";
+          ctx.beginPath(); ctx.ellipse(420, 478, len * 0.42, 13, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.save(); ctx.translate(420, 292); ctx.rotate(sway); ctx.translate(-420, -292);
+          drawFishShape(420, 292, len, 1, { body: body, belly: belly, eye: true, variant: variant, wagSpeed: 3.2 });
+          ctx.restore();
+          if (c.tier >= 2 && !RM) {
+            ctx.fillStyle = "rgba(255,225,120,0.9)";
+            for (var i = 0; i < 6; i++) {
+              var sx2 = 420 + Math.cos(i * 1.7 + F.now * 0.8) * (len * 0.42 + 16), sy2 = 292 + Math.sin(i * 2.3 + F.now) * 74;
+              var sr = 3 + Math.sin(F.now * 5 + i * 1.9) * 1.6;
+              if (sr <= 0.6) continue;
+              ctx.beginPath();
+              ctx.moveTo(sx2, sy2 - sr * 2); ctx.lineTo(sx2 + sr * 0.6, sy2 - sr * 0.6); ctx.lineTo(sx2 + sr * 2, sy2); ctx.lineTo(sx2 + sr * 0.6, sy2 + sr * 0.6); ctx.lineTo(sx2, sy2 + sr * 2); ctx.lineTo(sx2 - sr * 0.6, sy2 + sr * 0.6); ctx.lineTo(sx2 - sr * 2, sy2); ctx.lineTo(sx2 - sr * 0.6, sy2 - sr * 0.6);
+              ctx.closePath(); ctx.fill();
+            }
+          }
         }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        drawScene();
+        drawFightFish();
+        drawBobber();
+        drawRodAndLine();
+        drawForeground();
+        for (var i = 0; i < F.splashes.length; i++) {
+          var sp = F.splashes[i];
+          ctx.fillStyle = "rgba(255,255,255," + Math.max(0, Math.min(0.9, sp.life * 1.6)).toFixed(3) + ")";
+          ctx.beginPath(); ctx.arc(sp.x, sp.y, 2.6, 0, Math.PI * 2); ctx.fill();
+        }
+        drawJumpFish();
+        drawChargeArc();
       }
       function loop(ts) {
         F.raf = requestAnimationFrame(loop);
         var dt = F.lastTs ? Math.min(0.05, (ts - F.lastTs) / 1000) : 0.016;
         F.lastTs = ts;
         if (!view.classList.contains("open")) return;
-        if (F.state === "wait") {
-          F.t += dt;
-          F.shadowX += F.shadowDir * dt * 26;
-          if (F.shadowX < 190) F.shadowDir = 1;
-          if (F.shadowX > 330) F.shadowDir = -1;
-          if (F.t >= F.biteAt) {
-            F.state = "bite";
-            F.biteAt = ts;
-            tone(1180, 0.09, "square", 0.05);
-            statusEl.textContent = "！ ヒット！ すぐにボタンを押して合わせよう";
-            castBtn.textContent = "合わせる！";
-          }
-        } else if (F.state === "bite") {
-          var win = fishDiff === "easy" ? 850 : fishDiff === "hard" ? 480 : 650;
-          if (ts - F.biteAt > win) {
-            F.state = "idle";
-            statusEl.textContent = "逃げられた… タイミングが遅かったようです";
-            castBtn.textContent = "キャスト";
-            endCast();
-          }
-        } else if (F.state === "fight") {
-          var pull = fishDiff === "easy" ? 15 : fishDiff === "hard" ? 24 : 19;
-          if (ts >= F.nextSurge) {
-            F.surge = 0.55 + Math.random() * 0.5;
-            F.nextSurge = ts + 700 + Math.random() * 900;
-            tone(220, 0.1, "sawtooth", 0.03);
-          }
-          F.surge = Math.max(0, F.surge - dt * 1.4);
-          if (F.holding) F.progress += dt * 26;
-          F.progress -= dt * (4 + F.surge * pull);
-          F.shadowX += (246 - F.shadowX) * dt * (F.holding ? 0.7 : -0.12);
-          if (F.progress >= 100) { landFish(); }
-          else if (F.progress <= -12) {
-            F.state = "idle";
-            statusEl.textContent = "糸がたるんで逃げられた… 巻き続けよう";
-            castBtn.textContent = "キャスト";
-            tone(300, 0.3, "sawtooth", 0.04, 0, 0);
-            endCast();
-          }
-        }
-        draw(ts);
+        F.now += dt;
+        update(dt);
+        draw();
       }
-      function endCast() {
-        if (casts <= 0 && F.state === "idle") {
-          if (!banked && tripPts > 0 && window.ARCADE_points) window.ARCADE_points.earnScore("fishing", tripPts, fishDiff);
-          if (!banked) { statusEl.textContent += "（釣行終了： " + tripPts + " ptを精算しました）"; banked = true; }
-          castBtn.disabled = true;
-          castBtn.textContent = "釣行終了";
-        }
-        paintDex();
+
+      /* ---------- input ---------- */
+      function pressStart(e) {
+        if (F.phase === "idle") startCharge();
+        else if (F.phase === "bite") hookSet();
+        else if (F.phase === "fight") F.holding = true;
+        if (e && e.cancelable) e.preventDefault();
       }
-      function landFish() {
-        var f = F.rolled;
-        F.state = "idle";
-        var key = spot + ":" + f.name;
-        var first = !dex[key];
-        if (first || f.size > dex[key]) dex[key] = f.size;
-        saveDex();
-        var pts = TIER_PTS[f.tier] + (first ? 5 : 0);
-        tripPts += pts;
-        tone(784, 0.1, "triangle", 0.05); tone(1046, 0.16, "triangle", 0.05, 0.09);
-        if (f.tier >= 2) celebrate();
-        statusEl.textContent = f.emoji + " " + f.name + "（" + f.size + " cm・" + TIER_NAME[f.tier] + "）を釣り上げた！ +" + pts + " コイン" + (first ? "（初ゲット +5）" : "");
-        castBtn.textContent = "キャスト";
-        endCast();
+      function pressEnd() {
+        if (F.phase === "charge") releaseCast();
+        if (F.phase === "fight") F.holding = false;
       }
-      function startCast() {
-        if (F.state === "wait") return;
-        if (F.state === "bite") {
-          F.state = "fight";
-          F.rolled = rollFish();
-          F.progress = 22; F.holding = false; F.surge = 0; F.nextSurge = performance.now() + 800;
-          castBtn.textContent = "巻く（押し続ける）";
-          statusEl.textContent = "かかった！ ボタンを押し続けて巻き上げよう。魚が暴れたら少しゆるめると糸が切れにくい";
-          tone(520, 0.08, "square", 0.045);
-          return;
-        }
-        if (F.state === "fight") return;
-        if (casts <= 0) return;
-        casts--; banked = false;
-        F.state = "wait"; F.t = 0;
-        F.biteAt = 1.4 + Math.random() * 2.2;
-        F.shadowX = 200 + Math.random() * 90;
-        statusEl.textContent = "魚影が近づいてくる… 「！」を待とう";
-        castBtn.textContent = "……";
-        paintDex();
-      }
-      castBtn.addEventListener("click", startCast);
-      castBtn.addEventListener("pointerdown", function () { if (F.state === "fight") F.holding = true; });
-      document.addEventListener("pointerup", function () { F.holding = false; });
-      canvas.addEventListener("pointerdown", function () {
-        if (F.state === "bite") startCast();
-        else if (F.state === "fight") F.holding = true;
+      canvas.addEventListener("pointerdown", pressStart);
+      castBtn.addEventListener("pointerdown", pressStart);
+      window.addEventListener("pointerup", pressEnd);
+      window.addEventListener("pointercancel", pressEnd);
+      document.addEventListener("keydown", function (e) {
+        if (e.code !== "Space" || !view.classList.contains("open")) return;
+        if (e.repeat) { e.preventDefault(); return; }
+        pressStart(e);
       });
+      document.addEventListener("keyup", function (e) {
+        if (e.code !== "Space" || !view.classList.contains("open")) return;
+        if (e.cancelable) e.preventDefault();
+        pressEnd();
+      });
+      document.getElementById("fishCardBtn").addEventListener("click", function () {
+        cardEl.hidden = true;
+        if (casts > 0) { setPhase("idle"); statusEl.textContent = "釣り場を選んでキャストしてください"; }
+        else {
+          statusEl.textContent = tripPts > 0 ? "釣行終了： 合計 " + tripPts + " コインを精算しました" : "釣行終了";
+          showSummary();
+        }
+      });
+      document.getElementById("fishSumBtn").addEventListener("click", newTrip);
       document.getElementById("fishNewTrip").addEventListener("click", function () {
-        if (!banked && tripPts > 0 && window.ARCADE_points) window.ARCADE_points.earnScore("fishing", tripPts, fishDiff);
-        casts = 3; tripPts = 0; banked = true;
-        F.state = "idle";
-        castBtn.disabled = false;
-        castBtn.textContent = "キャスト";
-        statusEl.textContent = "新しい釣行です。釣り場を選んでキャストしてください";
+        if (F.phase === "charge" || F.phase === "fly" || F.phase === "wait" || F.phase === "bite" || F.phase === "fight") return;
+        newTrip();
+      });
+      var sceneTab = document.getElementById("fishTabScene"), dexTab = document.getElementById("fishTabDex");
+      var scenePane = document.getElementById("fishScenePane"), dexPane = document.getElementById("fishDexPane");
+      sceneTab.addEventListener("click", function () {
+        sceneTab.classList.add("on"); dexTab.classList.remove("on");
+        scenePane.hidden = false; dexPane.hidden = true;
+      });
+      dexTab.addEventListener("click", function () {
+        dexTab.classList.add("on"); sceneTab.classList.remove("on");
+        dexPane.hidden = false; scenePane.hidden = true;
         paintDex();
       });
       Array.prototype.forEach.call(document.querySelectorAll("#fishSpots .fish-spot-btn"), function (b) {
         b.addEventListener("click", function () {
-          if (F.state === "wait" || F.state === "bite" || F.state === "fight") return;
+          if (F.phase !== "idle" && F.phase !== "landed") return;
           spot = b.getAttribute("data-spot");
           Array.prototype.forEach.call(document.querySelectorAll("#fishSpots .fish-spot-btn"), function (x) { x.classList.toggle("on", x === b); });
+          buildSchool();
+          F.ripples = []; F.drift = [];
           paintDex();
         });
       });
       paintDex();
+      refreshControls();
       requestAnimationFrame(loop);
-      window.__fishing = { enter: function () {}, debug: function () { return { state: F.state, casts: casts, tripPts: tripPts, dex: dexCount(), diff: fishDiff }; } };
+      function debugPhase() {
+        if (F.phase === "charge" || F.phase === "fly") return "cast";
+        if (F.phase === "jump") return "landed";
+        return F.phase;
+      }
+      window.__fishing = {
+        enter: function () {},
+        debug: function () {
+          return {
+            phase: debugPhase(), state: debugPhase(),
+            tension: Math.round(F.tension), distance: Math.round(F.dist * 100),
+            distM: Math.round(F.dist * F.castMeters * 10) / 10,
+            casts: casts, tripPts: tripPts, dex: dexCount(), diff: fishDiff, spot: spot
+          };
+        },
+        debugForceBite: function () {
+          if (F.phase === "bite") return true;
+          if (F.phase !== "wait") return false;
+          F.nibbles = []; F.nibbleIdx = 0;
+          F.biteAt = F.now + 0.3;
+          return true;
+        },
+        reloadDex: reloadDex
+      };
     })();
   })();
   </script>
@@ -45568,7 +46537,7 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
       cubefallView: ["キューブフォールのルール", "落ちてくるキューブを並べて消し、できるだけ長く生き残ります。", "矢印キー／スワイプで移動と回転、落下ボタンで一気に落とします。", "ラインを消すほどスコアが伸びます。", "スコアに応じてコインが入ります（上限あり）。"],
       billiardsView: ["ビリヤードのルール", "8ボールです。自分のグループ（1〜7番か9〜15番）を全部入れてから、8番をコールしたポケットに入れれば勝ちです。", "ドラッグで狙って、離してショットします。引く量で強さが変わります。", "ファウル： スクラッチ／先に合法でない球に当てる／当たった後にどの球もクッションに届かない（ノーレール）。教育モード（エイムガイド）では予測線とショットの判定が出ます。", "勝利 30 コイン（難易度で変動）。教育モードを使ったマッチはコインが増えも減りもしません。"],
       gomokuView: ["五目ならべのルール", "15×15の盤に自分の石を5つ並べれば勝ちです。6つ以上の長連も勝ちで、禁手はありません。", "マスをタップ（クリック）して石を置きます。置く前にゴースト石で位置を確認できます。", "四（あと1つで5つ）と、両側が開いた三（活三）を意識すると強くなります。教育モードでは作り方と止め手を表示します。", "勝利 30 コイン／引き分け 10 コイン（難易度倍率あり）。教育モードを使った対局はコインが増えも減りもしません。"],
-      fishingView: ["釣り図鑑のルール", "湖・川・海で全36種を釣って図鑑を完成させます。", "キャストして、魚影が寄って「！」が出た瞬間に合わせ、ボタンを押し続けて巻き上げます。魚が暴れたら少しゆるめます。", "レア度の目安： コモン55%／レア28%／エピック12%／レジェンド5%。コインは 2／5／10／20 コイン、初めての種類は +5 コイン。", "1釣行（3キャスト）の合計が最大30 コイン入ります。"],
+      fishingView: ["釣り図鑑のルール", "湖・川・海で全36種を釣って図鑑を完成させます。", "ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリでウキが沈んで「！」が出たら素早くタップして合わせます。ファイト中は押し続けて巻き、魚が走る予兆が出たら少しゆるめてテンションを逃がします。赤いテンションが続くと糸が切れ、巻かないでいると距離が戻って逃げられます。", "基礎確率： コモン55%／レア28%／エピック12%／レジェンド5%。スキルが確率に効くのはキャストの質だけで、最大でレジェンド+2・エピック+2（パーフェクト時、コモンから差し引き）、良好でエピック+1。合わせの質は確率ではなく、ファイト開始時の距離と魚の疲労に効きます。難易度で合わせの猶予（やさしい900ms／ふつう650ms／むずかしい480ms）と魚の強さ・テンションの上がり方・ダッシュの頻度が変わります。", "コインはレア度で 2／5／10／20 コイン、初めての種類は +5 コイン。1釣行（3キャスト）の合計が最大30 コイン入ります。"],
       snakeView: ["スネークのルール", "エサを食べてヘビを伸ばし、壁と自分の体に当たらないようにします。", "矢印キー／スワイプで方向を変えます。", "エサ1つでスコア +10。難易度で速度が変わります。", "スコア10点ごとに 1 コイン（最大30 コイン、難易度倍率あり）。"],
       breakoutView: ["ブロック崩しのルール", "パドルでボールを跳ね返し、全部のブロックを壊します。", "マウス／指でパドルを左右に動かします。スティッキーで付いたボールはタップで発射します。", "アイテムはブロックから18%で落下： パドル拡大（12秒）／マルチボール（+2球）／貫通ボール（8秒）／スティッキー／レーザー（10秒）／シールド（床で1回だけ救済）／スローボール（8秒）／ライフ+1／爆弾ボール（次の命中で周囲も爆破）。貫通中はスティッキー無効、拡大とレーザーは共存できます。レベル2から硬いブロック（2発）、レベル3から爆発ブロックが出ます。", "スコア10点ごとに 1 コイン（最大30 コイン、難易度倍率あり）。"],
       minesView: ["マインスイーパーのルール", "地雷を踏まずに、全部の安全なマスを開きます。", "タップで開きます。長押し（または旗モード）で旗を立てます。", "数字は周囲8マスにある地雷の数です。難易度で地雷の数が 8／10／14 個に変わります。", "クリアで 20 コイン（難易度倍率あり）。"],
