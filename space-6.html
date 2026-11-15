@@ -4864,10 +4864,17 @@
          can be scrolled fully into view above the host chrome. */
       #libraryView .subscroll { touch-action: pan-y; overscroll-behavior: contain; }
 #notesView .subscroll { touch-action: pan-y; overscroll-behavior: contain; }
+      /* List -> detail screens (Build Notes, Knowledge Library, hunt,
+         shop, profile, ranking): a container carrying [hidden] must
+         never be painted. A component rule that sets display (e.g.
+         .lib-genres { display: flex }) otherwise overrides the UA
+         [hidden] default and leaks the hidden pane into the visible
+         list flow — the failure family behind article bodies showing
+         under a shelf list they were never opened from. */
+      #notesView [hidden], #libraryView [hidden], #huntView [hidden],
+      #pointsView [hidden], #profileView [hidden], #rankingView [hidden] { display: none !important; }
 .notes-wrap { max-width: 720px; margin: 0 auto; padding: 20px 20px 96px; }
 .notes-wrap .lead { font-size: 15px; line-height: 1.8; font-weight: 700; }
-.notes-sec { margin-top: 26px; padding-top: 20px; border-top: 1.5px solid rgba(147, 112, 219, 0.22); }
-.notes-h { font-size: 17.5px; font-weight: 900; line-height: 1.45; margin: 0 0 5px; }
 .notes-shelf-btn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-top: 10px; padding: 13px 15px; border-radius: 14px; border: 1.5px solid rgba(147, 112, 219, 0.3); background: var(--surface); color: var(--text); font-size: 15px; font-weight: 800; cursor: pointer; }
 .notes-shelf-btn:active { transform: scale(0.98); }
 .notes-shelf-count { margin-left: auto; font-size: 12px; font-weight: 800; color: #6a549e; background: #f4f1fa; border-radius: 999px; padding: 3px 10px; }
@@ -4904,15 +4911,43 @@
 @keyframes gomWinGlow { from { box-shadow: 0 0 4px rgba(255, 217, 77, 0.5); } to { box-shadow: 0 0 14px rgba(255, 217, 77, 1); } }
 .gom-cell.edu-best { box-shadow: inset 0 0 0 3px #f59e0b; }
 /* ===== Fishing dex （釣り図鑑) ===== */
-.fish-spots { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-.fish-spot-btn { border: 1.5px solid rgba(87, 168, 216, 0.5); background: var(--surface); color: var(--text); border-radius: 999px; padding: 8px 16px; font-size: 13.5px; font-weight: 800; cursor: pointer; }
-.fish-spot-btn.on { background: #2f7fc4; border-color: #2f7fc4; color: #fff; }
-.fish-stage-box { position: relative; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 1.5px rgba(87, 168, 216, 0.4); }
+.fish-root { background: linear-gradient(168deg, #e3f2f7 0%, #f2fafc 55%, #e8f6ee 100%); }
+.fish-stage-box { position: relative; border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 0 1.5px rgba(87, 168, 216, 0.4), 0 10px 24px rgba(20, 70, 100, 0.18); }
 #fishCanvas { display: block; width: 100%; height: auto; }
-.fish-actions { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
-.fish-cast-btn { border: 0; border-radius: 999px; padding: 12px 26px; background: linear-gradient(180deg, #3f9be0, #2f7fc4); color: #fff; font-size: 15px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #1d5a8f, 0 8px 14px rgba(31, 90, 143, 0.35); }
+/* In-scene HUD (2026-11-14 button tidy round): every fishing control
+   lives INSIDE the scene as an overlay — spot chips top-left, the
+   scene/dex tabs top-right, distance + fight bars on the row below,
+   and one control dock along the bottom centre (power gauge, status
+   chip, the big CAST button). Nothing sits in a band under the
+   picture any more, so nothing can be clipped by the scene edge. */
+.fish-spots { position: absolute; top: 10px; left: 10px; z-index: 4; display: flex; gap: 6px; flex-wrap: wrap; max-width: 62%; }
+.fish-spot-btn { border: 1.5px solid rgba(255, 255, 255, 0.65); background: rgba(8, 26, 44, 0.62); color: #eaf4fb; border-radius: 999px; padding: 9px 18px; min-height: 40px; font-size: 14px; font-weight: 900; cursor: pointer; backdrop-filter: blur(3px); box-shadow: 0 4px 10px rgba(4, 20, 36, 0.35); transition: transform 90ms ease; }
+.fish-spot-btn:active { transform: scale(0.94); }
+.fish-spot-btn.on { background: #2f7fc4; border-color: #bfe3ff; color: #fff; box-shadow: 0 4px 12px rgba(20, 90, 150, 0.55), inset 0 0 0 2px rgba(255, 255, 255, 0.35); }
+.fish-actions { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 7px; width: min(430px, 94%); pointer-events: none; }
+.fish-actions > * { pointer-events: auto; }
+.fish-stage-box:has(.fish-card:not([hidden])) .fish-actions,
+.fish-stage-box:has(.fish-card:not([hidden])) .fish-spots { display: none; }
+.fish-power { pointer-events: none; width: min(320px, 82%); height: 14px; border-radius: 999px; background: rgba(8, 26, 44, 0.66); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5), 0 3px 8px rgba(4, 20, 36, 0.35); position: relative; overflow: hidden; }
+.fish-power[hidden] { display: none; }
+.fish-power-fill { position: absolute; top: 0; bottom: 0; left: 0; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #57c84d, #ffd94d 62%, #ffd94d 78%, #ff9d3c 94%, #e0483e); }
+.fish-power-zone { position: absolute; top: 0; bottom: 0; left: 78%; width: 16%; background: rgba(255, 255, 255, 0.34); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.85); }
+.fish-status-chip { pointer-events: none; max-width: 100%; background: rgba(8, 26, 44, 0.68); color: #eaf4fb; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; line-height: 1.35; text-align: center; backdrop-filter: blur(3px); box-shadow: 0 3px 8px rgba(4, 20, 36, 0.3); overflow-wrap: break-word; }
+.fish-cast-btn { border: 0; border-radius: 999px; padding: 15px 42px; min-height: 56px; min-width: min(240px, 78vw); display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #3f9be0, #2f7fc4); color: #fff; font-size: 17px; font-weight: 900; letter-spacing: 0.04em; cursor: pointer; box-shadow: 0 5px 0 #1d5a8f, 0 10px 18px rgba(10, 50, 90, 0.45); transition: transform 90ms ease; }
 .fish-cast-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1d5a8f; }
 .fish-cast-btn:disabled { background: #8a93a3; box-shadow: 0 5px 0 #5f6774; cursor: default; }
+.fish-card .fish-cast-btn { min-width: 0; padding: 12px 30px; min-height: 50px; font-size: 15px; }
+@media (max-width: 560px) { .fish-spots { max-width: 58%; } .fish-spot-btn { padding: 8px 14px; } .fish-cast-btn { padding: 14px 30px; } }
+/* Narrow widths (phone / iPad split): the spot chips and the
+   scene/dex tabs cannot share the top row in every language
+   (EN "Lake/River/Sea" + "Fishing spot" is wider than the scene),
+   so the tabs drop to a second row on the right and the fight
+   HUD moves one row further down. Nothing overlaps. */
+@media (max-width: 620px) {
+  .fish-tabs { top: 58px; }
+  .fish-fight-hud { top: 108px; }
+  #fishDexPane { padding-top: 104px; }
+}
 .fish-dex { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-top: 12px; }
 .fish-dex-item { border-radius: 12px; padding: 8px 6px; text-align: center; background: var(--surface); border: 1.5px solid rgba(87, 168, 216, 0.25); }
 .fish-dex-item .fd-emoji { font-size: 24px; line-height: 1.2; display: block; }
@@ -4920,14 +4955,17 @@
 .fish-dex-item .fd-name { font-size: 11.5px; font-weight: 800; display: block; margin-top: 2px; }
 .fish-dex-item .fd-size { font-size: 10.5px; color: var(--muted, #8a84a0); display: block; }
 .fish-dex-item.rare { border-color: rgba(245, 158, 11, 0.65); }
-.fish-tabs { display: flex; gap: 8px; margin: 10px 0 2px; }
-.fish-tab { flex: 1; border: 1.5px solid rgba(87, 168, 216, 0.5); background: var(--surface); color: var(--text); border-radius: 12px; padding: 10px 16px; font-size: 14.5px; font-weight: 900; cursor: pointer; }
-.fish-tab.on { background: #1f7a8c; border-color: #1f7a8c; color: #fff; }
+.fish-tabs { position: absolute; top: 10px; right: 10px; z-index: 4; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(8, 26, 44, 0.62); backdrop-filter: blur(3px); box-shadow: 0 4px 10px rgba(4, 20, 36, 0.35); }
+.fish-tab { border: 0; background: transparent; color: #cfeaff; border-radius: 999px; padding: 8px 16px; min-height: 36px; font-size: 13.5px; font-weight: 900; cursor: pointer; white-space: nowrap; }
+.fish-tab.on { background: #1f7a8c; color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4); }
+.fish-stage-wrap { position: relative; }
+.fish-stage-wrap:has(.fish-card:not([hidden])) .fish-tabs { display: none; }
+#fishDexPane { padding-top: 50px; }
 #fishCanvas { touch-action: none; }
-.fish-dist-chip { position: absolute; top: 12px; left: 12px; z-index: 2; display: flex; gap: 8px; align-items: baseline; background: rgba(8, 26, 44, 0.72); color: #cfeaff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; pointer-events: none; }
+.fish-dist-chip { position: absolute; top: 60px; left: 10px; z-index: 2; display: flex; gap: 8px; align-items: baseline; background: rgba(8, 26, 44, 0.72); color: #cfeaff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; pointer-events: none; }
 .fish-dist-chip b { color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; }
 .fish-dist-chip[hidden] { display: none; }
-.fish-fight-hud { position: absolute; top: 12px; right: 12px; z-index: 2; width: min(46%, 380px); display: flex; flex-direction: column; gap: 5px; background: rgba(8, 26, 44, 0.55); border-radius: 12px; padding: 8px 12px; pointer-events: none; }
+.fish-fight-hud { position: absolute; top: 60px; right: 10px; z-index: 2; width: min(46%, 380px); display: flex; flex-direction: column; gap: 5px; background: rgba(8, 26, 44, 0.55); border-radius: 12px; padding: 8px 12px; pointer-events: none; }
 .fish-fight-hud[hidden] { display: none; }
 .fish-fh-row { display: flex; align-items: center; gap: 8px; }
 .fish-fh-lab { font-size: 11px; font-weight: 900; color: #eaf4fb; min-width: 74px; }
@@ -4973,6 +5011,8 @@
 .fish-sum-row .fs-name { font-weight: 900; color: #fff; }
 .fish-sum-row .fs-pts { margin-left: auto; font-weight: 900; color: #ffd94d; }
 .fish-dex-summary { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+.fish-root .w1-note { text-align: left; overflow-wrap: break-word; max-width: 100%; }
+#fishingView .diff-bar { margin: 2px 0 8px; }
 .fish-dex-pct { border: 1.5px solid rgba(87, 168, 216, 0.35); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800; }
 .fish-dex-pct b { color: #2f7fc4; }
 #fishSummary { background: rgba(8, 22, 38, 0.82); justify-content: center; padding: 16px; }
@@ -5039,7 +5079,6 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
 .diff-btn { border: 1.5px solid rgba(147, 112, 219, 0.35); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 800; cursor: pointer; }
 .diff-btn.on { background: #7c5cd6; border-color: #7c5cd6; color: #ffffff; }
 .diff-btn:active { transform: scale(0.95); }
-.notes-tag { font-size: 12px; font-weight: 800; color: #b3541e; margin: 0 0 7px; }
 .notes-body { font-size: 14.5px; line-height: 1.85; margin: 0; }
 .notes-verse { font-size: 13.5px; line-height: 1.9; margin: 12px 0 0; padding-left: 14px; border-left: 2px solid rgba(217, 164, 65, 0.45); color: #7a5c14; font-style: italic; }
 #huntView .subscroll { touch-action: pan-y; overscroll-behavior: contain; }
@@ -5967,6 +6006,43 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       .pf-eq-cat { flex-basis: 84px; }
     }
   </style>
+    <style>
+      /* ===== Button system unification (2026-11-14 tidy round) =====
+         One shared metric set for every game's controls, applied as a
+         late cascade layer over the per-game styles above:
+         - secondary pills (HUD buttons, difficulty, bet options):
+           40px min height, pill radius, 800 weight, centred label
+         - primary actions (start / bet / deal / spin class):
+           52px min height, pill radius, same padding rhythm
+         - chips stay circular but share one 52px size
+         - every control row wraps and centres, labels may wrap inside
+           their pill instead of overflowing at any language/length,
+           and no button may exceed its row's width. Game logic,
+           colours per game and wording are untouched. */
+      .w1-hbtn, .diff-btn, .cz-betbtn, .cz-mode-btn, .lobby-tool-btn, .rules-btn,
+      .pool-diff-btn, .pool-mode-btn, .pool-call-btn, .mj-rot-btn, .pts-btn {
+        min-height: 40px; display: inline-flex; align-items: center; justify-content: center;
+        text-align: center; line-height: 1.25; padding: 8px 15px; border-radius: 999px;
+        font-weight: 800; max-width: 100%; white-space: normal; overflow-wrap: break-word;
+      }
+      .w1-bigbtn, .bj-act, .slo-stopbtn, .rr-btn-main {
+        min-height: 52px; display: inline-flex; align-items: center; justify-content: center;
+        text-align: center; line-height: 1.25; padding: 13px 28px; border-radius: 999px;
+        max-width: 100%; white-space: normal; overflow-wrap: break-word;
+      }
+      .bj-act.ghost, .w1-bigbtn.ghost, .rr-btn-sub { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; text-align: center; padding: 11px 22px; border-radius: 999px; max-width: 100%; white-space: normal; }
+      .bj-chipbtn, .cz-chip { width: 52px; height: 52px; flex: 0 0 auto; }
+      .vp-holdbtn { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+      .cz-controls, .w1-ov-btns, .hunt-btnrow, .vp-deckbtns, .diff-bar, .pts-presets, .rb-lbtns, .retro-actions, .retro-pad-bar {
+        align-items: center; justify-content: center; flex-wrap: wrap; row-gap: 8px;
+      }
+      .gameview button, .subview button { max-width: 100%; }
+      .snk-dir { min-height: 52px; }
+      @media (max-width: 480px) {
+        .w1-bigbtn, .bj-act, .slo-stopbtn, .rr-btn-main { padding: 12px 20px; }
+        .bj-chipbtn, .cz-chip { width: 48px; height: 48px; }
+      }
+    </style>
   </head>
   <body>
     <div class="app">
@@ -7351,18 +7427,19 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <span class="w1-flex"></span>
               <button type="button" class="w1-hbtn" id="fishNewTrip">新しい釣行</button>
             </div>
+            <div class="fish-stage-wrap">
             <div class="fish-tabs" role="tablist">
               <button type="button" class="fish-tab on" id="fishTabScene" role="tab">釣り場</button>
               <button type="button" class="fish-tab" id="fishTabDex" role="tab">図鑑</button>
             </div>
             <div id="fishScenePane">
-              <div class="fish-spots" id="fishSpots">
-                <button type="button" class="fish-spot-btn on" data-spot="lake">湖</button>
-                <button type="button" class="fish-spot-btn" data-spot="river">川</button>
-                <button type="button" class="fish-spot-btn" data-spot="sea">海</button>
-              </div>
               <div class="fish-stage-box">
                 <canvas id="fishCanvas" width="840" height="600"></canvas>
+                <div class="fish-spots" id="fishSpots">
+                  <button type="button" class="fish-spot-btn on" data-spot="lake">湖</button>
+                  <button type="button" class="fish-spot-btn" data-spot="river">川</button>
+                  <button type="button" class="fish-spot-btn" data-spot="sea">海</button>
+                </div>
                 <div class="fish-dist-chip" id="fishDistChip" hidden><span>距離</span><b id="fishDistVal">0.0 m</b></div>
                 <div class="fish-fight-hud" id="fishFightHud" hidden>
                   <div class="fish-fh-row"><span class="fish-fh-lab">魚のスタミナ</span><div class="fish-fh-track"><div class="fish-fh-fill stam" id="fishStamFill"></div></div></div>
@@ -7392,15 +7469,17 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                   <div class="fish-card-line total"><span>合計</span><b id="fishSumTotal">+0 コイン</b></div>
                   <button type="button" class="fish-cast-btn" id="fishSumBtn">新しい釣行</button>
                 </div>
-              </div>
-              <div class="fish-actions">
-                <button type="button" class="fish-cast-btn" id="fishCastBtn">キャスト</button>
-                <span class="w2-status" id="fishStatus">釣り場を選んでキャストしてください</span>
+                <div class="fish-actions">
+                  <div class="fish-power" id="fishPower" hidden><div class="fish-power-fill" id="fishPowerFill"></div><div class="fish-power-zone"></div></div>
+                  <span class="fish-status-chip" id="fishStatus">釣り場を選んでキャストしてください</span>
+                  <button type="button" class="fish-cast-btn" id="fishCastBtn">キャスト</button>
+                </div>
               </div>
             </div>
             <div id="fishDexPane" hidden>
               <div class="fish-dex-summary" id="fishDexSummary"></div>
               <div class="fish-dex" id="fishDex"></div>
+            </div>
             </div>
             <p class="w1-note">遊び方： ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリ（ウキが沈んで「！」）の瞬間に素早く合わせます。ファイトは押し続けて巻くのが基本。魚が走る予兆が出たら少しゆるめてテンションを逃がし、巻かないでいると距離が戻ってたるむと逃げられます。1釣行は3キャストまで。</p>
             <p class="w1-note">確率とコイン： レア度の基礎確率は コモン55%／レア28%／エピック12%／レジェンド5%。キャストの質が効くのはここまで（パーフェクトでレジェンド+2・エピック+2、良好でエピック+1）で、合わせの質は確率ではなくファイトの開始条件に効きます。コインはレア度で 2／5／10／20、初ゲット +5、1釣行の上限は 30 コイン です。</p>
@@ -8559,64 +8638,6 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <span class="notes-art-tag" id="notesArtTag"></span>
               <div id="notesArtBody"></div>
             </div>
-            <section class="notes-sec">
-              <h3 class="notes-h">コイン経済の設計</h3>
-              <p class="notes-tag">対象：コイン全体</p>
-              <p class="notes-body">コインには「残高」と「累計」の2つの数字があります。残高は使えば減りますが、累計は絶対に減らない——これが経済全体の不変条件です。カジノで勝ったときは、返金分は残高へ、利益分だけが累計にも入るよう精算を分離しました。ゲームごとの難易度倍率と、1日1回だけ受け取れるデイリーボーナス（同じ日に2回受け取れない仕組み付き）も、この土台の上に乗っています。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">カジノの還元率は、全通り列挙で検証した</h3>
-              <p class="notes-tag">対象：スロット／ルーレット／ビデオポーカー</p>
-              <p class="notes-body">配当表は「なんとなく」では決めていません。スロットはリールの全1,000通り（10絵柄×3リール）をプログラムで列挙し、当選確率と配当から還元率が91.0%になることを確認しました。ルーレットは全37ポケットと全賭け種の配当を照合し、ビデオポーカーのダブルアップは「勝ち24通り・負け24通り・引き分け3通り」で期待値がちょうど賭け金と等しくなる（胴元にも客にも偏らない）ことを数えて確かめています。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">チェスのエンジンと教育モード</h3>
-              <p class="notes-tag">対象：チェス</p>
-              <p class="notes-body">CPUは合法手をすべて生成し、数手先まで読む探索と、駒の価値・配置を数値化した評価関数で最善手を選びます。教育モードはその探索をそのまま見せる機能で、最善手・候補手・読み筋・局面の評価を表示します。ただし教育モードを使った対局はコイン対象外——この「アシストを使ったらコインなし」の原則が、ARCADE全体のルールになりました。</p>
-              <p class="notes-verse">六十四のマスの海で、導きの星を見ずに漕ぎ出せ。<br>白と黒の王が倒れる日、最初の鍵は静かに落ちる。</p>
-              <p class="notes-verse">同じ盤のいちばん奥、名を伏せた最強の王が眠る。<br>導きを封じられた者だけが、その扉を開けられる。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">麻雀の向聴・待ち計算</h3>
-              <p class="notes-tag">対象：麻雀（一人用）</p>
-              <p class="notes-body">手牌があと何枚でアガリ形になるか（向聴数）、どの牌を待っているか、その牌が山と河にあと何枚残っているかを、毎手すべて計算して画面に出しています。待ちの残り枚数や受け入れ（引くと前進する牌）の数え上げは、14枚の組み合わせを面子と雀頭のパターンに分解する古典的なアルゴリズムです。危険な牌の警告も、この計算の応用です。</p>
-              <p class="notes-verse">緑だけを集めて織る手は、めったに姿を見せない。<br>竹と發の園で和了れたら、その名を年鑑に刻もう。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">ルービックのソルバーと、ボードゲームAIの考え方</h3>
-              <p class="notes-tag">対象：ルービックキューブ／リバーシ</p>
-              <p class="notes-body">ルービックキューブのヒントは、現在の状態から完成までの解法を計算し、その次の一手を示します。デモは解法の全手順をそのまま再生するものです。リバーシのCPUは合法手を列挙し、隅の価値や相手の合法手の数を評価して手を選びます。どちらも「強いAI」であると同時に「仕組みが見える教材」として作りました。なお、ヒントや合法手表示を使ったプレイはコイン対象外です。</p>
-              <p class="notes-verse">白と黒が入れ替わる庭で、最深く読む番人が待つ。<br>四隅を制して盤を返す者に、最初の門は開かれる。</p>
-              <p class="notes-verse">寄り添う数が倍々と育ち、頂に届くとき、<br>翡翠の実がひとつ、そっと熟す。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">コインの作り方：3Dで彫って、スプライト化</h3>
-              <p class="notes-tag">対象：コインのコイン</p>
-              <p class="notes-body">ショップや残高の横で回るコインは、絵文字でも写真でもありません。横顔と「EXTRA LIFE」の文字を3Dモデルとして彫り、回転させながらレンダリングして、コマ撮りのスプライト画像に変換したものです。だから金属の光沢を保ったまま、軽い画像としてクルッと回ります。タップしたときの表裏は、その場で50%ずつの完全なランダム抽選です。</p>
-              <p class="notes-verse">金色の円盤は、もう一つの顔を持っている。<br>同じ顔を三度つづけて見せたとき、水晶が応える。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">ランキングと引き継ぎコードの仕組み</h3>
-              <p class="notes-tag">対象：ランキング／プロフィール</p>
-              <p class="notes-body">ランキングは全プレイヤー共通の表に、自分の記録を名前と一緒に載せる仕組みです。引き継ぎコードは、コイン・所持アイテム・記録を1つのコードに詰めて別の端末へ運ぶためのものです。端末間の同期では「手元のデータが唯一の真実」という原則に作り替えたことで、古いデータに巻き戻される事故がなくなりました。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">カジノのルールは一次情報源で調べた</h3>
-              <p class="notes-tag">対象：カジノ全般</p>
-              <p class="notes-body">バカラのペアやドラゴン7／パンダ8、ブラックジャックのインシュランス、ルーレットのレーストラック賭け（ヴォワゾン・デュ・ゼロなど）の配当と成立条件は、カジノの公式ルールや専門資料といった一次情報源で確認してから実装しました。コミッション5%のような細部も、実際の運用に合わせています。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">10言語対応と、色のコントラスト検証</h3>
-              <p class="notes-tag">対象：アプリ全体</p>
-              <p class="notes-body">画面の文章はすべて辞書に登録され、表示と同時に10言語へ置き換わる仕組みで多言語化しています。新しく文章を足すときは、必ず10言語分の訳を同時に用意します。文字色と背景色の組み合わせはコントラスト比を測って選び、どのテーマでも読みにくくならないようにしています。</p>
-            </section>
-            <section class="notes-sec">
-              <h3 class="notes-h">演出の技術：タイルもコインも、全部プログラムで動く</h3>
-              <p class="notes-tag">対象：ロビー／演出全般</p>
-              <p class="notes-body">ロビーのタイルは、ホバーすると各ゲーム固有のアニメーション（駒が動く、牌が光る、ルーレットが回るなど）を見せます。当選時の紙吹雪、コインのフリップ、ホイールの回転と数字の位置合わせまで、動画ファイルは使わず、すべてCSSとJavaScriptのプログラムで描いています。止まっている画面でも何かが小さく動き続ける——「生きてる感」がARCADEの演出の基準です。</p>
-              <p class="notes-verse">伏せられた札の並びを、一度も迷わずめくり切れ。<br>記憶の庭に過ちがなければ、第二の門は開く。</p>
-              <p class="notes-verse">三つの鍵と三つの門、その先に金色の卵。<br>たどり着いた者への贈り物は、ただ「ありがとう」の心だけ。</p>
-            </section>
           </div>
         </div>
       </div>
@@ -31153,6 +31174,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     state.detail = -1;
     var d = el("libDetail"); if (d) d.hidden = true;
     var l = el("libList"); if (l) l.hidden = false;
+    var b = el("libDetailBody"); if (b) b.textContent = "";
+    var tt = el("libDetailTitle"); if (tt) tt.textContent = "";
+    var gg = el("libDetailGenre"); if (gg) gg.textContent = "";
+    var ll = el("libDetailLinkList"); if (ll) ll.textContent = "";
+    var lk = el("libDetailLinks"); if (lk) lk.hidden = true;
   }
 
   var search = el("libSearch");
@@ -43956,6 +43982,9 @@ PATTERNS.push(
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
       nEl("notesArticle").hidden = true;
+      var ab = nEl("notesArtBody"); if (ab) ab.innerHTML = "";
+      var at = nEl("notesArtTitle"); if (at) at.textContent = "";
+      var ag = nEl("notesArtTag"); if (ag) ag.textContent = "";
       box.hidden = false;
       var html = "";
       NOTES.forEach(function (sh, i) {
@@ -43969,6 +43998,9 @@ PATTERNS.push(
       curShelfIdx = i;
       nEl("notesShelves").hidden = true;
       nEl("notesArticle").hidden = true;
+      var ab2 = nEl("notesArtBody"); if (ab2) ab2.innerHTML = "";
+      var at2 = nEl("notesArtTitle"); if (at2) at2.textContent = "";
+      var ag2 = nEl("notesArtTag"); if (ag2) ag2.textContent = "";
       var list = nEl("notesList");
       list.hidden = false;
       nEl("notesListTitle").textContent = sh.shelf;
@@ -45463,6 +45495,7 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
       var statusEl = document.getElementById("fishStatus");
       var castsEl = document.getElementById("fishCasts"), tripPtsEl = document.getElementById("fishTripPts"), dexCountEl = document.getElementById("fishDexCount");
       var castBtn = document.getElementById("fishCastBtn");
+      var powerEl = document.getElementById("fishPower"), powerFill = document.getElementById("fishPowerFill");
       var dexEl = document.getElementById("fishDex");
       var dexSummaryEl = document.getElementById("fishDexSummary");
       var cardEl = document.getElementById("fishCard"), sumEl = document.getElementById("fishSummary");
@@ -45639,6 +45672,7 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
         else if (F.phase === "bite") { b.disabled = false; b.textContent = "合わせる！"; }
         else if (F.phase === "fight") { b.disabled = false; b.textContent = "巻く（押し続ける）"; }
         else { b.disabled = true; b.textContent = "キャスト"; }
+        if (powerEl) powerEl.hidden = F.phase !== "charge";
         distChip.hidden = !(F.phase === "wait" || F.phase === "bite" || F.phase === "fight" || F.phase === "jump");
         fightHud.hidden = F.phase !== "fight";
       }
@@ -45828,6 +45862,7 @@ window.__gqData = {"UI":{"title":{"ja":"クイズ","en":"Quiz","ko":"퀴즈","zh
           F.power += F.powerDir * dt * 92;
           if (F.power >= 100) { F.power = 100; F.powerDir = -1; }
           if (F.power <= 0) { F.power = 0; F.powerDir = 1; }
+          if (powerFill) powerFill.style.width = F.power.toFixed(1) + "%";
         } else if (F.phase === "fly") {
           F.flyT += dt;
           if (F.flyT >= 0.75) onSplashdown();
