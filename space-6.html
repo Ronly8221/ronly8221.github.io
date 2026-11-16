@@ -6625,6 +6625,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             <button type="button" class="points-chip" id="pointsChip" aria-label="コインショップを開く"><span class="pts-coin"><span class="coin" data-coin data-face="0" aria-hidden="true"><span class="coin-face"></span><span class="coin-spin"></span></span></span><span class="pts-chip-main"><span class="pts-chip-label">残高</span> <b id="ptsBalNum">0</b> コイン <span class="pts-chip-sep">・</span> <span class="pts-rank" id="ptsRankName">見習い</span></span><span class="pts-chip-track"><span class="pts-chip-fill" id="ptsProgFill"></span></span></button>
             <button type="button" class="top-shop-btn" id="topShopBtn" aria-label="コインショップを開く"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1.1 12h-10.8L5.5 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg>ショップ</button>
             <button type="button" class="top-rank-btn" id="topRankBtn" aria-label="ランキングを開く"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4.5a4 4 0 0 1-8 0V4z"/><path d="M8 5.5H5a3 3 0 0 0 3.2 3M16 5.5h3a3 3 0 0 1-3.2 3"/><path d="M12 12.5V16M8.8 20h6.4M12 16c-1.1 1-1.7 2.3-1.9 4h3.8c-.2-1.7-.8-3-1.9-4z"/></svg>ランキング</button>
+            <button type="button" class="top-rank-btn settings-gear-btn" id="globalSettingsBtn" aria-label="設定を開く"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/></svg>設定</button>
           </div>
           <h1 class="masthead"><span class="logo-game">GAME<span class="dot">.</span></span><span class="logo-arcade">ARCADE</span></h1>
           <p class="sky-line"><span class="sky-greet" id="skyGreet"></span><span class="sky-phrase" id="skyPhrase"></span><span class="sky-clock" id="skyClock"></span></p>
@@ -7062,6 +7063,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <h2>カジノVIPルーム</h2>
               <p class="sub">達人ランクで開く、スポットライトの舞台</p>
               <button type="button" class="play-btn lib" id="expOpenVip">VIPルームへ</button>
+            </section>
+  <section class="game-tile" aria-label="ターンテーブル" style="--i:32">
+              <div class="glyph glyph-turntable" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="14" cy="17" r="10"/><circle cx="14" cy="17" r="3.4"/><path d="M24 6l3.5 8.5M27.5 14.5l-4.5 1.8"/></svg></div>
+              <h2>ターンテーブル</h2>
+              <p class="sub">Spotifyとつながるレコード盤。ゲームのBGMに</p>
+              <span class="tile-count" data-count-for="turntable" hidden></span>
+              <button type="button" class="play-btn lib" id="openTurntable">ターンテーブルを開く</button>
             </section>
             </div>
           </section>
@@ -10623,6 +10631,18 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           </div>
         </div>
       </div>
+      <!-- Turntable: the Spotify-linked record player. Rendered by
+           module 65; the player core is app-level so playback and
+           the now-playing chip persist across screens. -->
+      <div class="subview" id="turntableView" aria-label="ターンテーブル画面" data-ttskin="ttskin-default">
+        <div class="subbar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">ターンテーブル</span>
+        </div>
+        <div class="subscroll">
+          <div id="ttRoot"></div>
+        </div>
+      </div>
       <!-- Brain view: the knowledge library as a point-cloud brain,
            a 2D force graph and a shelf list over the same real
            connections. Rendered by module 61; reached from the
@@ -11737,6 +11757,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           library: document.getElementById("libraryView"),
           brain: document.getElementById("brainView"),
           notes: document.getElementById("notesView"),
+          turntable: document.getElementById("turntableView"),
           hunt: document.getElementById("huntView"),
           points: document.getElementById("pointsView"),
           ranking: document.getElementById("rankingView"),
@@ -12426,6 +12447,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            the brain view's back button) are untouched. */
         document.getElementById("openLibrary").addEventListener("click", function () { openGenre("brain"); bumpPlayCount("library"); if (window.__brain) window.__brain.enter(); });
         document.getElementById("openNotes").addEventListener("click", function () { openGenre("notes"); });
+        document.getElementById("openTurntable").addEventListener("click", function () { openGenre("turntable"); if (window.__turntable) window.__turntable.enter(); });
         document.getElementById("openHunt").addEventListener("click", function () { openGenre("hunt"); });
         var topShopBtn = document.getElementById("topShopBtn");
         if (topShopBtn) topShopBtn.addEventListener("click", function () { openGenre("points"); });
@@ -16039,7 +16061,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            (it once rode into the public GitHub copy inside the
            shared base code). The assembled value is unchanged. */
         var DRIVE_API_KEY = (function () {
-var p = [""];
+          var p = [""];
           return p.join("");
         })();
         function dlUrl(id) { return DL_BASE + encodeURIComponent(id) + "?alt=media&key=" + DRIVE_API_KEY; }
@@ -35355,7 +35377,9 @@ var p = [""];
     { id: "riichi", name: "立直棒" },
     { id: "felt", name: "麻雀卓フェルト" },
     { id: "gomoku", name: "五目の石" },
-    { id: "pointer", name: "ポインター" }
+    { id: "pointer", name: "ポインター" },
+    { id: "vinyl", name: "レコードデザイン" },
+    { id: "ttskin", name: "ターンテーブルの画面スキン" }
   ];
   var SHOP = [
     { id: "lobby-default", cat: "lobby", name: "標準テーマ", price: 0 },
@@ -35470,7 +35494,19 @@ var p = [""];
     { id: "fx-confetti", cat: "fx", name: "紙吹雪", price: 800, desc: "ガチャ限定。勝利画面のカードに紙吹雪色の影が重なります", gachaOnly: true },
     { id: "fx-aurora", cat: "fx", name: "オーロラリング", price: 1500, desc: "ガチャ限定。勝利画面のカードにオーロラの輪がにじみます", gachaOnly: true },
     { id: "cov-meteor", cat: "cover", name: "流星群", price: 1000, desc: "ガチャ限定。流星群がプロフィールカードの背景になる", gachaOnly: true },
-    { id: "pfr-moon", cat: "pframe", name: "月のフレーム", price: 850, desc: "ガチャ限定。三日月と星をあしらったプロフィールフレーム", gachaOnly: true }
+    { id: "pfr-moon", cat: "pframe", name: "月のフレーム", price: 850, desc: "ガチャ限定。三日月と星をあしらったプロフィールフレーム", gachaOnly: true },
+    { id: "vinyl-default", cat: "vinyl", name: "クラシックブラック", price: 0, desc: "標準の黒いレコード盤。溝の光沢まで本物らしく" },
+    { id: "vinyl-clear", cat: "vinyl", name: "クリア盤", price: 800, desc: "透明なレコード盤。下のプラッターが透けて見える" },
+    { id: "vinyl-crimson", cat: "vinyl", name: "クリムゾンレッド", price: 1200, desc: "深紅のカラーレコード盤" },
+    { id: "vinyl-cobalt", cat: "vinyl", name: "コバルトブルー", price: 1200, desc: "群青のカラーレコード盤" },
+    { id: "vinyl-sakura", cat: "vinyl", name: "サクラピンク", price: 1500, desc: "桜色のカラーレコード盤" },
+    { id: "vinyl-picture", cat: "vinyl", name: "ピクチャーディスク", price: 2500, desc: "盤面いっぱいにジャケット写真が広がるピクチャー盤" },
+    { id: "vinyl-coin", cat: "vinyl", name: "真鍮コイン盤", price: 4000, desc: "真鍮のEXTRA LIFEコインがそのままレコードになった盤" },
+    { id: "ttskin-default", cat: "ttskin", name: "チャコール", price: 0, desc: "標準のチャコールグレーのデッキ" },
+    { id: "ttskin-walnut", cat: "ttskin", name: "ウォールナット", price: 1500, desc: "ウォールナットの木目デッキ。70年代のハイファイの顔" },
+    { id: "ttskin-studio", cat: "ttskin", name: "スタジオブラック", price: 1500, desc: "真っ黒なスタジオ仕様のデッキ" },
+    { id: "ttskin-cream", cat: "ttskin", name: "クリームレトロ", price: 2000, desc: "クリーム色のレトロなデッキ" },
+    { id: "ttskin-midnight", cat: "ttskin", name: "ミッドナイトブルー", price: 2000, desc: "深夜の青に沈むデッキ" }
   ];
   var GUIDE = [
     "チェス勝利： 50 コイン（教育モードを使った対局はコインが増えも減りもしません）", "チェス引き分け： 15 コイン（教育モードを使った対局はコインが増えも減りもしません）",
@@ -35714,8 +35750,25 @@ var p = [""];
     var fr = pframeId && FRAME_ART[pframeId] ? FRAME_ART[pframeId] : "";
     return '<span class="pf-av pf-av--' + (size || "md") + '"><span class="pf-av-in">' + art + "</span>" + fr + "</span>";
   }
+  /* Turntable mini art (2026-11-16): flat SVG discs / decks in the
+     item's own colours — no gradient ids (house rule). */
+  var TT_ART = {
+    "vinyl-default": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#0b0b0e"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="1"/><circle cx="24" cy="24" r="12" fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/><circle cx="24" cy="24" r="7" fill="#17171c"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-clear": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#d2dceB" fill-opacity="0.35"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/><circle cx="24" cy="24" r="7" fill="#232733"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-crimson": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#57101d"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1"/><circle cx="24" cy="24" r="7" fill="#2b0a10"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-cobalt": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#122a5e"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1"/><circle cx="24" cy="24" r="7" fill="#0a1836"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-sakura": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#a34a68"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/><circle cx="24" cy="24" r="7" fill="#5e2438"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-picture": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#274a7c"/><path d="M6 32a21 21 0 0 1 36 0z" fill="#e9b93c"/><circle cx="33" cy="16" r="4.5" fill="#f2d98c"/><circle cx="24" cy="24" r="6.4" fill="#17171c"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>',
+    "vinyl-coin": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#c9a227"/><circle cx="24" cy="24" r="17.5" fill="none" stroke="#2e2004" stroke-opacity="0.5" stroke-width="1.4"/><circle cx="24" cy="24" r="10" fill="none" stroke="#2e2004" stroke-opacity="0.5" stroke-width="1.2"/><text x="24" y="27.5" text-anchor="middle" font-size="9" font-weight="800" fill="#2e2004">1UP</text></svg>',
+    "ttskin-default": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#232733"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#17171c"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
+    "ttskin-walnut": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#5d3d24"/><path d="M3 17h42M3 31h42" stroke="#3c2716" stroke-width="1.6" opacity="0.6"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#17171c"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
+    "ttskin-studio": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0a0a0c"/><rect x="3" y="9" width="42" height="30" rx="4" fill="none" stroke="#26262c" stroke-width="1.6"/><circle cx="19" cy="24" r="10" fill="#101014"/><circle cx="19" cy="24" r="3" fill="#1c1c20"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
+    "ttskin-cream": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#ecdfc6"/><circle cx="19" cy="24" r="10" fill="#17130c"/><circle cx="19" cy="24" r="3" fill="#e9b93c"/><path d="M36 13l4 9" stroke="#4a3a20" stroke-width="2" stroke-linecap="round"/></svg>',
+    "ttskin-midnight": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0e1e3d"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#274a7c"/><circle cx="39" cy="14" r="1.3" fill="#dfe6f2"/><circle cx="33" cy="11" r="0.9" fill="#dfe6f2"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
   function pfItemArtHTML(item) {
     if (!item) return "";
+    if (item.cat === "vinyl" || item.cat === "ttskin") return TT_ART[item.id] || "";
     if (item.cat === "avatar") return AVATAR_ART[item.id] || "";
     if (item.cat === "cover") return COVER_ART[item.id] || "";
     if (item.cat === "pframe") return pfAvatarHTML(null, item.id, "md");
@@ -36152,6 +36205,17 @@ var p = [""];
       else gomv.removeAttribute("data-gomstone");
     }
     try { if (typeof window.__bgmSet === "function") window.__bgmSet(store.equipped.bgm || null); } catch (e) {}
+    /* Turntable cosmetics (2026-11-16): publish the equipped record
+       design + screen skin as globals and set the view attribute;
+       module 65 reads them live and repaints the deck. */
+    var ttv = document.getElementById("turntableView");
+    if (ttv) {
+      if (store.equipped.ttskin) ttv.setAttribute("data-ttskin", store.equipped.ttskin);
+      else ttv.removeAttribute("data-ttskin");
+    }
+    window.__ttVinyl = store.equipped.vinyl || "vinyl-default";
+    window.__ttSkin = store.equipped.ttskin || "ttskin-default";
+    try { if (typeof window.__turntableCosmetics === "function") window.__turntableCosmetics(); } catch (e) {}
   }
 
   /* ---------- shop ---------- */
@@ -36289,7 +36353,7 @@ var p = [""];
       /* Pointer cards show their real cursor art; so do the
          gacha-only decorations that carry mini art. Everything
          else keeps its painted swatch (2026-11-15). */
-      var hasArt = item.cat === "avatar" || item.cat === "cover" || item.cat === "pframe" || item.cat === "pointer" || ((item.cat === "mjback" || item.cat === "fx") && !!pfItemArtHTML(item));
+      var hasArt = item.cat === "avatar" || item.cat === "cover" || item.cat === "pframe" || item.cat === "pointer" || item.cat === "vinyl" || item.cat === "ttskin" || ((item.cat === "mjback" || item.cat === "fx") && !!pfItemArtHTML(item));
       var art = hasArt ? '<span class="pts-art" data-i18n-skip>' + pfItemArtHTML(item) + "</span>" : '<span class="pts-swatch sw-' + item.id + '" aria-hidden="true"></span>';
       var h = '<div class="pts-item' + (eq ? " is-equipped" : "") + (item.huntOnly && !owned ? " is-locked" : "") + '">' + art + '<div class="pts-item-info"><span class="pts-item-name">' + item.name + (item.price >= 2000 ? '<span class="pts-premium-tag">プレミアム</span>' : "") + '</span>' +
         (item.desc ? '<span class="pts-item-desc">' + item.desc + '</span>' : "");
@@ -40407,6 +40471,42 @@ PATTERNS.push(
   "制作ノートの画面を、検査場のようなコンソールに作り替えた。棚ごとの件数も本文の文字数も、開いた瞬間に実データから数えて表示する。全139件の記事は検査カードとして並び、仕様（SPEC）は二段構えで、主要な23件は6項目すべてを手書きし、残りは本文からの抽出だけで組み、ない項目は空欄のままにした。ズームは3段階で、対象マップは48のマスに分かれる。重いメタデータは「性能予算：重いデータは後読み」と同じ考え方で、後読みの別ファイルに分けた。数字チップは、SPECの数字行にある数字だけを数える。": ["Redesigned the production note screen into a console-like inspection station. Counts for items per shelf and character counts are displayed live upon opening. All 139 articles are arranged as inspection cards. SPEC is two-tiered; 23 major entries have all 6 items handwritten, while others are extracted from text, leaving missing items blank. 3 zoom levels; map split into 48 cells. Heavy metadata is split into separate files loaded on demand, following the 'Performance Budget: Load Heavy Data Later' strategy. Number chips count only numbers within the SPEC lines.", "제작 노트 화면을 검사소 같은 콘솔로 재구성했습니다. 선반별 개수와 본문 글자 수는 여는 즉시 실데이터에서 계산되어 표시됩니다. 총 139개의 기사가 검사 카드로 나열되며, SPEC은 2단 구성입니다. 주요 23개 항목은 6개 항목 모두 수기로 작성했고 나머지는 본문에서 추출했으며, 항목이 없으면 공란으로 두었습니다. 줌은 3단계이며 대상 맵은 48개 격자로 나뉩니다. 무거운 메타데이터는 '성능 예산: 무거운 데이터는 후속 로드' 전략에 따라 별도 파일로 분리했습니다. 숫자 칩은 SPEC 숫자 행에 있는 숫자만 카운트합니다.", "将制作笔记界面改造成了类似检查站的控制台。每栏的数量和正文字数在打开瞬间实时计算显示。139篇文章以检查卡形式排列，SPEC分为两层，23篇主要条目手动填写了全部6项内容，其余从正文提取，缺失项留空。缩放分为3级，目标地图分为48个格子。繁重的元数据遵循“性能预算：重型数据后加载”原则，分成了独立文件。数字芯片仅统计SPEC数字行内的数字。", "將製作筆記界面改造成了類似檢查站的控制台。每欄的數量和正文字數在打開瞬間即時計算顯示。139篇文章以檢查卡形式排列，SPEC分為兩層，23篇主要條目手動填寫了全部6項內容，其餘從正文提取，缺失項留空。縮放分為3級，目標地圖分為48個格子。繁重的元數據遵循「性能預算：重型資料後載入」原則，分成了獨立檔案。數字晶片僅統計SPEC數字行內的數字。", "Rediseñé la pantalla de notas de producción como una consola de inspección. El conteo de objetos por estante y caracteres se muestra al instante basándose en datos reales. Las 139 entradas se organizan como tarjetas de inspección. Las SPEC tienen dos niveles; las 23 principales tienen los 6 campos rellenados a mano, el resto se extrae del texto, dejando campos vacíos. 3 niveles de zoom; mapa dividido en 48 celdas. Los metadatos pesados se cargan por separado, siguiendo la estrategia de 'Presupuesto de rendimiento: cargar datos pesados después'. Las fichas numéricas solo cuentan los números de las líneas SPEC.", "J'ai transformé l'écran des notes de production en une console d'inspection. Le nombre d'objets par étagère et le nombre de caractères sont calculés en temps réel à l'ouverture. Les 139 articles sont disposés en cartes d'inspection. Les SPEC sont à deux niveaux ; les 23 entrées majeures sont remplies manuellement, les autres sont extraites du texte, laissant les vides. 3 niveaux de zoom ; carte divisée en 48 cellules. Les métadonnées lourdes sont chargées à la demande, suivant la stratégie « Budget de performance : charger les données lourdes plus tard ». Les jetons numériques ne comptent que les chiffres des lignes SPEC.", "Ich habe den Notiz-Bildschirm in eine Konsole umgewandelt. Die Anzahl der Artikel pro Regal und Zeichen werden sofort beim Öffnen live berechnet. Alle 139 Artikel sind als Inspektionskarten angeordnet. SPEC ist zweistufig; 23 Haupteinträge wurden manuell ausgefüllt, der Rest aus dem Text extrahiert. 3 Zoomstufen; Karte in 48 Felder geteilt. Schwere Metadaten werden separat nachgeladen, gemäß der Strategie „Performance-Budget: Schwere Daten später laden“. Die Zahl-Chips zählen nur Zahlen in den SPEC-Zeilen.", "Redesenhei a tela de notas de produção como uma estação de inspeção. A contagem de itens por prateleira e caracteres é exibida em tempo real ao abrir. Os 139 artigos são organizados como cartões de inspeção. O SPEC é de dois níveis; 23 entradas principais foram preenchidas manualmente, o restante extraído do texto, deixando campos vazios. 3 níveis de zoom; mapa dividido em 48 células. Metadados pesados são separados e carregados sob demanda, seguindo a estratégia de 'Orçamento de performance: carregar dados pesados depois'. Os chips numéricos contam apenas os números nas linhas SPEC.", "Ho trasformato la schermata delle note di produzione in una console di ispezione. Il conteggio degli articoli per scaffale e il numero di caratteri vengono visualizzati in tempo reale all'apertura. Tutti i 139 articoli sono disposti come schede di ispezione. Le SPEC sono a due livelli; 23 voci principali sono compilate a mano, le altre estratte dal testo, lasciando vuoti i campi mancanti. 3 livelli di zoom; mappa divisa in 48 celle. I metadati pesanti sono caricati separatamente secondo la strategia 'Budget di performance: carica dati pesanti dopo'. I chip numerici contano solo i numeri nelle righe SPEC."],
   "関連ノートは3段階で示す。同じ棚にあるもの、互いに参照し合うもの、そして本文の中で名前を直接挙げているもの（いちばん強いつながり）。背骨のように残るDNAのモチーフは、読んでいる章に合わせて灯る。知識ライブラリの2Dグラフは、力任せの配置をやめ、「脳ビュー（知識の脳）の仕組み」で決めた、17の棚ごとの扇形に整列するリング配置を標準にした。配置は計算式だけで決まるので、何度開いても同じ絵になる。": ["Related notes are shown in 3 levels: same shelf, cross-referenced, and directly mentioned in text (strongest link). DNA motifs acting as the 'backbone' illuminate according to the chapter being read. The 2D graph in the library now uses the 'Brain View' logic: a fan-shaped ring alignment for each of the 17 shelves, ensuring a consistent layout regardless of how many times it's opened, as it's determined purely by calculation.", "관련 노트는 3단계로 표시됩니다. 같은 선반, 상호 참조, 그리고 본문에 직접 언급된 항목(가장 강한 연결)입니다. 척추처럼 남는 DNA 모티프는 읽고 있는 챕터에 맞춰 빛납니다. 지식 라이브러리의 2D 그래프는 강제 배치를 그만두고 '뇌 뷰(지식의 뇌) 구조'에서 결정한 17개 선반별 부채꼴 정렬을 표준으로 삼았습니다. 배치는 계산식만으로 결정되므로 몇 번을 열어도 같은 그림이 됩니다.", "相关笔记分3级展示：同一书架、相互引用、正文中直接提及（最强关联）。作为主干的DNA图案会随当前阅读的章节亮起。知识库的2D图表放弃了强制布局，改为“大脑视图”逻辑：17个书架扇形排列，由于布局完全由计算公式决定，无论打开多少次，视图始终如一。", "相關筆記分3級展示：同一書架、相互引用、正文中直接提及（最強關聯）。作為主幹的DNA圖案會隨當前閱讀的章節亮起。知識庫的2D圖表放棄了強制佈局，改為「大腦視圖」邏輯：17個書架扇形排列，由於佈局完全由計算公式決定，無論打開多少次，視圖始終如一。", "Las notas relacionadas se muestran en 3 niveles: mismo estante, referencia cruzada y mencionadas directamente en el texto (el vínculo más fuerte). Los motivos de ADN actúan como una columna vertebral y se iluminan según el capítulo leído. El gráfico 2D de la biblioteca dejó la disposición forzada y usa la lógica de 'Vista cerebral': una alineación en abanico para cada uno de los 17 estantes. Al basarse solo en cálculos, el diseño es idéntico cada vez que se abre.", "Les notes liées sont affichées en 3 niveaux : même étagère, référence croisée, et mention directe dans le texte (lien le plus fort). Les motifs ADN servent d'épine dorsale et s'illuminent selon le chapitre lu. Le graphique 2D de la bibliothèque utilise désormais la logique « Vue Cerveau » : un alignement en éventail pour chacune des 17 étagères. Comme la disposition est purement mathématique, elle est identique à chaque ouverture.", "Verwandte Notizen werden in 3 Stufen angezeigt: Gleiches Regal, Querverweise und direkte Erwähnung im Text (stärkste Verbindung). Die DNA-Motive leuchten je nach Kapitel. Das 2D-Diagramm nutzt nun die „Brain View“-Logik: eine fächerförmige Ringanordnung für jedes der 17 Regale. Da das Layout rein berechnet wird, ist das Bild bei jedem Öffnen gleich.", "Notas relacionadas são exibidas em 3 níveis: mesma prateleira, referências cruzadas e mencionadas diretamente no texto (vínculo mais forte). Motivos de DNA funcionam como uma espinha dorsal e iluminam-se conforme o capítulo. O gráfico 2D da biblioteca agora usa a lógica 'Vista Cerebral': alinhamento em leque para cada uma das 17 prateleiras. Como o layout é puramente calculado, é sempre idêntico ao abrir.", "Le note correlate sono mostrate su 3 livelli: stesso scaffale, riferimenti incrociati e citate direttamente nel testo (legame più forte). I motivi del DNA fungono da colonna vertebrale e si illuminano in base al capitolo letto. Il grafico 2D della libreria utilizza la logica 'Vista Cervello': allineamento a ventaglio per ognuno dei 17 scaffali. Poiché il layout è puramente calcolato, rimane identico a ogni apertura."],
   "検証の数字です。ノート画面の検査71項目、リング配置の検査51項目、チェスクイズの題名の検査22項目がすべて合格で、整列の格子から外れた点は0件、開き直しても配置は一致しました。同じ改造の中で直した不具合も検査しています。ホールデムは3つの画面サイズで操作列が画面内に収まり、当たり枠の発光はサイコロとルーレットで実際に光ることを確認し、卵探しの記録漏れは「保留して後で適用する」形に直し、釣りは実プレイ3投すべてで釣果がありました。": ["Verification numbers: 71 checks for notes, 51 for ring alignment, 22 for chess quiz titles—all passed. 0 deviations from grid alignment; layout matches after re-opening. Bugs fixed in the same update were also tested. Hold'em operations fit within all 3 screen sizes, highlights confirmed to glow for dice and roulette, egg-hunting records fixed to 'pending apply', and fishing confirmed successful in 3/3 test casts.", "검증 숫자입니다. 노트 화면 검사 71개, 링 정렬 검사 51개, 체스 퀴즈 제목 검사 22개 모두 합격했으며, 정렬 격자를 벗어난 점은 0건, 다시 열어도 배치는 일치했습니다. 같은 개조에서 수정한 버그들도 검사했습니다. 홀덤은 3개 화면 크기에서 조작열이 화면 내에 수용되며, 당첨 칸 발광은 주사위와 룰렛에서 실제로 빛남을 확인했고, 달걀 찾기 누락 기록은 '보류 후 나중에 적용'으로 수정했으며, 낚시는 실플레이 3번 투척 모두 조과가 있었습니다.", "验证数字：笔记画面71项检查、圆环排列51项检查、国际象棋测验标题22项检查全部通过。零项超出对齐网格，重新打开布局一致。同一改造中修复的漏洞也进行了测试。德州扑克在3种屏幕尺寸下操作列均在范围内，骰子与轮盘的发光效果已确认，寻蛋记录缺失已改为“暂存后应用”，钓鱼测试3投全部钓到鱼。", "驗證數字：筆記畫面71項檢查、圓環排列51項檢查、國際象棋測驗標題22項檢查全部通過。零項超出對齊網格，重新打開佈局一致。同一改造中修復的漏洞也進行了測試。德州撲克在3種螢幕尺寸下操作列均在範圍內，骰子與輪盤的發光效果已確認，尋蛋記錄缺失已改為「暫存後應用」，釣魚測試3投全部釣到魚。", "Números de verificación: 71 controles en notas, 51 en alineación de anillos y 22 en títulos de puzzles de ajedrez, todos aprobados. 0 desviaciones de la rejilla; el diseño coincide al reabrir. Se probaron las correcciones de errores del mismo update. En Hold'em, la interfaz cabe en los 3 tamaños de pantalla, los brillos de dados y ruleta funcionan, el registro de búsqueda de huevos se cambió a 'aplicar pendiente', y la pesca tuvo éxito en 3/3 lanzamientos de prueba.", "Chiffres de vérification : 71 contrôles sur les notes, 51 sur l'alignement des anneaux, 22 sur les titres de quiz d'échecs, tous validés. 0 écart par rapport à la grille ; la mise en page est identique à la réouverture. Les bugs corrigés ont été testés. Au Hold'em, les contrôles s'adaptent aux 3 tailles d'écran, le rétroéclairage des dés et de la roulette fonctionne, les enregistrements de chasse aux œufs sont en « application différée », et la pêche a réussi lors des 3 essais.", "Verifizierungszahlen: 71 Notiz-Prüfungen, 51 Ring-Ausrichtungs-Prüfungen, 22 Schach-Quiz-Titel—alle bestanden. 0 Abweichungen vom Raster; das Layout ist nach erneutem Öffnen identisch. Im gleichen Update behobene Fehler wurden ebenfalls getestet. Hold'em-Bedienelemente passen auf alle 3 Bildschirmgrößen, Leuchteffekte bei Würfeln/Roulette funktionieren, Eiersuche-Datensätze wurden auf „später anwenden“ korrigiert, und Fischen war in 3 von 3 Versuchen erfolgreich.", "Números de verificação: 71 checagens em notas, 51 em alinhamento de anéis e 22 em títulos de quiz de xadrez, todos aprovados. 0 desvios do grid; o layout permanece consistente ao reabrir. Bugs corrigidos na mesma atualização foram testados. No Hold'em, os controles cabem nos 3 tamanhos de tela, o brilho de dados e roleta foi confirmado, registros de caça aos ovos corrigidos para 'aplicar depois', e a pesca foi bem-sucedida em 3/3 lançamentos.", "Numeri di verifica: 71 controlli per le note, 51 per l'allineamento degli anelli, 22 per i titoli dei quiz di scacchi: tutto superato. 0 deviazioni dalla griglia; il layout corrisponde dopo la riapertura. I bug corretti nello stesso aggiornamento sono stati testati. Nel Hold'em, i comandi rientrano in tutte le 3 dimensioni dello schermo, l'illuminazione di dadi e roulette è stata confermata, i record della caccia alle uova sono stati corretti in 'applica dopo' e la pesca ha avuto successo in 3/3 lanci di prova."],
+  "レコードデザイン": ["Record Design", "레코드 디자인", "唱片设计", "唱片設計", "Diseño del disco", "Design de disque", "Schallplattendesign", "Design do disco", "Design del disco"],
+  "ターンテーブルの画面スキン": ["Turntable Screen Skin", "턴테이블 화면 스킨", "转盘屏幕皮肤", "唱盤畫面外觀", "Aspecto de la pantalla del giradiscos", "Apparence de la platine", "Plattenspieler-Oberfläche", "Skin da tela da vitrola", "Skin schermata giradischi"],
+  "クラシックブラック": ["Classic Black", "클래식 블랙", "经典黑", "經典黑", "Negro clásico", "Noir classique", "Klassisches Schwarz", "Preto clássico", "Nero classico"],
+  "標準の黒いレコード盤。溝の光沢まで本物らしく": ["Standard black vinyl record. Even the grooves have a realistic sheen.", "표준 검은색 레코드판. 홈의 광택까지 실감 나게 구현", "标准黑色唱片。连唱片纹路的质感都还原得栩栩如生", "標準的黑色唱片。連溝槽的光澤都十分逼真", "Disco de vinilo negro estándar. Incluso el brillo de los surcos parece real", "Disque noir standard. Même les rainures sont réalistes.", "Die Standard-schwarze Schallplatte. Sogar der Glanz der Rillen wirkt authentisch.", "O disco preto padrão. Até o brilho dos sulcos parece real", "Disco in vinile nero standard. Con dettagli realistici anche nei solchi."],
+  "クリア盤": ["Clear Vinyl", "클리어 디스크", "透明盘", "透明盤", "Disco transparente", "Disque transparent", "Durchsichtig", "Disco transparente", "Disco trasparente"],
+  "透明なレコード盤。下のプラッターが透けて見える": ["Transparent vinyl record. The platter underneath is visible.", "투명한 레코드판. 아래쪽 플래터가 비쳐 보임", "透明唱片。可以透视看到下方的转盘", "透明的唱片。可以看見下方的唱盤", "Disco de vinilo transparente. El plato inferior se ve a través de él", "Disque vinyle transparent. La platine en dessous est visible.", "Eine transparente Schallplatte. Der darunterliegende Plattenteller ist sichtbar.", "Um disco transparente. É possível ver o prato abaixo", "Disco in vinile trasparente. Lascia intravedere il piatto sottostante."],
+  "クリムゾンレッド": ["Crimson Red", "크림슨 레드", "深红", "深紅", "Rojo carmesí", "Rouge cramoisi", "Karminrot", "Vermelho carmesim", "Rosso cremisi"],
+  "深紅のカラーレコード盤": ["Deep crimson colored vinyl record.", "진홍색 컬러 레코드판", "深红色唱片", "深紅色的彩色唱片", "Disco de vinilo de color rojo intenso", "Disque vinyle rouge profond", "Eine tiefrote Farb-Schallplatte.", "Um disco na cor vermelho intenso", "Disco in vinile color rosso intenso"],
+  "コバルトブルー": ["Cobalt Blue", "코발트 블루", "钴蓝", "鈷藍", "Azul cobalto", "Bleu cobalt", "Kobaltblau", "Azul cobalto", "Blu cobalto"],
+  "群青のカラーレコード盤": ["Ultramarine colored vinyl record.", "군청색 컬러 레코드판", "群青色唱片", "群青色的彩色唱片", "Disco de vinilo de color azul ultramar", "Disque vinyle bleu outremer", "Eine azurblaue Farb-Schallplatte.", "Um disco na cor azul profundo", "Disco in vinile color blu oltremare"],
+  "サクラピンク": ["Sakura Pink", "사쿠라 핑크", "樱花粉", "櫻花粉", "Rosa cerezo", "Rose cerisier", "Kirschblütenrosa", "Rosa sakura", "Rosa ciliegio"],
+  "桜色のカラーレコード盤": ["Cherry blossom colored vinyl record.", "벚꽃색 컬러 레코드판", "樱花色唱片", "櫻花色的彩色唱片", "Disco de vinilo de color rosa cerezo", "Disque vinyle couleur fleur de cerisier", "Eine kirschblütenfarbene Schallplatte.", "Um disco na cor rosa flor de cerejeira", "Disco in vinile color rosa ciliegio"],
+  "ピクチャーディスク": ["Picture Disc", "픽처 디스크", "图片盘", "圖案唱片", "Disco de imagen", "Disque illustré", "Picture Disc", "Disco ilustrado", "Picture disc"],
+  "盤面いっぱいにジャケット写真が広がるピクチャー盤": ["A picture disc with the album art covering the entire surface.", "반면 가득 재킷 사진이 펼쳐지는 픽처 디스크", "盘面印有完整专辑封面的图片唱片", "盤面印有滿版封面照片的圖案唱片", "Disco de imagen con la carátula del álbum extendida por toda la superficie", "Disque orné de l'illustration de la pochette", "Eine Picture Disc, deren Covermotiv die gesamte Fläche ausfüllt.", "Um disco com a capa do álbum estampada em toda a superfície", "Disco illustrato con la copertina dell’album estesa su tutta la superficie"],
+  "真鍮コイン盤": ["Brass Coin Disc", "황동 코인 디스크", "黄铜币盘", "黃銅幣盤", "Disco de moneda de latón", "Disque pièce en laiton", "Messingmünze", "Disco moeda de latão", "Disco moneta in ottone"],
+  "真鍮のEXTRA LIFEコインがそのままレコードになった盤": ["A record made from an EXTRA LIFE brass coin.", "황동 EXTRA LIFE 코인이 그대로 레코드가 된 디스크", "将EXTRA LIFE黄铜硬币直接设计成的唱片", "將EXTRA LIFE黃銅硬幣直接製成的唱片", "Disco que es una moneda de EXTRA LIFE de latón convertida en vinilo", "Disque en forme de pièce EXTRA LIFE en laiton", "Eine Schallplatte im Design einer EXTRA LIFE-Messingmünze.", "Um disco feito com o formato de uma moeda EXTRA LIFE de latão", "Disco realizzato con il design di una moneta EXTRA LIFE in ottone"],
+  "チャコール": ["Charcoal", "차콜", "炭灰", "炭灰", "Carbón", "Charbon", "Holzkohle", "Carvão", "Antracite"],
+  "標準のチャコールグレーのデッキ": ["Standard charcoal gray deck.", "표준 차콜 그레이 데크", "标准炭灰色底座", "標準的炭灰色唱盤機座", "Plataforma de color gris carbón estándar", "Platine gris anthracite standard", "Ein standardmäßiges anthrazitfarbenes Deck.", "O deck padrão na cor cinza-carvão", "Base di colore grigio antracite standard"],
+  "ウォールナット": ["Walnut", "월넛", "胡桃木", "胡桃木", "Nogal", "Noyer", "Walnuss", "Nogueira", "Noce"],
+  "ウォールナットの木目デッキ。70年代のハイファイの顔": ["Walnut wood grain deck. The face of 70s hi-fi.", "월넛 나뭇결 데크. 70년대 하이파이의 얼굴", "胡桃木纹理底座。重现70年代高保真音响外观", "胡桃木紋唱盤機座。70年代Hi-Fi音響的經典外觀", "Plataforma con veteado de madera de nogal. El aspecto del Hi-Fi de los años 70", "Platine en bois de noyer. Le look hi-fi des années 70", "Ein Deck mit Walnuss-Maserung. Der Hi-Fi-Look der 70er.", "Um deck com textura de madeira nogueira. O visual hi-fi dos anos 70", "Base in venature di noce. Il look hi-fi anni '70"],
+  "スタジオブラック": ["Studio Black", "스튜디오 블랙", "录音室黑", "錄音室黑", "Negro estudio", "Noir studio", "Studio-Schwarz", "Preto estúdio", "Nero studio"],
+  "真っ黒なスタジオ仕様のデッキ": ["Pitch black studio-spec deck.", "새까만 스튜디오 사양 데크", "纯黑色的录音室风格底座", "純黑色的錄音室規格唱盤機座", "Plataforma de estudio en color negro absoluto", "Platine au look noir studio", "Ein tiefschwarzes Studio-Deck.", "Um deck preto fosco com visual de estúdio", "Base in nero assoluto in stile studio"],
+  "クリームレトロ": ["Cream Retro", "크림 레트로", "复古奶油", "復古奶油", "Crema retro", "Crème rétro", "Cremiges Retro", "Creme retrô", "Crema retrò"],
+  "クリーム色のレトロなデッキ": ["Cream-colored retro deck.", "크림색 레트로 데크", "奶油色的复古底座", "奶油色的復古唱盤機座", "Plataforma retro de color crema", "Platine rétro couleur crème", "Ein cremefarbenes Retro-Deck.", "Um deck retrô na cor creme", "Base in stile retrò color crema"],
+  "ミッドナイトブルー": ["Midnight Blue", "미드나잇 블루", "午夜蓝", "午夜藍", "Azul medianoche", "Bleu minuit", "Mitternachtsblau", "Azul meia-noite", "Blu mezzanotte"],
+  "深夜の青に沈むデッキ": ["Deck immersed in midnight blue.", "심야의 푸른색에 잠긴 데크", "沉浸于午夜蓝色的底座", "沉浸於深夜藍色的唱盤機座", "Plataforma sumergida en un azul de medianoche", "Platine aux tons bleu nuit", "Ein Deck, das in das Blau der Nacht getaucht ist.", "Um deck imerso no azul profundo da meia-noite", "Base color blu notte profonda"],
+  "ターンテーブルを開く": ["Open Turntable", "턴테이블 열기", "打开转盘", "打開唱盤", "Abrir giradiscos", "Ouvrir la platine", "Plattenspieler öffnen", "Abrir vitrola", "Apri giradischi"],
+  "Spotifyとつながるレコード盤。ゲームのBGMに": ["A record that connects to Spotify. For your game BGM.", "Spotify와 연결되는 레코드판. 게임 BGM으로 활용", "与Spotify连接的唱片。用于播放游戏背景音乐", "與Spotify連結的唱片。播放遊戲背景音樂", "Disco que se conecta a Spotify. Para la música de fondo del juego", "Disque connecté à Spotify. Pour la BGM de vos jeux", "Eine mit Spotify verbundene Schallplatte. Für die Hintergrundmusik im Spiel.", "Um disco conectado ao Spotify. Para a trilha sonora do jogo", "Il giradischi si collega a Spotify. Per la colonna sonora del gioco"],
+  "ターンテーブルは、あなたのSpotifyで回る": ["The Turntable Spins with Your Spotify", "턴테이블은 당신의 Spotify와 함께 돌아갑니다", "唱机，随着您的Spotify转动", "唱盤會隨著你的 Spotify 轉動", "El tocadiscos gira con tu Spotify", "La platine tourne avec votre Spotify", "Der Plattenspieler dreht sich mit Ihrem Spotify", "O toca-discos gira com o seu Spotify", "Il giradischi gira con il tuo Spotify"],
+  "拡張の新しい画面「ターンテーブル」は、あなたのSpotifyアカウントとつながるレコードプレーヤーです。つなぎ方はPKCEという認可の仕組みで、秘密鍵はアプリの中に置きません。ログインで受け取るトークンは、この端末のこのページの中だけにしまわれ、セーブデータの同期には絶対に混ざりません。再生の経路は2つあり、Premiumの人はこの画面自体がSpotify Connectの機器になって音がここで鳴り、そうでない場合はスマホやPCの再生と同期して、ジャケットと進み具合と針がそのまま映ります。": ["The new expansion screen, Turntable, is a record player that connects to your Spotify account. It uses an authorization mechanism called PKCE, and the secret key is not stored within the app. The token received upon login is kept only on this device and within this specific page, and it is never mixed into the save data synchronization. There are two playback paths: for Premium users, this screen itself acts as a Spotify Connect device and plays audio directly, while others sync with playback on their smartphone or PC, displaying the jacket art, playback progress, and needle movement in real time.", "확장의 새로운 화면인 턴테이블은 당신의 Spotify 계정과 연결되는 레코드 플레이어입니다. 연결 방식은 PKCE라는 인가 방식을 사용하며, 비밀 키는 앱 내에 저장하지 않습니다. 로그인 시 수신하는 토큰은 이 단말기의 이 페이지 내에만 보관되며, 세이브 데이터 동기화에는 절대 포함되지 않습니다. 재생 경로는 2가지가 있는데, Premium 사용자는 이 화면 자체가 Spotify Connect 기기가 되어 소리가 여기서 출력되며, 그렇지 않은 경우에는 스마트폰이나 PC의 재생과 동기화되어 앨범 재킷과 진행 상황, 바늘이 그대로 표시됩니다.", "扩展功能的新界面「唱机」是一款能与您的Spotify账户连接的唱片播放器。连接方式采用了名为PKCE的授权机制，私钥不会保存在应用程序中。登录时获取的令牌仅被存放在本终端的此页面内，绝不会混入存档数据的同步中。播放途径有两种：Premium用户可以将此界面本身作为Spotify Connect设备，声音会直接在此处播放；若非Premium用户，则会与手机或PC的播放同步，界面上会实时显示专辑封面、进度以及唱针位置。", "擴充功能的全新頁面「唱盤」是一款能與你的 Spotify 帳號連結的黑膠唱片機。連接方式採用名為 PKCE 的授權機制，密鑰不會存放在應用程式內。登入時收到的 Token 僅會保存在該裝置的此頁面中，絕對不會混入存檔資料的同步作業。播放路徑分為兩種，Premium 使用者可將此頁面本身作為 Spotify Connect 的裝置直接在此發聲；若非 Premium 使用者，則會與手機或電腦的播放內容同步，顯示原本的專輯封面、播放進度以及唱針位置。", "La nueva pantalla de expansión «tocadiscos» es un reproductor de discos que se conecta a tu cuenta de Spotify. La forma de conexión utiliza un mecanismo de autorización llamado PKCE, y la clave secreta no se almacena dentro de la aplicación. El token recibido al iniciar sesión se guarda únicamente en esta página de este dispositivo y nunca se mezcla con la sincronización de datos guardados. Existen dos rutas de reproducción: si eres usuario Premium, esta pantalla funciona como un dispositivo de Spotify Connect y el sonido se reproduce aquí mismo; de lo contrario, se sincroniza con la reproducción de tu teléfono o PC, mostrando la portada, el progreso y la aguja tal cual.", "Le nouvel écran d'extension « Platine » est un lecteur de disques qui se connecte à votre compte Spotify. La connexion s'effectue via un mécanisme d'autorisation appelé PKCE, et aucune clé privée n'est stockée dans l'application. Les jetons reçus lors de la connexion sont conservés uniquement sur cet appareil et sur cette page, et ne sont absolument jamais mélangés à la synchronisation des données de sauvegarde. Il existe deux modes de lecture : les abonnés Premium peuvent utiliser cet écran comme un appareil Spotify Connect afin que le son soit diffusé directement ici, tandis que pour les autres, l'interface se synchronise avec la lecture sur smartphone ou PC, reflétant fidèlement la pochette, l'avancement et la position de l'aiguille.", "Der neue Erweiterungsbildschirm ‚Plattenspieler‘ ist ein Plattenspieler, der sich mit Ihrem Spotify-Konto verbindet. Die Verbindung erfolgt über einen Autorisierungsmechanismus namens PKCE, wobei der private Schlüssel nicht in der App gespeichert wird. Das beim Login empfangene Token wird ausschließlich auf diesem Gerät und auf dieser Seite gespeichert und wird niemals mit der Synchronisierung der Speicherdaten vermischt. Es gibt zwei Wiedergabewege: Für Premium-Nutzer fungiert dieser Bildschirm selbst als Spotify Connect-Gerät und der Ton wird hier ausgegeben. Andernfalls wird die Wiedergabe mit dem Smartphone oder PC synchronisiert, wobei das Cover, der Fortschritt und die Nadel direkt angezeigt werden.", "A nova tela de expansão «Toca-discos» é um reprodutor de discos que se conecta à sua conta do Spotify. O método de conexão utiliza o mecanismo de autorização PKCE, e a chave secreta não é armazenada no aplicativo. O token recebido no login é guardado apenas nesta página deste dispositivo e nunca é misturado à sincronização de dados salvos. Existem dois caminhos de reprodução: os usuários Premium podem utilizar esta tela como um dispositivo Spotify Connect, fazendo com que o som saia por aqui, enquanto os demais usuários podem sincronizar com a reprodução do smartphone ou PC, exibindo a capa, o progresso e a agulha de forma correspondente.", "La nuova schermata di espansione «Giradischi» è un lettore di dischi che si collega al tuo account Spotify. Il metodo di connessione utilizza il meccanismo di autorizzazione PKCE e la chiave segreta non viene memorizzata all'interno dell'app. Il token ricevuto al momento dell'accesso viene conservato esclusivamente in questa pagina e su questo dispositivo, e non viene mai incluso nella sincronizzazione dei dati di salvataggio. Esistono due percorsi di riproduzione: per gli utenti Premium, questa schermata funge da dispositivo Spotify Connect e l'audio viene riprodotto direttamente qui; in caso contrario, si sincronizza con la riproduzione dello smartphone o del PC, mostrando la copertina, l'avanzamento del brano e la puntina in tempo reale."],
+  "盤面はキャンバスに描いた本気のレコードで、回転数は33と45の切り替えつき。再生が始まるとゆっくり回転が上がり、止まるとすっと落ちる、実機の立ち上がりを真似ています。針（トーンアーム）は曲の進み具合に合わせて溝の内側へ少しずつ進み、終われば持ち上がって戻ります。レーベルには再生中のジャケット写真がそのまま貼りつきます。プレーヤーの本体は画面ではなくアプリ全体に常駐するので、ゲームへ移っても音楽は止まらず、ロビーには小さな再生チップが出ます。": ["The disc is an authentic-looking record drawn on a canvas, with a switchable rotation speed of 33 and 45. It mimics the startup of a real machine, with rotation slowly increasing when playback begins and dropping smoothly when it stops. The needle (tonearm) advances little by little toward the inner groove as the song progresses, then lifts and returns when finished. The jacket art of the track currently playing is applied directly to the label. Since the player unit resides in the entire app rather than just the screen, the music does not stop when moving to a game, and a small playback chip appears in the lobby.", "반면은 캔버스에 그린 진지한 레코드로, 회전수는 33과 45로 전환할 수 있습니다. 재생이 시작되면 천천히 회전이 올라가고 멈추면 자연스럽게 떨어지는 등 실기기의 구동 방식을 모방했습니다. 바늘(톤암)은 곡의 진행 상황에 맞춰 홈 안쪽으로 조금씩 이동하며, 끝나면 들어 올려져 돌아옵니다. 라벨에는 재생 중인 재킷 사진이 그대로 붙습니다. 플레이어 본체는 화면이 아닌 앱 전체에 상주하므로 게임으로 이동해도 음악은 멈추지 않으며, 로비에는 작은 재생 칩이 표시됩니다.", "唱盘是绘制在画布上的写实唱片，转速支持33与45的切换。当播放开始时转速会缓慢上升，停止时则会平滑下降，还原了实体唱机的启动效果。唱针（唱臂）会随着歌曲进度一点点向沟槽内侧移动，播放结束时会自动抬起并归位。唱片标签上会直接贴上当前播放的专辑封面。由于播放器主体是驻留在整个应用程序而非仅限当前界面，因此即便切换到游戏界面音乐也不会停止，大厅中也会显示出一个小的播放插件。", "盤面是繪製於畫布上的本格黑膠唱片，具備 33 與 45 轉的切換功能。開始播放時轉速會緩慢提升，停止時則會自然減速，完美模擬了實體機器的運作方式。唱針（唱臂）會隨著曲目的播放進度逐漸向溝槽內側移動，結束時則會自動抬起並返回。唱片標籤上會直接貼上播放中的專輯封面。由於播放器主體是常駐在整個應用程式而非單一畫面上，因此切換至遊戲時音樂也不會停止，在大廳畫面中亦會顯示小巧的播放晶片。", "El disco está dibujado minuciosamente sobre un lienzo y cuenta con un selector de velocidad de 33 y 45 revoluciones. Al iniciar la reproducción, la velocidad aumenta gradualmente y al detenerse, desciende suavemente, imitando el arranque de un equipo real. La aguja (brazo fonocaptor) avanza poco a poco hacia el interior de los surcos según el progreso de la canción y, al finalizar, se levanta y regresa a su posición. La carátula del álbum en reproducción queda adherida directamente a la etiqueta del disco. El reproductor permanece residente no solo en la pantalla, sino en toda la aplicación, por lo que la música no se detiene al cambiar a un juego y aparece un pequeño chip de reproducción en el lobby.", "Le disque est une véritable reproduction dessinée sur canevas, avec une commutation de vitesse entre 33 et 45 tours. Le démarrage simule une machine réelle, avec une accélération progressive au lancement et une décélération fluide à l'arrêt. L'aiguille (le bras de lecture) se déplace lentement vers l'intérieur du sillon au rythme de la chanson, puis se soulève et revient à sa position initiale une fois la piste terminée. La pochette du titre en cours s'affiche directement sur l'étiquette du disque. Le lecteur réside en permanence dans toute l'application plutôt que sur un seul écran, ce qui permet à la musique de continuer même si vous passez à un jeu, avec un petit widget de lecture qui apparaît dans le lobby.", "Die Platte ist eine auf eine Leinwand gezeichnete echte Schallplatte mit einer Umschaltmöglichkeit zwischen 33 und 45 Umdrehungen pro Minute. Wenn die Wiedergabe beginnt, steigt die Drehzahl langsam an, und beim Stoppen fällt sie sanft ab, was das Anlaufverhalten eines echten Geräts imitiert. Die Nadel (Tonarm) bewegt sich je nach Fortschritt des Liedes allmählich weiter in Richtung der Rillen und hebt sich ab und kehrt zurück, sobald das Lied endet. Auf dem Label wird das Cover des aktuell abgespielten Titels direkt angezeigt. Der Player selbst bleibt nicht nur auf dem Bildschirm, sondern ist in der gesamten App präsent, sodass die Musik auch beim Wechsel zum Spiel nicht stoppt und in der Lobby ein kleiner Wiedergabe-Chip erscheint.", "O disco é uma gravação realista desenhada em tela, com alternância entre 33 e 45 rotações. Ao iniciar a reprodução, a rotação aumenta gradualmente, e ao parar, ela diminui suavemente, imitando o comportamento de um aparelho real. A agulha (braço fonocaptor) avança pouco a pouco em direção ao centro do sulco conforme a música progride e, ao terminar, ela levanta e retorna à posição inicial. A capa da música em reprodução é aplicada diretamente ao selo do disco. Como o corpo do player reside em todo o aplicativo e não apenas na tela, a música não para ao mudar para o jogo, e um pequeno chip de reprodução aparece no lobby.", "Il disco è un vinile autentico disegnato su tela, con velocità di rotazione selezionabile tra 33 e 45 giri. L'avvio simula quello di un dispositivo reale, con una rotazione che accelera gradualmente all'inizio e rallenta dolcemente alla fine. La puntina (braccio di lettura) si sposta gradualmente verso l'interno del solco in base all'avanzamento della canzone, per poi sollevarsi e tornare in posizione una volta terminata. Sull'etichetta viene applicata la copertina del brano in riproduzione. Il corpo del lettore rimane residente non solo nella schermata, ma nell'intera app: la musica non si interrompe passando ai giochi e nella lobby viene visualizzato un piccolo chip di riproduzione."],
+  "レコード盤の絵柄と画面のスキンは、コインショップの装備品です。透明盤や色つき盤、真鍮コイン盤、木目のデッキなどを買って着せ替えでき、持ち物と装備は他の装備品と同じ仕組みで同期されます。検証では、ログイン用URLの合言葉（PKCE）が国際規格RFC 7636のテスト値と一致すること、トークンの保存先が1か所だけで同期データに漏れていないこと、購入と装備が再読み込み後も残ることを確かめました。ただし実アカウントでのログイン往復とPremiumの実再生だけは、あなたの端末とアカウントでしか確かめられません。": ["The patterns of the vinyl record and the screen skins are items from the Coin Shop. You can buy and equip transparent discs, colored discs, brass coin discs, wood-grain decks, and more; items and equipment are synchronized using the same system as other equipment. During verification, we confirmed that the login URL password (PKCE) matches the test values for the international standard RFC 7636, that the token is saved in only one location and does not leak into synchronized data, and that purchases and equipment remain after reloading. Please note, however, that the login round trip with a real account and actual playback for Premium can only be verified on your own device and account.", "레코드판의 무늬와 화면 스킨은 코인 숍의 장비품입니다. 투명판이나 유색판, 황동 코인판, 나뭇결 데크 등을 구매해 커스터마이징할 수 있으며, 소지품과 장비는 다른 장비품과 동일한 방식으로 동기화됩니다. 검증에서는 로그인용 URL의 암호(PKCE)가 국제 규격 RFC 7636의 테스트 값과 일치하는지, 토큰의 저장소가 한곳뿐이며 동기화 데이터로 유출되지 않았는지, 구매와 장착 상태가 재로드 후에도 유지되는지를 확인했습니다. 단, 실제 계정을 통한 로그인 왕복과 Premium의 실제 재생만은 사용자의 단말기와 계정에서만 확인할 수 있습니다.", "唱片的设计与界面皮肤均属于金币商店的装备品。您可以购买透明唱片、彩色唱片、黄铜币唱片、木纹底座等进行装扮，其持有物品与装备将通过与其它装备品相同的机制进行同步。在验证过程中，我们确认了登录用URL的口令（PKCE）与国际标准RFC 7636的测试值一致，令牌的保存位置仅有一处且不会泄露到同步数据中，以及购买和装备的状态在重新加载后依然保留。但有关真实账户的登录往返以及Premium的实际播放功能，只能由您在自己的终端与账户上进行确认。", "唱片盤面的圖案與畫面外觀皆可從硬幣商店購買並裝備。你可以購買透明盤、彩色盤、黃銅硬幣盤或木紋機身等進行更換，其持有物與裝備皆透過與其他裝備品相同的機制進行同步。我們已驗證登入用 URL 的密語（PKCE）與國際標準 RFC 7636 的測試值一致、Token 的儲存位置僅限一處且不會洩漏至同步資料中，以及購買與裝備狀態在重新載入後仍會保留。不過，涉及真實帳號的登入往返以及 Premium 的實際播放功能，僅能由你的裝置與帳號進行確認。", "El diseño del disco y la apariencia de la pantalla son accesorios de la tienda de monedas. Puedes comprar discos transparentes, de colores, de monedas de latón, bases con vetas de madera, entre otros, para personalizarlo; la posesión y el equipamiento se sincronizan con el mismo sistema que otros accesorios. Durante las pruebas, se verificó que la contraseña (PKCE) de la URL de inicio de sesión coincida con los valores de prueba del estándar internacional RFC 7636, que el almacenamiento del token sea en un solo lugar sin filtrarse a los datos sincronizados, y que la compra y el equipamiento persistan tras recargar. Sin embargo, el viaje de ida y vuelta del inicio de sesión con una cuenta real y la reproducción real de Premium solo pueden ser verificados por tu propio dispositivo y cuenta.", "Les motifs des disques et les habillages de l'écran sont des équipements disponibles dans la boutique de pièces. Vous pouvez acheter et personnaliser des disques transparents, colorés, en laiton, ou des platines à texture bois, les objets et équipements étant synchronisés via le même système que les autres éléments. Lors des tests, nous avons vérifié que le mot de passe de l'URL de connexion (PKCE) correspond aux valeurs de test de la norme internationale RFC 7636, que le jeton est stocké dans un emplacement unique sans fuite vers les données synchronisées, et que les achats et équipements persistent après un rechargement. Toutefois, les allers-retours de connexion avec un compte réel et la lecture effective en Premium ne peuvent être vérifiés qu'avec votre propre appareil et votre propre compte.", "Die Muster der Schallplatten und die Bildschirm-Skins sind Ausrüstungsgegenstände aus dem Münz-Shop. Sie können transparente oder farbige Platten, Messing-Platten, Decks mit Holzmaserung usw. kaufen, um das Design zu ändern. Der Besitz und die Ausrüstung werden nach dem gleichen Prinzip wie bei anderen Ausrüstungsgegenständen synchronisiert. Bei der Überprüfung wurde sichergestellt, dass das Passwort für die Login-URL (PKCE) mit dem Testwert des internationalen Standards RFC 7636 übereinstimmt, dass das Token nur an einer Stelle gespeichert wird und nicht in die synchronisierten Daten gelangt, und dass Käufe und Ausrüstung auch nach einem Neustart erhalten bleiben. Bitte beachten Sie jedoch, dass der Login-Vorgang mit einem echten Konto und die tatsächliche Wiedergabe bei Premium nur auf Ihrem Gerät und mit Ihrem Konto verifiziert werden können.", "As artes dos discos e os visuais da tela são equipamentos da Loja de Moedas. É possível comprar e personalizar discos transparentes ou coloridos, discos de moedas de latão, decks com textura de madeira, entre outros, sendo que os itens e equipamentos são sincronizados com o mesmo sistema dos outros itens. Durante a verificação, confirmamos que a senha da URL de login (PKCE) corresponde aos valores de teste do padrão internacional RFC 7636, que o local de armazenamento do token é único e não vaza para os dados de sincronização, e que as compras e equipamentos permanecem após a recarga. No entanto, o fluxo de ida e volta do login com conta real e a reprodução real do Premium só podem ser verificados no seu próprio dispositivo e conta.", "Il motivo del disco e la skin della schermata sono elementi equipaggiabili dal negozio di monete. È possibile acquistare e personalizzare il giradischi con dischi trasparenti o colorati, dischi in moneta di ottone, deck con venature del legno e altro ancora; gli oggetti posseduti e quelli equipaggiati vengono sincronizzati con lo stesso sistema degli altri elementi di gioco. Durante la verifica, abbiamo confermato che la parola chiave (PKCE) dell'URL di accesso corrisponde al valore di test dello standard internazionale RFC 7636, che il token viene salvato in un'unica posizione senza fuoriuscire nei dati di sincronizzazione e che gli acquisti e l'equipaggiamento rimangono dopo il ricaricamento. Tuttavia, il round-trip di accesso con l'account reale e la riproduzione effettiva di Premium possono essere verificati solo sul tuo dispositivo e con il tuo account."],
+  "全体設定とマスター音量：最初は0": ["Global Settings and Master Volume: Starting at 0", "전체 설정과 마스터 음량: 초기값은 0", "全局设置与主音量：初始值为0", "整體設定與主音量：初始值為0", "Configuración general y volumen maestro: comienza en 0", "Paramètres globaux et volume principal : départ à 0", "Globale Einstellungen und Master-Lautstärke: Start bei 0", "Configurações gerais e volume master: começando em 0", "Impostazioni generali e volume master: inizialmente a 0"],
+  "ロビーの右上に設定ボタンがつきました。開くと全体の音量（マスター音量）を変えられます。この音量は全ゲームの効果音、起動時の音、BGM、そしてターンテーブルの音楽まで、ARCADEのすべての音にかかる親玉です。初めて開くときは0、つまり無音から始まります。うるさいと感じたらまず自分で上げる、という置き方です。設定はこの端末の中だけに保存され、セーブデータの同期には入りません。": ["A settings button has been added to the top right of the lobby. Opening it allows you to change the overall volume (master volume). This volume is the master control that affects all sounds in ARCADE, including sound effects for all games, startup sounds, BGM, and even the turntable music. It starts at 0—that is, silent—when opened for the first time. The design philosophy is that if you find it too loud, you increase it yourself. These settings are saved only on this device and are not included in save data synchronization.", "로비 오른쪽 상단에 설정 버튼이 추가되었습니다. 버튼을 누르면 전체 음량(마스터 음량)을 조절할 수 있습니다. 이 음량은 모든 게임의 효과음, 시작 시의 소리, BGM, 그리고 턴테이블 음악까지, ARCADE의 모든 소리를 관장하는 상위 설정입니다. 처음 열었을 때는 0, 즉 무음 상태에서 시작합니다. 시끄럽다고 느껴지면 직접 볼륨을 올리는 방식입니다. 설정은 해당 기기에만 저장되며, 세이브 데이터 동기화에는 포함되지 않습니다.", "大厅右上角新增了设置按钮。点击即可调整全局音量（主音量）。该音量是控制ARCADE内所有声音的“总指挥”，涵盖了所有游戏的音效、启动音、背景音乐，以及唱机（turntable）的音乐。初次打开时默认为0，即从静音状态开始。这是一种若用户感到吵闹则需自行调大的设计思路。该设置仅保存在本地设备中，不会被计入存档同步范围内。", "大廳的右上角新增了設定按鈕。打開後可以調整整體音量（主音量）。此音量是涵蓋所有遊戲音效、啟動音效、背景音樂，甚至是轉盤音樂的 ARCADE 所有聲音的總開關。初次打開時預設為 0，也就是從靜音狀態開始。採用的是若覺得吵，請先自行調高的設計。此設定僅保存於本機端，不會包含在存檔同步中。", "Se ha añadido un botón de configuración en la parte superior derecha del lobby. Al abrirlo, se puede cambiar el volumen general (volumen maestro). Este volumen es el controlador principal que afecta a todos los sonidos de ARCADE, incluidos los efectos de sonido de todos los juegos, el sonido de inicio, la música de fondo y hasta la música del tocadiscos. La primera vez que se abre comienza en 0, es decir, en silencio. La idea es que, si al usuario le parece ruidoso, sea él mismo quien lo suba. Esta configuración se guarda solo en el dispositivo actual y no se incluye en la sincronización de datos guardados.", "Un bouton de réglages a été ajouté en haut à droite du lobby. Une fois ouvert, il permet de modifier le volume global (volume principal). Ce volume est le maître qui contrôle tous les sons d'ARCADE, y compris les effets sonores de tous les jeux, le son au démarrage, la musique de fond et même la musique de la platine. Lors de la première ouverture, il est réglé sur 0, c'est-à-dire en mode silencieux. L'idée est que si l'utilisateur trouve le son trop fort, c'est à lui de l'augmenter. Ces paramètres sont enregistrés uniquement sur cet appareil et ne sont pas inclus dans la synchronisation des données de sauvegarde.", "Oben rechts in der Lobby wurde ein Einstellungssymbol hinzugefügt. Wenn man es öffnet, lässt sich die Gesamtlautstärke (Master-Lautstärke) anpassen. Diese Lautstärke ist die übergeordnete Steuerung für alle Töne in ARCADE, einschließlich der Soundeffekte aller Spiele, des Start-Sounds, der Hintergrundmusik und der Musik des Plattenspielers. Beim ersten Öffnen steht sie auf 0, beginnt also lautlos. Das Konzept dahinter ist, dass man die Lautstärke selbst erhöht, falls es einem zu leise ist. Die Einstellungen werden nur lokal auf diesem Gerät gespeichert und nicht in die Synchronisierung der Spielstände einbezogen.", "Adicionamos um botão de configurações no canto superior direito do lobby. Ao abri-lo, você pode alterar o volume geral (volume master). Este volume é o controlador principal que afeta todos os sons do ARCADE, incluindo efeitos sonoros de todos os jogos, som de inicialização, música de fundo e até mesmo a música do toca-discos. Quando aberto pela primeira vez, ele começa em 0, ou seja, no silêncio. A lógica é que, se o usuário achar barulhento, ele mesmo pode aumentar. As configurações são salvas apenas neste dispositivo e não são incluídas na sincronização de dados salvos.", "È stato aggiunto un pulsante di impostazioni in alto a destra nella lobby. Aprendolo è possibile modificare il volume complessivo (volume master). Questo volume è il controllo principale che agisce su tutti i suoni di ARCADE, inclusi gli effetti sonori di tutti i giochi, il suono all'avvio, la musica di sottofondo e persino la musica del giradischi. Quando viene aperto per la prima volta, inizia da 0, ovvero in silenzio. L'impostazione è pensata in modo che, se l'utente lo trova troppo rumoroso, sia lui stesso ad alzarlo. Le impostazioni vengono salvate solo su questo dispositivo e non vengono incluse nella sincronizzazione dei dati di salvataggio."],
+  "裏側の苦労は、ARCADEの音の出口が1つではなかったことです。画面まわりの音は共有の音響回路、ゲームごとの音はそれぞれの回路、という具合に分かれていて、全員が出口へ直結していました。そこで、音響回路が生まれるたびにマスターのつまみ（ゲイン）を出口の手前に差し込み、行き先をそちらへ付け替える方式にしました。後から生まれる回路——レトロのエミュレータや麻雀・チェスの中の音も、同じ仕掛けで自動的に傘下に入ります。各ゲームの音ON/OFFは今まで通り、その手前で働きます。": ["The difficulty behind the scenes was that ARCADE did not have just one audio output. Sounds around the screen were on a shared audio circuit, while sounds for each game were on their own separate circuits, and all of them were connected directly to the output. Therefore, we adopted a system where a master knob (gain) is inserted just before the output every time an audio circuit is created, and the destination is rerouted through it. Circuits created later—such as retro emulators or sounds within Mahjong and Chess—are also automatically brought under this umbrella using the same mechanism. The ON/OFF setting for each game's sound continues to function as before, operating upstream of this.", "개발 과정에서의 어려움은 ARCADE의 소리 출력구가 하나가 아니었다는 점입니다. 화면 주변의 소리는 공용 음향 회로, 게임별 소리는 각각의 회로와 같이 나누어져 있었고, 모두가 출력구에 직결된 상태였습니다. 그래서 음향 회로가 생성될 때마다 마스터 노브(게인)를 출력구 앞에 삽입하고, 목적지를 그쪽으로 변경하는 방식을 채택했습니다. 나중에 생성되는 회로인 레트로 에뮬레이터나 마작·체스 내의 소리도 같은 장치를 통해 자동으로 통제 범위에 들어옵니다. 각 게임의 소리 ON/OFF는 이전과 마찬가지로 그 이전 단계에서 작동합니다.", "幕后的难点在于，ARCADE的音频出口并非只有一个。界面相关的声音使用的是共享音频电路，而各游戏的声音则使用各自独立的电路，它们原本都直接连接到出口。为此，我们采用了在每个音频电路生成时，在其出口前端插入一个主旋钮（增益）并将去向重新导向该旋钮的方式。后续生成的电路——如复古游戏模拟器以及麻将、国际象棋中的音效，也能通过相同的机制自动纳入管辖范围。各游戏原本的音量开关功能依旧照常，作用于该机制的前端。", "背後的開發困難在於 ARCADE 的聲音輸出出口並非只有一個。介面周邊的聲音屬於共享音響電路，而各個遊戲的聲音則有各自獨立的電路，原本各個聲音都是直接連接至出口。因此，我們採取了當音響電路產生時，便在出口前方插入主旋鈕（增益）並將路徑重新導向該處的機制。後續新增的電路——例如復古遊戲模擬器或麻將、西洋棋內的聲音，也能透過相同的機制自動納入管理。各遊戲的聲音開關（ON/OFF）則如同以往，在該機制之前運作。", "La dificultad técnica fue que los sonidos de ARCADE no tenían una única salida. Los sonidos de la interfaz estaban en un circuito de audio compartido, mientras que los sonidos de cada juego tenían sus propios circuitos, y todos estaban conectados directamente a la salida. Por ello, implementamos un método en el que, cada vez que se genera un circuito de audio, se inserta una perilla maestra (ganancia) antes de la salida y se redirige el flujo hacia ella. Los circuitos que se crean posteriormente —como el emulador retro o los sonidos dentro del mahjong y ajedrez— también se incorporan automáticamente bajo el mismo sistema. El encendido/apagado del sonido de cada juego sigue funcionando igual que antes, antes de pasar por este control.", "La difficulté technique résidait dans le fait qu'ARCADE n'avait pas qu'une seule sortie audio. Le son de l'interface était géré par un circuit acoustique partagé, tandis que les sons de chaque jeu dépendaient de leurs propres circuits, tous connectés directement à la sortie. Par conséquent, nous avons mis en place un système où, à chaque création d'un circuit acoustique, un bouton principal (gain) est inséré juste avant la sortie pour rediriger le signal. Les circuits créés ultérieurement — comme ceux des émulateurs rétro ou les sons du Mahjong et des échecs — sont automatiquement intégrés sous cette gestion grâce au même mécanisme. L'activation ou la désactivation du son pour chaque jeu continue de fonctionner comme avant, en amont de ce réglage.", "Die größte Herausforderung bei der Umsetzung war, dass ARCADE nicht nur einen einzigen Tonausgang hatte. Die Klänge rund um die Benutzeroberfläche und die Töne der einzelnen Spiele liefen über verschiedene Schaltkreise, die alle direkt mit dem Ausgang verbunden waren. Daher haben wir ein Verfahren eingeführt, bei dem bei der Erstellung jedes Audiokreises ein Master-Regler (Gain) vor dem Ausgang zwischengeschaltet und die Verbindung entsprechend umgeleitet wird. Auch später hinzugefügte Schaltkreise – wie etwa Retro-Emulatoren oder Sounds in Mahjong und Schach – werden durch denselben Mechanismus automatisch unter diese Steuerung gestellt. Die Ein-/Ausschaltfunktion für die einzelnen Spiele bleibt wie bisher davor geschaltet.", "O esforço nos bastidores foi que o ARCADE não tinha apenas uma saída de som. O som ao redor da tela utilizava um circuito de áudio compartilhado, enquanto os sons de cada jogo utilizavam seus próprios circuitos, e todos estavam conectados diretamente à saída. Portanto, adotamos um método onde, sempre que um circuito de áudio é criado, inserimos um botão master (ganho) antes da saída e redirecionamos o destino para ele. Circuitos criados posteriormente — como emuladores retrô ou sons dentro de Mahjong e Xadrez — também entram automaticamente sob o mesmo mecanismo. O LIGAR/DESLIGAR do som de cada jogo funciona como antes, antes desse estágio.", "La difficoltà tecnica è stata che i punti di uscita del suono di ARCADE non erano uno solo. I suoni dell'interfaccia erano gestiti da un circuito audio condiviso, mentre i suoni di ogni gioco avevano circuiti separati, e tutti erano collegati direttamente all'uscita. Per risolvere, abbiamo adottato un metodo in cui, ogni volta che viene creato un circuito audio, viene inserita una manopola master (gain) prima dell'uscita e la destinazione viene reindirizzata lì. Anche i circuiti creati successivamente — come gli emulatori retro o i suoni di Mahjong e Scacchi — vengono automaticamente inclusi sotto questo controllo con lo stesso meccanismo. L'attivazione/disattivazione del suono di ogni singolo gioco continua a funzionare, come prima, a monte di questo processo."],
+  "検証では、真新しい状態で開くと音量が0で、音響回路のマスターゲインも0であること、70に上げると再読み込み後も70のまま残ること、設定パネルがロビーと全17画面の上バーから開けることを確かめました。ターンテーブルの音量は、このマスターと画面側の音量を掛け算した値で決まります。": ["During verification, we confirmed that when opened in a fresh state, the volume is 0 and the master gain of the audio circuit is also 0, that it remains at 70 after reloading once raised to 70, and that the settings panel can be opened from the lobby and the top bar of all 17 screens. The volume of the turntable is determined by multiplying this master volume by the screen-specific volume.", "검증 단계에서는 초기 상태로 열었을 때 음량이 0이며 음향 회로의 마스터 게인 또한 0인지, 70으로 올린 뒤 재로딩해도 70으로 유지되는지, 설정 패널을 로비와 전체 17개 화면의 상단 바에서 열 수 있는지를 확인했습니다. 턴테이블 음량은 이 마스터 음량과 화면 측 음량을 곱한 값으로 결정됩니다.", "在验证测试中，我们确认了在全新状态下打开时音量为0，且音频电路的主增益也为0；调至70后，重新加载依然保持为70；以及设置面板可以从大厅和全部17个画面的顶部栏打开。唱机的音量由该主音量与画面侧音量相乘所得的值决定。", "在驗證過程中，我們確認了在全新狀態下打開時音量為 0，且音響電路的主增益也為 0；調整至 70 後，重新載入依然保持在 70；以及設定面板可從大廳及全部 17 個畫面的上方列開啟。轉盤的音量是由此主音量與畫面側音量相乘後的值來決定。", "En las pruebas, confirmamos que al abrir la aplicación en un estado nuevo, el volumen está en 0 y la ganancia maestra del circuito de audio también es 0; que al subirlo a 70, este valor se mantiene tras recargar; y que el panel de configuración se puede abrir desde el lobby y desde la barra superior de las 17 pantallas. El volumen del tocadiscos se determina multiplicando este valor maestro por el volumen específico de la pantalla.", "Lors des tests, nous avons vérifié qu'à l'ouverture initiale, le volume est à 0 et le gain principal du circuit acoustique est également à 0, qu'une valeur réglée sur 70 reste à 70 après un rechargement, et que le panneau de configuration est accessible depuis le lobby ainsi que depuis la barre supérieure des 17 écrans. Le volume de la platine est déterminé par la valeur résultant de la multiplication de ce volume principal par le volume spécifique de l'écran.", "Bei der Überprüfung haben wir bestätigt, dass die Lautstärke beim ersten Öffnen im Neuzustand auf 0 steht und auch der Master-Gain des Audiokreises 0 beträgt, dass eine Einstellung von 70 nach einem erneuten Laden erhalten bleibt und dass das Einstellungsfeld sowohl von der Lobby als auch von der oberen Leiste aller 17 Bildschirme aus geöffnet werden kann. Die Lautstärke des Plattenspielers ergibt sich aus dem Produkt dieser Master-Lautstärke und der Lautstärkeeinstellung der jeweiligen Anzeige.", "Na validação, confirmamos que, ao abrir em um estado totalmente novo, o volume é 0 e o ganho master do circuito de áudio também é 0; que, ao aumentar para 70, o valor permanece em 70 mesmo após recarregar; e que o painel de configurações pode ser aberto a partir da barra superior do lobby e de todas as 17 telas. O volume do toca-discos é determinado pelo valor da multiplicação deste master pelo volume do lado da tela.", "Durante le verifiche, abbiamo confermato che, all'apertura in uno stato nuovo, il volume è 0 e anche il gain master del circuito audio è 0; che impostandolo a 70, il valore rimane 70 anche dopo il ricaricamento; e che il pannello delle impostazioni è accessibile dalla lobby e dalla barra superiore di tutte le 17 schermate. Il volume del giradischi è determinato dal valore risultante dalla moltiplicazione tra questo master e il volume specifico della schermata."],
   "脳ビューが知識ライブラリになった：棚画面の廃止と全幅化": ["Brain View is now the Knowledge Library: Shelf screen removed and made full-width", "뇌 뷰가 지식 라이브러리로 변경: 선반 화면 폐지 및 전체 너비 확장", "“脑视图”升级为“知识库”：废除货架界面并实现全屏宽显示", "「腦視圖」進化為「知識庫」：移除書架頁面並實現全寬度顯示", "La Vista cerebral ahora es la Biblioteca de conocimientos: eliminación y expansión de la pantalla de estantes", "La vue Cerveau devient la Bibliothèque de connaissances : suppression de l’écran Rayons et passage en plein écran", "Gehirn-Ansicht wird zur Wissensbibliothek: Wegfall des Regal-Bildschirms und Umstellung auf Vollbild", "A Exibição Cerebral tornou-se a Biblioteca de Conhecimento: fim da tela de prateleira e suporte a tela cheia", "La Vista Cervello diventa Libreria della conoscenza: eliminata la schermata a scaffali e ottimizzata a larghezza intera"],
   "知識ライブラリの独立した棚画面を目的地として廃止し、脳ビュー自体を知識ライブラリにした。全1,551件のタイトル・本文検索は脳ビューの棚リストへ移植し、複数キーワードのAND検索、全9言語の翻訳文も検索対象、ヒット件数の表示まで旧画面と同等に揃えた。棚レールをタップしたときは検索を解除してから該当の棚へスクロールする。脳ビューの戻るボタンはロビーへ戻る形に改め、「?game=library」のディープリンクも脳ビューに着地する。旧画面のコードとデータ層は残してあるが、到達できる導線はすべて断った（脳ビューの記事パネルが使うデータ層は共有のため無傷）。": ["We have removed the standalone Knowledge Library shelf screen and transformed Brain View itself into the new library. The full-text search across all 1,551 titles and entries has been ported to the Brain View shelf list, matching the previous experience with features like multi-keyword AND search, support for all 9 languages, and hit count displays. Tapping a shelf rail now clears the search before scrolling to that shelf. The Brain View back button now returns to the lobby, and '?game=library' deep links land directly in Brain View. While the legacy screen code and data layer remain, all navigation paths to them have been removed (the data layer used by the Brain View article panel remains intact as it is shared).", "지식 라이브러리의 독립된 선반 화면을 목적지로서 폐지하고, 뇌 뷰 자체를 지식 라이브러리로 통합했습니다. 총 1,551건의 제목 및 본문 검색 기능은 뇌 뷰의 선반 리스트로 이식했으며, 다중 키워드 AND 검색, 9개 언어 전체의 번역문 검색, 검색 결과 건수 표시까지 기존 화면과 동일하게 구현했습니다. 선반 레일을 탭하면 검색을 해제한 후 해당 선반으로 스크롤합니다. 뇌 뷰의 뒤로 가기 버튼은 로비로 돌아가는 방식으로 변경되었으며, 「?game=library」 딥링크도 뇌 뷰로 연결됩니다. 기존 화면의 코드와 데이터 계층은 유지하고 있으나, 접근 가능한 경로는 모두 차단했습니다(뇌 뷰의 기사 패널이 사용하는 데이터 계층은 공유되므로 그대로 유지됩니다).", "废除知识库独立的货架界面，将“脑视图”本身打造为知识库。全部1,551条标题及正文的检索功能已迁移至脑视图的列表，并实现了与旧界面同等的体验，包括多关键词AND检索、包含全部9种语言的翻译文检索以及命中数量显示。点击货架栏时，系统会自动取消检索并滚动至相应货架。脑视图的“返回”按钮现已改为返回至大厅，“?game=library”深层链接也将直接跳转至脑视图。旧界面的代码与数据层虽予以保留，但已切断所有进入路径（脑视图文章面板所使用的数据层因共享而未受影响）。", "我們廢除了知識庫獨立的書架頁面，直接將「腦視圖」本身轉變為知識庫。原有的 1,551 筆標題與內文搜尋功能已移植至腦視圖的書架列表，並完整保留了多關鍵字 AND 搜尋、全 9 種語言譯文搜尋以及搜尋結果數量顯示等功能。點擊書架軌道時，系統會先清除搜尋狀態再捲動至相應書架。腦視圖的返回按鈕現改為返回大廳，且「?game=library」的深層連結亦會直接引導至腦視圖。舊頁面的程式碼與資料層雖予以保留，但已切斷所有進入的導向連結（腦視圖文章面板所使用的資料層因共用而不受影響）。", "Hemos eliminado la pantalla de estantes independiente de la Biblioteca de conocimientos como destino y hemos convertido la propia Vista cerebral en la biblioteca. La búsqueda de títulos y cuerpos de texto para los 1,551 elementos se ha trasladado a la lista de estantes de la Vista cerebral, manteniendo las mismas funciones que la pantalla anterior: búsqueda con múltiples palabras clave (AND), búsqueda en traducciones de los 9 idiomas y visualización del número de resultados. Al tocar un riel de estante, se cancela la búsqueda y se desplaza hacia el estante correspondiente. El botón de retroceso de la Vista cerebral ahora dirige al lobby, y el enlace profundo «?game=library» aterriza directamente en la Vista cerebral. Aunque el código y la capa de datos de la pantalla anterior se mantienen, se han eliminado todos los puntos de acceso (la capa de datos utilizada por el panel de artículos de la Vista cerebral permanece intacta por ser compartida).", "L’écran Rayons autonome de la Bibliothèque de connaissances a été supprimé en tant que destination, la vue Cerveau faisant désormais office de Bibliothèque. La recherche par titre et corps de texte sur l’ensemble des 1 551 éléments a été transférée vers la liste des rayons de la vue Cerveau, avec une parité fonctionnelle totale par rapport à l’ancien écran : recherche par mots-clés multiples (ET), recherche dans les traductions en 9 langues et affichage du nombre de résultats. Appuyer sur un rail de rayon réinitialise la recherche avant de défiler jusqu’au rayon correspondant. Le bouton retour de la vue Cerveau renvoie désormais au hall d’accueil, et les liens profonds ?game=library redirigent vers la vue Cerveau. Le code et la couche de données de l’ancien écran sont conservés, mais tous les accès ont été coupés (la couche de données utilisée par le panneau d’articles de la vue Cerveau demeure intacte car partagée).", "Die eigenständige Regal-Ansicht der Wissensbibliothek wurde als Ziel entfernt und die Gehirn-Ansicht selbst zur Wissensbibliothek umgewandelt. Die Suche in allen 1,551 Titeln und Textinhalten wurde in die Regalliste der Gehirn-Ansicht integriert. Funktionen wie die AND-Suche mit mehreren Schlagwörtern, die Einbeziehung von Übersetzungen in allen 9 Sprachen sowie die Anzeige der Trefferanzahl wurden beibehalten. Beim Tippen auf eine Regalschiene wird die Suche zurückgesetzt und direkt zum entsprechenden Regal gescrollt. Der Zurück-Button in der Gehirn-Ansicht führt nun direkt in die Lobby, und Deep-Links mit „?game=library“ landen ebenfalls in der Gehirn-Ansicht. Der Code und die Datenschicht des alten Bildschirms bleiben erhalten, wurden jedoch von allen Navigationswegen getrennt (die Datenschicht, die vom Artikel-Panel der Gehirn-Ansicht genutzt wird, bleibt unangetastet).", "A tela de prateleira independente da Biblioteca de Conhecimento foi descontinuada como destino, tornando a própria Exibição Cerebral a nova Biblioteca de Conhecimento. A busca por título e corpo de texto, que abrange 1.551 itens, foi migrada para a lista de prateleiras da Exibição Cerebral, mantendo a paridade com a tela anterior: busca AND por múltiplos termos, suporte a busca em traduções de todos os 9 idiomas e exibição do número de resultados. Ao tocar em um trilho de prateleira, a busca é limpa antes de rolar até a prateleira correspondente. O botão de voltar na Exibição Cerebral agora leva ao saguão, e links profundos do tipo ?game=library também direcionam para a Exibição Cerebral. Embora o código e a camada de dados da tela antiga tenham sido mantidos, todos os pontos de acesso foram removidos (a camada de dados utilizada pelo painel de artigos da Exibição Cerebral permanece intacta por ser compartilhada).", "La schermata a scaffali dedicata della Libreria della conoscenza è stata rimossa; la Vista Cervello ora funge essa stessa da libreria. La ricerca per titolo e testo su un totale di 1.551 elementi è stata trasferita nell’elenco a scaffali della Vista Cervello, mantenendo le funzionalità precedenti: ricerca AND con parole chiave multiple, ricerca nelle traduzioni in tutte le 9 lingue e visualizzazione del conteggio dei risultati. Toccando un binario dello scaffale, la ricerca viene annullata e la vista scorre verso lo scaffale corrispondente. Il pulsante Indietro nella Vista Cervello ora riporta alla lobby e anche i deep link ?game=library approdano direttamente alla Vista Cervello. Il codice e il livello dati della vecchia schermata sono stati conservati, ma ogni percorso di accesso è stato disabilitato (il livello dati utilizzato dal pannello articoli della Vista Cervello rimane invariato poiché condiviso)."],
   "制作ノート画面をワイド画面で全幅化した。従来は最大720pxの中央カラムで、幅1180pxの画面では左右に約230pxずつ空白ができていた。761px以上の幅では左右の余白を16pxにまで広げ、概要・一覧・記事の3つのズーム段階すべてで画面いっぱいに読める。スマホ幅の見た目は従来どおり変えていない。": ["The creation notes screen has been updated to full-width for widescreen displays. Previously, it was restricted to a maximum 720px center column, leaving about 230px of empty space on each side of an 1180px wide screen. For widths of 761px or more, the side margins are now expanded to 16px, allowing for a full-screen reading experience across all three zoom levels: overview, list, and article. The appearance on smartphone widths remains unchanged.", "제작 노트 화면을 와이드 화면에서 전체 너비로 확장했습니다. 기존에는 최대 720px의 중앙 칼럼으로, 너비 1180px 화면에서는 좌우에 약 230px씩 공백이 발생했습니다. 761px 이상의 너비에서는 좌우 여백을 16px까지 줄여, 개요·목록·기사의 3단계 줌 모드 모두에서 화면을 가득 채워 읽을 수 있습니다. 스마트폰 너비에서의 모습은 기존과 동일합니다.", "制作笔记界面现已支持宽屏全屏显示。此前该界面被限制在最大720px的中央栏内，在1180px宽的屏幕上左右两侧各有约230px的留白。宽度在761px以上时，左右边距将扩展至16px，在概览、列表、文章这3种缩放阶段下均可实现全屏阅读。手机端的显示外观保持不变。", "「製作筆記」頁面改為寬螢幕全寬度顯示。過去頁面限制在最大 720px 的中央欄位，導致在 1180px 寬的螢幕上左右兩側各有約 230px 的留白。現在當寬度大於 761px 時，左右邊距將縮減至 16px，無論在概要、列表或文章這 3 種縮放階段，皆能以全螢幕視野閱讀。手機版的顯示外觀則維持不變。", "La pantalla de notas de producción se ha expandido a pantalla completa en formato ancho. Anteriormente, se limitaba a una columna central de 720px, dejando aproximadamente 230px de espacio en blanco a cada lado en pantallas de 1180px de ancho. En anchos superiores a 761px, los márgenes laterales se han ampliado a 16px, permitiendo una lectura a pantalla completa en los 3 niveles de zoom: resumen, lista y artículo. La apariencia en dispositivos móviles permanece sin cambios.", "L’écran des notes de production est désormais en plein écran sur les affichages larges. Auparavant, il était limité à une colonne centrale de 720 px, laissant environ 230 px de vide de chaque côté sur un écran de 1180 px. Pour les largeurs de 761 px et plus, les marges latérales sont désormais réduites à 16 px, permettant une lecture plein écran sur les 3 niveaux de zoom : aperçu, liste et article. L’affichage sur smartphone reste inchangé.", "Der Bildschirm für Produktionsnotizen wurde für Breitbildformate auf die volle Breite skaliert. Zuvor war er auf eine zentrale Spalte von maximal 720px begrenzt, was bei einer Bildschirmbreite von 1180px zu Rändern von jeweils etwa 230px führte. Bei einer Breite von 761px oder mehr werden die seitlichen Ränder nun auf 16px erweitert, sodass Inhalte in allen drei Zoomstufen (Übersicht, Liste, Artikel) bildschirmfüllend gelesen werden können. Die Darstellung auf Smartphones bleibt unverändert.", "A tela de Notas de Produção agora utiliza a largura total em telas amplas. Anteriormente, era limitada a uma coluna central de no máximo 720px, deixando cerca de 230px de espaço vazio em cada lado em telas de 1180px. Com larguras a partir de 761px, as margens laterais foram expandidas para 16px, permitindo a leitura em tela cheia nos três níveis de zoom: visão geral, lista e artigo. A aparência em smartphones permanece inalterada.", "La schermata Note di produzione è stata estesa a larghezza intera. In precedenza, era limitata a una colonna centrale di massimo 720px, lasciando circa 230px di spazio vuoto su ciascun lato in schermi da 1180px. Con una larghezza superiore a 761px, i margini laterali sono stati ridotti a 16px, consentendo la lettura a schermo intero in tutti e 3 i livelli di zoom (panoramica, elenco e articolo). L’aspetto su smartphone rimane invariato."],
@@ -48586,6 +48686,8 @@ PATTERNS.push(
     notesAdd("仕組みと同期", { t: "脳ビューを本物の脳に：立体配置とニューロンの輝き", b: ["これまで脳ビューの点は、横から見た脳の輪郭の中に並べ、奥行きは位置からの計算で求めていた。真横に回すと厚みが潰れて、半分消えたように見えた。今回、点の配置そのものを立体で作り直した。前後739・上下430・左右465の広がりを持つ大脳の塊に、左右の半球を分ける縦の溝（大脳縦裂）と平らな底面を入れ、後ろ下には小脳（46件）、その下に短い脳幹（13件）も置いた。棚ごとの集まりは崩しておらず、17棚すべてが1つながりの領域になっている。", "接続のないオーファン114件は、脳の外側に輪を作るのをやめ、内側の深いところに散らした。114件すべてが脳の形の内側に収まり、全1,551件で1つの脳の輪郭を作る。見た目も神経細胞（ニューロン）に寄せた。点は明るい中心（細胞体）と柔らかい光のハローで描き、ハローは棚の色で用意した17色のグロー画像を使い回す。実在の接続の上を、小さな信号の光がときどき走る。", "収め方は、立体全体を包む球に合わせる方式に変えた。検証の数字です。390×844と1180×820の2サイズで、正面・真横・真上を含む4方向すべて、画面外に出る点はゼロ。スマホでの倍率は0.411で、前回の0.412とほぼ同じ大きさに写る。代償も正直に書く。光の描画が増えたぶん、検証環境（ソフトウェア描画）での1フレームは平均37.5ミリ秒から54.6ミリ秒に重くなった。ハローだけを消すと31.2ミリ秒に戻ることも測ってある。"] });
     notesAdd("仕組みと同期", { t: "起動は組み立てから：アセンブリ・ブートと液体モーフ", b: ["起動シーケンス「アセンブリ・ブート」を新設した（モジュール63）。ロビーを開くと約2.6秒のあいだに、ゲームタイルのグリフ約14個が画面の縁から渦巻いて集まり、麻雀の緑の發が中央でカチッと音を立ててスケールインし、「GAME.」のワードマークが1文字ずつ着地して「ARCADE」に光の帯が走る。続いてロビー本体が上から順に組み上がり、最後にグリフたちがマスコットのアライグマのドックへ群れ飛んで、おかえりの吹き出しと温かい和音で引き継ぐ。表示はセッションごとに初回だけ（sessionStorageのフラグ）で、画面のどこをタップしても即座に終わり、2.8秒のウォッチドッグが必ず完了させる。", "バリアントは3種ある。保存データが一切ない初回起動では1.6秒の短縮版になり、言語チップを含むトップバーは最初から表示されたまま下だけが組み上がる。OSの「視差効果を減らす」設定では静止版になり、ワードマークと發が約0.4秒フェードするだけで音も鳴らない。組み立てリストは常にその場の実DOMから作るため、GitHub版のようにレトロのタイル自体が存在しない環境では、存在しないタイルが幽霊のように現れることはない。音は既存のWebAudioキットと同じ作法で、すべてコード合成のみ（新しい音声ファイルはゼロ）。", "あわせて液体モーフのトランジション・プリセット（window.__liquidMorph）を新設した。水滴が弾けて金色の雫が飛ぶ演出だが、適用先は宝探しコンプリート（ゴールデンエッグ）の出現モーダル、ただ1箇所だけに限定してある。他のステージのクリア演出は従来どおり共有のstateCrackのまま。ブートもモーフも表示だけの演出で、ポイント・所持品・セーブデータのキーには一切触れていない。"] });
     notesAdd("仕組みと同期", { t: "脳ビューが知識ライブラリになった：棚画面の廃止と全幅化", b: ["知識ライブラリの独立した棚画面を目的地として廃止し、脳ビュー自体を知識ライブラリにした。全1,551件のタイトル・本文検索は脳ビューの棚リストへ移植し、複数キーワードのAND検索、全9言語の翻訳文も検索対象、ヒット件数の表示まで旧画面と同等に揃えた。棚レールをタップしたときは検索を解除してから該当の棚へスクロールする。脳ビューの戻るボタンはロビーへ戻る形に改め、「?game=library」のディープリンクも脳ビューに着地する。旧画面のコードとデータ層は残してあるが、到達できる導線はすべて断った（脳ビューの記事パネルが使うデータ層は共有のため無傷）。", "制作ノート画面をワイド画面で全幅化した。従来は最大720pxの中央カラムで、幅1180pxの画面では左右に約230pxずつ空白ができていた。761px以上の幅では左右の余白を16pxにまで広げ、概要・一覧・記事の3つのズーム段階すべてで画面いっぱいに読める。スマホ幅の見た目は従来どおり変えていない。", "ビリヤードの3Dプレイ画面も全幅化した。従来は「高さから逆算した幅」の上限に縛られ、幅1180pxの画面でもキャンバスは約520px（画面の44%）までしか広がらなかった。新しいフィット処理はステージの実寸（ボールのトレイと操作デッキのあいだの高さ）を測ってキャンバスとカメラのアスペクト比を決め、視点距離もアスペクト比で補正する。通常視点でも真上視点でも、レールを含めたテーブル全体が常時収まる。"] });
+  notesAdd("拡張と暮らし", { t: "ターンテーブルは、あなたのSpotifyで回る", b: ["拡張の新しい画面「ターンテーブル」は、あなたのSpotifyアカウントとつながるレコードプレーヤーです。つなぎ方はPKCEという認可の仕組みで、秘密鍵はアプリの中に置きません。ログインで受け取るトークンは、この端末のこのページの中だけにしまわれ、セーブデータの同期には絶対に混ざりません。再生の経路は2つあり、Premiumの人はこの画面自体がSpotify Connectの機器になって音がここで鳴り、そうでない場合はスマホやPCの再生と同期して、ジャケットと進み具合と針がそのまま映ります。", "盤面はキャンバスに描いた本気のレコードで、回転数は33と45の切り替えつき。再生が始まるとゆっくり回転が上がり、止まるとすっと落ちる、実機の立ち上がりを真似ています。針（トーンアーム）は曲の進み具合に合わせて溝の内側へ少しずつ進み、終われば持ち上がって戻ります。レーベルには再生中のジャケット写真がそのまま貼りつきます。プレーヤーの本体は画面ではなくアプリ全体に常駐するので、ゲームへ移っても音楽は止まらず、ロビーには小さな再生チップが出ます。", "レコード盤の絵柄と画面のスキンは、コインショップの装備品です。透明盤や色つき盤、真鍮コイン盤、木目のデッキなどを買って着せ替えでき、持ち物と装備は他の装備品と同じ仕組みで同期されます。検証では、ログイン用URLの合言葉（PKCE）が国際規格RFC 7636のテスト値と一致すること、トークンの保存先が1か所だけで同期データに漏れていないこと、購入と装備が再読み込み後も残ることを確かめました。ただし実アカウントでのログイン往復とPremiumの実再生だけは、あなたの端末とアカウントでしか確かめられません。"] });
+  notesAdd("仕組みと同期", { t: "全体設定とマスター音量：最初は0", b: ["ロビーの右上に設定ボタンがつきました。開くと全体の音量（マスター音量）を変えられます。この音量は全ゲームの効果音、起動時の音、BGM、そしてターンテーブルの音楽まで、ARCADEのすべての音にかかる親玉です。初めて開くときは0、つまり無音から始まります。うるさいと感じたらまず自分で上げる、という置き方です。設定はこの端末の中だけに保存され、セーブデータの同期には入りません。", "裏側の苦労は、ARCADEの音の出口が1つではなかったことです。画面まわりの音は共有の音響回路、ゲームごとの音はそれぞれの回路、という具合に分かれていて、全員が出口へ直結していました。そこで、音響回路が生まれるたびにマスターのつまみ（ゲイン）を出口の手前に差し込み、行き先をそちらへ付け替える方式にしました。後から生まれる回路——レトロのエミュレータや麻雀・チェスの中の音も、同じ仕掛けで自動的に傘下に入ります。各ゲームの音ON/OFFは今まで通り、その手前で働きます。", "検証では、真新しい状態で開くと音量が0で、音響回路のマスターゲインも0であること、70に上げると再読み込み後も70のまま残ること、設定パネルがロビーと全17画面の上バーから開けることを確かめました。ターンテーブルの音量は、このマスターと画面側の音量を掛け算した値で決まります。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -69512,6 +69614,1083 @@ window.__BN_VIEW__ = {
   if (reduced) runStatic();
   else if (firstEver) runShort();
   else runFull();
+})();
+</script>
+<script>/* ============================================================
+   Module 64 — Global settings: master volume + settings panel.
+   (2026-11-16, turntable round scope addition, Ryuichi's word:
+   「ゲーム全体の音量などの設定を右上に配置して設定できるように
+   して、始めて開くときは音量0で」)
+
+   MASTER VOLUME. One device-local setting (localStorage
+   "arcade-settings-v1", NEVER synced) governing every sound in
+   ARCADE: all games, the boot sequence, UI sounds, shop BGM and
+   the turntable BGM. First-ever open (no saved value) starts at
+   0 — silent until the user raises it.
+
+   Mechanism: ARCADE has no single audio bus — shell sounds share
+   window.__arcadeAC, many games own a private AudioContext, and
+   everything connects straight to ctx.destination. So the master
+   is fitted per AudioContext: a master GainNode wired to the real
+   destination, with the instance's `destination` property
+   shadowed to return that gain. The AudioContext constructors
+   are wrapped so every future context (games, the retro
+   emulator, the mahjong/chess apps — all created after page
+   load) is fitted at birth; a pre-existing __arcadeAC is
+   retro-fitted below. Per-game 音 ON/OFF toggles are untouched
+   and stay subordinate (they gate their own sounds upstream of
+   the master gain). The Spotify SDK player is not a page
+   AudioContext; module 65 maps its volume = master × local.
+
+   Public surface (also the probe hooks):
+     window.__arcadeMasterVol()      -> effective gain 0..1
+     window.__arcadeSetMaster(volPercent, muted?)
+     window.__arcadeSettingsState()  -> {vol, muted, loaded, contexts}
+     window.__arcadeSettingsOpen() / __arcadeSettingsClose()
+     window.__arcadeOnMasterChange(cb)
+   ============================================================ */
+(function () {
+  "use strict";
+  var KEY = "arcade-settings-v1";
+  var state = { vol: 0, muted: false, loaded: false };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var p = JSON.parse(raw);
+      if (p && typeof p.vol === "number" && isFinite(p.vol)) {
+        state.vol = Math.max(0, Math.min(100, Math.round(p.vol)));
+        state.muted = !!p.muted;
+        state.loaded = true;
+      }
+    }
+  } catch (e) {}
+  function effective() { return state.muted ? 0 : state.vol / 100; }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ vol: state.vol, muted: state.muted })); state.loaded = true; } catch (e) {}
+  }
+
+  /* ---------------- master gain fitting ---------------- */
+  var contexts = [];
+  var listeners = [];
+  function fit(ctx) {
+    if (!ctx || ctx.__arcadeMasterGain) return ctx;
+    try {
+      var proto = Object.getPrototypeOf(ctx);
+      var desc = proto ? Object.getOwnPropertyDescriptor(proto, "destination") : null;
+      var real = desc && desc.get ? desc.get.call(ctx) : ctx.destination;
+      var g = ctx.createGain();
+      g.gain.value = effective();
+      g.connect(real);
+      Object.defineProperty(ctx, "destination", {
+        configurable: true, enumerable: false,
+        get: function () { return g; }
+      });
+      ctx.__arcadeMasterGain = g;
+      contexts.push(ctx);
+    } catch (e) {}
+    return ctx;
+  }
+  function wrapConstructor(name) {
+    var Orig = window[name];
+    if (!Orig || Orig.__arcadeWrapped) return;
+    function WrappedAC() {
+      var args = Array.prototype.slice.call(arguments);
+      var ctx = new (Function.prototype.bind.apply(Orig, [null].concat(args)))();
+      return fit(ctx);
+    }
+    WrappedAC.prototype = Orig.prototype;
+    WrappedAC.__arcadeWrapped = true;
+    try { window[name] = WrappedAC; } catch (e) {}
+  }
+  wrapConstructor("AudioContext");
+  wrapConstructor("webkitAudioContext");
+  try { if (window.__arcadeAC) fit(window.__arcadeAC); } catch (e) {}
+  window.__arcadeFitAudio = fit;
+
+  function applyAll() {
+    var v = effective();
+    for (var i = 0; i < contexts.length; i++) {
+      var g = contexts[i].__arcadeMasterGain;
+      if (!g) continue;
+      try { g.gain.setTargetAtTime(v, contexts[i].currentTime, 0.03); } catch (e) { try { g.gain.value = v; } catch (e2) {} }
+    }
+    for (var j = 0; j < listeners.length; j++) { try { listeners[j](v, state); } catch (e) {} }
+  }
+  function setMaster(vol, muted) {
+    if (typeof vol === "number" && isFinite(vol)) state.vol = Math.max(0, Math.min(100, Math.round(vol)));
+    if (typeof muted === "boolean") state.muted = muted;
+    save(); applyAll(); syncPanel();
+  }
+  window.__arcadeMasterVol = effective;
+  window.__arcadeSetMaster = setMaster;
+  window.__arcadeOnMasterChange = function (cb) { if (typeof cb === "function") listeners.push(cb); };
+  window.__arcadeSettingsState = function () {
+    return { vol: state.vol, muted: state.muted, loaded: state.loaded, contexts: contexts.length };
+  };
+
+  /* ---------------- strings (self-contained, module 61 pattern) ---------------- */
+  var STR = {
+    settings: { ja: "設定", en: "Settings", ko: "설정", zh: "设置", zht: "設定", es: "Ajustes", fr: "Paramètres", de: "Einstellungen", pt: "Configurações", it: "Impostazioni" },
+    masterVolume: { ja: "全体の音量", en: "Master Volume", ko: "전체 음량", zh: "总音量", zht: "整體音量", es: "Volumen general", fr: "Volume général", de: "Gesamtlautstärke", pt: "Volume geral", it: "Volume generale" },
+    masterNote: { ja: "すべてのゲーム・ブート・BGMの音量です。この端末にだけ保存されます。", en: "This is the volume for all game boot BGM. It is saved only on this device.", ko: "모든 게임 부트 BGM의 음량입니다. 이 기기에만 저장됩니다.", zh: "所有游戏启动 BGM 的音量。仅保存在此设备中。", zht: "這是所有遊戲啟動背景音樂的音量。僅儲存在此裝置。", es: "Este es el volumen de toda la BGM de arranque de los juegos. Solo se guarda en este dispositivo.", fr: "Volume de toute la BGM de démarrage des jeux. Enregistré uniquement sur cet appareil.", de: "Dies ist die Lautstärke aller Boot-BGM der Spiele. Sie wird nur auf diesem Gerät gespeichert.", pt: "Este é o volume de toda a música de inicialização do jogo. Ele é salvo apenas neste dispositivo.", it: "Volume di tutte le BGM di avvio dei giochi. Salvato solo su questo dispositivo." },
+    mute: { ja: "ミュート", en: "Mute", ko: "음소거", zh: "静音", zht: "靜音", es: "Silenciar", fr: "Muet", de: "Stummschalten", pt: "Silenciar", it: "Disattiva audio" },
+    unmute: { ja: "ミュート解除", en: "Unmute", ko: "음소거 해제", zh: "取消静音", zht: "取消靜音", es: "Activar sonido", fr: "Réactiver le son", de: "Stummschaltung aufheben", pt: "Ativar som", it: "Riattiva audio" },
+    close: { ja: "閉じる", en: "Close", ko: "닫기", zh: "关闭", zht: "關閉", es: "Cerrar", fr: "Fermer", de: "Schließen", pt: "Fechar", it: "Chiudi" },
+    openSettings: { ja: "設定を開く", en: "Open Settings", ko: "설정 열기", zh: "打开设置", zht: "開啟設定", es: "Abrir ajustes", fr: "Ouvrir les paramètres", de: "Einstellungen öffnen", pt: "Abrir configurações", it: "Apri impostazioni" }
+  };
+  function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
+  function L(key) { var e = STR[key]; if (!e) return key; return e[lang()] || e.ja || key; }
+
+  /* ---------------- styles ---------------- */
+  var css = [
+    ".settings-gear-btn{display:inline-flex;align-items:center;gap:5px}",
+    ".subbar .settings-mini{margin-left:auto;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#e8ecf4;border-radius:999px;min-width:38px;height:38px;padding:0 10px;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none}",
+    ".subbar .settings-mini:active{transform:scale(.94)}",
+    "#settingsOverlay{position:fixed;inset:0;z-index:8600;background:rgba(4,6,12,.55);display:flex;justify-content:flex-end;align-items:flex-start;padding:64px 14px 14px}",
+    "#settingsOverlay[hidden]{display:none}",
+    "#settingsPanel{background:#12172a;border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.55);width:min(400px,calc(100vw - 28px));padding:16px 18px 14px;color:#eef1f8}",
+    "#settingsPanel h2{margin:0 0 4px;font-size:17px;letter-spacing:.02em;display:flex;align-items:center;gap:8px}",
+    "#settingsPanel .set-close{margin-left:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#e8ecf4;border-radius:999px;min-width:36px;height:36px;font-size:15px;cursor:pointer}",
+    ".set-row{display:flex;align-items:center;gap:10px;margin-top:14px}",
+    ".set-row label{font-size:13.5px;font-weight:600;white-space:nowrap}",
+    ".set-mute{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#e8ecf4;border-radius:10px;min-width:44px;height:44px;font-size:17px;cursor:pointer;flex:none}",
+    ".set-vol{flex:1;accent-color:#e9b93c;height:44px;cursor:pointer}",
+    ".set-val{font-variant-numeric:tabular-nums;font-size:14px;min-width:44px;text-align:right}",
+    ".set-note{font-size:12px;line-height:1.55;color:#aeb6c8;margin:10px 0 2px}",
+    "@media (max-width:560px){#settingsOverlay{padding:56px 10px 10px;justify-content:center}}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.id = "arcade-settings-style";
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  /* ---------------- panel ---------------- */
+  var overlay = null, slider = null, valEl = null, muteBtn = null, titleEl = null, labelEl = null, noteEl = null, closeBtn = null;
+  function buildPanel() {
+    if (overlay) return;
+    overlay = document.createElement("div");
+    overlay.id = "settingsOverlay";
+    overlay.hidden = true;
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.innerHTML =
+      '<div id="settingsPanel">' +
+      '<h2><span aria-hidden="true">⚙</span><span class="set-title"></span>' +
+      '<button type="button" class="set-close" aria-label="Close">✕</button></h2>' +
+      '<div class="set-row"><label class="set-label" for="setVolRange"></label>' +
+      '<button type="button" class="set-mute" id="setMuteBtn" aria-label="Mute">🔊</button>' +
+      '<input type="range" class="set-vol" id="setVolRange" min="0" max="100" step="1" value="0">' +
+      '<span class="set-val" id="setVolVal">0%</span></div>' +
+      '<p class="set-note"></p></div>';
+    document.body.appendChild(overlay);
+    slider = overlay.querySelector("#setVolRange");
+    valEl = overlay.querySelector("#setVolVal");
+    muteBtn = overlay.querySelector("#setMuteBtn");
+    titleEl = overlay.querySelector(".set-title");
+    labelEl = overlay.querySelector(".set-label");
+    noteEl = overlay.querySelector(".set-note");
+    closeBtn = overlay.querySelector(".set-close");
+    slider.addEventListener("input", function () {
+      var v = parseInt(slider.value, 10) || 0;
+      setMaster(v, v === 0 ? state.muted : false);
+    });
+    muteBtn.addEventListener("click", function () { setMaster(state.vol, !state.muted); });
+    closeBtn.addEventListener("click", closePanel);
+    overlay.addEventListener("click", function (ev) { if (ev.target === overlay) closePanel(); });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && overlay && !overlay.hidden) closePanel();
+    });
+  }
+  function syncPanel() {
+    if (!overlay) return;
+    titleEl.textContent = L("settings");
+    labelEl.textContent = L("masterVolume");
+    noteEl.textContent = L("masterNote");
+    closeBtn.setAttribute("aria-label", L("close"));
+    muteBtn.textContent = state.muted || state.vol === 0 ? "🔇" : "🔊";
+    muteBtn.setAttribute("aria-label", state.muted ? L("unmute") : L("mute"));
+    if (document.activeElement !== slider) slider.value = String(state.vol);
+    valEl.textContent = (state.muted ? "0" : state.vol) + "%";
+  }
+  function openPanel() { buildPanel(); syncPanel(); overlay.hidden = false; try { slider.focus({ preventScroll: true }); } catch (e) {} }
+  function closePanel() { if (overlay) overlay.hidden = true; }
+  window.__arcadeSettingsOpen = openPanel;
+  window.__arcadeSettingsClose = closePanel;
+
+  /* ---------------- buttons ---------------- */
+  function gearSVG() {
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/></svg>';
+  }
+  function bindLobbyButton() {
+    var b = document.getElementById("globalSettingsBtn");
+    if (b && !b.__setBound) { b.__setBound = true; b.addEventListener("click", openPanel); }
+  }
+  function injectSubbarButtons() {
+    var bars = document.querySelectorAll(".subbar");
+    for (var i = 0; i < bars.length; i++) {
+      if (bars[i].querySelector(".settings-mini")) continue;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "settings-mini";
+      btn.setAttribute("aria-label", L("openSettings"));
+      btn.innerHTML = gearSVG();
+      btn.addEventListener("click", openPanel);
+      bars[i].appendChild(btn);
+    }
+  }
+  bindLobbyButton();
+  injectSubbarButtons();
+  // Views can be re-rendered rarely; one late re-inject pass is cheap insurance.
+  setTimeout(function () { bindLobbyButton(); injectSubbarButtons(); }, 1500);
+})();
+</script>
+<script>/* ============================================================
+   Module 65 — ターンテーブル (Turntable): a Spotify-linked
+   record player for ARCADE. (2026-11-16, Ryuichi's spec:
+   「見た目は本気で作って、ゲームBGMとして使えるようにして、
+   コインで色んなレコードだけじゃなく色々な画面に変えれる
+   ようにして」)
+
+   AUTH: Authorization Code + PKCE (S256) against the public
+   Client ID below — no client secret anywhere. Tokens live in
+   localStorage "arcade-spotify-v1" on THIS page origin only;
+   they are never written to sync2 / Firebase / any server.
+   The PKCE verifier + OAuth state live in sessionStorage and
+   are cleared after the exchange. redirect_uri is built as
+   window.location.origin + window.location.pathname so the
+   GitHub Pages deployment matches its registered URI exactly.
+
+   PLAYBACK PATHS:
+   (a) Web Playback SDK (Premium): ARCADE registers as a
+       Spotify Connect device and the music plays IN ARCADE.
+       SDK volume = master volume (module 64) × local volume.
+   (b) Display-sync: poll the Web API playback state and mirror
+       it (artwork label, progress, tonearm); transport controls
+       call the Web API.
+   (c) Demo mode: a local fixture drives the full visual state
+       machine with no network (also the probe fixture path).
+   The player core is app-level (this IIFE runs at page load,
+   not per-screen), so music and the now-playing chip persist
+   across ARCADE screens; leaving/re-entering the screen never
+   restarts playback.
+
+   Probe surface: window.__turntable { state, buildAuthorizeUrl,
+   demo, stopDemo, applyCosmetics, enter, els }.
+   ============================================================ */
+(function () {
+  "use strict";
+  var CLIENT_ID = "a5010c3a5cea485a98c2c762f3cc5af9";
+  var SCOPES = "streaming user-read-playback-state user-read-currently-playing user-modify-playback-state user-read-private playlist-read-private user-read-recently-played";
+  var TOK_KEY = "arcade-spotify-v1";
+  var AUTH_KEY = "arcade-spotify-auth";
+  var VOL_KEY = "arcade-spotify-vol";
+  var HERE_KEY = "arcade-spotify-playhere";
+  var RM = false;
+  try { RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) {}
+
+  /* ---------------- strings ---------------- */
+  var STR = {
+    connect: { ja: "Spotifyとつなぐ", en: "Connect to Spotify", ko: "Spotify와 연결", zh: "连接 Spotify", zht: "連接 Spotify", es: "Conectar con Spotify", fr: "Connecter à Spotify", de: "Mit Spotify verbinden", pt: "Conectar ao Spotify", it: "Connetti a Spotify" },
+    disconnect: { ja: "接続を切る", en: "Disconnect", ko: "연결 해제", zh: "断开连接", zht: "中斷連接", es: "Desconectar", fr: "Déconnecter", de: "Verbindung trennen", pt: "Desconectar", it: "Disconnetti" },
+    connected: { ja: "接続済み", en: "Connected", ko: "연결됨", zh: "已连接", zht: "已連接", es: "Conectado", fr: "Connecté", de: "Verbunden", pt: "Conectado", it: "Connesso" },
+    notConnected: { ja: "未接続", en: "Disconnected", ko: "연결 안 됨", zh: "未连接", zht: "未連接", es: "No conectado", fr: "Non connecté", de: "Nicht verbunden", pt: "Não conectado", it: "Non connesso" },
+    loginNote: { ja: "あなたのSpotifyアカウントでログインします。再生はこの画面の中（Premium）か、いつものデバイスと同期して表示されます。", en: "Log in with your Spotify account. Playback will appear within this screen (Premium) or synced with your usual devices.", ko: "Spotify 계정으로 로그인합니다. 재생은 이 화면 내(Premium)에서 진행하거나 사용 중인 기기와 동기화되어 표시됩니다.", zh: "登录您的 Spotify 账号。播放内容将在此界面（Premium）或同步显示在您常用的设备上。", zht: "登入您的 Spotify 帳號。播放內容將顯示在此畫面中（Premium）或是與您平常使用的裝置同步。", es: "Inicia sesión con tu cuenta de Spotify. La reproducción se mostrará en esta pantalla (Premium) o sincronizada con tu dispositivo habitual.", fr: "Connectez-vous avec votre compte Spotify. La lecture sera affichée sur cet écran (Premium) ou synchronisée avec vos appareils habituels.", de: "Melden Sie sich mit Ihrem Spotify-Konto an. Die Wiedergabe erfolgt entweder auf diesem Bildschirm (Premium) oder wird mit Ihren üblichen Geräten synchronisiert.", pt: "Faça login com sua conta Spotify. A reprodução aparecerá nesta tela (Premium) ou sincronizada com seus dispositivos habituais.", it: "Accedi con il tuo account Spotify. La riproduzione avverrà su questa schermata (Premium) o sincronizzata con i tuoi soliti dispositivi." },
+    playHere: { ja: "この画面で再生する", en: "Play on this screen", ko: "이 화면에서 재생", zh: "在此界面播放", zht: "在此畫面播放", es: "Reproducir en esta pantalla", fr: "Lire sur cet écran", de: "Auf diesem Bildschirm wiedergeben", pt: "Reproduzir nesta tela", it: "Riproduci su questa schermata" },
+    premiumNeeded: { ja: "この画面での再生にはSpotify Premiumが必要です。今は他のデバイスの再生と同期して表示しています。", en: "Spotify Premium is required for playback on this screen. It is currently displaying synced with playback on other devices.", ko: "이 화면에서 재생하려면 Spotify Premium이 필요합니다. 현재는 다른 기기의 재생 상태와 동기화되어 표시 중입니다.", zh: "在此界面播放需要 Spotify Premium。目前正在同步显示其他设备的播放内容。", zht: "在此畫面播放需要 Spotify Premium。目前正與其他裝置的播放內容同步顯示。", es: "Se requiere Spotify Premium para reproducir en esta pantalla. Actualmente se muestra sincronizado con la reproducción de otro dispositivo.", fr: "La lecture sur cet écran nécessite Spotify Premium. Actuellement, l'affichage est synchronisé avec la lecture sur un autre appareil.", de: "Die Wiedergabe auf diesem Bildschirm erfordert Spotify Premium. Derzeit wird die Wiedergabe mit anderen Geräten synchronisiert.", pt: "A reprodução nesta tela requer Spotify Premium. No momento, está sendo exibido sincronizado com a reprodução de outro dispositivo.", it: "La riproduzione su questa schermata richiede Spotify Premium. Al momento è sincronizzata con la riproduzione su altri dispositivi." },
+    playingElsewhere: { ja: "他のデバイスで再生中", en: "Playing on another device", ko: "다른 기기에서 재생 중", zh: "正在其他设备上播放", zht: "正在其他裝置播放", es: "Reproduciendo en otro dispositivo", fr: "Lecture sur un autre appareil", de: "Wiedergabe auf einem anderen Gerät", pt: "Reproduzindo em outro dispositivo", it: "In riproduzione su altri dispositivi" },
+    playingHere: { ja: "この画面で再生中", en: "Playing on this screen", ko: "이 화면에서 재생 중", zh: "正在此界面播放", zht: "正在此畫面播放", es: "Reproduciendo en esta pantalla", fr: "Lecture sur cet écran", de: "Wiedergabe auf diesem Bildschirm", pt: "Reproduzindo nesta tela", it: "In riproduzione su questa schermata" },
+    demo: { ja: "デモモードで見てみる", en: "Try in Demo Mode", ko: "데모 모드로 보기", zh: "尝试演示模式", zht: "嘗試示範模式", es: "Probar en modo demo", fr: "Essayer le mode démo", de: "Im Demomodus ansehen", pt: "Experimentar o modo de demonstração", it: "Prova in modalità demo" },
+    demoMode: { ja: "デモモード", en: "Demo Mode", ko: "데모 모드", zh: "演示模式", zht: "示範模式", es: "Modo demo", fr: "Mode démo", de: "Demomodus", pt: "Modo de demonstração", it: "Modalità demo" },
+    demoNote: { ja: "デモモード中：音は出ません。盤面と針の動きだけをお試し中です。", en: "In Demo Mode: No sound. Only testing the movement of the record and needle.", ko: "데모 모드 중: 소리는 나오지 않습니다. 판과 바늘의 움직임만 체험 중입니다.", zh: "演示模式中：无声音。仅测试唱片和唱针的动作。", zht: "示範模式中：不會發出聲音。僅測試唱片盤與唱針的動作。", es: "Modo demo: No hay sonido. Solo se está probando el movimiento del disco y la aguja.", fr: "En mode démo : aucun son n'est émis. Vous testez uniquement les mouvements du disque et du bras de lecture.", de: "Demomodus aktiv: Kein Ton. Sie testen gerade nur die Bewegungen von Platte und Nadel.", pt: "Modo de demonstração ativado: sem áudio. Testando apenas os movimentos do disco e da agulha.", it: "In modalità demo: nessun audio. Stai testando solo il movimento del disco e della puntina." },
+    playlists: { ja: "プレイリスト", en: "Playlists", ko: "플레이리스트", zh: "播放列表", zht: "播放清單", es: "Lista de reproducción", fr: "Playlist", de: "Playlist", pt: "Playlist", it: "Playlist" },
+    recents: { ja: "最近聴いた曲", en: "Recently Played", ko: "최근 들은 곡", zh: "最近播放", zht: "最近聽過的歌曲", es: "Escuchado recientemente", fr: "Récemment écouté", de: "Zuletzt gehört", pt: "Tocadas recentemente", it: "Ascoltati di recente" },
+    noTrack: { ja: "再生中の曲はありません", en: "No song is currently playing", ko: "재생 중인 곡이 없습니다", zh: "当前没有播放的歌曲", zht: "沒有正在播放的歌曲", es: "No hay canciones reproduciéndose", fr: "Aucun morceau en cours de lecture", de: "Keine Musik wird wiedergegeben", pt: "Nenhuma música sendo reproduzida", it: "Nessun brano in riproduzione" },
+    chooseTrack: { ja: "下のプレイリストや最近の曲から選んでください。", en: "Please select from the playlists or recent songs below.", ko: "아래의 플레이리스트나 최근 곡에서 선택해 주세요.", zh: "请从下方的播放列表或最近歌曲中选择。", zht: "請從下方的播放清單或最近聽過的歌曲中選擇。", es: "Elige una canción de las listas de reproducción o de las recientes a continuación.", fr: "Veuillez choisir parmi les playlists ci-dessous ou les morceaux récents.", de: "Bitte wählen Sie einen Titel aus den Playlists oder den zuletzt gehörten Titeln unten aus.", pt: "Selecione a partir das playlists ou músicas recentes abaixo.", it: "Scegli tra le playlist o i brani recenti qui sotto." },
+    volume: { ja: "音量", en: "Volume", ko: "음량", zh: "音量", zht: "音量", es: "Volumen", fr: "Volume", de: "Lautstärke", pt: "Volume", it: "Volume" },
+    authErrorTitle: { ja: "Spotifyに接続できませんでした", en: "Could not connect to Spotify", ko: "Spotify에 연결할 수 없었습니다", zh: "无法连接到 Spotify", zht: "無法連接至 Spotify", es: "No se pudo conectar a Spotify", fr: "Impossible de se connecter à Spotify", de: "Verbindung zu Spotify konnte nicht hergestellt werden", pt: "Não foi possível conectar ao Spotify", it: "Impossibile connettersi a Spotify" },
+    apiError: { ja: "Spotify APIエラー", en: "Spotify API error", ko: "Spotify API 오류", zh: "Spotify API 错误", zht: "Spotify API 錯誤", es: "Error de API de Spotify", fr: "Erreur d'API Spotify", de: "Spotify API-Fehler", pt: "Erro da API do Spotify", it: "Errore API Spotify" },
+    connDetails: { ja: "接続の詳細", en: "Connection Details", ko: "연결 세부 정보", zh: "连接详情", zht: "連接詳情", es: "Detalles de la conexión", fr: "Détails de la connexion", de: "Verbindungsdetails", pt: "Detalhes da conexão", it: "Dettagli connessione" },
+    redirectLabel: { ja: "この画面が使うリダイレクトURI", en: "Redirect URI used by this screen", ko: "이 화면이 사용하는 리다이렉트 URI", zh: "此界面使用的重定向 URI", zht: "此畫面使用的重新導向 URI", es: "URI de redirección utilizada por esta pantalla", fr: "URI de redirection utilisée par cet écran", de: "Von diesem Bildschirm verwendeter Redirect-URI", pt: "URI de redirecionamento usada por esta tela", it: "URI di reindirizzamento utilizzato da questa schermata" },
+    tokenNote: { ja: "トークンはこの端末のこのページにだけ保存され、同期やサーバーには送られません。", en: "Tokens are saved only on this page of this device and are not sent to sync or servers.", ko: "토큰은 이 기기의 이 페이지에만 저장되며, 동기화되거나 서버로 전송되지 않습니다.", zh: "令牌仅保存在此设备的当前页面，不会同步或发送到服务器。", zht: "權杖僅儲存在此裝置的此頁面，不會同步或傳送至伺服器。", es: "Los tokens solo se guardan en esta página de este dispositivo y no se envían a servidores ni se sincronizan.", fr: "Les jetons sont enregistrés uniquement sur cette page de cet appareil et ne sont pas synchronisés ou envoyés aux serveurs.", de: "Token werden nur auf dieser Seite auf diesem Gerät gespeichert und nicht synchronisiert oder an Server gesendet.", pt: "O token é salvo apenas nesta página deste dispositivo e não é enviado para sincronização ou servidores.", it: "I token vengono salvati solo su questa pagina del dispositivo e non vengono inviati a server o sincronizzati." },
+    openSpotifyFirst: { ja: "再生できるデバイスがありません。スマホやPCでSpotifyを開いてから選んでください。", en: "No playable devices found. Please open Spotify on your smartphone or PC first, then select it.", ko: "재생할 수 있는 기기가 없습니다. 스마트폰이나 PC에서 Spotify를 실행한 후 선택해 주세요.", zh: "没有可用的播放设备。请先在手机或电脑上打开 Spotify 后再进行选择。", zht: "沒有可播放的裝置。請在手機或電腦上開啟 Spotify 後再選擇。", es: "No hay dispositivos disponibles para reproducir. Abre Spotify en tu teléfono o PC y selecciónalo.", fr: "Aucun appareil disponible pour la lecture. Veuillez ouvrir Spotify sur votre smartphone ou PC, puis effectuez une sélection.", de: "Kein wiedergabefähiges Gerät gefunden. Bitte öffnen Sie Spotify auf Ihrem Smartphone oder PC und wählen Sie es dann aus.", pt: "Não há dispositivos disponíveis para reprodução. Abra o Spotify no seu celular ou PC e selecione um.", it: "Nessun dispositivo disponibile per la riproduzione. Apri Spotify sul tuo smartphone o PC e seleziona un dispositivo." },
+    demoTrack: { ja: "デモトラック", en: "Demo Track", ko: "데모 트랙", zh: "演示曲目", zht: "示範曲目", es: "Pista de demostración", fr: "Piste démo", de: "Demotrack", pt: "Faixa de demonstração", it: "Traccia demo" },
+    demoArtist: { ja: "ARCADEターンテーブル デモ", en: "ARCADE Turntable Demo", ko: "ARCADE 턴테이블 데모", zh: "ARCADE 唱机演示", zht: "ARCADE 唱盤示範", es: "Giradiscos ARCADE Demo", fr: "Platine vinyle ARCADE Démo", de: "ARCADE Plattenspieler Demo", pt: "Toca-discos ARCADE Demo", it: "Giradischi ARCADE Demo" }
+  };
+  function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
+  function L(key) { var e = STR[key]; if (!e) return key; return e[lang()] || e.ja || key; }
+
+  /* ---------------- state ---------------- */
+  var S = {
+    auth: "out",            // out | in
+    mode: "none",           // none | sdk | sync | demo
+    premium: null,          // null = unknown
+    accountName: "",
+    track: null,            // {name, artists, album, art, durationMs, uri}
+    progressMs: 0, fetchedAt: 0, isPlaying: false,
+    deviceName: "", deviceHere: false,
+    sdkDeviceId: "", sdkReady: false, sdkTried: false,
+    localVol: 0.8, rpm: 33,
+    playlists: [], recents: [],
+    notice: "", error: "",
+    vinyl: "vinyl-default", skin: "ttskin-default"
+  };
+  try { var lv = parseFloat(localStorage.getItem(VOL_KEY)); if (isFinite(lv)) S.localVol = Math.max(0, Math.min(1, lv)); } catch (e) {}
+  try { S.vinyl = window.__ttVinyl || S.vinyl; S.skin = window.__ttSkin || S.skin; } catch (e) {}
+
+  /* ---------------- PKCE + tokens ---------------- */
+  function b64url(bytes) {
+    var s = "", i; for (i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function randomVerifier() {
+    var a = new Uint8Array(48); crypto.getRandomValues(a);
+    return b64url(a);
+  }
+  function challengeFor(verifier) {
+    var enc = new TextEncoder().encode(verifier);
+    return crypto.subtle.digest("SHA-256", enc).then(function (buf) { return b64url(new Uint8Array(buf)); });
+  }
+  function redirectUri() { return window.location.origin + window.location.pathname; }
+  function buildAuthorizeUrl(verifier, stateVal) {
+    return challengeFor(verifier).then(function (ch) {
+      var q = new URLSearchParams({
+        client_id: CLIENT_ID, response_type: "code",
+        redirect_uri: redirectUri(), scope: SCOPES,
+        code_challenge_method: "S256", code_challenge: ch, state: stateVal
+      });
+      return "https://accounts.spotify.com/authorize?" + q.toString();
+    });
+  }
+  function saveTokens(tok) {
+    var rec = {
+      access: tok.access_token || "",
+      refresh: tok.refresh_token || "",
+      expiresAt: Date.now() + (Math.max(60, tok.expires_in || 3600) - 30) * 1000
+    };
+    try {
+      var old = JSON.parse(localStorage.getItem(TOK_KEY) || "null");
+      if (!rec.refresh && old && old.refresh) rec.refresh = old.refresh;
+      localStorage.setItem(TOK_KEY, JSON.stringify(rec));
+    } catch (e) {}
+    return rec;
+  }
+  function loadTokens() { try { return JSON.parse(localStorage.getItem(TOK_KEY) || "null"); } catch (e) { return null; } }
+  function tokenPost(body) {
+    return fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(body).toString()
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, json: j }; }); });
+  }
+  function getAccessToken() {
+    var rec = loadTokens();
+    if (!rec || !rec.access) return Promise.resolve(null);
+    if (rec.expiresAt > Date.now()) return Promise.resolve(rec.access);
+    if (!rec.refresh) return Promise.resolve(null);
+    return tokenPost({ grant_type: "refresh_token", refresh_token: rec.refresh, client_id: CLIENT_ID })
+      .then(function (res) {
+        if (!res.ok || !res.json.access_token) { S.error = L("authErrorTitle") + " (refresh " + res.status + ")"; return null; }
+        return saveTokens(res.json).access;
+      })
+      .catch(function () { return null; });
+  }
+  function login() {
+    var verifier = randomVerifier();
+    var st = randomVerifier().slice(0, 22);
+    try { sessionStorage.setItem(AUTH_KEY, JSON.stringify({ v: verifier, s: st })); sessionStorage.setItem("arcade-spotify-return", "1"); } catch (e) {}
+    buildAuthorizeUrl(verifier, st).then(function (url) { window.location.href = url; });
+  }
+  function handleCallback() {
+    var q = new URLSearchParams(window.location.search);
+    var err = q.get("error"), code = q.get("code"), st = q.get("state");
+    if (!err && !code) return;
+    var saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem(AUTH_KEY) || "null"); } catch (e) {}
+    try { sessionStorage.removeItem(AUTH_KEY); } catch (e) {}
+    var ret = false;
+    try { ret = sessionStorage.getItem("arcade-spotify-return") === "1"; sessionStorage.removeItem("arcade-spotify-return"); } catch (e) {}
+    try { window.history.replaceState({}, "", window.location.pathname); } catch (e) {}
+    if (err) {
+      S.error = L("authErrorTitle") + ": " + err + " — " + L("redirectLabel") + ": " + redirectUri();
+      return;
+    }
+    if (!saved || saved.s !== st || !code) { S.error = L("authErrorTitle") + ": state"; return; }
+    tokenPost({ grant_type: "authorization_code", code: code, redirect_uri: redirectUri(), client_id: CLIENT_ID, code_verifier: saved.v })
+      .then(function (res) {
+        if (!res.ok || !res.json.access_token) { S.error = L("authErrorTitle") + " (" + res.status + " " + (res.json.error || "") + ")"; renderAll(); return; }
+        saveTokens(res.json);
+        S.auth = "in"; S.error = "";
+        afterAuth(ret);
+        renderAll();
+      })
+      .catch(function () { S.error = L("authErrorTitle") + ": network"; renderAll(); });
+  }
+  function logout() {
+    try { localStorage.removeItem(TOK_KEY); } catch (e) {}
+    if (sdkPlayer) { try { sdkPlayer.disconnect(); } catch (e) {} sdkPlayer = null; }
+    S.auth = "out"; S.mode = "none"; S.track = null; S.isPlaying = false; S.sdkReady = false; S.sdkTried = false;
+    renderAll();
+  }
+
+  /* ---------------- Web API ---------------- */
+  function api(path, opts) {
+    opts = opts || {};
+    return getAccessToken().then(function (tok) {
+      if (!tok) throw new Error("no-token");
+      var init = { method: opts.method || "GET", headers: { "Authorization": "Bearer " + tok } };
+      if (opts.body) { init.headers["Content-Type"] = "application/json"; init.body = JSON.stringify(opts.body); }
+      return fetch("https://api.spotify.com/v1" + path, init).then(function (r) {
+        if (r.status === 204) return { ok: true, status: 204, json: null };
+        return r.json().then(function (j) { return { ok: r.ok, status: r.status, json: j }; })
+          .catch(function () { return { ok: r.ok, status: r.status, json: null }; });
+      });
+    });
+  }
+  function trackFromItem(it) {
+    if (!it) return null;
+    var art = "";
+    try { var imgs = (it.album && it.album.images) || []; art = (imgs[1] && imgs[1].url) || (imgs[0] && imgs[0].url) || ""; } catch (e) {}
+    return {
+      name: it.name || "",
+      artists: (it.artists || []).map(function (a) { return a.name; }).join(", "),
+      album: (it.album && it.album.name) || "",
+      art: art, durationMs: it.duration_ms || 0, uri: it.uri || ""
+    };
+  }
+  function fetchPlayer() {
+    if (S.auth !== "in" || S.mode === "demo") return Promise.resolve();
+    return api("/me/player").then(function (res) {
+      if (res.status === 204 || !res.json) { if (S.mode !== "sdk") { S.track = null; S.isPlaying = false; } renderAll(); return; }
+      if (!res.ok) { if (res.status === 401) { S.auth = "out"; } S.error = L("apiError") + " " + res.status; renderAll(); return; }
+      var j = res.json;
+      S.track = trackFromItem(j.item);
+      S.progressMs = j.progress_ms || 0; S.fetchedAt = Date.now();
+      S.isPlaying = !!j.is_playing;
+      if (j.device) { S.deviceName = j.device.name || ""; S.deviceHere = !!S.sdkDeviceId && j.device.id === S.sdkDeviceId; }
+      if (S.mode === "none") S.mode = "sync";
+      renderAll();
+    }).catch(function () {});
+  }
+  function fetchLists() {
+    api("/me/playlists?limit=30").then(function (res) {
+      if (res.ok && res.json && res.json.items) {
+        S.playlists = res.json.items.filter(Boolean).map(function (p) {
+          var img = ""; try { img = (p.images && p.images[0] && p.images[0].url) || ""; } catch (e) {}
+          return { name: p.name || "", uri: p.uri || "", img: img, count: (p.tracks && p.tracks.total) || 0 };
+        });
+        renderLists();
+      }
+    }).catch(function () {});
+    api("/me/player/recently-played?limit=10").then(function (res) {
+      if (res.ok && res.json && res.json.items) {
+        S.recents = res.json.items.filter(function (x) { return x && x.track; }).map(function (x) { return trackFromItem(x.track); });
+        renderLists();
+      }
+    }).catch(function () {});
+  }
+  function fetchProfile() {
+    return api("/me").then(function (res) {
+      if (res.ok && res.json) {
+        S.accountName = res.json.display_name || res.json.id || "";
+        S.premium = res.json.product === "premium";
+      }
+      return res;
+    }).catch(function () { return null; });
+  }
+  function afterAuth(openScreen) {
+    fetchProfile().then(function () {
+      fetchPlayer(); fetchLists();
+      if (openScreen && window.__openArcadeView) { try { window.__openArcadeView("turntable"); } catch (e) {} }
+      try { if (localStorage.getItem(HERE_KEY) === "1" && S.premium !== false) ensureSDK(); } catch (e) {}
+    });
+  }
+
+  /* ---------------- Web Playback SDK ---------------- */
+  var sdkPlayer = null;
+  function effSdkVol() {
+    var m = 1; try { m = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
+    return Math.max(0, Math.min(1, m * S.localVol));
+  }
+  function ensureSDK() {
+    if (sdkPlayer || S.sdkTried) return;
+    S.sdkTried = true;
+    var start = function () {
+      try {
+        sdkPlayer = new window.Spotify.Player({
+          name: "ARCADE Turntable",
+          getOAuthToken: function (cb) { getAccessToken().then(function (t) { if (t) cb(t); }); },
+          volume: effSdkVol()
+        });
+        sdkPlayer.addListener("ready", function (ev) {
+          S.sdkDeviceId = ev.device_id; S.sdkReady = true; S.mode = "sdk"; S.deviceHere = true; S.deviceName = "ARCADE Turntable";
+          renderAll();
+        });
+        sdkPlayer.addListener("player_state_changed", function (st) {
+          if (!st) return;
+          var tw = st.track_window && st.track_window.current_track;
+          if (tw) {
+            S.track = {
+              name: tw.name || "", artists: (tw.artists || []).map(function (a) { return a.name; }).join(", "),
+              album: (tw.album && tw.album.name) || "",
+              art: (tw.album && tw.album.images && tw.album.images[0] && tw.album.images[0].url) || "",
+              durationMs: st.duration || tw.duration_ms || 0, uri: tw.uri || ""
+            };
+          }
+          S.progressMs = st.position || 0; S.fetchedAt = Date.now();
+          S.isPlaying = !st.paused;
+          renderAll();
+        });
+        sdkPlayer.addListener("account_error", function () {
+          S.premium = false; S.notice = L("premiumNeeded"); S.mode = "sync"; renderAll();
+        });
+        sdkPlayer.addListener("authentication_error", function () {
+          S.error = L("authErrorTitle") + ": sdk-auth"; renderAll();
+        });
+        sdkPlayer.connect();
+      } catch (e) { S.mode = "sync"; }
+    };
+    if (window.Spotify && window.Spotify.Player) { start(); return; }
+    window.onSpotifyWebPlaybackSDKReady = start;
+    var sc = document.createElement("script");
+    sc.src = "https://sdk.scdn.co/spotify-player.js";
+    sc.async = true;
+    sc.onerror = function () { S.notice = L("apiError") + ": sdk-load"; if (S.mode === "none") S.mode = "sync"; renderAll(); };
+    document.head.appendChild(sc);
+  }
+  function playHere() {
+    try { localStorage.setItem(HERE_KEY, "1"); } catch (e) {}
+    ensureSDK();
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (S.sdkReady && S.sdkDeviceId) {
+        clearInterval(iv);
+        api("/me/player", { method: "PUT", body: { device_ids: [S.sdkDeviceId], play: !!S.track } }).catch(function () {});
+      }
+      if (tries > 24) clearInterval(iv);
+    }, 250);
+  }
+
+  /* ---------------- transport ---------------- */
+  function ctl(action, arg) {
+    if (S.mode === "demo") {
+      if (action === "seek") { S.progressMs = arg || 0; S.fetchedAt = Date.now(); renderAll(); return; }
+      demoControl(action); return;
+    }
+    if (S.mode === "sdk" && sdkPlayer) {
+      if (action === "toggle") { sdkPlayer.togglePlay(); return; }
+      if (action === "next") { sdkPlayer.nextTrack(); return; }
+      if (action === "prev") { sdkPlayer.previousTrack(); return; }
+      if (action === "seek") { sdkPlayer.seek(arg); return; }
+    }
+    var p = null;
+    if (action === "toggle") p = api("/me/player/" + (S.isPlaying ? "pause" : "play"), { method: "PUT" });
+    else if (action === "next") p = api("/me/player/next", { method: "POST" });
+    else if (action === "prev") p = api("/me/player/previous", { method: "POST" });
+    else if (action === "seek") p = api("/me/player/seek?position_ms=" + Math.round(arg), { method: "PUT" });
+    if (p) p.then(function (res) {
+      if (res && !res.ok && res.status !== 204) S.error = L("apiError") + " " + res.status;
+      setTimeout(fetchPlayer, 450);
+      renderAll();
+    }).catch(function () {});
+  }
+  function playContext(uri, isTrack) {
+    var body = isTrack ? { uris: [uri] } : { context_uri: uri };
+    var path = "/me/player/play" + (S.sdkReady && S.sdkDeviceId ? "?device_id=" + encodeURIComponent(S.sdkDeviceId) : "");
+    api(path, { method: "PUT", body: body }).then(function (res) {
+      if (res && !res.ok) {
+        if (res.status === 404) S.notice = L("openSpotifyFirst");
+        else S.error = L("apiError") + " " + res.status;
+      }
+      setTimeout(fetchPlayer, 500);
+      renderAll();
+    }).catch(function () {});
+  }
+  function setLocalVol(v) {
+    S.localVol = Math.max(0, Math.min(1, v));
+    try { localStorage.setItem(VOL_KEY, String(S.localVol)); } catch (e) {}
+    if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol()); } catch (e) {} }
+    else if (S.auth === "in" && S.mode === "sync") {
+      var m = 1; try { m = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
+      api("/me/player/volume?volume_percent=" + Math.round(m * S.localVol * 100), { method: "PUT" }).catch(function () {});
+    }
+  }
+  try { if (window.__arcadeOnMasterChange) window.__arcadeOnMasterChange(function () { if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol()); } catch (e) {} } }); } catch (e) {}
+
+  /* ---------------- demo mode ---------------- */
+  var demoTimer = null;
+  function demo(track) {
+    S.mode = "demo";
+    S.track = track || { name: L("demoTrack"), artists: L("demoArtist"), album: "ARCADE", art: "", durationMs: 214000, uri: "" };
+    S.progressMs = 0; S.fetchedAt = Date.now(); S.isPlaying = true;
+    S.deviceName = "ARCADE Turntable"; S.deviceHere = true;
+    if (demoTimer) clearInterval(demoTimer);
+    demoTimer = setInterval(function () {
+      if (S.mode !== "demo") { clearInterval(demoTimer); demoTimer = null; return; }
+      if (S.isPlaying) {
+        S.progressMs += 250;
+        if (S.progressMs >= (S.track ? S.track.durationMs : 0)) { S.progressMs = 0; }
+        S.fetchedAt = Date.now();
+      }
+      renderAll();
+    }, 250);
+    renderAll();
+  }
+  function demoControl(action) {
+    if (action === "toggle") S.isPlaying = !S.isPlaying;
+    if (action === "next" || action === "prev") S.progressMs = 0;
+    if (action === "seek") { /* arg handled by caller below */ }
+    S.fetchedAt = Date.now(); renderAll();
+  }
+  function stopDemo() {
+    if (demoTimer) { clearInterval(demoTimer); demoTimer = null; }
+    if (S.mode === "demo") { S.mode = S.auth === "in" ? "sync" : "none"; S.track = null; S.isPlaying = false; }
+    renderAll();
+  }
+
+  /* ---------------- styles ---------------- */
+  var css = [
+    "#turntableView .subscroll{background:linear-gradient(180deg,#0a0c14,#0d1019 60%,#0a0c14)}",
+    ".tt-wrap{padding:14px 14px 30px;max-width:none;color:#e9edf6}",
+    ".tt-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}",
+    ".tt-dot{width:9px;height:9px;border-radius:50%;background:#5b6474;flex:none}",
+    ".tt-dot.on{background:#1db954;box-shadow:0 0 8px #1db95488}",
+    ".tt-status-txt{font-size:13.5px;font-weight:700}",
+    ".tt-acct{font-size:12px;color:#aeb6c8}",
+    ".tt-prem{font-size:10.5px;font-weight:800;color:#0c0f16;background:#e9b93c;border-radius:999px;padding:2px 8px}",
+    ".tt-btn{background:#1db954;color:#06130a;border:none;border-radius:999px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;min-height:40px}",
+    ".tt-btn.ghost{background:rgba(255,255,255,.08);color:#e9edf6;border:1px solid rgba(255,255,255,.16)}",
+    ".tt-btn:active{transform:scale(.97)}",
+    ".tt-login-note{font-size:12px;color:#9aa3b5;line-height:1.6;margin:10px 2px 0}",
+    ".tt-notice{margin-top:10px;background:#2a2410;border:1px solid #8a6d1f;color:#f2d98c;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.55}",
+    ".tt-error{margin-top:10px;background:#2a1215;border:1px solid #8a2f38;color:#f3a7ae;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.55;word-break:break-all}",
+    ".tt-main{display:grid;grid-template-columns:1fr;gap:16px;margin-top:14px}",
+    "@media (min-width:920px){.tt-main{grid-template-columns:minmax(0,1.25fr) minmax(300px,1fr)}}",
+    ".tt-stage{position:relative;border-radius:18px;padding:18px;background:radial-gradient(120% 120% at 30% 20%,#232733,#14161d 70%);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 16px 34px rgba(0,0,0,.4)}",
+    "#turntableView[data-ttskin='ttskin-walnut'] .tt-stage{background:linear-gradient(135deg,#4a2f1d,#5d3d24 40%,#3c2716);border-color:#7a5636}",
+    "#turntableView[data-ttskin='ttskin-studio'] .tt-stage{background:linear-gradient(180deg,#0a0a0c,#121216);border-color:#26262c}",
+    "#turntableView[data-ttskin='ttskin-cream'] .tt-stage{background:linear-gradient(150deg,#f2e7d3,#e4d3b3 60%,#d9c69e);border-color:#b39b6d}",
+    "#turntableView[data-ttskin='ttskin-midnight'] .tt-stage{background:radial-gradient(120% 120% at 70% 10%,#16294d,#0a1428 70%);border-color:#274a7c}",
+    "#ttCanvas{display:block;width:100%;aspect-ratio:1/1;touch-action:pan-y}",
+    ".tt-rpm{position:absolute;right:14px;bottom:12px;display:flex;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);border-radius:999px;overflow:hidden}",
+    ".tt-rpm button{background:transparent;border:none;color:#c8cfdd;font-size:12px;font-weight:800;padding:8px 13px;cursor:pointer;min-height:36px}",
+    ".tt-rpm button.on{background:#e9b93c;color:#171106}",
+    ".tt-side{display:flex;flex-direction:column;gap:12px;min-width:0}",
+    ".tt-info .tt-title{font-size:clamp(19px,2.6vw,26px);font-weight:800;line-height:1.25;overflow-wrap:anywhere}",
+    ".tt-info .tt-artist{font-size:15px;color:#c6cdd9;margin-top:3px;overflow-wrap:anywhere}",
+    ".tt-info .tt-album{font-size:12.5px;color:#8b93a5;margin-top:2px;overflow-wrap:anywhere}",
+    ".tt-device{font-size:12px;color:#9fd8ae;margin-top:6px}",
+    ".tt-device.else{color:#aeb6c8}",
+    ".tt-progress{display:flex;align-items:center;gap:10px}",
+    ".tt-progress span{font-size:12px;font-variant-numeric:tabular-nums;color:#aeb6c8;min-width:36px}",
+    ".tt-progress span:last-child{text-align:right}",
+    ".tt-seek{flex:1;accent-color:#1db954;height:36px;cursor:pointer}",
+    ".tt-transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap}",
+    ".tt-tbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eef1f8;border-radius:50%;width:48px;height:48px;font-size:17px;cursor:pointer;flex:none}",
+    ".tt-tbtn.main{width:58px;height:58px;font-size:21px;background:#1db954;color:#06130a;border-color:transparent}",
+    ".tt-tbtn:active{transform:scale(.94)}",
+    ".tt-vol{display:flex;align-items:center;gap:8px;margin-left:auto}",
+    ".tt-vol label{font-size:12px;color:#aeb6c8}",
+    ".tt-vol input{width:110px;accent-color:#e9b93c;height:36px;cursor:pointer}",
+    ".tt-actions{display:flex;gap:10px;flex-wrap:wrap}",
+    ".tt-lists{display:grid;grid-template-columns:1fr;gap:14px}",
+    "@media (min-width:920px){.tt-lists{grid-template-columns:1fr 1fr}}",
+    ".tt-list h3{font-size:13px;margin:0 0 8px;color:#c6cdd9;letter-spacing:.04em}",
+    ".tt-list ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}",
+    ".tt-list li{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:7px 10px;cursor:pointer;min-height:44px}",
+    ".tt-list li:active{transform:scale(.99)}",
+    ".tt-list img{width:34px;height:34px;border-radius:6px;object-fit:cover;flex:none;background:#222}",
+    ".tt-list .tt-li-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".tt-list .tt-li-sub{font-size:11px;color:#8b93a5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".tt-details{margin-top:16px;font-size:12px;color:#8b93a5}",
+    ".tt-details summary{cursor:pointer;padding:8px 0}",
+    ".tt-details p{line-height:1.6;word-break:break-all;margin:4px 0}",
+    "#ttChip{position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:6400;display:flex;align-items:center;gap:9px;background:rgba(16,20,32,.94);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px 5px 5px;box-shadow:0 10px 26px rgba(0,0,0,.45);cursor:pointer;max-width:min(78vw,430px)}",
+    "#ttChip[hidden]{display:none}",
+    "#ttChip img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#222;flex:none}",
+    "#ttChip .tt-chip-title{font-size:12.5px;font-weight:700;color:#eef1f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    "#ttChip .tt-chip-btn{background:#1db954;border:none;color:#06130a;width:34px;height:34px;border-radius:50%;font-size:13px;cursor:pointer;flex:none}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.id = "arcade-turntable-style";
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  /* ---------------- DOM ---------------- */
+  var viewEl = document.getElementById("turntableView");
+  var root = document.getElementById("ttRoot");
+  var els = {};
+  function build() {
+    if (!root || els.built) return;
+    els.built = true;
+    root.innerHTML =
+      '<div class="tt-wrap">' +
+      '<div class="tt-status"><span class="tt-dot" id="ttDot"></span><span class="tt-status-txt" id="ttStatusTxt"></span>' +
+      '<span class="tt-acct" id="ttAcct"></span><span class="tt-prem" id="ttPrem" hidden>PREMIUM</span>' +
+      '<span style="flex:1"></span>' +
+      '<button type="button" class="tt-btn" id="ttConnect"></button>' +
+      '<button type="button" class="tt-btn ghost" id="ttDisconnect"></button></div>' +
+      '<p class="tt-login-note" id="ttLoginNote"></p>' +
+      '<div class="tt-notice" id="ttNotice" hidden></div>' +
+      '<div class="tt-error" id="ttError" hidden></div>' +
+      '<div class="tt-main">' +
+      '<div class="tt-stage"><canvas id="ttCanvas" width="640" height="640"></canvas>' +
+      '<div class="tt-rpm"><button type="button" id="ttRpm33">33</button><button type="button" id="ttRpm45">45</button></div></div>' +
+      '<div class="tt-side">' +
+      '<div class="tt-info"><div class="tt-title" id="ttTitle"></div><div class="tt-artist" id="ttArtist"></div><div class="tt-album" id="ttAlbum"></div><div class="tt-device" id="ttDevice"></div></div>' +
+      '<div class="tt-progress"><span id="ttCur">0:00</span><input type="range" class="tt-seek" id="ttSeek" min="0" max="1000" step="1" value="0"><span id="ttDur">0:00</span></div>' +
+      '<div class="tt-transport">' +
+      '<button type="button" class="tt-tbtn" id="ttPrev" aria-label="Previous">⏮</button>' +
+      '<button type="button" class="tt-tbtn main" id="ttPlay" aria-label="Play/Pause">▶</button>' +
+      '<button type="button" class="tt-tbtn" id="ttNext" aria-label="Next">⏭</button>' +
+      '<div class="tt-vol"><label id="ttVolLabel"></label><input type="range" id="ttVol" min="0" max="100" step="1"></div>' +
+      '</div>' +
+      '<div class="tt-actions"><button type="button" class="tt-btn" id="ttPlayHere"></button>' +
+      '<button type="button" class="tt-btn ghost" id="ttDemo"></button></div>' +
+      '<div class="tt-lists"><div class="tt-list"><h3 id="ttPlHead"></h3><ul id="ttPlaylists"></ul></div>' +
+      '<div class="tt-list"><h3 id="ttReHead"></h3><ul id="ttRecents"></ul></div></div>' +
+      '</div></div>' +
+      '<details class="tt-details"><summary id="ttDetSum"></summary>' +
+      '<p><span id="ttRedirLabel"></span>: <span id="ttRedir"></span></p><p id="ttTokenNote"></p></details>' +
+      '</div>';
+    els.canvas = document.getElementById("ttCanvas");
+    els.ctx = els.canvas.getContext("2d");
+    els.dot = document.getElementById("ttDot"); els.statusTxt = document.getElementById("ttStatusTxt");
+    els.acct = document.getElementById("ttAcct"); els.prem = document.getElementById("ttPrem");
+    els.connect = document.getElementById("ttConnect"); els.disconnect = document.getElementById("ttDisconnect");
+    els.loginNote = document.getElementById("ttLoginNote");
+    els.notice = document.getElementById("ttNotice"); els.error = document.getElementById("ttError");
+    els.title = document.getElementById("ttTitle"); els.artist = document.getElementById("ttArtist");
+    els.album = document.getElementById("ttAlbum"); els.device = document.getElementById("ttDevice");
+    els.cur = document.getElementById("ttCur"); els.dur = document.getElementById("ttDur");
+    els.seek = document.getElementById("ttSeek"); els.play = document.getElementById("ttPlay");
+    els.vol = document.getElementById("ttVol");
+    document.getElementById("ttVolLabel").textContent = L("volume");
+    els.connect.addEventListener("click", login);
+    els.disconnect.addEventListener("click", logout);
+    els.play.addEventListener("click", function () { ctl("toggle"); });
+    document.getElementById("ttNext").addEventListener("click", function () { ctl("next"); });
+    document.getElementById("ttPrev").addEventListener("click", function () { ctl("prev"); });
+    document.getElementById("ttPlayHere").addEventListener("click", playHere);
+    document.getElementById("ttDemo").addEventListener("click", function () { if (S.mode === "demo") stopDemo(); else demo(); });
+    document.getElementById("ttRpm33").addEventListener("click", function () { S.rpm = 33; renderAll(); });
+    document.getElementById("ttRpm45").addEventListener("click", function () { S.rpm = 45; renderAll(); });
+    els.vol.value = String(Math.round(S.localVol * 100));
+    els.vol.addEventListener("input", function () { setLocalVol((parseInt(els.vol.value, 10) || 0) / 100); });
+    els.seek.addEventListener("input", function () {
+      if (!S.track) return;
+      var ms = S.track.durationMs * (parseInt(els.seek.value, 10) || 0) / 1000;
+      if (S.mode === "demo") { S.progressMs = ms; S.fetchedAt = Date.now(); renderAll(); }
+    });
+    els.seek.addEventListener("change", function () {
+      if (!S.track || S.mode === "demo") return;
+      ctl("seek", S.track.durationMs * (parseInt(els.seek.value, 10) || 0) / 1000);
+    });
+    document.getElementById("ttDetSum").textContent = L("connDetails");
+    document.getElementById("ttRedirLabel").textContent = L("redirectLabel");
+    document.getElementById("ttRedir").textContent = redirectUri();
+    document.getElementById("ttTokenNote").textContent = L("tokenNote");
+    document.getElementById("ttPlHead").textContent = L("playlists");
+    document.getElementById("ttReHead").textContent = L("recents");
+    // now-playing chip
+    var chip = document.createElement("div");
+    chip.id = "ttChip"; chip.hidden = true;
+    chip.innerHTML = '<img alt=""><span class="tt-chip-title"></span><button type="button" class="tt-chip-btn" aria-label="Play/Pause">▶</button>';
+    document.body.appendChild(chip);
+    els.chip = chip; els.chipTitle = chip.querySelector(".tt-chip-title"); els.chipArt = chip.querySelector("img"); els.chipBtn = chip.querySelector(".tt-chip-btn");
+    els.chipBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ctl("toggle"); });
+    chip.addEventListener("click", function () { var b = document.getElementById("openTurntable"); if (b) b.click(); });
+    applyCosmetics();
+  }
+
+  /* ---------------- rendering ---------------- */
+  function fmtTime(ms) {
+    if (!isFinite(ms) || ms < 0) ms = 0;
+    var s = Math.floor(ms / 1000);
+    return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+  }
+  function dispProgress() {
+    if (!S.track) return 0;
+    var p = S.progressMs;
+    if (S.isPlaying && S.mode !== "demo") p += Date.now() - S.fetchedAt;
+    return Math.max(0, Math.min(S.track.durationMs || 0, p));
+  }
+  function renderLists() {
+    if (!els.built) return;
+    var pl = document.getElementById("ttPlaylists"), re = document.getElementById("ttRecents");
+    if (pl) {
+      pl.innerHTML = "";
+      S.playlists.forEach(function (p) {
+        var li = document.createElement("li");
+        li.innerHTML = (p.img ? '<img alt="">' : '') + '<span style="min-width:0"><span class="tt-li-name"></span><br><span class="tt-li-sub"></span></span>';
+        if (p.img) li.querySelector("img").src = p.img;
+        li.querySelector(".tt-li-name").textContent = p.name;
+        li.querySelector(".tt-li-sub").textContent = p.count + " tracks";
+        li.addEventListener("click", function () { playContext(p.uri, false); });
+        pl.appendChild(li);
+      });
+    }
+    if (re) {
+      re.innerHTML = "";
+      S.recents.forEach(function (t) {
+        var li = document.createElement("li");
+        li.innerHTML = (t.art ? '<img alt="">' : '') + '<span style="min-width:0"><span class="tt-li-name"></span><br><span class="tt-li-sub"></span></span>';
+        if (t.art) li.querySelector("img").src = t.art;
+        li.querySelector(".tt-li-name").textContent = t.name;
+        li.querySelector(".tt-li-sub").textContent = t.artists;
+        li.addEventListener("click", function () { playContext(t.uri, true); });
+        re.appendChild(li);
+      });
+    }
+  }
+  function renderAll() {
+    if (!els.built) return;
+    var on = S.auth === "in" || S.mode === "demo";
+    els.dot.className = "tt-dot" + (on ? " on" : "");
+    els.statusTxt.textContent = S.mode === "demo" ? L("demoMode") : (S.auth === "in" ? L("connected") : L("notConnected"));
+    els.acct.textContent = S.accountName || "";
+    els.prem.hidden = !(S.auth === "in" && S.premium);
+    els.connect.hidden = S.auth === "in";
+    els.connect.textContent = L("connect");
+    els.disconnect.hidden = S.auth !== "in";
+    els.disconnect.textContent = L("disconnect");
+    els.loginNote.hidden = S.auth === "in";
+    els.loginNote.textContent = L("loginNote");
+    var noticeTxt = S.mode === "demo" ? L("demoNote") : S.notice;
+    els.notice.hidden = !noticeTxt; els.notice.textContent = noticeTxt || "";
+    els.error.hidden = !S.error; els.error.textContent = S.error || "";
+    if (S.track) {
+      els.title.textContent = S.track.name;
+      els.artist.textContent = S.track.artists;
+      els.album.textContent = S.track.album;
+    } else {
+      els.title.textContent = L("noTrack");
+      els.artist.textContent = S.auth === "in" ? L("chooseTrack") : "";
+      els.album.textContent = "";
+    }
+    if (S.track && S.deviceName) {
+      els.device.textContent = (S.deviceHere ? "🔊 " + L("playingHere") : "📱 " + L("playingElsewhere")) + " — " + S.deviceName;
+      els.device.className = "tt-device" + (S.deviceHere ? "" : " else");
+    } else els.device.textContent = "";
+    els.play.textContent = S.isPlaying ? "⏸" : "▶";
+    document.getElementById("ttPlayHere").textContent = L("playHere");
+    document.getElementById("ttPlayHere").style.display = (S.auth === "in" && !S.deviceHere) ? "" : "none";
+    document.getElementById("ttDemo").textContent = L("demo");
+    document.getElementById("ttRpm33").className = S.rpm === 33 ? "on" : "";
+    document.getElementById("ttRpm45").className = S.rpm === 45 ? "on" : "";
+    // chip
+    var showChip = !!S.track && (S.auth === "in" || S.mode === "demo") && !(viewEl && viewEl.classList.contains("open"));
+    els.chip.hidden = !showChip;
+    if (showChip) {
+      els.chipTitle.textContent = S.track.name + " — " + S.track.artists;
+      if (els.chipArt.getAttribute("src") !== (S.track.art || "")) els.chipArt.src = S.track.art || "";
+      els.chipArt.style.display = S.track.art ? "" : "none";
+      els.chipBtn.textContent = S.isPlaying ? "⏸" : "▶";
+    }
+    renderLists();
+  }
+
+  /* ---------------- canvas platter ---------------- */
+  var angle = 0, speed = 0, lastFrame = 0, artImg = null, artUrl = "";
+  function loadArt(url) {
+    if (url === artUrl) return;
+    artUrl = url; artImg = null;
+    if (!url) return;
+    var im = new Image();
+    im.crossOrigin = "anonymous";
+    im.onload = function () { if (artUrl === url) artImg = im; };
+    im.src = url;
+  }
+  var VINYL = {
+    "vinyl-default": { base: "#0b0b0e", groove: "rgba(255,255,255,0.055)", label: "#17171c", labelText: "#e9b93c" },
+    "vinyl-clear": { base: "rgba(210,220,235,0.30)", groove: "rgba(255,255,255,0.20)", label: "#232733", labelText: "#dfe6f2" },
+    "vinyl-crimson": { base: "#57101d", groove: "rgba(255,255,255,0.07)", label: "#2b0a10", labelText: "#f3c1cb" },
+    "vinyl-cobalt": { base: "#122a5e", groove: "rgba(255,255,255,0.07)", label: "#0a1836", labelText: "#bcd2f7" },
+    "vinyl-sakura": { base: "#a34a68", groove: "rgba(255,255,255,0.08)", label: "#5e2438", labelText: "#ffe3ec" },
+    "vinyl-picture": { base: "#101014", groove: "rgba(255,255,255,0.05)", label: "#17171c", labelText: "#e9b93c", picture: true },
+    "vinyl-coin": { base: "#8a6a24", groove: "rgba(60,40,4,0.25)", label: "#c9a227", labelText: "#2e2004", coin: true }
+  };
+  function drawPlatter(now) {
+    var ctx = els.ctx, cv = els.canvas;
+    if (!ctx || !cv) return;
+    var w = cv.clientWidth || 640;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(w * dpr); }
+    var W = cv.width, cx = W / 2, cy = W / 2, R = W * 0.44;
+    var dt = Math.min(0.05, (now - (lastFrame || now)) / 1000); lastFrame = now;
+    var target = 0;
+    if (!RM) {
+      if (S.isPlaying) target = (S.rpm === 45 ? 45 : 33.333) / 60 * Math.PI * 2;
+      else target = 0.045; // idle drift — the deck breathes
+    }
+    var tau = target > speed ? 0.55 : 0.95;
+    speed += (target - speed) * (1 - Math.exp(-dt / tau));
+    if (RM) speed = 0;
+    angle = (angle + speed * dt) % (Math.PI * 2);
+    loadArt(S.track ? S.track.art : "");
+    var d = VINYL[S.vinyl] || VINYL["vinyl-default"];
+    ctx.clearRect(0, 0, W, W);
+    // platter
+    ctx.beginPath(); ctx.arc(cx, cy, R * 1.06, 0, Math.PI * 2);
+    ctx.fillStyle = "#26282f"; ctx.fill();
+    ctx.lineWidth = W * 0.006; ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.stroke();
+    // strobe dots
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+    ctx.fillStyle = "rgba(235,238,245,0.5)";
+    for (var i = 0; i < 72; i++) {
+      var a = i / 72 * Math.PI * 2;
+      ctx.beginPath(); ctx.arc(Math.cos(a) * R * 1.025, Math.sin(a) * R * 1.025, W * 0.0045, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    // vinyl body
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = d.base; ctx.fill();
+    if (d.picture && artImg) {
+      ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.clip();
+      ctx.drawImage(artImg, -R, -R, R * 2, R * 2); ctx.restore();
+    }
+    // grooves
+    ctx.lineWidth = Math.max(1, W * 0.0016);
+    for (var g = 0; g < 24; g++) {
+      ctx.beginPath(); ctx.arc(0, 0, R * (0.42 + g * 0.024), 0, Math.PI * 2);
+      ctx.strokeStyle = d.groove; ctx.stroke();
+    }
+    if (d.coin) {
+      ctx.beginPath(); ctx.arc(0, 0, R * 0.9, 0, Math.PI * 2);
+      ctx.lineWidth = W * 0.008; ctx.strokeStyle = "rgba(46,32,4,0.55)"; ctx.stroke();
+      ctx.fillStyle = d.labelText; ctx.font = "800 " + Math.round(W * 0.045) + "px sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      var word = "EXTRA LIFE ★ EXTRA LIFE ★ ";
+      for (var ci = 0; ci < word.length; ci++) {
+        var ca = ci / word.length * Math.PI * 2;
+        ctx.save(); ctx.rotate(ca); ctx.translate(0, -R * 0.78); ctx.fillText(word[ci], 0, 0); ctx.restore();
+      }
+    }
+    // label
+    var lr = R * 0.335;
+    ctx.beginPath(); ctx.arc(0, 0, lr, 0, Math.PI * 2);
+    if (artImg && !d.coin) {
+      ctx.save(); ctx.clip(); ctx.drawImage(artImg, -lr, -lr, lr * 2, lr * 2); ctx.restore();
+    } else {
+      ctx.fillStyle = d.label; ctx.fill();
+      ctx.fillStyle = d.labelText; ctx.font = "800 " + Math.round(W * 0.038) + "px sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(d.coin ? "1UP" : "ARCADE", 0, -W * 0.012);
+      ctx.font = "600 " + Math.round(W * 0.02) + "px sans-serif";
+      ctx.fillText(d.coin ? "EXTRA LIFE" : "33⅓ · SIDE A", 0, W * 0.028);
+    }
+    ctx.restore();
+    // sheen (fixed light)
+    var grad = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+    grad.addColorStop(0, "rgba(255,255,255,0.10)"); grad.addColorStop(0.35, "rgba(255,255,255,0.0)");
+    grad.addColorStop(0.75, "rgba(255,255,255,0.06)"); grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+    // spindle
+    ctx.beginPath(); ctx.arc(cx, cy, W * 0.012, 0, Math.PI * 2); ctx.fillStyle = "#c8ccd4"; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, W * 0.005, 0, Math.PI * 2); ctx.fillStyle = "#555a63"; ctx.fill();
+    // tonearm
+    var px = cx + R * 1.02, py = cy - R * 1.02;
+    var prog = S.track && S.track.durationMs ? dispProgress() / S.track.durationMs : 0;
+    var lifted = !S.track;
+    var bear = -52 * Math.PI / 180;
+    var rOut = R * 0.94, rIn = R * 0.40;
+    var rT = lifted ? rOut * 1.06 : rOut - prog * (rOut - rIn);
+    var sx = cx + Math.cos(bear) * rT, sy = cy + Math.sin(bear) * rT;
+    var armA = Math.atan2(sy - py, sx - px);
+    var armL = Math.hypot(sx - px, sy - py);
+    // counterweight (behind the pivot, opposite the arm)
+    ctx.beginPath(); ctx.arc(px - Math.cos(armA) * W * 0.052, py - Math.sin(armA) * W * 0.052, W * 0.021, 0, Math.PI * 2);
+    ctx.fillStyle = "#26282e"; ctx.fill();
+    ctx.lineWidth = W * 0.003; ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.stroke();
+    // pivot base
+    ctx.beginPath(); ctx.arc(px, py, W * 0.038, 0, Math.PI * 2); ctx.fillStyle = "#1c1e24"; ctx.fill();
+    ctx.lineWidth = W * 0.0035; ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.stroke();
+    // arm tube: a slim dark-silver wand from pivot to stylus
+    var ex = px + Math.cos(armA) * armL, ey = py + Math.sin(armA) * armL;
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey);
+    ctx.lineWidth = W * 0.0075; ctx.strokeStyle = lifted ? "#7d838d" : "#a7adb6"; ctx.lineCap = "round"; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey);
+    ctx.lineWidth = W * 0.0028; ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.stroke();
+    // headshell + cartridge at the stylus end
+    ctx.save(); ctx.translate(ex, ey); ctx.rotate(armA + 0.42);
+    ctx.fillStyle = "#101114"; ctx.fillRect(-W * 0.004, -W * 0.011, W * 0.062, W * 0.022);
+    ctx.fillStyle = "#c33"; ctx.fillRect(W * 0.038, -W * 0.007, W * 0.016, W * 0.014);
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(px, py, W * 0.016, 0, Math.PI * 2); ctx.fillStyle = "#3a3d44"; ctx.fill();
+    ctx.beginPath(); ctx.arc(px, py, W * 0.006, 0, Math.PI * 2); ctx.fillStyle = "#6a6f78"; ctx.fill();
+    // progress text on canvas-free DOM handled in tick()
+  }
+  var scrubbing = false;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!els.built) return;
+    var open = viewEl && viewEl.classList.contains("open");
+    if (open) {
+      drawPlatter(now || performance.now());
+      if (!scrubbing && S.track) {
+        var p = dispProgress();
+        els.cur.textContent = fmtTime(p);
+        els.dur.textContent = fmtTime(S.track.durationMs);
+        els.seek.value = String(S.track.durationMs ? Math.round(p / S.track.durationMs * 1000) : 0);
+      } else if (!S.track) { els.cur.textContent = "0:00"; els.dur.textContent = "0:00"; }
+    }
+    // chip play state can drift between renders; keep its icon honest
+    if (els.chip && !els.chip.hidden) els.chipBtn.textContent = S.isPlaying ? "⏸" : "▶";
+  }
+
+  /* ---------------- cosmetics ---------------- */
+  function applyCosmetics() {
+    try {
+      S.vinyl = window.__ttVinyl || "vinyl-default";
+      S.skin = window.__ttSkin || "ttskin-default";
+    } catch (e) {}
+    if (viewEl) viewEl.setAttribute("data-ttskin", S.skin);
+  }
+  window.__turntableCosmetics = applyCosmetics;
+
+  /* ---------------- enter / polling ---------------- */
+  var lastPoll = 0;
+  function enter() {
+    build();
+    if (S.auth === "in") { fetchPlayer(); fetchLists(); }
+    renderAll();
+  }
+  setInterval(function () {
+    if (S.auth !== "in" || S.mode === "demo") return;
+    var open = viewEl && viewEl.classList.contains("open");
+    var gap = open ? 5000 : 10000;
+    if (Date.now() - lastPoll > gap) { lastPoll = Date.now(); fetchPlayer(); }
+  }, 1000);
+
+  /* ---------------- init ---------------- */
+  build();
+  handleCallback();
+  if (loadTokens() && loadTokens().access) {
+    S.auth = "in";
+    afterAuth(false);
+  }
+  renderAll();
+  requestAnimationFrame(frame);
+  if (els.seek) {
+    els.seek.addEventListener("pointerdown", function () { scrubbing = true; });
+    window.addEventListener("pointerup", function () { scrubbing = false; });
+  }
+
+  window.__turntable = {
+    state: function () {
+      return {
+        auth: S.auth, mode: S.mode, premium: S.premium, accountName: S.accountName,
+        track: S.track, isPlaying: S.isPlaying, deviceName: S.deviceName, deviceHere: S.deviceHere,
+        vinyl: S.vinyl, skin: S.skin, rpm: S.rpm, error: S.error, notice: S.notice,
+        redirectUri: redirectUri(), chipVisible: !!(els.chip && !els.chip.hidden)
+      };
+    },
+    buildAuthorizeUrl: function (verifier, st) { return buildAuthorizeUrl(verifier, st || "probe-state"); },
+    login: login, logout: logout, demo: demo, stopDemo: stopDemo,
+    setFixture: function (t) { S.mode = "sync"; S.track = t; S.progressMs = 0; S.fetchedAt = Date.now(); S.isPlaying = true; renderAll(); },
+    applyCosmetics: applyCosmetics, enter: enter, ctl: ctl,
+    els: function () { return { view: viewEl, canvas: els.canvas, chip: els.chip, root: root }; }
+  };
 })();
 </script>
 </body>
