@@ -2823,7 +2823,7 @@
         padding: 10px 10px 16px; overflow-y: auto;
       }
       .pool-tray {
-        width: 100%; max-width: 980px; box-sizing: border-box;
+        width: 100%; max-width: 1180px; box-sizing: border-box;
         display: flex; align-items: center; gap: 10px;
         background: #141a16; border: 1px solid #263128; border-radius: 12px;
         padding: 7px 12px;
@@ -2840,7 +2840,12 @@
       .pool-shots { color: #93a697; font-size: 11.5px; font-weight: 700; white-space: nowrap; letter-spacing: 0.04em; }
       .pool-wrap {
         position: relative; margin: 12px auto 0;
-        width: min(980px, 100%, max(300px, calc((100dvh - 430px) * 1.333)));
+        /* Full stage width (owner directive 2026-11-16): the old
+           height-derived cap ((100dvh - 430px) * 1.333) shrank the
+           3D viewport to ~44% of an iPad-landscape stage. The
+           height is now measured in JS (module 13 fit()) against
+           the real space between the tray and the deck. */
+        width: 100%; max-width: 1180px;
       }
       #poolCanvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 20px; touch-action: none; cursor: grab; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.55); }
       #poolCanvas:active { cursor: grabbing; }
@@ -2880,7 +2885,7 @@
       .pool-bih .pool-bih-warn { display: block; font-size: 11px; font-weight: 800; color: #ff7a6b; margin-top: 2px; }
       /* ===== Control deck (below the table) ===== */
       .pool-deck {
-        width: 100%; max-width: 980px; box-sizing: border-box; margin-top: 12px;
+        width: 100%; max-width: 1180px; box-sizing: border-box; margin-top: 12px;
         background: #141a16; border: 1px solid #263128; border-radius: 16px;
         padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 10px;
       }
@@ -5121,6 +5126,11 @@
       #notesView [hidden], #libraryView [hidden], #huntView [hidden],
       #pointsView [hidden], #profileView [hidden], #rankingView [hidden] { display: none !important; }
 .notes-wrap { max-width: 720px; margin: 0 auto; padding: 20px 20px 96px; }
+/* Full-bleed on wide screens (owner directive 2026-11-16: the
+   centered column left wide empty margins on iPad/desktop). The
+   intro and the console frame span the viewport with only small
+   side padding; phone widths keep the original measure. */
+@media (min-width: 761px) { .notes-wrap { max-width: none; margin: 0; padding-left: 16px; padding-right: 16px; } }
 .notes-wrap .lead { font-size: 15px; line-height: 1.8; font-weight: 700; }
 .notes-shelf-btn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-top: 10px; padding: 13px 15px; border-radius: 14px; border: 1.5px solid rgba(147, 112, 219, 0.3); background: var(--surface); color: var(--text); font-size: 15px; font-weight: 800; cursor: pointer; }
 .notes-shelf-btn:active { transform: scale(0.98); }
@@ -5608,6 +5618,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       .bv-boot-name { font-family: var(--font-display); font-size: 21px; font-weight: 900; letter-spacing: 0.14em; }
       .bv-boot-phase { margin-top: 7px; font-size: 12px; font-weight: 700; color: #9fb0cc; min-height: 18px; }
       .bv-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 14px 30px; }
+      .bv-search { display: flex; align-items: center; gap: 10px; padding: 8px 2px 8px; position: sticky; top: 0; z-index: 3; background: #070c17; }
+      .bv-search input { flex: 1 1 auto; min-width: 0; min-height: 44px; background: #0a1327; border: 1px solid #22314d; border-radius: 10px; color: #eef3ff; padding: 10px 12px; font-size: 14px; }
+      .bv-search input::placeholder { color: #7e93b8; }
+      .bv-search .bv-hits { font-size: 12.5px; font-weight: 800; color: #a9c2e8; white-space: nowrap; }
+      .bv-noresults { padding: 26px 16px; text-align: center; color: #8fa8cc; font-size: 13.5px; font-weight: 700; }
       .bv-sec-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; background: #070c17; padding: 10px 2px 7px; font-size: 13.5px; font-weight: 900; border-bottom: 1px solid #1b2740; }
       .bv-sec-head .dot { width: 10px; height: 10px; border-radius: 50%; }
       .bv-sec-head .ct { margin-left: auto; color: #7286a8; font-size: 11.5px; font-weight: 800; }
@@ -10614,7 +10629,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            library screen's brain-view button. -->
       <div class="subview" id="brainView" aria-label="脳ビュー画面">
         <div class="subbar">
-          <button type="button" class="back-btn" id="brainBack" aria-label="ライブラリへ戻る">← ライブラリへ戻る</button>
+          <button type="button" class="back-btn" id="brainBack" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
           <span class="gname">脳ビュー</span>
         </div>
         <div class="bv-root" id="brainRoot"></div>
@@ -12327,6 +12342,18 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           if (sc) sc.scrollTop = 0;
         }
         window.__openArcadeView = function (key) {
+          /* Library unification (2026-11-16): the standalone shelf
+             screen is abolished as a destination — the brain view
+             IS the knowledge library. Every route that used to
+             open "library" (deep links, session restore, the
+             remote mirror) lands on the brain view, with the same
+             play-count semantics as the lobby tile. */
+          if (key === "library") {
+            openGenre("brain");
+            bumpPlayCount("library");
+            if (window.__brain) window.__brain.enter();
+            return;
+          }
           if (genreViews[key]) openGenre(key);
           else if (views[key]) openGame(key);
         };
@@ -16012,7 +16039,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            (it once rode into the public GitHub copy inside the
            shared base code). The assembled value is unchanged. */
         var DRIVE_API_KEY = (function () {
-          var p = [""];
+var p = [""];
           return p.join("");
         })();
         function dlUrl(id) { return DL_BASE + encodeURIComponent(id) + "?alt=media&key=" + DRIVE_API_KEY; }
@@ -23342,6 +23369,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           cam.gpol = 0.72; cam.gdist = 10.0;
         }
       }
+      /* Aspect fit (2026-11-16): the goal distances were tuned
+         at 4/3. A narrower canvas needs proportionally more
+         distance or the table crops sideways; a wider one needs
+         none extra (the vertical FOV is unchanged). The top view
+         takes its exact fit distance from fit(). */
+      if (viewMode === "top") cam.gdist = fitTopDist;
+      else if (!cam.free) cam.gdist *= fitDistScale;
       if (!camDragId && Object.keys(camPointers).length === 0) {
         cam.gaz += cam.vaz * dt;
         cam.gpol = clampN(cam.gpol + cam.vpol * dt, 0.15, 1.38);
@@ -23567,15 +23601,56 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       cueGroup = null; cueTip = null; cueShaft = null; cueButt = null;
       coachHiIdx = -1;
     }
+    /* Viewport fit (2026-11-16, logo & boot round): the canvas
+       takes the wrap's full width and as much height as the stage
+       actually leaves between its siblings (mode bar / tray /
+       deck / coach / quiz / message rows), capped at the classic
+       4:3. fitAspect / fitDistScale / fitTopDist feed
+       updateCamera so the whole table (10.76 x 5.76 world units
+       incl. rails, 50° vertical FOV) stays framed at any aspect,
+       in both view modes. */
+    var fitAspect = 4 / 3, fitDistScale = 1, fitTopDist = 10.6;
     function fit() {
       var w = wrap.clientWidth;
       if (!w) return;
+      var h = Math.round(w * 0.75);
+      var stage = wrap.parentElement;
+      if (stage && stage.clientHeight) {
+        /* Reserve only what shares the screen with the canvas:
+           the rows above it (mode bar / guide bar / ball tray)
+           and the control deck below it. Panels further down
+           (coach / hint rows) scroll with the stage instead of
+           shrinking the play area. */
+        var used = 0, wi = Array.prototype.indexOf.call(stage.children, wrap);
+        for (var i = 0; i < stage.children.length; i++) {
+          var ch = stage.children[i];
+          if (ch === wrap) continue;
+          if (i > wi && ch.id !== "poolDeck") continue;
+          if (!ch.getClientRects || !ch.getClientRects().length) continue;
+          var cst = getComputedStyle(ch);
+          used += ch.offsetHeight + (parseFloat(cst.marginTop) || 0) + (parseFloat(cst.marginBottom) || 0);
+        }
+        var sst = getComputedStyle(stage);
+        var avail = stage.clientHeight - used - (parseFloat(sst.paddingTop) || 0) - (parseFloat(sst.paddingBottom) || 0) - 12;
+        if (avail > 0) h = Math.min(h, Math.max(230, Math.floor(avail)));
+      }
+      if (!(h >= 180)) h = Math.round(w * 0.75);
+      fitAspect = w / h;
+      fitDistScale = Math.min(1.8, Math.max(1, (4 / 3) / fitAspect));
+      var tanV = Math.tan(25 * Math.PI / 180);
+      var needTop = Math.max((5.76 * 1.12 / 2) / tanV, (10.76 * 1.08 / 2) / (tanV * fitAspect));
+      /* Top view: never farther than the tuned 10.6 (narrow
+         canvases may need more), but on wide canvases come closer
+         so the table keeps the same width-fill it has at 4:3
+         instead of shrinking into the middle of the stage. */
+      fitTopDist = Math.max(needTop, Math.min(10.6, 14.13 / fitAspect));
       if (renderer && camera3) {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        renderer.setSize(Math.round(w), Math.round(w * 0.75), false);
-        camera3.aspect = 4 / 3;
+        renderer.setSize(Math.round(w), h, false);
+        camera3.aspect = fitAspect;
         camera3.updateProjectionMatrix();
       }
+      if (canvas) canvas.style.aspectRatio = w + " / " + h;
     }
 
     /* ---- Deck + power UI sync ---- */
@@ -40332,6 +40407,14 @@ PATTERNS.push(
   "制作ノートの画面を、検査場のようなコンソールに作り替えた。棚ごとの件数も本文の文字数も、開いた瞬間に実データから数えて表示する。全139件の記事は検査カードとして並び、仕様（SPEC）は二段構えで、主要な23件は6項目すべてを手書きし、残りは本文からの抽出だけで組み、ない項目は空欄のままにした。ズームは3段階で、対象マップは48のマスに分かれる。重いメタデータは「性能予算：重いデータは後読み」と同じ考え方で、後読みの別ファイルに分けた。数字チップは、SPECの数字行にある数字だけを数える。": ["Redesigned the production note screen into a console-like inspection station. Counts for items per shelf and character counts are displayed live upon opening. All 139 articles are arranged as inspection cards. SPEC is two-tiered; 23 major entries have all 6 items handwritten, while others are extracted from text, leaving missing items blank. 3 zoom levels; map split into 48 cells. Heavy metadata is split into separate files loaded on demand, following the 'Performance Budget: Load Heavy Data Later' strategy. Number chips count only numbers within the SPEC lines.", "제작 노트 화면을 검사소 같은 콘솔로 재구성했습니다. 선반별 개수와 본문 글자 수는 여는 즉시 실데이터에서 계산되어 표시됩니다. 총 139개의 기사가 검사 카드로 나열되며, SPEC은 2단 구성입니다. 주요 23개 항목은 6개 항목 모두 수기로 작성했고 나머지는 본문에서 추출했으며, 항목이 없으면 공란으로 두었습니다. 줌은 3단계이며 대상 맵은 48개 격자로 나뉩니다. 무거운 메타데이터는 '성능 예산: 무거운 데이터는 후속 로드' 전략에 따라 별도 파일로 분리했습니다. 숫자 칩은 SPEC 숫자 행에 있는 숫자만 카운트합니다.", "将制作笔记界面改造成了类似检查站的控制台。每栏的数量和正文字数在打开瞬间实时计算显示。139篇文章以检查卡形式排列，SPEC分为两层，23篇主要条目手动填写了全部6项内容，其余从正文提取，缺失项留空。缩放分为3级，目标地图分为48个格子。繁重的元数据遵循“性能预算：重型数据后加载”原则，分成了独立文件。数字芯片仅统计SPEC数字行内的数字。", "將製作筆記界面改造成了類似檢查站的控制台。每欄的數量和正文字數在打開瞬間即時計算顯示。139篇文章以檢查卡形式排列，SPEC分為兩層，23篇主要條目手動填寫了全部6項內容，其餘從正文提取，缺失項留空。縮放分為3級，目標地圖分為48個格子。繁重的元數據遵循「性能預算：重型資料後載入」原則，分成了獨立檔案。數字晶片僅統計SPEC數字行內的數字。", "Rediseñé la pantalla de notas de producción como una consola de inspección. El conteo de objetos por estante y caracteres se muestra al instante basándose en datos reales. Las 139 entradas se organizan como tarjetas de inspección. Las SPEC tienen dos niveles; las 23 principales tienen los 6 campos rellenados a mano, el resto se extrae del texto, dejando campos vacíos. 3 niveles de zoom; mapa dividido en 48 celdas. Los metadatos pesados se cargan por separado, siguiendo la estrategia de 'Presupuesto de rendimiento: cargar datos pesados después'. Las fichas numéricas solo cuentan los números de las líneas SPEC.", "J'ai transformé l'écran des notes de production en une console d'inspection. Le nombre d'objets par étagère et le nombre de caractères sont calculés en temps réel à l'ouverture. Les 139 articles sont disposés en cartes d'inspection. Les SPEC sont à deux niveaux ; les 23 entrées majeures sont remplies manuellement, les autres sont extraites du texte, laissant les vides. 3 niveaux de zoom ; carte divisée en 48 cellules. Les métadonnées lourdes sont chargées à la demande, suivant la stratégie « Budget de performance : charger les données lourdes plus tard ». Les jetons numériques ne comptent que les chiffres des lignes SPEC.", "Ich habe den Notiz-Bildschirm in eine Konsole umgewandelt. Die Anzahl der Artikel pro Regal und Zeichen werden sofort beim Öffnen live berechnet. Alle 139 Artikel sind als Inspektionskarten angeordnet. SPEC ist zweistufig; 23 Haupteinträge wurden manuell ausgefüllt, der Rest aus dem Text extrahiert. 3 Zoomstufen; Karte in 48 Felder geteilt. Schwere Metadaten werden separat nachgeladen, gemäß der Strategie „Performance-Budget: Schwere Daten später laden“. Die Zahl-Chips zählen nur Zahlen in den SPEC-Zeilen.", "Redesenhei a tela de notas de produção como uma estação de inspeção. A contagem de itens por prateleira e caracteres é exibida em tempo real ao abrir. Os 139 artigos são organizados como cartões de inspeção. O SPEC é de dois níveis; 23 entradas principais foram preenchidas manualmente, o restante extraído do texto, deixando campos vazios. 3 níveis de zoom; mapa dividido em 48 células. Metadados pesados são separados e carregados sob demanda, seguindo a estratégia de 'Orçamento de performance: carregar dados pesados depois'. Os chips numéricos contam apenas os números nas linhas SPEC.", "Ho trasformato la schermata delle note di produzione in una console di ispezione. Il conteggio degli articoli per scaffale e il numero di caratteri vengono visualizzati in tempo reale all'apertura. Tutti i 139 articoli sono disposti come schede di ispezione. Le SPEC sono a due livelli; 23 voci principali sono compilate a mano, le altre estratte dal testo, lasciando vuoti i campi mancanti. 3 livelli di zoom; mappa divisa in 48 celle. I metadati pesanti sono caricati separatamente secondo la strategia 'Budget di performance: carica dati pesanti dopo'. I chip numerici contano solo i numeri nelle righe SPEC."],
   "関連ノートは3段階で示す。同じ棚にあるもの、互いに参照し合うもの、そして本文の中で名前を直接挙げているもの（いちばん強いつながり）。背骨のように残るDNAのモチーフは、読んでいる章に合わせて灯る。知識ライブラリの2Dグラフは、力任せの配置をやめ、「脳ビュー（知識の脳）の仕組み」で決めた、17の棚ごとの扇形に整列するリング配置を標準にした。配置は計算式だけで決まるので、何度開いても同じ絵になる。": ["Related notes are shown in 3 levels: same shelf, cross-referenced, and directly mentioned in text (strongest link). DNA motifs acting as the 'backbone' illuminate according to the chapter being read. The 2D graph in the library now uses the 'Brain View' logic: a fan-shaped ring alignment for each of the 17 shelves, ensuring a consistent layout regardless of how many times it's opened, as it's determined purely by calculation.", "관련 노트는 3단계로 표시됩니다. 같은 선반, 상호 참조, 그리고 본문에 직접 언급된 항목(가장 강한 연결)입니다. 척추처럼 남는 DNA 모티프는 읽고 있는 챕터에 맞춰 빛납니다. 지식 라이브러리의 2D 그래프는 강제 배치를 그만두고 '뇌 뷰(지식의 뇌) 구조'에서 결정한 17개 선반별 부채꼴 정렬을 표준으로 삼았습니다. 배치는 계산식만으로 결정되므로 몇 번을 열어도 같은 그림이 됩니다.", "相关笔记分3级展示：同一书架、相互引用、正文中直接提及（最强关联）。作为主干的DNA图案会随当前阅读的章节亮起。知识库的2D图表放弃了强制布局，改为“大脑视图”逻辑：17个书架扇形排列，由于布局完全由计算公式决定，无论打开多少次，视图始终如一。", "相關筆記分3級展示：同一書架、相互引用、正文中直接提及（最強關聯）。作為主幹的DNA圖案會隨當前閱讀的章節亮起。知識庫的2D圖表放棄了強制佈局，改為「大腦視圖」邏輯：17個書架扇形排列，由於佈局完全由計算公式決定，無論打開多少次，視圖始終如一。", "Las notas relacionadas se muestran en 3 niveles: mismo estante, referencia cruzada y mencionadas directamente en el texto (el vínculo más fuerte). Los motivos de ADN actúan como una columna vertebral y se iluminan según el capítulo leído. El gráfico 2D de la biblioteca dejó la disposición forzada y usa la lógica de 'Vista cerebral': una alineación en abanico para cada uno de los 17 estantes. Al basarse solo en cálculos, el diseño es idéntico cada vez que se abre.", "Les notes liées sont affichées en 3 niveaux : même étagère, référence croisée, et mention directe dans le texte (lien le plus fort). Les motifs ADN servent d'épine dorsale et s'illuminent selon le chapitre lu. Le graphique 2D de la bibliothèque utilise désormais la logique « Vue Cerveau » : un alignement en éventail pour chacune des 17 étagères. Comme la disposition est purement mathématique, elle est identique à chaque ouverture.", "Verwandte Notizen werden in 3 Stufen angezeigt: Gleiches Regal, Querverweise und direkte Erwähnung im Text (stärkste Verbindung). Die DNA-Motive leuchten je nach Kapitel. Das 2D-Diagramm nutzt nun die „Brain View“-Logik: eine fächerförmige Ringanordnung für jedes der 17 Regale. Da das Layout rein berechnet wird, ist das Bild bei jedem Öffnen gleich.", "Notas relacionadas são exibidas em 3 níveis: mesma prateleira, referências cruzadas e mencionadas diretamente no texto (vínculo mais forte). Motivos de DNA funcionam como uma espinha dorsal e iluminam-se conforme o capítulo. O gráfico 2D da biblioteca agora usa a lógica 'Vista Cerebral': alinhamento em leque para cada uma das 17 prateleiras. Como o layout é puramente calculado, é sempre idêntico ao abrir.", "Le note correlate sono mostrate su 3 livelli: stesso scaffale, riferimenti incrociati e citate direttamente nel testo (legame più forte). I motivi del DNA fungono da colonna vertebrale e si illuminano in base al capitolo letto. Il grafico 2D della libreria utilizza la logica 'Vista Cervello': allineamento a ventaglio per ognuno dei 17 scaffali. Poiché il layout è puramente calcolato, rimane identico a ogni apertura."],
   "検証の数字です。ノート画面の検査71項目、リング配置の検査51項目、チェスクイズの題名の検査22項目がすべて合格で、整列の格子から外れた点は0件、開き直しても配置は一致しました。同じ改造の中で直した不具合も検査しています。ホールデムは3つの画面サイズで操作列が画面内に収まり、当たり枠の発光はサイコロとルーレットで実際に光ることを確認し、卵探しの記録漏れは「保留して後で適用する」形に直し、釣りは実プレイ3投すべてで釣果がありました。": ["Verification numbers: 71 checks for notes, 51 for ring alignment, 22 for chess quiz titles—all passed. 0 deviations from grid alignment; layout matches after re-opening. Bugs fixed in the same update were also tested. Hold'em operations fit within all 3 screen sizes, highlights confirmed to glow for dice and roulette, egg-hunting records fixed to 'pending apply', and fishing confirmed successful in 3/3 test casts.", "검증 숫자입니다. 노트 화면 검사 71개, 링 정렬 검사 51개, 체스 퀴즈 제목 검사 22개 모두 합격했으며, 정렬 격자를 벗어난 점은 0건, 다시 열어도 배치는 일치했습니다. 같은 개조에서 수정한 버그들도 검사했습니다. 홀덤은 3개 화면 크기에서 조작열이 화면 내에 수용되며, 당첨 칸 발광은 주사위와 룰렛에서 실제로 빛남을 확인했고, 달걀 찾기 누락 기록은 '보류 후 나중에 적용'으로 수정했으며, 낚시는 실플레이 3번 투척 모두 조과가 있었습니다.", "验证数字：笔记画面71项检查、圆环排列51项检查、国际象棋测验标题22项检查全部通过。零项超出对齐网格，重新打开布局一致。同一改造中修复的漏洞也进行了测试。德州扑克在3种屏幕尺寸下操作列均在范围内，骰子与轮盘的发光效果已确认，寻蛋记录缺失已改为“暂存后应用”，钓鱼测试3投全部钓到鱼。", "驗證數字：筆記畫面71項檢查、圓環排列51項檢查、國際象棋測驗標題22項檢查全部通過。零項超出對齊網格，重新打開佈局一致。同一改造中修復的漏洞也進行了測試。德州撲克在3種螢幕尺寸下操作列均在範圍內，骰子與輪盤的發光效果已確認，尋蛋記錄缺失已改為「暫存後應用」，釣魚測試3投全部釣到魚。", "Números de verificación: 71 controles en notas, 51 en alineación de anillos y 22 en títulos de puzzles de ajedrez, todos aprobados. 0 desviaciones de la rejilla; el diseño coincide al reabrir. Se probaron las correcciones de errores del mismo update. En Hold'em, la interfaz cabe en los 3 tamaños de pantalla, los brillos de dados y ruleta funcionan, el registro de búsqueda de huevos se cambió a 'aplicar pendiente', y la pesca tuvo éxito en 3/3 lanzamientos de prueba.", "Chiffres de vérification : 71 contrôles sur les notes, 51 sur l'alignement des anneaux, 22 sur les titres de quiz d'échecs, tous validés. 0 écart par rapport à la grille ; la mise en page est identique à la réouverture. Les bugs corrigés ont été testés. Au Hold'em, les contrôles s'adaptent aux 3 tailles d'écran, le rétroéclairage des dés et de la roulette fonctionne, les enregistrements de chasse aux œufs sont en « application différée », et la pêche a réussi lors des 3 essais.", "Verifizierungszahlen: 71 Notiz-Prüfungen, 51 Ring-Ausrichtungs-Prüfungen, 22 Schach-Quiz-Titel—alle bestanden. 0 Abweichungen vom Raster; das Layout ist nach erneutem Öffnen identisch. Im gleichen Update behobene Fehler wurden ebenfalls getestet. Hold'em-Bedienelemente passen auf alle 3 Bildschirmgrößen, Leuchteffekte bei Würfeln/Roulette funktionieren, Eiersuche-Datensätze wurden auf „später anwenden“ korrigiert, und Fischen war in 3 von 3 Versuchen erfolgreich.", "Números de verificação: 71 checagens em notas, 51 em alinhamento de anéis e 22 em títulos de quiz de xadrez, todos aprovados. 0 desvios do grid; o layout permanece consistente ao reabrir. Bugs corrigidos na mesma atualização foram testados. No Hold'em, os controles cabem nos 3 tamanhos de tela, o brilho de dados e roleta foi confirmado, registros de caça aos ovos corrigidos para 'aplicar depois', e a pesca foi bem-sucedida em 3/3 lançamentos.", "Numeri di verifica: 71 controlli per le note, 51 per l'allineamento degli anelli, 22 per i titoli dei quiz di scacchi: tutto superato. 0 deviazioni dalla griglia; il layout corrisponde dopo la riapertura. I bug corretti nello stesso aggiornamento sono stati testati. Nel Hold'em, i comandi rientrano in tutte le 3 dimensioni dello schermo, l'illuminazione di dadi e roulette è stata confermata, i record della caccia alle uova sono stati corretti in 'applica dopo' e la pesca ha avuto successo in 3/3 lanci di prova."],
+  "脳ビューが知識ライブラリになった：棚画面の廃止と全幅化": ["Brain View is now the Knowledge Library: Shelf screen removed and made full-width", "뇌 뷰가 지식 라이브러리로 변경: 선반 화면 폐지 및 전체 너비 확장", "“脑视图”升级为“知识库”：废除货架界面并实现全屏宽显示", "「腦視圖」進化為「知識庫」：移除書架頁面並實現全寬度顯示", "La Vista cerebral ahora es la Biblioteca de conocimientos: eliminación y expansión de la pantalla de estantes", "La vue Cerveau devient la Bibliothèque de connaissances : suppression de l’écran Rayons et passage en plein écran", "Gehirn-Ansicht wird zur Wissensbibliothek: Wegfall des Regal-Bildschirms und Umstellung auf Vollbild", "A Exibição Cerebral tornou-se a Biblioteca de Conhecimento: fim da tela de prateleira e suporte a tela cheia", "La Vista Cervello diventa Libreria della conoscenza: eliminata la schermata a scaffali e ottimizzata a larghezza intera"],
+  "知識ライブラリの独立した棚画面を目的地として廃止し、脳ビュー自体を知識ライブラリにした。全1,551件のタイトル・本文検索は脳ビューの棚リストへ移植し、複数キーワードのAND検索、全9言語の翻訳文も検索対象、ヒット件数の表示まで旧画面と同等に揃えた。棚レールをタップしたときは検索を解除してから該当の棚へスクロールする。脳ビューの戻るボタンはロビーへ戻る形に改め、「?game=library」のディープリンクも脳ビューに着地する。旧画面のコードとデータ層は残してあるが、到達できる導線はすべて断った（脳ビューの記事パネルが使うデータ層は共有のため無傷）。": ["We have removed the standalone Knowledge Library shelf screen and transformed Brain View itself into the new library. The full-text search across all 1,551 titles and entries has been ported to the Brain View shelf list, matching the previous experience with features like multi-keyword AND search, support for all 9 languages, and hit count displays. Tapping a shelf rail now clears the search before scrolling to that shelf. The Brain View back button now returns to the lobby, and '?game=library' deep links land directly in Brain View. While the legacy screen code and data layer remain, all navigation paths to them have been removed (the data layer used by the Brain View article panel remains intact as it is shared).", "지식 라이브러리의 독립된 선반 화면을 목적지로서 폐지하고, 뇌 뷰 자체를 지식 라이브러리로 통합했습니다. 총 1,551건의 제목 및 본문 검색 기능은 뇌 뷰의 선반 리스트로 이식했으며, 다중 키워드 AND 검색, 9개 언어 전체의 번역문 검색, 검색 결과 건수 표시까지 기존 화면과 동일하게 구현했습니다. 선반 레일을 탭하면 검색을 해제한 후 해당 선반으로 스크롤합니다. 뇌 뷰의 뒤로 가기 버튼은 로비로 돌아가는 방식으로 변경되었으며, 「?game=library」 딥링크도 뇌 뷰로 연결됩니다. 기존 화면의 코드와 데이터 계층은 유지하고 있으나, 접근 가능한 경로는 모두 차단했습니다(뇌 뷰의 기사 패널이 사용하는 데이터 계층은 공유되므로 그대로 유지됩니다).", "废除知识库独立的货架界面，将“脑视图”本身打造为知识库。全部1,551条标题及正文的检索功能已迁移至脑视图的列表，并实现了与旧界面同等的体验，包括多关键词AND检索、包含全部9种语言的翻译文检索以及命中数量显示。点击货架栏时，系统会自动取消检索并滚动至相应货架。脑视图的“返回”按钮现已改为返回至大厅，“?game=library”深层链接也将直接跳转至脑视图。旧界面的代码与数据层虽予以保留，但已切断所有进入路径（脑视图文章面板所使用的数据层因共享而未受影响）。", "我們廢除了知識庫獨立的書架頁面，直接將「腦視圖」本身轉變為知識庫。原有的 1,551 筆標題與內文搜尋功能已移植至腦視圖的書架列表，並完整保留了多關鍵字 AND 搜尋、全 9 種語言譯文搜尋以及搜尋結果數量顯示等功能。點擊書架軌道時，系統會先清除搜尋狀態再捲動至相應書架。腦視圖的返回按鈕現改為返回大廳，且「?game=library」的深層連結亦會直接引導至腦視圖。舊頁面的程式碼與資料層雖予以保留，但已切斷所有進入的導向連結（腦視圖文章面板所使用的資料層因共用而不受影響）。", "Hemos eliminado la pantalla de estantes independiente de la Biblioteca de conocimientos como destino y hemos convertido la propia Vista cerebral en la biblioteca. La búsqueda de títulos y cuerpos de texto para los 1,551 elementos se ha trasladado a la lista de estantes de la Vista cerebral, manteniendo las mismas funciones que la pantalla anterior: búsqueda con múltiples palabras clave (AND), búsqueda en traducciones de los 9 idiomas y visualización del número de resultados. Al tocar un riel de estante, se cancela la búsqueda y se desplaza hacia el estante correspondiente. El botón de retroceso de la Vista cerebral ahora dirige al lobby, y el enlace profundo «?game=library» aterriza directamente en la Vista cerebral. Aunque el código y la capa de datos de la pantalla anterior se mantienen, se han eliminado todos los puntos de acceso (la capa de datos utilizada por el panel de artículos de la Vista cerebral permanece intacta por ser compartida).", "L’écran Rayons autonome de la Bibliothèque de connaissances a été supprimé en tant que destination, la vue Cerveau faisant désormais office de Bibliothèque. La recherche par titre et corps de texte sur l’ensemble des 1 551 éléments a été transférée vers la liste des rayons de la vue Cerveau, avec une parité fonctionnelle totale par rapport à l’ancien écran : recherche par mots-clés multiples (ET), recherche dans les traductions en 9 langues et affichage du nombre de résultats. Appuyer sur un rail de rayon réinitialise la recherche avant de défiler jusqu’au rayon correspondant. Le bouton retour de la vue Cerveau renvoie désormais au hall d’accueil, et les liens profonds ?game=library redirigent vers la vue Cerveau. Le code et la couche de données de l’ancien écran sont conservés, mais tous les accès ont été coupés (la couche de données utilisée par le panneau d’articles de la vue Cerveau demeure intacte car partagée).", "Die eigenständige Regal-Ansicht der Wissensbibliothek wurde als Ziel entfernt und die Gehirn-Ansicht selbst zur Wissensbibliothek umgewandelt. Die Suche in allen 1,551 Titeln und Textinhalten wurde in die Regalliste der Gehirn-Ansicht integriert. Funktionen wie die AND-Suche mit mehreren Schlagwörtern, die Einbeziehung von Übersetzungen in allen 9 Sprachen sowie die Anzeige der Trefferanzahl wurden beibehalten. Beim Tippen auf eine Regalschiene wird die Suche zurückgesetzt und direkt zum entsprechenden Regal gescrollt. Der Zurück-Button in der Gehirn-Ansicht führt nun direkt in die Lobby, und Deep-Links mit „?game=library“ landen ebenfalls in der Gehirn-Ansicht. Der Code und die Datenschicht des alten Bildschirms bleiben erhalten, wurden jedoch von allen Navigationswegen getrennt (die Datenschicht, die vom Artikel-Panel der Gehirn-Ansicht genutzt wird, bleibt unangetastet).", "A tela de prateleira independente da Biblioteca de Conhecimento foi descontinuada como destino, tornando a própria Exibição Cerebral a nova Biblioteca de Conhecimento. A busca por título e corpo de texto, que abrange 1.551 itens, foi migrada para a lista de prateleiras da Exibição Cerebral, mantendo a paridade com a tela anterior: busca AND por múltiplos termos, suporte a busca em traduções de todos os 9 idiomas e exibição do número de resultados. Ao tocar em um trilho de prateleira, a busca é limpa antes de rolar até a prateleira correspondente. O botão de voltar na Exibição Cerebral agora leva ao saguão, e links profundos do tipo ?game=library também direcionam para a Exibição Cerebral. Embora o código e a camada de dados da tela antiga tenham sido mantidos, todos os pontos de acesso foram removidos (a camada de dados utilizada pelo painel de artigos da Exibição Cerebral permanece intacta por ser compartilhada).", "La schermata a scaffali dedicata della Libreria della conoscenza è stata rimossa; la Vista Cervello ora funge essa stessa da libreria. La ricerca per titolo e testo su un totale di 1.551 elementi è stata trasferita nell’elenco a scaffali della Vista Cervello, mantenendo le funzionalità precedenti: ricerca AND con parole chiave multiple, ricerca nelle traduzioni in tutte le 9 lingue e visualizzazione del conteggio dei risultati. Toccando un binario dello scaffale, la ricerca viene annullata e la vista scorre verso lo scaffale corrispondente. Il pulsante Indietro nella Vista Cervello ora riporta alla lobby e anche i deep link ?game=library approdano direttamente alla Vista Cervello. Il codice e il livello dati della vecchia schermata sono stati conservati, ma ogni percorso di accesso è stato disabilitato (il livello dati utilizzato dal pannello articoli della Vista Cervello rimane invariato poiché condiviso)."],
+  "制作ノート画面をワイド画面で全幅化した。従来は最大720pxの中央カラムで、幅1180pxの画面では左右に約230pxずつ空白ができていた。761px以上の幅では左右の余白を16pxにまで広げ、概要・一覧・記事の3つのズーム段階すべてで画面いっぱいに読める。スマホ幅の見た目は従来どおり変えていない。": ["The creation notes screen has been updated to full-width for widescreen displays. Previously, it was restricted to a maximum 720px center column, leaving about 230px of empty space on each side of an 1180px wide screen. For widths of 761px or more, the side margins are now expanded to 16px, allowing for a full-screen reading experience across all three zoom levels: overview, list, and article. The appearance on smartphone widths remains unchanged.", "제작 노트 화면을 와이드 화면에서 전체 너비로 확장했습니다. 기존에는 최대 720px의 중앙 칼럼으로, 너비 1180px 화면에서는 좌우에 약 230px씩 공백이 발생했습니다. 761px 이상의 너비에서는 좌우 여백을 16px까지 줄여, 개요·목록·기사의 3단계 줌 모드 모두에서 화면을 가득 채워 읽을 수 있습니다. 스마트폰 너비에서의 모습은 기존과 동일합니다.", "制作笔记界面现已支持宽屏全屏显示。此前该界面被限制在最大720px的中央栏内，在1180px宽的屏幕上左右两侧各有约230px的留白。宽度在761px以上时，左右边距将扩展至16px，在概览、列表、文章这3种缩放阶段下均可实现全屏阅读。手机端的显示外观保持不变。", "「製作筆記」頁面改為寬螢幕全寬度顯示。過去頁面限制在最大 720px 的中央欄位，導致在 1180px 寬的螢幕上左右兩側各有約 230px 的留白。現在當寬度大於 761px 時，左右邊距將縮減至 16px，無論在概要、列表或文章這 3 種縮放階段，皆能以全螢幕視野閱讀。手機版的顯示外觀則維持不變。", "La pantalla de notas de producción se ha expandido a pantalla completa en formato ancho. Anteriormente, se limitaba a una columna central de 720px, dejando aproximadamente 230px de espacio en blanco a cada lado en pantallas de 1180px de ancho. En anchos superiores a 761px, los márgenes laterales se han ampliado a 16px, permitiendo una lectura a pantalla completa en los 3 niveles de zoom: resumen, lista y artículo. La apariencia en dispositivos móviles permanece sin cambios.", "L’écran des notes de production est désormais en plein écran sur les affichages larges. Auparavant, il était limité à une colonne centrale de 720 px, laissant environ 230 px de vide de chaque côté sur un écran de 1180 px. Pour les largeurs de 761 px et plus, les marges latérales sont désormais réduites à 16 px, permettant une lecture plein écran sur les 3 niveaux de zoom : aperçu, liste et article. L’affichage sur smartphone reste inchangé.", "Der Bildschirm für Produktionsnotizen wurde für Breitbildformate auf die volle Breite skaliert. Zuvor war er auf eine zentrale Spalte von maximal 720px begrenzt, was bei einer Bildschirmbreite von 1180px zu Rändern von jeweils etwa 230px führte. Bei einer Breite von 761px oder mehr werden die seitlichen Ränder nun auf 16px erweitert, sodass Inhalte in allen drei Zoomstufen (Übersicht, Liste, Artikel) bildschirmfüllend gelesen werden können. Die Darstellung auf Smartphones bleibt unverändert.", "A tela de Notas de Produção agora utiliza a largura total em telas amplas. Anteriormente, era limitada a uma coluna central de no máximo 720px, deixando cerca de 230px de espaço vazio em cada lado em telas de 1180px. Com larguras a partir de 761px, as margens laterais foram expandidas para 16px, permitindo a leitura em tela cheia nos três níveis de zoom: visão geral, lista e artigo. A aparência em smartphones permanece inalterada.", "La schermata Note di produzione è stata estesa a larghezza intera. In precedenza, era limitata a una colonna centrale di massimo 720px, lasciando circa 230px di spazio vuoto su ciascun lato in schermi da 1180px. Con una larghezza superiore a 761px, i margini laterali sono stati ridotti a 16px, consentendo la lettura a schermo intero in tutti e 3 i livelli di zoom (panoramica, elenco e articolo). L’aspetto su smartphone rimane invariato."],
+  "ビリヤードの3Dプレイ画面も全幅化した。従来は「高さから逆算した幅」の上限に縛られ、幅1180pxの画面でもキャンバスは約520px（画面の44%）までしか広がらなかった。新しいフィット処理はステージの実寸（ボールのトレイと操作デッキのあいだの高さ）を測ってキャンバスとカメラのアスペクト比を決め、視点距離もアスペクト比で補正する。通常視点でも真上視点でも、レールを含めたテーブル全体が常時収まる。": ["The 3D billiards play screen is now also full-width. Previously, it was constrained by a maximum width calculated from the height, limiting the canvas to about 520px (44% of the screen) even on an 1180px wide display. The new fitting process measures the actual stage size (the height between the ball tray and the control deck) to determine the canvas and camera aspect ratio, with the viewpoint distance adjusted accordingly. Whether using the normal or overhead view, the entire table, including the rails, now stays fully in view at all times.", "당구 3D 플레이 화면도 전체 너비로 확장했습니다. 기존에는 「높이에서 역산한 너비」의 상한선에 제한되어, 너비 1180px 화면에서도 캔버스가 약 520px(화면의 44%)까지만 확장되었습니다. 새로운 맞춤 처리는 스테이지의 실측 크기(볼 트레이와 조작 데크 사이의 높이)를 측정하여 캔버스와 카메라의 화면 비율을 결정하며, 시점 거리도 화면 비율에 맞춰 보정합니다. 일반 시점과 수직 시점 모두에서 레일을 포함한 테이블 전체가 항상 화면에 들어옵니다.", "台球3D游戏界面也已实现全屏宽显示。此前受限于“由高度逆向计算出的宽度”上限，即使在1180px宽的屏幕上，画布也只能扩展至约520px（占屏幕的44%）。新的适配处理通过测量舞台的实际尺寸（球托盘与操作台之间的高度）来决定画布与摄像头的纵横比，并根据纵横比修正视点距离。无论是普通视角还是俯视视角，现在都能完整呈现包含轨道在内的整张球台。", "「撞球」的 3D 遊戲畫面亦實現了全寬度顯示。過去受限於「根據高度回推寬度」的上限，即使在 1180px 寬的螢幕上，畫布寬度也僅能展開至約 520px（佔螢幕的 44%）。新的適配處理方式會測量舞台實際尺寸（球盤與操作台之間的高度）來決定畫布與攝影機的長寬比，並透過長寬比修正視點距離。無論是一般視點或正上方視點，皆能確保包含桌邊軌道在內的整張球桌完整呈現。", "La pantalla de juego 3D de billar también se ha expandido a pantalla completa. Antes estaba restringida por un ancho calculado inversamente a partir de la altura, lo que limitaba el lienzo a unos 520px (44% de la pantalla) incluso en pantallas de 1180px de ancho. El nuevo proceso de ajuste mide el tamaño real del escenario (la altura entre la bandeja de bolas y la plataforma de control) para determinar la relación de aspecto del lienzo y la cámara, compensando además la distancia de visualización. Tanto en la vista normal como en la vista cenital, la mesa completa, incluidos los rieles, cabe siempre en pantalla.", "L’écran de jeu 3D du billard passe également en plein écran. Auparavant, il était limité par une largeur calculée en fonction de la hauteur, ce qui restreignait le canevas à environ 520 px (44 % de l’écran) sur un affichage de 1180 px. Le nouveau processus d’ajustement mesure les dimensions réelles de la scène (la hauteur entre le plateau des billes et la zone de contrôle) pour définir le rapport d’aspect du canevas et de la caméra, tout en corrigeant la distance focale selon ce rapport. Que ce soit en vue normale ou en vue de dessus, toute la table, rails compris, reste visible en permanence.", "Der 3D-Spielbildschirm für Billard wurde ebenfalls auf Vollbild umgestellt. Zuvor war die Breite durch ein Limit beschränkt, das aus der Höhe berechnet wurde, wodurch sich die Spielfläche bei 1180px Breite nur auf etwa 520px (44% des Bildschirms) ausdehnen konnte. Das neue Anpassungsverfahren misst die tatsächliche Größe der Bühne (die Höhe zwischen der Ballablage und dem Bedienfeld), um das Seitenverhältnis von Spielfläche und Kamera festzulegen, wobei auch der Blickwinkelabstand entsprechend korrigiert wird. Sowohl in der Standardansicht als auch in der Draufsicht ist nun der gesamte Tisch inklusive der Banden jederzeit vollständig sichtbar.", "A tela de jogo 3D de bilhar também foi expandida para tela cheia. Antes, estava limitada por uma largura calculada a partir da altura, fazendo com que o canvas ocupasse apenas cerca de 520px (44% da tela) mesmo em resoluções de 1180px. O novo processamento de ajuste mede o tamanho real do estágio (altura entre a bandeja de bolas e o painel de controle) para determinar a proporção do canvas e da câmera, corrigindo também a distância do ponto de vista. Tanto na visão normal quanto na visão superior, a mesa inteira, incluindo as tabelas, permanece sempre visível.", "Anche la schermata di gioco 3D del biliardo è stata estesa a larghezza intera. In precedenza, era vincolata da una larghezza massima calcolata in base all’altezza, il che faceva sì che in schermi da 1180px il canvas si espandesse solo fino a circa 520px (il 44% dello schermo). La nuova gestione del ridimensionamento misura le dimensioni reali dello stage (l’altezza tra il vassoio delle biglie e la plancia di comando) per determinare il rapporto d’aspetto di canvas e fotocamera, compensando inoltre la distanza focale. Sia nella vista normale che in quella dall’alto, l’intero tavolo, sponde incluse, rimane sempre visibile."],
+  "起動は組み立てから：アセンブリ・ブートと液体モーフ": ["Booting from Assembly: Assembly Boot and Liquid Morph", "시작은 조립부터: 어셈블리 부트와 리퀴드 모프", "启动即组装：汇编引导与液体变形", "啟動從組裝開始：組合引導與液體變形", "El inicio comienza con el montaje: Arranque de ensamblaje y morfosis líquida", "Démarrage par assemblage : Assembly Boot et morphing liquide", "Start durch Zusammenbau: Assembly-Boot und Liquid-Morph", "A inicialização a partir da montagem: Boot de montagem e morph líquido", "Avvio tramite assemblaggio: Assembly Boot e Morph liquido"],
+  "起動シーケンス「アセンブリ・ブート」を新設した（モジュール63）。ロビーを開くと約2.6秒のあいだに、ゲームタイルのグリフ約14個が画面の縁から渦巻いて集まり、麻雀の緑の發が中央でカチッと音を立ててスケールインし、「GAME.」のワードマークが1文字ずつ着地して「ARCADE」に光の帯が走る。続いてロビー本体が上から順に組み上がり、最後にグリフたちがマスコットのアライグマのドックへ群れ飛んで、おかえりの吹き出しと温かい和音で引き継ぐ。表示はセッションごとに初回だけ（sessionStorageのフラグ）で、画面のどこをタップしても即座に終わり、2.8秒のウォッチドッグが必ず完了させる。": ["We have introduced the Assembly Boot startup sequence (Module 63). When the lobby opens, approximately 14 game tile glyphs swirl in from the screen edges over 2.6 seconds. The Mahjong green Fa tile clicks into place at the center, the GAME. wordmark lands character by character, and a band of light sweeps across ARCADE. Subsequently, the lobby assembles from top to bottom, and finally, the glyphs swarm to the mascot raccoon dock, greeting you with a speech bubble and a warm chord. This animation plays only once per session (via sessionStorage flag) and can be skipped instantly by tapping anywhere, with a 2.8-second watchdog ensuring it always finishes.", "부팅 시퀀스인 ‘어셈블리 부트’를 신설했습니다(모듈 63). 로비 실행 시 약 2.6초 동안 게임 타일의 글리프 약 14개가 화면 가장자리에서 소용돌이치며 모이고, 중앙에서 마작패 녹색 발이 딸깍 소리를 내며 스케일인(scale-in)합니다. 이후 ‘GAME.’ 워드마크가 한 글자씩 착지하고 ‘ARCADE’에 빛의 띠가 흐릅니다. 이어 로비 본체가 위에서부터 순차적으로 조립되며, 마지막으로 글리프들이 마스코트인 라쿤의 독으로 날아가 환영 말풍선과 따뜻한 화음으로 바통을 넘깁니다. 해당 연출은 세션당 최초 1회만 재생되며(sessionStorage 플래그), 화면 어디든 탭하면 즉시 종료되고 2.8초의 워치독이 반드시 완료 처리합니다.", "新增启动序列“汇编引导”（模块63）。打开大厅后的约2.6秒内，约14个游戏磁贴字形会从屏幕边缘漩涡般汇聚，中央的麻将“绿发”伴随清脆音效缩放登场，“GAME.”字标逐字着陆，“ARCADE”闪过一道光带。随后大厅主体自上而下组装完成，字形最终飞向吉祥物浣熊的底座，并弹出欢迎气泡，伴随温馨和弦完成交接。该动画仅在每轮会话的首次显示（基于sessionStorage标记），点击屏幕任何位置可立即结束，2.8秒的看门狗定时器也会确保其强制完成。", "新增了啟動序列「組合引導」（模組63）。開啟大廳後約2.6秒內，約14個遊戲圖塊的字形會從螢幕邊緣旋轉匯集，麻將綠色「發」會在中央發出喀噠聲並縮放顯示，接著「GAME.」字樣逐字落下，「ARCADE」跑過一道光束。隨後大廳本體由上而下逐一組裝，最後字形群飛至吉祥物浣熊的底座，以歡迎氣泡與溫暖和弦完成交接。此顯示僅限每階段首次（sessionStorage 旗標），點擊螢幕任何位置皆可立即結束，且2.8秒的看門狗程式將強制完成。", "Se ha añadido la secuencia de inicio «Arranque de ensamblaje» (módulo 63). Al abrir el vestíbulo, unos 14 glifos de mosaicos del juego se arremolinan desde los bordes de la pantalla en unos 2,6 segundos, el carácter verde de Mahjong se escala con un clic en el centro, el logotipo «GAME.» aterriza letra por letra y una estela de luz recorre «ARCADE». Luego, el vestíbulo se ensambla de arriba hacia abajo y, al final, los glifos vuelan hacia el muelle del mapache mascota, quien saluda con un bocadillo de bienvenida y un acorde cálido. Esta animación se muestra solo la primera vez por sesión (flag de sessionStorage); se puede omitir al instante tocando cualquier parte de la pantalla y el watchdog de 2,8 segundos garantiza su finalización.", "Nous avons introduit la séquence de démarrage « Assembly Boot » (module 63). À l’ouverture du lobby, en environ 2,6 secondes, 14 glyphes de tuiles de jeu tourbillonnent depuis les bords de l’écran pour se rassembler ; le caractère mahjong vert « Fa » se verrouille au centre avec un effet de mise à l’échelle, le logotype « GAME. » se stabilise lettre par lettre et une traînée lumineuse balaie « ARCADE ». Ensuite, le lobby s’assemble du haut vers le bas et, pour finir, les glyphes s’envolent vers le dock du raton laveur mascotte, qui vous accueille avec une bulle de texte et un accord harmonieux. Cet affichage ne se produit qu’une fois par session (indicateur sessionStorage), peut être interrompu instantanément par un tapotement et est systématiquement finalisé par un garde-fou de 2,8 secondes.", "Die Startsequenz „Assembly-Boot“ wurde neu eingeführt (Modul 63). Beim Öffnen der Lobby sammeln sich innerhalb von ca. 2,6 Sekunden etwa 14 Spiel-Glyphen wirbelnd vom Bildschirmrand, während in der Mitte ein grünes Mahjong-Plättchen („Fa“) mit einem Klick-Geräusch einrastet. Das Wortmarken-Logo „GAME.“ landet Buchstabe für Buchstabe, und ein Lichtstreifen läuft über „ARCADE“. Anschließend baut sich die Lobby von oben nach unten zusammen, bis die Glyphen schließlich zum Maskottchen-Waschbären am Dock fliegen, wo sie mit einer Willkommens-Sprechblase und einem warmen Akkord begrüßt werden. Die Anzeige erfolgt nur beim ersten Aufruf pro Sitzung (sessionStorage-Flag); ein Tippen auf den Bildschirm beendet den Vorgang sofort, während ein 2,8-Sekunden-Watchdog den Abschluss garantiert.", "Implementamos uma nova sequência de inicialização chamada “boot de montagem” (módulo 63). Ao abrir o lobby, em cerca de 2,6 segundos, aproximadamente 14 glifos dos blocos do jogo giram das bordas da tela e se reúnem, o caractere verde de Mahjong (發) encaixa-se no centro com um clique e aumenta de escala, o logotipo “GAME.” é formado letra por letra e um feixe de luz atravessa a palavra “ARCADE”. Em seguida, o corpo do lobby é montado de cima para baixo e, por fim, os glifos voam em direção ao dock do mascote guaxinim, que o recebe com um balão de fala e um acorde suave. A animação é exibida apenas uma vez por sessão (via flag no sessionStorage), pode ser encerrada instantaneamente ao tocar em qualquer lugar da tela e é obrigatoriamente concluída pelo watchdog de 2,8 segundos.", "È stata introdotta la sequenza di avvio «Assembly Boot» (modulo 63). All'apertura della lobby, nell'arco di circa 2,6 secondi, circa 14 glifi delle tessere di gioco vorticano dai bordi dello schermo per riunirsi; il carattere mahjong «Verde» si incastra al centro con un effetto scala, il logotipo «GAME.» appare una lettera alla volta e una scia luminosa attraversa la scritta «ARCADE». Successivamente, la lobby si assembla dall'alto verso il basso e, infine, i glifi volano verso il dock del procione mascotte, che accoglie l'utente con un fumetto di benvenuto e un accordo armonioso. L'animazione viene mostrata solo al primo avvio per sessione (tramite flag sessionStorage), può essere interrotta immediatamente toccando ovunque sullo schermo e viene comunque completata dopo 2,8 secondi dal watchdog."],
+  "バリアントは3種ある。保存データが一切ない初回起動では1.6秒の短縮版になり、言語チップを含むトップバーは最初から表示されたまま下だけが組み上がる。OSの「視差効果を減らす」設定では静止版になり、ワードマークと發が約0.4秒フェードするだけで音も鳴らない。組み立てリストは常にその場の実DOMから作るため、GitHub版のようにレトロのタイル自体が存在しない環境では、存在しないタイルが幽霊のように現れることはない。音は既存のWebAudioキットと同じ作法で、すべてコード合成のみ（新しい音声ファイルはゼロ）。": ["There are three variants. The initial launch with no saved data uses a 1.6-second shortened version where the top bar, including language chips, remains visible while only the bottom assembles. The OS Reduce Motion setting triggers a static version, where the wordmark and Fa tile simply fade in over 0.4 seconds without sound. The assembly list is generated from the actual DOM on the fly, ensuring that in environments where retro tiles do not exist—such as the GitHub version—ghost tiles will not appear. Audio follows the established WebAudio kit conventions and is entirely synthesized in code, with zero new audio files.", "변형은 3종입니다. 저장 데이터가 전혀 없는 최초 실행 시에는 1.6초 단축 버전이 재생되며, 언어 칩이 포함된 상단 바는 처음부터 유지된 채 하단만 조립됩니다. OS의 ‘동작 줄이기’ 설정 시에는 정적 버전으로 전환되어 워드마크와 발이 약 0.4초간 페이드될 뿐 소리는 나지 않습니다. 조립 리스트는 항상 현장의 실제 DOM에서 생성하므로, GitHub 버전처럼 레트로 타일 자체가 존재하지 않는 환경에서는 존재하지 않는 타일이 유령처럼 나타나지 않습니다. 사운드는 기존 WebAudio 키트와 동일한 방식으로 모두 코드 합성만 사용했습니다(새로운 음성 파일은 0개).", "提供3种变体。在无任何存档的首次启动时，会切换为1.6秒的精简版，包含语言芯片的顶部栏将保持显示，仅下方进行组装。若开启操作系统的“减少动态效果”设置，则变为静态版，仅字标与“发”进行约0.4秒的淡入，且无音效。由于组装列表始终根据当前实DOM实时生成，因此在如GitHub版般不存在复古磁贴的环境下，不会出现幽灵磁贴。音效沿用既有WebAudio套件的规范，均为纯代码合成（无需额外音频文件）。", "共有3種變體。在無任何保存資料的首次啟動時，會改用1.6秒的縮減版，包含語言晶片的頂部列會預先顯示，僅組裝下半部分。在OS設定為「減少動態效果」時則為靜止版，字樣與「發」僅會淡入約0.4秒，且不會發出聲音。由於組裝清單是根據當下的實體DOM即時生成，因此在類似GitHub版本這類不存在復古圖塊的環境中，不會出現圖塊幽靈。音效採用與現有 WebAudio 套件相同的作法，全數以程式碼合成（無使用任何新音訊檔案）。", "Existen 3 variantes. En el primer inicio sin datos guardados, se usa una versión abreviada de 1,6 segundos donde la barra superior, incluidos los chips de idioma, permanece visible mientras solo se ensambla la parte inferior. Con el ajuste de sistema «Reducir movimiento», la versión es estática: el logotipo y el carácter se desvanecen en unos 0,4 segundos sin sonido. La lista de ensamblaje se genera a partir del DOM real, por lo que en entornos sin mosaicos retro, estos no aparecerán de forma fantasma. El audio utiliza el kit WebAudio existente y se sintetiza por código (cero archivos de audio nuevos).", "Trois variantes existent. Lors du premier lancement sans aucune donnée sauvegardée, une version raccourcie de 1,6 seconde s’active, où seule la partie inférieure s’assemble tandis que la barre supérieure avec les puces de langue reste affichée. Si le réglage système « Réduire les animations » est activé, une version statique est utilisée : le logotype et le « Fa » apparaissent simplement en fondu pendant environ 0,4 seconde sans aucun son. La liste d’assemblage étant générée dynamiquement à partir du DOM réel, les tuiles inexistantes ne peuvent pas apparaître comme des fantômes, contrairement à la version GitHub. Les sons suivent les méthodes du kit WebAudio existant et sont entièrement générés par code (aucun nouveau fichier audio).", "Es gibt drei Varianten. Beim allerersten Start ohne Speicherdaten wird eine verkürzte Version von 1,6 Sekunden verwendet, bei der die Top-Bar inklusive Sprach-Chip bereits sichtbar ist und sich nur der untere Bereich aufbaut. Bei aktivierter OS-Einstellung „Bewegungsreduzierung“ wird eine statische Version angezeigt, bei der Wortmarke und Plättchen lediglich in ca. 0,4 Sekunden einblenden und keine Töne abgespielt werden. Da die Liste der Bauteile stets aus dem aktuellen realen DOM generiert wird, treten keine Geister-Effekte für nicht vorhandene Kacheln auf (wie es etwa bei der GitHub-Version ohne Retro-Tiles der Fall wäre). Der Sound folgt der bestehenden WebAudio-Methodik und basiert ausschließlich auf Code-Synthese (keine neuen Audiodateien).", "Existem 3 variantes. Na primeira inicialização sem dados salvos, a versão é reduzida para 1,6 segundos, onde a barra superior, incluindo os chips de idioma, permanece visível desde o início e apenas a parte inferior é montada. Com a configuração “Reduzir movimento” do SO ativada, a versão é estática, com o logotipo e o caractere (發) apenas aparecendo com um fade de 0,4 segundos sem som. Como a lista de montagem é criada a partir do DOM real no momento da execução, em ambientes onde os blocos retrô não existem (como na versão do GitHub), não ocorrerá o surgimento fantasma de blocos inexistentes. O som segue a mesma técnica do kit WebAudio existente, sendo inteiramente sintetizado via código (zero novos arquivos de áudio).", "Sono disponibili 3 varianti. Al primo avvio assoluto senza dati salvati, viene riprodotta una versione abbreviata di 1,6 secondi, in cui la barra superiore contenente i chip lingua rimane visibile fin dall'inizio e si assembla solo la parte inferiore. Se è attiva l'impostazione di sistema «Riduci movimento», viene visualizzata una versione statica in cui il logotipo e il carattere «Verde» sfumano in circa 0,4 secondi senza riprodurre suoni. Poiché la lista di assemblaggio viene generata dal DOM reale sul momento, in ambienti in cui le tessere retro non esistono (come nella versione GitHub), queste non appariranno mai come fantasmi. Il comparto audio segue le convenzioni del kit WebAudio esistente ed è composto interamente da sintesi via codice (nessun nuovo file audio aggiunto)."],
+  "あわせて液体モーフのトランジション・プリセット（window.__liquidMorph）を新設した。水滴が弾けて金色の雫が飛ぶ演出だが、適用先は宝探しコンプリート（ゴールデンエッグ）の出現モーダル、ただ1箇所だけに限定してある。他のステージのクリア演出は従来どおり共有のstateCrackのまま。ブートもモーフも表示だけの演出で、ポイント・所持品・セーブデータのキーには一切触れていない。": ["Additionally, we have implemented a new liquid morph transition preset (window.__liquidMorph). This effect features droplets splashing and golden sparks flying; however, its application is limited exclusively to the treasure hunt completion (Golden Egg) modal. Clear effects for other stages remain unchanged and continue to use the shared stateCrack. Both Boot and Morph are purely visual effects and do not affect points, inventory, or save data keys in any way.", "이와 함께 리퀴드 모프 트랜지션 프리셋(window.__liquidMorph)을 신설했습니다. 물방울이 터지며 금색 물방울이 튀는 연출이지만, 적용 대상은 보물찾기 완료(골든 에그) 출현 모달로만 한정했습니다. 다른 스테이지의 클리어 연출은 기존과 같이 공통 stateCrack을 유지합니다. 부트와 모프 모두 시각적인 연출일 뿐이며, 포인트·소지품·세이브 데이터 키에는 전혀 영향을 주지 않습니다.", "同步新增了液体变形转场预设（window.__liquidMorph）。该效果呈现水滴爆裂并飞溅出金色液滴，目前仅限定应用于宝藏收集完成（金蛋）的弹出模态框中。其他关卡的通关动画维持原有的stateCrack方案。无论是引导还是变形均为视觉效果，绝不触碰积分、物品及存档数据键值。", "同步新增了液體變形轉場預設（window.__liquidMorph）。此效果模擬水滴迸裂並飛濺金色水珠，僅限定應用於寶藏收集完成（黃金蛋）的彈出視窗。其餘關卡的過關演出維持原有的 stateCrack 狀態。引導與變形皆僅為視覺演出，不會觸及任何點數、持有物品或保存資料的鍵值。", "Además, se ha añadido el preajuste de transición de morfosis líquida (window.__liquidMorph). El efecto consiste en gotas de agua que estallan dejando caer gotas doradas, limitado exclusivamente al modal de aparición del huevo dorado al completar la búsqueda del tesoro. El resto de las animaciones de finalización de niveles mantienen el estado stateCrack compartido. Tanto el arranque como la morfosis son efectos visuales y no afectan en absoluto a las claves de puntos, inventario o datos guardados.", "Parallèlement, nous avons ajouté un préréglage de transition de morphing liquide (window.__liquidMorph). Il simule l’éclatement d’une goutte d’eau avec des gouttelettes dorées, mais son application est limitée uniquement à la fenêtre modale de récompense pour la complétion de la chasse au trésor (Golden Egg). Les autres animations de fin de niveau conservent le système stateCrack partagé. Ces effets de démarrage et de morphing sont purement visuels et n’interagissent en aucun cas avec les points, l’inventaire ou les clés de sauvegarde.", "Zudem wurde ein neues Preset für Liquid-Morph-Übergänge (window.__liquidMorph) implementiert. Dieser Effekt, bei dem Wassertropfen zerplatzen und goldene Spritzer entstehen, ist exakt auf ein Szenario beschränkt: das Modal beim Abschluss der Schatzsuche (Golden Egg). Die Abschlusssequenzen anderer Level bleiben unverändert beim bestehenden stateCrack. Sowohl der Boot-Vorgang als auch das Morphing sind rein visuelle Effekte und greifen zu keiner Zeit auf Schlüssel für Punkte, Inventar oder Speicherdaten zu.", "Adicionalmente, introduzimos um novo preset de transição de morph líquido (window.__liquidMorph). O efeito consiste no estouro de uma gota d'água com gotas douradas dispersas, porém, sua aplicação está limitada exclusivamente ao modal de conclusão da caça ao tesouro (Golden Egg). As animações de conclusão de outras fases permanecem inalteradas, utilizando o stateCrack compartilhado. Tanto o boot quanto o morph são apenas efeitos visuais e não alteram em nada as chaves de pontuação, itens ou dados salvos.", "È stato inoltre aggiunto il preset di transizione «Morph liquido» (window.__liquidMorph). Si tratta di un effetto in cui una goccia d'acqua si infrange liberando goccioline dorate, applicato esclusivamente al modale di completamento della caccia al tesoro (Uovo d'oro). Le animazioni di completamento degli altri livelli rimangono invariate e utilizzano il solito stateCrack. Sia il boot che il morph sono effetti puramente visivi e non interagiscono in alcun modo con le chiavi di punteggio, inventario o dati di salvataggio."],
   "脳ビューを本物の脳に：立体配置とニューロンの輝き": ["Brain View as a Real Brain: 3D Layout and Neuronal Glow", "뇌 뷰를 진짜 뇌처럼: 입체 배치와 뉴런의 빛", "将大脑视图还原为真实大脑：立体布局与神经元的辉光", "將腦部檢視化為真實腦體：立體配置與神經元的閃爍", "Vista cerebral realista: disposición tridimensional y brillo neuronal", "Vue cérébrale réaliste : configuration 3D et éclat des neurones", "Die Gehirnansicht wird zur echten Gehirnform: Dreidimensionale Anordnung und neuronales Leuchten", "Vista do cérebro em 3D: disposição espacial e brilho dos neurônios", "Visualizzazione cerebrale realistica: disposizione tridimensionale e luminosità dei neuroni"],
   "これまで脳ビューの点は、横から見た脳の輪郭の中に並べ、奥行きは位置からの計算で求めていた。真横に回すと厚みが潰れて、半分消えたように見えた。今回、点の配置そのものを立体で作り直した。前後739・上下430・左右465の広がりを持つ大脳の塊に、左右の半球を分ける縦の溝（大脳縦裂）と平らな底面を入れ、後ろ下には小脳（46件）、その下に短い脳幹（13件）も置いた。棚ごとの集まりは崩しておらず、17棚すべてが1つながりの領域になっている。": ["Previously, dots in Brain View were aligned within a side-profile outline of the brain, with depth calculated from their positions. When rotated to a direct side view, the thickness would flatten, making half the dots appear to vanish. Now, we have rebuilt the dot layout itself in 3D. Within a cerebral mass spanning 739 front-to-back, 430 top-to-bottom, and 465 side-to-side, we added the longitudinal fissure separating the left and right hemispheres and a flat base, plus the cerebellum (46 items) at the lower rear and a short brainstem (13 items) beneath it. The groupings by shelf remain intact, with all 17 shelves forming a single contiguous region.", "기존 뇌 뷰의 점들은 옆에서 본 뇌의 윤곽 안에 배치하고 깊이는 위치 계산을 통해 구했습니다. 정면에서 보면 두께가 압축되어 절반이 사라진 것처럼 보였으나, 이번에는 점 배치 자체를 입체적으로 재구성했습니다. 전후 739, 상하 430, 좌우 465 크기의 대뇌 덩어리에 좌우 반구를 나누는 세로 홈(대뇌종렬)과 평평한 바닥면을 넣었고, 뒤쪽 아래에는 소뇌(46건)와 그 아래 짧은 뇌간(13건)도 배치했습니다. 선반별 구성은 유지하여 17개 선반 모두 하나의 연결된 영역으로 구현했습니다.", "以往大脑视图中的点是按侧面轮廓排列的，深度是通过位置计算得出的。转到正侧面时厚度会塌陷，看起来像消失了一半。此次我们重新以立体方式构建了点的布局。在大脑块体（前后739、上下430、左右465的范围）中加入了分割左右半球的纵向沟槽（大脑纵裂）和底部平面，并在后下方放置了小脑（46件），在其下方放置了简短的脑干（13件）。各层架的分组结构未被破坏，所有17个层架仍保持为一个连续区域。", "過去腦部檢視的點僅排列在側面視圖的腦輪廓內，深度則是透過位置計算求得，因此轉到正側面時厚度會被壓縮，看起來彷彿消失了一半。此次，我們將點的配置本身以立體方式重新打造。在大腦塊體（前後 739、上下 430、左右 465）中加入分隔左右半球的縱向溝槽（大腦縱裂）以及平坦的底面，並在後下方放置小腦（46 件），再其下方配置短小的腦幹（13 件）。各架上的集結狀態並未拆散，所有 17 個架位皆維持為一體化的區域。", "Hasta ahora, los puntos de la vista cerebral se alineaban dentro del contorno de un cerebro visto de lado, calculando la profundidad según su posición. Al girarlo de perfil, el grosor se comprimía y parecía desaparecer parcialmente. Esta vez, hemos recreado la disposición de los puntos en tres dimensiones. Sobre una masa cerebral con una extensión de 739 de profundidad, 430 de altura y 465 de anchura, hemos incluido la cisura longitudinal que separa ambos hemisferios y una base plana, colocando el cerebelo (46 elementos) en la parte inferior trasera y el tronco encefálico (13 elementos) debajo. Los grupos por estante se mantienen intactos, formando 17 regiones continuas.", "Jusqu’à présent, les points de la vue cérébrale étaient alignés sur le contour d’un cerveau vu de profil, la profondeur étant calculée à partir de la position. En rotation latérale, l’épaisseur s’écrasait et semblait disparaître. Nous avons désormais recréé la disposition des points en 3D. Dans une masse cérébrale de 739 en profondeur, 430 en hauteur et 465 en largeur, nous avons intégré le sillon longitudinal séparant les deux hémisphères et une base plate, en ajoutant le cervelet (46 éléments) en bas à l’arrière et le tronc cérébral (13 éléments) en dessous. Les regroupements par étagère sont préservés, les 17 étagères formant une zone continue.", "Bisher wurden die Punkte der Gehirnansicht innerhalb der Umrisse eines seitlich betrachteten Gehirns angeordnet, wobei die Tiefe rechnerisch ermittelt wurde. Bei einer Drehung in die exakte Seitenansicht wirkte die Struktur flach und schien teilweise zu verschwinden. Nun haben wir die Anordnung der Punkte selbst in eine dreidimensionale Form überführt. Das Gehirngebilde erstreckt sich nun über 739 Einheiten in der Tiefe, 430 in der Höhe und 465 in der Breite, ergänzt durch die zentrale Längsfurche (Fissura longitudinalis cerebri) zwischen den Hemisphären, eine flache Unterseite sowie das Kleinhirn (46 Einheiten) mit dem darunter liegenden kurzen Hirnstamm (13 Einheiten). Die Gruppierung der Regale wurde beibehalten, sodass alle 17 Regale einen zusammenhängenden Bereich bilden.", "Anteriormente, os pontos da visualização cerebral eram alinhados dentro do contorno lateral do cérebro, com a profundidade calculada pela posição. Ao girar para a vista lateral, a espessura era comprimida, fazendo com que metade desaparecesse. Desta vez, reconstruímos a própria disposição dos pontos em 3D. Em uma massa cerebral com dimensões de 739 na frente/trás, 430 na altura e 465 na largura, inserimos a fissura longitudinal que separa os hemisférios e a base plana, além de posicionar o cerebelo (46 itens) na parte inferior traseira e o tronco cerebral (13 itens) logo abaixo. Mantivemos o agrupamento por prateleiras, tornando todas as 17 prateleiras uma área contínua.", "In precedenza, i punti della visualizzazione cerebrale venivano allineati entro il profilo di un cervello visto di lato, calcolandone la profondità in base alla posizione. Ruotando la vista esattamente di lato, lo spessore si appiattiva, facendoli apparire parzialmente scomparsi. Ora abbiamo ricostruito la disposizione dei punti in 3D. All’interno della massa cerebrale, che si estende per 739 unità in profondità, 430 in verticale e 465 in orizzontale, abbiamo inserito il solco interemisferico (scissura longitudinale) e la base piatta; nella parte inferiore posteriore abbiamo posizionato il cervelletto (46 elementi) e sotto di esso un breve tronco encefalico (13 elementi). L’aggregazione per scaffali rimane invariata e tutti i 17 scaffali formano un’area continua."],
   "接続のないオーファン114件は、脳の外側に輪を作るのをやめ、内側の深いところに散らした。114件すべてが脳の形の内側に収まり、全1,551件で1つの脳の輪郭を作る。見た目も神経細胞（ニューロン）に寄せた。点は明るい中心（細胞体）と柔らかい光のハローで描き、ハローは棚の色で用意した17色のグロー画像を使い回す。実在の接続の上を、小さな信号の光がときどき走る。": ["The 114 orphan items with no connections no longer form a ring outside the brain; they are now scattered deep within the interior. All 114 are housed inside the brain shape, with all 1,551 items forming a single brain contour. The visual design has also been brought closer to real neurons. Dots are rendered with a bright center (cell body) and a soft light halo, utilizing 17-color glow images corresponding to the shelf colors. Tiny signal lights now occasionally travel along the actual connections.", "연결되지 않은 고아(Orphan) 114건은 뇌 외부에 고리를 만드는 대신 내부 깊숙한 곳에 배치했습니다. 114건 모두 뇌 형태 안으로 수용되어 총 1,551건이 하나의 뇌 윤곽을 이룹니다. 외형 또한 신경세포(뉴런)와 가깝게 구현했습니다. 점은 밝은 중심(세포체)과 부드러운 빛의 후광으로 표현했으며, 후광은 선반 색상에 맞춰 17가지 색상의 글로우 이미지를 사용했습니다. 실제 연결 경로 위로는 작은 신호의 빛이 간헐적으로 흐릅니다.", "将114个无连接的孤立点从脑外围的圆环中移出，散布在内部深处。全部114个点均收纳在大脑形态内，共1,551个点构成了一个完整的大脑轮廓。外观也更接近神经元。点通过明亮的中心（细胞体）和柔和的光晕绘制，光晕重复使用了对应层架颜色的17种辉光图像。在实际的连接线上，偶尔会有微小的信号光穿行。", "沒有連接的 114 件孤兒節點，不再環繞於腦部外側，而是散佈在內部的深處。這 114 件全部收納於腦部形狀之內，由總計 1,551 件組成一個完整的腦部輪廓。視覺表現上也更貼近神經元：每個點由明亮的核心（細胞體）與柔和的光暈組成，光暈採用架位所屬的 17 種顏色輝光圖像進行循環運用。在實際的連接線上，偶爾會有微小的訊號之光流動。", "Los 114 elementos huérfanos sin conexiones ya no forman un anillo exterior, sino que se han dispersado en las profundidades del interior. Los 1,551 elementos ahora conforman un único contorno cerebral. La apariencia también se asemeja a las neuronas reales: los puntos se dibujan con un núcleo brillante (cuerpo celular) y un halo de luz suave, utilizando 17 imágenes de brillo correspondientes a los colores de cada estante. Pequeñas señales luminosas recorren de vez en cuando las conexiones existentes.", "Les 114 éléments orphelins sans connexion ne forment plus d’anneau à l’extérieur, mais sont dispersés profondément à l’intérieur. L’ensemble des 1 551 éléments s’inscrit désormais dans la forme du cerveau. L’apparence se rapproche de celle des neurones : chaque point se compose d’un centre lumineux (corps cellulaire) entouré d’un halo diffus, utilisant les 17 couleurs d’images « glow » correspondant aux étagères. De petites lueurs de signal parcourent désormais les connexions réelles.", "Die 114 verwaisten Einheiten ohne Verbindungen bilden nun keinen Ring mehr außerhalb des Gehirns, sondern sind im Inneren verteilt. Alle 114 Einheiten befinden sich nun innerhalb der Gehirnform, wodurch insgesamt 1.551 Einheiten einen geschlossenen Gehirnumriss bilden. Auch das visuelle Erscheinungsbild wurde den Nervenzellen (Neuronen) angenähert. Die Punkte bestehen aus einem hellen Kern (Zellkörper) und einem sanften Lichtschein; für den Schein kommen 17 verschiedene Glow-Grafiken in den Farben der jeweiligen Regale zum Einsatz. Über die tatsächlichen Verbindungen huschen gelegentlich kleine Lichtsignale.", "Os 114 itens órfãos sem conexões deixaram de formar um anel fora do cérebro e foram dispersos nas profundezas internas. Todos os 114 itens agora se encaixam no formato cerebral, compondo o contorno de um único cérebro com o total de 1.551 itens. A estética foi aproximada à dos neurônios: os pontos são desenhados com um núcleo brilhante (corpo celular) e um halo de luz suave, utilizando 17 imagens de brilho nas cores das prateleiras. Pequenos pontos de luz de sinalização agora percorrem ocasionalmente as conexões reais.", "I 114 elementi orfani senza connessioni non formano più un cerchio all’esterno del cervello, ma sono stati dispersi nelle zone interne più profonde. Tutti i 114 elementi sono ora contenuti all’interno della forma cerebrale, completando il profilo con un totale di 1.551 unità. Anche l’aspetto visivo è stato avvicinato a quello dei neuroni: i punti sono rappresentati con un centro luminoso (corpo cellulare) e un alone di luce soffusa, utilizzando immagini di bagliore nelle 17 varianti di colore corrispondenti agli scaffali. Piccoli impulsi luminosi scorrono occasionalmente lungo le connessioni reali."],
@@ -48025,7 +48108,14 @@ PATTERNS.push(
       try { if (window.celebrateBurst) window.celebrateBurst(); } catch (e) {}
       /* Motion-template wiring (2026-11-15): the clear card cracks
          into its new state through the shared layer. */
-      try { var card = md ? md.querySelector(".hunt-modal-card") : null; if (card && window.ARCADE_motion) window.ARCADE_motion.stateCrack(card, { duration: 500 }); } catch (e) {}
+      try {
+        var card = md ? md.querySelector(".hunt-modal-card") : null;
+        /* Liquid-morph preset (2026-11-16, logo & boot round): the
+           ONE moment it exists for — the Golden Egg reveal. Every
+           other stage keeps the shared stateCrack. */
+        if (card && stage === "gate3" && window.__liquidMorph) window.__liquidMorph(card, { duration: 900 });
+        else if (card && window.ARCADE_motion) window.ARCADE_motion.stateCrack(card, { duration: 500 });
+      } catch (e) {}
     }
     /* PENDING CLEARS (fix 2026-11-15, owner report: a clean chess
        win earned before the hunt unlocked never counted — the old
@@ -48494,6 +48584,8 @@ PATTERNS.push(
     notesAdd("仕組みと同期", { t: "リロードしても消えない：全タイトルの途中保存", b: ["途中でリロードすると、賭けたコインや未決済の馬券、進行中のゲームが消える問題があった。賭け・馬券・釣りの途中経過・麻雀の対局など、42タイトルの途中状態を、ブラウザを閉じても残る場所に記録するようにした。賭けた金額は二重に引かれることも、消えることもない。フリーベットではコインの記録は一切変わらない。", "麻雀はアプリ側の保存の通り道を直して、対局の続きを「保存済み」から再開できるようにした。2048とリバーシと四目並べは、起動時のリセットが保存を消してしまう順序の不具合を直した。スロットは回転の抽選結果を回し始めた瞬間に記録し、途中でリロードしてもその回の結果で決着する。", "検証の数字です。42タイトルすべてを、途中の状態でリロードして確かめた。賭けや対局のあるタイトルは2回連続でリロードしても、賭け金・馬券・手札・スコアが変わらなかった。カジノの6タイトルでは、10コインの賭けや、20コインで買ったパチンコの100玉、宝くじのチケット1枚が消えなかった。競馬・競輪・競艇・オートレースの馬券1枚ずつと、スポーツベットの10コインの券1枚も残った。古い版の保存データが新しい版でそのまま読み込めて、コインの残高が変わらないことも確認した。"] });
     notesAdd("仕組みと同期", { t: "脳ビューをスマホ仕様に：縦画面フレーミングとライブラリ直行", b: ["ロビーで知識ライブラリを開くと、そのまま脳ビューに直行するようになった。棚と検索の画面は、脳ビューの「ライブラリへ戻る」から今までどおり開ける。スマホ表示も直した。見出しは122ピクセルから108ピクセルに圧縮し、脳／2Dグラフ／棚リストの切替は横幅いっぱいのボタン列に、説明文は1行に畳んだ。棚のチップ列は、右端が薄くなるフェード付きの横スクロールで、17棚すべてに届く。2Dグラフの整列／力学の切替は、キャンバスの上から操作列へ引っ越したので、扇形のラベルと重ならない。", "いちばん大きいのは、縦画面での脳の収め方だ。今まではオーファンのリングまで含めた全体で合わせていたため、脳そのものが小さく写っていた。縦画面では、接続のある点（全1,437件）の集まりに余白を足した枠で合わせる。390ピクセル幅での倍率は0.322から0.412に上がり、接続のある点は、脳がゆっくり揺れる全周期を通して1件も画面外に出ない。接続を持たないオーファンの点は、リングの左右の端だけが縦画面では画面の外に回る（最大で20件ほど）。オーファンには接続の線がないので、選んだ項目の線が画面外へ飛ぶことはない。", "記事パネルは、メイン領域の55%を上限とするボトムシートにした。背景は不透明で、中だけがスクロールし、本文の末尾には104ピクセルの余白を足して、アプリ下部の浮動バーに隠れず最後まで読める。棚リスト表示では、説明文が6ピクセルまで潰れてしまう不具合も見つけて直した（23ピクセルで安定）。検証の数字です。390×844と360×740の2サイズで、3つの表示モードすべて横はみ出しゼロ。棚リストの棚タップで該当の棚の先頭へスクロールする動きは不変。デスクトップ（1,180ピクセル幅）では従来の収め方と倍率が一致し、記事パネルも408ピクセルのサイドバーのままだ。"] });
     notesAdd("仕組みと同期", { t: "脳ビューを本物の脳に：立体配置とニューロンの輝き", b: ["これまで脳ビューの点は、横から見た脳の輪郭の中に並べ、奥行きは位置からの計算で求めていた。真横に回すと厚みが潰れて、半分消えたように見えた。今回、点の配置そのものを立体で作り直した。前後739・上下430・左右465の広がりを持つ大脳の塊に、左右の半球を分ける縦の溝（大脳縦裂）と平らな底面を入れ、後ろ下には小脳（46件）、その下に短い脳幹（13件）も置いた。棚ごとの集まりは崩しておらず、17棚すべてが1つながりの領域になっている。", "接続のないオーファン114件は、脳の外側に輪を作るのをやめ、内側の深いところに散らした。114件すべてが脳の形の内側に収まり、全1,551件で1つの脳の輪郭を作る。見た目も神経細胞（ニューロン）に寄せた。点は明るい中心（細胞体）と柔らかい光のハローで描き、ハローは棚の色で用意した17色のグロー画像を使い回す。実在の接続の上を、小さな信号の光がときどき走る。", "収め方は、立体全体を包む球に合わせる方式に変えた。検証の数字です。390×844と1180×820の2サイズで、正面・真横・真上を含む4方向すべて、画面外に出る点はゼロ。スマホでの倍率は0.411で、前回の0.412とほぼ同じ大きさに写る。代償も正直に書く。光の描画が増えたぶん、検証環境（ソフトウェア描画）での1フレームは平均37.5ミリ秒から54.6ミリ秒に重くなった。ハローだけを消すと31.2ミリ秒に戻ることも測ってある。"] });
+    notesAdd("仕組みと同期", { t: "起動は組み立てから：アセンブリ・ブートと液体モーフ", b: ["起動シーケンス「アセンブリ・ブート」を新設した（モジュール63）。ロビーを開くと約2.6秒のあいだに、ゲームタイルのグリフ約14個が画面の縁から渦巻いて集まり、麻雀の緑の發が中央でカチッと音を立ててスケールインし、「GAME.」のワードマークが1文字ずつ着地して「ARCADE」に光の帯が走る。続いてロビー本体が上から順に組み上がり、最後にグリフたちがマスコットのアライグマのドックへ群れ飛んで、おかえりの吹き出しと温かい和音で引き継ぐ。表示はセッションごとに初回だけ（sessionStorageのフラグ）で、画面のどこをタップしても即座に終わり、2.8秒のウォッチドッグが必ず完了させる。", "バリアントは3種ある。保存データが一切ない初回起動では1.6秒の短縮版になり、言語チップを含むトップバーは最初から表示されたまま下だけが組み上がる。OSの「視差効果を減らす」設定では静止版になり、ワードマークと發が約0.4秒フェードするだけで音も鳴らない。組み立てリストは常にその場の実DOMから作るため、GitHub版のようにレトロのタイル自体が存在しない環境では、存在しないタイルが幽霊のように現れることはない。音は既存のWebAudioキットと同じ作法で、すべてコード合成のみ（新しい音声ファイルはゼロ）。", "あわせて液体モーフのトランジション・プリセット（window.__liquidMorph）を新設した。水滴が弾けて金色の雫が飛ぶ演出だが、適用先は宝探しコンプリート（ゴールデンエッグ）の出現モーダル、ただ1箇所だけに限定してある。他のステージのクリア演出は従来どおり共有のstateCrackのまま。ブートもモーフも表示だけの演出で、ポイント・所持品・セーブデータのキーには一切触れていない。"] });
+    notesAdd("仕組みと同期", { t: "脳ビューが知識ライブラリになった：棚画面の廃止と全幅化", b: ["知識ライブラリの独立した棚画面を目的地として廃止し、脳ビュー自体を知識ライブラリにした。全1,551件のタイトル・本文検索は脳ビューの棚リストへ移植し、複数キーワードのAND検索、全9言語の翻訳文も検索対象、ヒット件数の表示まで旧画面と同等に揃えた。棚レールをタップしたときは検索を解除してから該当の棚へスクロールする。脳ビューの戻るボタンはロビーへ戻る形に改め、「?game=library」のディープリンクも脳ビューに着地する。旧画面のコードとデータ層は残してあるが、到達できる導線はすべて断った（脳ビューの記事パネルが使うデータ層は共有のため無傷）。", "制作ノート画面をワイド画面で全幅化した。従来は最大720pxの中央カラムで、幅1180pxの画面では左右に約230pxずつ空白ができていた。761px以上の幅では左右の余白を16pxにまで広げ、概要・一覧・記事の3つのズーム段階すべてで画面いっぱいに読める。スマホ幅の見た目は従来どおり変えていない。", "ビリヤードの3Dプレイ画面も全幅化した。従来は「高さから逆算した幅」の上限に縛られ、幅1180pxの画面でもキャンバスは約520px（画面の44%）までしか広がらなかった。新しいフィット処理はステージの実寸（ボールのトレイと操作デッキのあいだの高さ）を測ってキャンバスとカメラのアスペクト比を決め、視点距離もアスペクト比で補正する。通常視点でも真上視点でも、レールを含めたテーブル全体が常時収まる。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -66690,6 +66782,9 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   "hubCounts": {"ja":"{0}項目 · 接続 {1}","en":"{0} items · Connected {1}","ko":"{0}개 항목 · 연결됨 {1}","zh":"{0}个项目 · 已连接 {1}","zht":"{0}個項目 · 已連接 {1}","es":"{0} elementos · Conectado {1}","fr":"{0} éléments · Connecté {1}","de":"{0} Objekte · Verbunden {1}","pt":"{0} itens · Conectado {1}","it":"{0} elementi · Connesso {1}"},
   "hintRings": {"ja":"ドラッグで移動 ・ ピンチ／ホイールでズーム ・ タップで開く（整列表示：棚が角度、項目が格子）","en":"Drag to move · Pinch/scroll to zoom · Tap to open (aligned view: shelves are angles, items are a lattice)","ko":"드래그로 이동 · 핀치/휠로 줌 · 탭으로 열기 (정렬 보기: 선반은 각도, 항목은 격자)","zh":"拖动以移动 · 双指缩放/滚轮缩放 · 点击以打开（排列视图：架子是角度，条目是格子）","zht":"拖曳以移動 · 縮放以放大縮小 · 點擊以開啟（排列檢視：書架是角度，條目是格子）","es":"Arrastra para mover · Pellizca o usa la rueda para hacer zoom · Toca para abrir (vista alineada: los estantes son ángulos, los elementos una retícula)","fr":"Faire glisser pour déplacer · Pincer/molette pour zoomer · Taper pour ouvrir (vue alignée : les rayons sont des angles, les éléments un treillis)","de":"Ziehen zum Verschieben · Zoomen mit Pinch/Rad · Tippen zum Öffnen (Ausrichtungsansicht: Regale sind Winkel, Objekte ein Gitter)","pt":"Arraste para mover · Pinça/Roda para zoom · Toque para abrir (vista alinhada: as estantes são ângulos, os itens uma grade)","it":"Trascina per spostare · Pizzica/rotella per zoomare · Tocca per aprire (vista allineata: gli scaffali sono angoli, gli elementi un reticolo)"},
   "viewList": {"ja":"棚リスト","en":"Shelf List","ko":"선반 리스트","zh":"架子列表","zht":"書架列表","es":"Lista de estantes","fr":"Liste des rayons","de":"Regalliste","pt":"Lista de estantes","it":"Elenco scaffali"},
+  "searchPh": {"ja":"タイトル・本文から検索","en":"Search titles & text","ko":"제목·본문에서 검색","zh":"搜索标题和正文","zht":"搜尋標題和正文","es":"Buscar en títulos y texto","fr":"Rechercher dans les titres et le texte","de":"In Titeln & Text suchen","pt":"Pesquisar em títulos e texto","it":"Cerca in titoli e testo"},
+  "searchHits": {"ja":"{0}件が見つかりました","en":"{0} found","ko":"{0}건 찾음","zh":"找到 {0} 条","zht":"找到 {0} 件","es":"{0} resultados","fr":"{0} résultat(s)","de":"{0} Treffer","pt":"{0} encontrados","it":"{0} trovati"},
+  "searchNone": {"ja":"条件に合うトピックがありません。キーワードを変えてみてください。","en":"No topics match. Try different keywords.","ko":"조건에 맞는 토픽이 없습니다. 키워드를 바꿔 보세요.","zh":"没有符合条件的条目。换个关键词试试。","zht":"沒有符合條件的條目。換個關鍵字試試。","es":"Ningún tema coincide. Prueba con otras palabras.","fr":"Aucun sujet ne correspond. Essayez d'autres mots-clés.","de":"Keine Treffer. Bitte andere Suchbegriffe versuchen.","pt":"Nenhum tópico corresponde. Tente outras palavras.","it":"Nessun argomento corrisponde. Prova altre parole."},
 };
   function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
   function L(key) { var o = STR[key]; if (!o) return key; var l = lang(); return o[l] || o.en || o.ja || key; }
@@ -67412,6 +67507,9 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   }
   function scrollListToShelf(i) {
     buildList();
+    /* A rail tap means "show me this shelf" — an active search
+       filter would hide the target section, so clear it first. */
+    if (searchQuery) { searchQuery = ""; if (elSearchIn) elSearchIn.value = ""; applySearch(); }
     var sec = listSecs[i];
     if (!elList || !sec) return;
     var target = elList.scrollTop + (sec.getBoundingClientRect().top - elList.getBoundingClientRect().top);
@@ -67546,11 +67644,61 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   }
 
   /* ---------- shelf list view -------------------------------------- */
+  /* List search (2026-11-16, library unification): the abolished
+     shelf screen's title+body search lives on here, with the same
+     matching recipe as module 23 — multi-word AND over a lowercase
+     haystack of title + body + every translation. */
+  var searchQuery = "", searchHitsNow = -1, searchHay = null;
+  var listRows = [], listHeadCt = [], elSearchIn = null, elHits = null, elNoRes = null;
+  function buildHaystack() {
+    searchHay = topics.map(function (t) {
+      var parts = [t.t || "", t.b || ""];
+      if (t.x) Object.keys(t.x).forEach(function (k) { if (t.x[k]) { parts.push(t.x[k][0] || ""); parts.push(t.x[k][1] || ""); } });
+      return parts.join("\n").toLowerCase();
+    });
+  }
+  function applySearch() {
+    if (!listBuilt) return;
+    var words = searchQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    var total = 0;
+    listRows.forEach(function (rows, si) {
+      var n = 0;
+      rows.forEach(function (r) {
+        var ok = !words.length;
+        if (!ok) { var hay = searchHay ? (searchHay[r.idx] || "") : ""; ok = words.every(function (w) { return hay.indexOf(w) >= 0; }); }
+        r.el.style.display = ok ? "" : "none";
+        if (ok) n++;
+      });
+      var sec = listSecs[si];
+      if (sec) sec.style.display = (!words.length || n > 0) ? "" : "none";
+      if (listHeadCt[si]) listHeadCt[si].textContent = words.length ? (n + " / " + rows.length) : String(rows.length);
+      total += n;
+    });
+    searchHitsNow = words.length ? total : -1;
+    if (elHits) elHits.textContent = words.length ? fmt("searchHits", total) : "";
+    if (elNoRes) elNoRes.hidden = !(words.length && total === 0);
+  }
   function buildList() {
     if (listBuilt) return; listBuilt = true;
+    if (!searchHay) buildHaystack();
+    listRows = []; listHeadCt = [];
     var byShelf = GENRE_JA.map(function () { return []; });
     for (var i = 0; i < N; i++) byShelf[genreOf[i]].push(i);
     var frag = document.createDocumentFragment();
+    /* search row: sticky at the top of the list scroll area */
+    var srow = document.createElement("div");
+    srow.className = "bv-search";
+    elSearchIn = document.createElement("input");
+    elSearchIn.type = "search";
+    elSearchIn.setAttribute("autocomplete", "off");
+    elSearchIn.setAttribute("aria-label", "search");
+    elSearchIn.placeholder = L("searchPh");
+    elSearchIn.value = searchQuery;
+    elSearchIn.addEventListener("input", function () { searchQuery = elSearchIn.value; applySearch(); });
+    elHits = document.createElement("span");
+    elHits.className = "bv-hits";
+    srow.appendChild(elSearchIn); srow.appendChild(elHits);
+    frag.appendChild(srow);
     GENRE_JA.forEach(function (name, si) {
       var sec = document.createElement("section");
       listSecs[si] = sec;
@@ -67558,6 +67706,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       head.className = "bv-sec-head";
       head.innerHTML = '<span class="dot" style="background:' + shelfCss[si] + '"></span><span>' + esc(name) + '</span><span class="ct">' + byShelf[si].length + "</span>";
       sec.appendChild(head);
+      listHeadCt[si] = head.querySelector(".ct");
+      listRows[si] = [];
       byShelf[si].forEach(function (idx) {
         var t = topics[idx];
         var row = document.createElement("button");
@@ -67568,10 +67718,17 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         row.innerHTML = '<span>' + esc(topicTitle(idx)) + '</span><span class="dg">' + (chip ? esc(chip) + " · " : "") + esc(fmt("deg", deg[idx])) + "</span>";
         row.addEventListener("click", function () { selectNode(idx); });
         sec.appendChild(row);
+        listRows[si].push({ el: row, idx: idx });
       });
       frag.appendChild(sec);
     });
+    elNoRes = document.createElement("div");
+    elNoRes.className = "bv-noresults";
+    elNoRes.textContent = L("searchNone");
+    elNoRes.hidden = true;
+    frag.appendChild(elNoRes);
     elList.appendChild(frag);
+    applySearch();
   }
 
   /* ---------- view switching --------------------------------------- */
@@ -68225,7 +68382,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   /* verification hook: live view state for headless probes */
   window.__BRAIN_VIEW__ = {
     getState: function () {
-      return { mode: mode, arrange: arrange, yaw: manualAng, pitch: manualPitch, roll: manualRoll, zoom: cam.zoom, camX: cam.x, camY: cam.y, selected: selected, panelOpen: elPanel ? elPanel.classList.contains("open") : false, focusShelf: focusShelf, gliding: glide.active, dataReady: dataReady, nodes: N, edges: EDGES.length, orphans: stats.orphans, pulses: pulses.length };
+      return { mode: mode, arrange: arrange, yaw: manualAng, pitch: manualPitch, roll: manualRoll, zoom: cam.zoom, camX: cam.x, camY: cam.y, selected: selected, panelOpen: elPanel ? elPanel.classList.contains("open") : false, focusShelf: focusShelf, gliding: glide.active, dataReady: dataReady, nodes: N, edges: EDGES.length, orphans: stats.orphans, pulses: pulses.length, search: { q: searchQuery, hits: searchHitsNow } };
     },
     resetView: resetView, clearSelection: clearSelection, selectNode: selectNode, setMode: setMode, toggleFocus: toggleFocus, setArrange: setArrange,
     setAngles: function (yaw, pitch, roll) { manualAng = yaw; manualPitch = pitch; manualRoll = roll || 0; camAnim = null; stopGlide(); },
@@ -68251,11 +68408,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     if (window.__openArcadeView) window.__openArcadeView("brain");
     enter();
   });
-  var backBtn = document.getElementById("brainBack");
-  if (backBtn) backBtn.addEventListener("click", function () {
-    if (window.__openArcadeView) window.__openArcadeView("library");
-    if (window.__libraryOpen) window.__libraryOpen();
-  });
+  /* The back button carries data-back in the markup (2026-11-16,
+     library unification): the shell's shared [data-back] wiring
+     takes it home to the lobby, like every other screen. The old
+     handler that routed it to the abolished shelf screen is gone. */
 })();
 </script>
 <script>/* 62: Build Notes console — the DE NOVO BINDER FOUNDRY grammar from the
@@ -68759,6 +68915,603 @@ window.__BN_VIEW__ = {
   figNOf: function (bn) { var e = byBn[bn]; return e ? e.figN : null; },
   relOf: function (bn) { var e = byBn[bn]; return e ? e.rel : null; }
 };
+})();
+</script>
+<script>/* ================================================================
+   Module 63 — Assembly Boot + liquid-morph preset (2026-11-16,
+   logo & boot round; spec: reel study DfUdHN9sMbg §4, approved by
+   the owner 2026-11-15).
+
+   Two exports:
+   - window.__liquidMorph(el, opts): the liquid-morph transition
+     preset. It is applied at EXACTLY ONE moment in the app — the
+     egg-hunt completion (Golden Egg) reveal in module 31's
+     showClear("gate3"). Nowhere else.
+   - The Assembly Boot itself: a ~2.6 s presentation overlay that
+     plays on the FIRST lobby entry of a session and assembles the
+     lobby from ARCADE's own glyphs (B0 wipe → B1 gather → B2
+     wordmark → B3 build → B4 handover). Pure presentation: it
+     writes NOTHING except the session flag
+     sessionStorage["arcade-boot-shown"] (sessionStorage only,
+     the shell's existing pattern). No points, no play counts, no
+     inventory, no sync — it only reads the live DOM, so on
+     *.github.io (where the retro tile does not exist) the build
+     list simply has no retro ghost.
+   ================================================================ */
+(function () {
+  "use strict";
+  var reduced = false;
+  try { reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) {}
+
+  /* ================= liquid-morph preset =================
+     The element melts: border-radius wanders through blob shapes
+     while the box squashes and stretches like a liquid body, gold
+     droplets arc off the rim and fall back, and a warm glow
+     breathes behind it — then everything settles into the final
+     state. Marks the element with data-liquid-morph="1" so the
+     moment is observable (probes / audits). */
+  window.__liquidMorph = function (el, opts) {
+    if (!el) return;
+    var dur = (opts && opts.duration) || 900;
+    try { el.setAttribute("data-liquid-morph", "1"); } catch (e) {}
+    var baseRadius = "18px";
+    try { baseRadius = getComputedStyle(el).borderRadius || baseRadius; } catch (e) {}
+    if (reduced) {
+      try {
+        var a0 = el.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+        if (a0 && a0.finished) a0.finished.catch(function () {});
+      } catch (e) {}
+      return;
+    }
+    var drops = [];
+    try {
+      var r = el.getBoundingClientRect();
+      if (r.width > 0) {
+        var glow = document.createElement("div");
+        glow.style.cssText = "position:fixed;left:" + (r.left + r.width / 2) + "px;top:" + (r.top + r.height / 2) + "px;width:" + Math.round(r.width * 1.15) + "px;height:" + Math.round(r.height * 1.3) + "px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,205,80,.5),rgba(255,205,80,0) 70%);pointer-events:none;z-index:8990";
+        document.body.appendChild(glow);
+        drops.push(glow);
+        var ga = glow.animate([
+          { opacity: 0, transform: "translate(-50%,-50%) scale(.7)" },
+          { opacity: 1, transform: "translate(-50%,-50%) scale(1.05)", offset: 0.35 },
+          { opacity: 0, transform: "translate(-50%,-50%) scale(1.18)" }
+        ], { duration: dur + 250, easing: "ease-out", fill: "forwards" });
+        if (ga && ga.finished) ga.finished.then(function () { glow.remove(); }).catch(function () { glow.remove(); });
+        for (var i = 0; i < 5; i++) {
+          var d = document.createElement("div");
+          var sz = 7 + Math.round(Math.random() * 8);
+          var sx = r.left + r.width * (0.18 + 0.64 * Math.random());
+          var sy = r.top + r.height * (0.25 + 0.5 * Math.random());
+          d.style.cssText = "position:fixed;left:" + sx + "px;top:" + sy + "px;width:" + sz + "px;height:" + sz + "px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#f5c542 55%,#c8890a);pointer-events:none;z-index:8991";
+          document.body.appendChild(d);
+          drops.push(d);
+          var dx = (Math.random() - 0.5) * 130, up = 26 + Math.random() * 44;
+          var da = d.animate([
+            { transform: "translate(0,0) scale(1)", opacity: 1 },
+            { transform: "translate(" + dx * 0.6 + "px," + (-up) + "px) scale(1.06,0.94)", opacity: 1, offset: 0.4 },
+            { transform: "translate(" + dx + "px," + (34 + Math.random() * 30) + "px) scale(0.7,1.15)", opacity: 0 }
+          ], { duration: dur * (0.75 + Math.random() * 0.3), delay: i * 55, easing: "cubic-bezier(.3,.6,.4,1)", fill: "forwards" });
+          if (da && da.finished) da.finished.then((function (n) { return function () { n.remove(); }; })(d)).catch((function (n) { return function () { n.remove(); }; })(d));
+        }
+      }
+    } catch (e) {}
+    try {
+      el.classList.add("liquid-morphing");
+      var anim = el.animate([
+        { transform: "scale(1,1)", borderRadius: baseRadius },
+        { transform: "scale(1.05,0.93)", borderRadius: "46% 54% 58% 42% / 38% 44% 56% 62%", offset: 0.28 },
+        { transform: "scale(0.965,1.045)", borderRadius: "56% 44% 40% 60% / 55% 58% 42% 45%", offset: 0.55 },
+        { transform: "scale(1.018,0.99)", borderRadius: "30px 22px 28px 20px / 24px 28px 22px 30px", offset: 0.78 },
+        { transform: "scale(1,1)", borderRadius: baseRadius }
+      ], { duration: dur, easing: "cubic-bezier(.34,1.25,.44,1)", fill: "forwards" });
+      var done = function () { try { el.classList.remove("liquid-morphing"); anim.cancel(); } catch (e) {} };
+      if (anim && anim.finished) anim.finished.then(done).catch(done); else setTimeout(done, dur + 60);
+    } catch (e) {}
+  };
+
+  /* ================= shared sound (house family) =================
+     Best-effort WebAudio synth on the shared context — the pluck
+     recipe of module 39 and the clink recipe of module 28, so the
+     boot sounds like the rest of ARCADE. A cold AudioContext may
+     stay locked until a user gesture; then the boot simply runs
+     silent. Sound never blocks or delays the visuals. */
+  var soundCut = false;
+  function ac() {
+    if (soundCut) return null;
+    try {
+      var c = window.__arcadeAC || (window.__arcadeAC = new (window.AudioContext || window.webkitAudioContext)());
+      if (c.state === "suspended") { var p = c.resume(); if (p && p.catch) p.catch(function () {}); }
+      return c;
+    } catch (e) { return null; }
+  }
+  function tone(o) {
+    var c = ac(); if (!c) return;
+    try {
+      var t0 = c.currentTime + (o.t || 0);
+      var osc = c.createOscillator(), g = c.createGain();
+      osc.type = o.type || "triangle";
+      osc.frequency.setValueAtTime(o.f, t0);
+      if (o.f2) osc.frequency.exponentialRampToValueAtTime(Math.max(30, o.f2), t0 + o.dur);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(o.vol || 0.1, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(t0); osc.stop(t0 + o.dur + 0.05);
+    } catch (e) {}
+  }
+  function pluck(f, t, dur) { tone({ f: f, t: t, dur: dur || 0.5, vol: 0.13, type: "triangle" }); tone({ f: f * 2, t: t, dur: (dur || 0.5) * 0.7, vol: 0.04, type: "sine" }); }
+  function tick(t, vol) { tone({ f: 1900, t: t, dur: 0.03, vol: vol || 0.045, type: "square" }); }
+  function clack(t) {
+    var c = ac(); if (!c) return;
+    try {
+      var t0 = c.currentTime + (t || 0);
+      var len = Math.max(1, Math.floor(c.sampleRate * 0.05));
+      var buf = c.createBuffer(1, len, c.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      var src = c.createBufferSource(); src.buffer = buf;
+      var f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 2400; f.Q.value = 1.1;
+      var g = c.createGain(); g.gain.value = 0.45;
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start(t0);
+    } catch (e) {}
+    tone({ f: 170, t: t, dur: 0.09, vol: 0.15, type: "sine" });
+  }
+  function clink(t) { tone({ f: 2093, t: t, dur: 0.22, vol: 0.09, type: "sine" }); tone({ f: 2637, t: (t || 0) + 0.055, dur: 0.22, vol: 0.08, type: "sine" }); }
+  function chord(t) { [261.63, 329.63, 392.0, 523.25].forEach(function (f) { tone({ f: f, t: t, dur: 0.55, vol: 0.06, type: "triangle" }); }); }
+
+  /* ================= Assembly Boot ================= */
+  var bootState = { played: false, variant: null, skipped: false, reason: "" };
+  window.__ASSEMBLY_BOOT__ = bootState;
+
+  var homeView = document.getElementById("homeView");
+  if (!homeView) { bootState.reason = "no-home-view"; return; }
+  function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+  if (ssGet("arcade-boot-shown")) { bootState.reason = "already-shown-this-session"; return; }
+  var deepLink = false;
+  try { deepLink = !!new URLSearchParams(location.search).get("game"); } catch (e) {}
+  if (!deepLink && ssGet("arcade-open-view")) deepLink = true;
+  /* The flag is consumed either way: a deep-linked session has
+     entered the app, and the boot must never ambush the player
+     mid-session when they return to the lobby. */
+  ssSet("arcade-boot-shown", "1");
+  if (deepLink) { bootState.reason = "deep-link-or-restore"; return; }
+  if (homeView.style.display === "none") { bootState.reason = "lobby-not-showing"; return; }
+
+  var firstEver = false;
+  try {
+    var hasPlays = !!localStorage.getItem("arcade-play-counts");
+    var ps = (window.ARCADE_points && window.ARCADE_points.getState) ? window.ARCADE_points.getState() : null;
+    firstEver = !hasPlays && !!ps && ps.balance === 0 && ps.lifetime === 0;
+  } catch (e) {}
+
+  var LANGS = ["ja", "en", "ko", "zh", "zht", "es", "fr", "de", "pt", "it"];
+  function lang() { try { var l = localStorage.getItem("arcade-lang") || "en"; return LANGS.indexOf(l) >= 0 ? l : "en"; } catch (e) { return "en"; } }
+  /* The mascot's own word table (module 39), same words. */
+  var WELCOME = { ja: "おかえり！", en: "Welcome back!", ko: "어서 와!", zh: "欢迎回来！", zht: "歡迎回來！", es: "¡Bienvenido!", fr: "Bon retour !", de: "Willkommen zurück!", pt: "Bem-vindo de volta!", it: "Bentornato!" };
+  var HELLO = { ja: "やあ！", en: "Hi!", ko: "안녕!", zh: "嗨！", zht: "嗨！", es: "¡Hola!", fr: "Salut !", de: "Hallo!", pt: "Oi!", it: "Ciao!" };
+
+  /* ---------- CSS ---------- */
+  var CSS = [
+    "#bootOverlay{position:fixed;inset:0;z-index:8000;touch-action:none;background:transparent}",
+    "#bootOverlay.boot-fading{opacity:0;transition:opacity .25s ease}",
+    ".boot-glyph{position:fixed;z-index:8001;pointer-events:none;display:grid;place-items:center;will-change:transform,opacity}",
+    ".boot-glyph .glyph{pointer-events:none}",
+    ".boot-pre{opacity:0!important}",
+    ".boot-pre-tile{opacity:0!important;transform:translateY(12px) scale(.965)!important}",
+    ".boot-wire{outline:2px dashed rgba(61,44,90,.5)!important;outline-offset:-2px;background:rgba(255,255,255,.12)!important;box-shadow:none!important}",
+    "#homeView.boot-dim .sky-layer{filter:brightness(.58) saturate(.85)}",
+    ".masthead .boot-letter{display:inline-block;will-change:transform,opacity}",
+    "#pointsChip .coin.boot-flip{animation:bootCoinFlip .55s ease}",
+    "@keyframes bootCoinFlip{0%{transform:rotateY(0deg)}100%{transform:rotateY(360deg)}}",
+    ".boot-sweep{position:absolute;top:-12%;bottom:-12%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-18deg);pointer-events:none}",
+    ".liquid-morphing{z-index:5}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = CSS;
+  document.head.appendChild(styleEl);
+
+  /* ---------- timeline plumbing ---------- */
+  var STALL = ssGet("arcade-boot-test-stall") === "1"; /* probe hook: beats crawl, watchdog stays real-time */
+  var timers = [], anims = [], glyphs = [], hiddenItems = [];
+  var finished = false;
+  function later(ms, fn) { var id = setTimeout(fn, STALL ? ms * 20 : ms); timers.push(id); return id; }
+  function track(a) { if (a) { anims.push(a); if (a.finished) a.finished.catch(function () {}); } return a; }
+  function animate(el, keys, opts) { try { return track(el.animate(keys, opts)); } catch (e) { return null; } }
+
+  var overlay = document.createElement("div");
+  overlay.id = "bootOverlay";
+  overlay.setAttribute("aria-hidden", "true");
+
+  var inner = homeView.querySelector(".home-inner");
+  var masthead = inner ? inner.querySelector(".masthead") : null;
+  var gameEl = masthead ? masthead.querySelector(".logo-game") : null;
+  var arcadeEl = masthead ? masthead.querySelector(".logo-arcade") : null;
+  var savedGameHTML = gameEl ? gameEl.innerHTML : null;
+
+  function finish(skipped, byWatchdog) {
+    if (finished) return; finished = true;
+    if (skipped) { soundCut = true; bootState.skipped = true; }
+    if (byWatchdog) bootState.watchdog = true;
+    timers.forEach(function (id) { clearTimeout(id); });
+    anims.forEach(function (a) { try { a.cancel(); } catch (e) {} });
+    glyphs.forEach(function (g) { try { g.remove(); } catch (e) {} });
+    hiddenItems.forEach(function (el) { el.classList.remove("boot-pre", "boot-pre-tile", "boot-wire"); });
+    homeView.classList.remove("boot-dim");
+    if (gameEl && savedGameHTML != null) gameEl.innerHTML = savedGameHTML;
+    if (arcadeEl) { arcadeEl.style.position = ""; arcadeEl.style.overflow = ""; arcadeEl.style.opacity = ""; var sw = arcadeEl.querySelector(".boot-sweep"); if (sw) sw.remove(); }
+    var chipCoin = document.querySelector("#pointsChip .coin.boot-flip");
+    if (chipCoin) chipCoin.classList.remove("boot-flip");
+    if (overlay.parentNode) overlay.remove();
+    bootState.played = true;
+  }
+  /* Watchdog: the overlay can never hold the lobby past ~2.8 s,
+     even if every animation stalls. */
+  setTimeout(function () { finish(false, true); }, 2800);
+  overlay.addEventListener("pointerdown", function () { finish(true); });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") finish(true); });
+
+  /* ---------- build list: derived from the LIVE DOM ---------- */
+  function collectItems(includeTopbar) {
+    var items = [], seen = new Set();
+    if (!inner) return items;
+    var sel = ".masthead, .sky-line, .lead, .resume-bar, .collection-bar, .lobby-tools, .genre-head, .game-tile, .hub-home-card" + (includeTopbar ? ", .lobby-topbar > *" : "");
+    inner.querySelectorAll(sel).forEach(function (el) {
+      if (seen.has(el) || !el.getClientRects().length) return;
+      seen.add(el); items.push(el);
+    });
+    /* Fallback: any other visible direct child of .home-inner that
+       no collected item lives in (utility rows added by later
+       modules) joins the cascade as one block, in place. */
+    Array.prototype.forEach.call(inner.children, function (child) {
+      if (child.id === "mascotDock" || seen.has(child) || !child.getClientRects().length) return;
+      var covered = false;
+      seen.forEach(function (el) { if (child.contains(el)) covered = true; });
+      if (!covered) { seen.add(child); items.push(child); }
+    });
+    items.sort(function (a, b) {
+      var p = a.compareDocumentPosition(b);
+      if (p & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+      if (p & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+      return 0;
+    });
+    return items;
+  }
+
+  /* ---------- glyph swarm (clones of live lobby glyphs) ---------- */
+  function pickGlyphTiles() {
+    var picks = [], used = {};
+    function add(t) {
+      if (!t) return;
+      var k = t.getAttribute("aria-label") || "";
+      if (used[k] || !t.getClientRects().length || !t.querySelector(".glyph")) return;
+      used[k] = 1; picks.push(t);
+    }
+    add(homeView.querySelector('.game-tile[aria-label="麻雀"]')); /* hero: the 發 tile */
+    homeView.querySelectorAll(".genre-group").forEach(function (g) { add(g.querySelector(".game-tile")); });
+    var tiles = homeView.querySelectorAll(".genre-group .game-tile");
+    for (var i = 0; i < tiles.length && picks.length < 14; i += 3) add(tiles[i]);
+    for (var j = 0; j < tiles.length && picks.length < 14; j++) add(tiles[j]);
+    return picks.slice(0, 14);
+  }
+  function makeGlyph(tile, size) {
+    var src = tile.querySelector(".glyph");
+    if (!src) return null;
+    var wrap = document.createElement("div");
+    wrap.className = "boot-glyph";
+    var clone = src.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.style.width = "100%"; clone.style.height = "100%";
+    clone.style.fontSize = Math.round(size * 0.62) + "px";
+    clone.style.animation = "none";
+    wrap.appendChild(clone);
+    wrap.style.width = size + "px"; wrap.style.height = size + "px";
+    wrap.style.left = "0px"; wrap.style.top = "0px";
+    wrap.style.opacity = "0";
+    document.body.appendChild(wrap);
+    glyphs.push(wrap);
+    return wrap;
+  }
+  function place(el, x, y, s, o) {
+    el.style.transform = "translate(" + (x - el.offsetWidth / 2) + "px," + (y - el.offsetHeight / 2) + "px) scale(" + (s || 1) + ")";
+    if (o !== undefined) el.style.opacity = String(o);
+  }
+  function flyTo(el, x, y, s, o, dur, delay, ease) {
+    var cur = el._bp || { x: 0, y: 0, s: 1, o: 0 };
+    var from = "translate(" + (cur.x - el.offsetWidth / 2) + "px," + (cur.y - el.offsetHeight / 2) + "px) scale(" + cur.s + ")";
+    var to = "translate(" + (x - el.offsetWidth / 2) + "px," + (y - el.offsetHeight / 2) + "px) scale(" + s + ")";
+    el._bp = { x: x, y: y, s: s, o: o };
+    return animate(el, [
+      { transform: from, opacity: cur.o },
+      { transform: to, opacity: o }
+    ], { duration: dur, delay: delay || 0, easing: ease || "cubic-bezier(.3,.7,.3,1)", fill: "forwards" });
+  }
+  function spiralIn(el, cx, cy, ox, oy, delay) {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var side = Math.floor(Math.random() * 4);
+    var sx = side === 0 ? -60 : side === 1 ? vw + 60 : Math.random() * vw;
+    var sy = side === 2 ? -60 : side === 3 ? vh + 60 : Math.random() * vh;
+    if (side < 2) sy = Math.random() * vh; else sx = Math.random() * vw;
+    el._bp = { x: sx, y: sy, s: 0.6, o: 0 };
+    place(el, sx, sy, 0.6, 0);
+    var a0 = Math.atan2(sy - cy, sx - cx), a1 = Math.atan2(oy - cy, ox - cx);
+    while (a1 - a0 > Math.PI) a1 -= Math.PI * 2;
+    while (a0 - a1 > Math.PI) a1 += Math.PI * 2;
+    var r0 = Math.hypot(sx - cx, sy - cy), r1 = Math.hypot(ox - cx, oy - cy);
+    var keys = [{ transform: "", opacity: 0 }, {}, {}, {}];
+    var frames = [];
+    for (var k = 0; k <= 3; k++) {
+      var t = k / 3, a = a0 + (a1 - a0) * t + (1 - t) * 1.9, r = r0 + (r1 - r0) * t;
+      var x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * (r > 200 ? 0.82 : 1);
+      frames.push({ transform: "translate(" + (x - el.offsetWidth / 2) + "px," + (y - el.offsetHeight / 2) + "px) scale(" + (0.6 + 0.4 * t) + ")", opacity: t === 0 ? 0 : 1 });
+    }
+    el._bp = { x: ox, y: oy, s: 1, o: 1 };
+    return animate(el, frames, { duration: 560, delay: delay, easing: "cubic-bezier(.25,.7,.3,1)", fill: "forwards" });
+  }
+
+  /* ---------- wordmark ---------- */
+  function splitLetters() {
+    if (!gameEl) return [];
+    var units = [];
+    Array.prototype.slice.call(gameEl.childNodes).forEach(function (node) {
+      if (node.nodeType === 3) {
+        node.textContent.split("").forEach(function (ch) {
+          var s = document.createElement("span");
+          s.className = "boot-letter"; s.textContent = ch; s.style.opacity = "0";
+          units.push(s); gameEl.appendChild(s);
+        });
+        node.remove();
+      } else if (node.nodeType === 1) {
+        node.classList.add("boot-letter"); node.style.opacity = "0";
+        units.push(node);
+      }
+    });
+    return units;
+  }
+  var PENTA = [523.25, 587.33, 659.25, 783.99, 880.0];
+  function landLetters(units, stagger, atMs) {
+    units.forEach(function (u, i) {
+      later(atMs + i * stagger, function () {
+        animate(u, [
+          { opacity: 0, transform: "translateY(-16px) scale(1.35)" },
+          { opacity: 1, transform: "translateY(2px) scale(0.98)", offset: 0.72 },
+          { opacity: 1, transform: "translateY(0) scale(1)" }
+        ], { duration: 300, easing: "cubic-bezier(.3,.8,.4,1)", fill: "forwards" });
+        pluck(PENTA[i % PENTA.length], 0, 0.45);
+      });
+    });
+  }
+  function sweepArcade(atMs) {
+    if (!arcadeEl) return;
+    later(atMs, function () {
+      arcadeEl.style.position = "relative"; arcadeEl.style.overflow = "hidden";
+      animate(arcadeEl, [
+        { opacity: 0, transform: "translateX(14px)" },
+        { opacity: 1, transform: "translateX(0)" }
+      ], { duration: 260, easing: "ease-out", fill: "forwards" });
+      var sw = document.createElement("span");
+      sw.className = "boot-sweep"; sw.style.left = "0px";
+      arcadeEl.appendChild(sw);
+      var a = animate(sw, [
+        { transform: "translateX(-140%) skewX(-18deg)" },
+        { transform: "translateX(340%) skewX(-18deg)" }
+      ], { duration: 620, easing: "ease-in-out", fill: "forwards" });
+      if (a && a.finished) a.finished.then(function () { sw.remove(); }).catch(function () {});
+      pluck(1318.5, 0, 0.6); pluck(1760, 0.05, 0.5);
+    });
+  }
+
+  /* ---------- cascade (B3) ---------- */
+  var GENRE_NOTES = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25];
+  function cascade(items, startMs, stepMs) {
+    var genreIdx = 0;
+    items.forEach(function (el, i) {
+      var at = startMs + i * stepMs;
+      var isTile = el.classList.contains("game-tile");
+      later(at, function () {
+        el.classList.remove(isTile ? "boot-pre-tile" : "boot-pre");
+        if (isTile) {
+          el.classList.add("boot-wire");
+          animate(el, [
+            { opacity: 0.25, transform: "translateY(12px) scale(.965)" },
+            { opacity: 1, transform: "translateY(0) scale(1)" }
+          ], { duration: 340, easing: "cubic-bezier(.3,.8,.4,1)", fill: "forwards" });
+          later(200, function () { el.classList.remove("boot-wire"); });
+        } else {
+          animate(el, [
+            { opacity: 0, transform: "translateY(8px) scale(.97)" },
+            { opacity: 1, transform: "translateY(0) scale(1)" }
+          ], { duration: 300, easing: "cubic-bezier(.3,.8,.4,1)", fill: "forwards" });
+        }
+        if (el.classList.contains("genre-head")) { pluck(GENRE_NOTES[genreIdx % GENRE_NOTES.length], 0, 0.55); genreIdx++; }
+        else if (i % 2 === 0) tick(0, 0.03);
+        if (el.id === "pointsChip") {
+          var coin = el.querySelector(".coin");
+          if (coin) { coin.classList.add("boot-flip"); later(600, function () { coin.classList.remove("boot-flip"); }); }
+          clink(0.15);
+        }
+      });
+    });
+    return startMs + items.length * stepMs;
+  }
+
+  /* ---------- mascot handover (B4) ---------- */
+  function handover(word, atMs) {
+    later(atMs, function () {
+      var dock = document.getElementById("mascotDock");
+      if (!dock) return;
+      var innerM = dock.querySelector(".masc-inner");
+      if (innerM) {
+        innerM.classList.remove("masc-routine-hop"); void innerM.offsetWidth;
+        innerM.classList.add("masc-routine-hop");
+        /* raw setTimeout on purpose: these cleanups belong to the
+           lobby's own life and must survive the boot's teardown */
+        setTimeout(function () { innerM.classList.remove("masc-routine-hop"); }, 1000);
+      }
+      var bubble = dock.querySelector(".masc-bubble");
+      if (bubble) {
+        bubble.textContent = word;
+        bubble.classList.add("show");
+        setTimeout(function () { bubble.classList.remove("show"); }, 2400);
+      }
+    });
+  }
+  function fadeOut(atMs) {
+    later(atMs, function () { overlay.classList.add("boot-fading"); });
+    /* The finish timer is armed NOW (absolute from boot start),
+       not nested inside the fade callback: if the main thread is
+       blocked past the watchdog's 2.8 s mark, an already-armed
+       2.68 s finish still wins the expiry race, and only a truly
+       stalled boot lets the watchdog be the one to complete it. */
+    var id = setTimeout(function () { finish(false); }, STALL ? atMs * 20 : atMs + 260);
+    timers.push(id);
+  }
+
+  /* ---------- variants ---------- */
+  function hideItems(items) {
+    items.forEach(function (el) {
+      el.classList.add(el.classList.contains("game-tile") ? "boot-pre-tile" : "boot-pre");
+      hiddenItems.push(el);
+    });
+  }
+
+  /* Reduced motion: no flight, no cascade — the masthead and the
+     發 glyph simply fade in (~0.4 s). Sound off. */
+  function runStatic() {
+    bootState.variant = "static";
+    overlay.style.pointerEvents = "none";
+    document.body.appendChild(overlay);
+    if (masthead) animate(masthead, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out", fill: "forwards" });
+    var mj = homeView.querySelector('.game-tile[aria-label="麻雀"] .glyph');
+    if (mj) animate(mj, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out", fill: "forwards" });
+    later(480, function () { finish(false); });
+  }
+
+  /* First-ever launch (~1.6 s): B0+B2+B4 only. The topbar —
+     including the language chip — is pre-built and visible from
+     frame 0 (standing first-launch rule); the swarm builds only
+     what is below it. */
+  function runShort() {
+    bootState.variant = "short";
+    var items = collectItems(false).filter(function (el) { return el !== masthead; });
+    hideItems(items);
+    homeView.classList.add("boot-dim");
+    document.body.appendChild(overlay);
+    var units = splitLetters();
+    if (arcadeEl) arcadeEl.style.opacity = "0";
+    landLetters(units, 45, 120);
+    sweepArcade(430);
+    var mh = masthead ? masthead.getBoundingClientRect() : { left: window.innerWidth / 2 - 100, top: 110, width: 200, height: 60 };
+    var cx = mh.left + mh.width / 2, cy = mh.top + mh.height / 2;
+    var swarm = [];
+    pickGlyphTiles().slice(0, 5).forEach(function (t, i, arr) {
+      var g = makeGlyph(t, 38); if (!g) return;
+      var a = (i / Math.max(1, arr.length)) * Math.PI * 2 - Math.PI / 2;
+      var x = cx + Math.cos(a) * Math.min(120, window.innerWidth * 0.3), y = cy + Math.sin(a) * 54;
+      g._bp = { x: x, y: y + 16, s: 0.6, o: 0 };
+      place(g, x, y + 16, 0.6, 0);
+      swarm.push(g);
+      later(500 + i * 40, function () { flyTo(g, x, y, 1, 1, 260, 0); });
+    });
+    cascade(items, 620, 22);
+    later(1240, function () {
+      var dock = document.getElementById("mascotDock");
+      var dr = dock ? dock.getBoundingClientRect() : null;
+      swarm.forEach(function (g, i) { if (dr) flyTo(g, dr.left + dr.width / 2, dr.top + dr.height / 2, 0.3, 0, 360, i * 45); });
+      chord(0.05); clink(0.2);
+    });
+    handover(HELLO[lang()] || HELLO.en, 1330);
+    fadeOut(1400);
+  }
+
+  /* Full variant (~2.6 s): B0 wipe → B1 gather → B2 wordmark →
+     B3 build → B4 handover. */
+  function runFull() {
+    bootState.variant = "full";
+    var items = collectItems(true);
+    hideItems(items);
+    homeView.classList.add("boot-dim");
+    document.body.appendChild(overlay);
+    tone({ f: 110, f2: 220, t: 0, dur: 0.32, vol: 0.035, type: "sine" }); /* power-on hum */
+    var units = splitLetters();
+    if (arcadeEl) arcadeEl.style.opacity = "0";
+    var mh = masthead ? masthead.getBoundingClientRect() : { left: window.innerWidth / 2 - 100, top: 110, width: 200, height: 60 };
+    var cx = mh.left + mh.width / 2, cy = mh.top + mh.height / 2;
+    var rx = Math.min(135, window.innerWidth * 0.30), ry = rx * 0.58;
+    var swarm = [];
+    pickGlyphTiles().forEach(function (t, i) {
+      var hero = i === 0;
+      var g = makeGlyph(t, hero ? 54 : 40);
+      if (!g) return;
+      var a = ((i - 1) / 13) * Math.PI * 2 - Math.PI / 2;
+      var ox = hero ? cx : cx + Math.cos(a) * rx;
+      var oy = hero ? cy : cy + Math.sin(a) * ry;
+      var rec = { el: g, x: ox, y: oy, tile: t, hero: hero };
+      swarm.push(rec);
+      spiralIn(g, cx, cy, ox, oy, 260 + i * 32);
+      later(260 + i * 32 + 520, function () { tick(0, 0.03 + i * 0.002); });
+    });
+    /* The 發 tile clacks in at the centre, then yields to the
+       wordmark as the letters land over it. */
+    later(920, function () {
+      clack(0);
+      if (swarm.length) flyTo(swarm[0].el, cx, cy, 1.45, 1, 170, 0);
+    });
+    later(1130, function () { if (swarm.length) flyTo(swarm[0].el, cx, cy, 1.05, 0, 280, 0); });
+    /* B2 wordmark */
+    later(980, function () { if (masthead) masthead.classList.remove("boot-pre"); });
+    landLetters(units, 72, 1000);
+    sweepArcade(1330);
+    later(1360, function () {
+      swarm.forEach(function (s) {
+        if (s.hero) return;
+        var dx = s.x - cx, dy = s.y - cy, m = Math.hypot(dx, dy) || 1;
+        s.x += dx / m * 30; s.y += dy / m * 30;
+        flyTo(s.el, s.x, s.y, 1, 1, 300, 0);
+      });
+    });
+    /* B3 build */
+    cascade(items.filter(function (el) { return el !== masthead; }), 1420, 30);
+    later(1500, function () {
+      var tileItems = items.filter(function (el) { return el.classList.contains("game-tile"); });
+      var keep = [];
+      swarm.forEach(function (s, i) {
+        if (s.hero) return;
+        if (i % 3 === 0 && keep.length < 5) { keep.push(s); return; }
+        var target = tileItems.length ? tileItems[(i * 5) % tileItems.length] : null;
+        if (target) {
+          var r = target.getBoundingClientRect();
+          flyTo(s.el, r.left + r.width / 2, r.top + r.height / 2, 0.5, 0, 520, i * 18);
+        }
+      });
+      swarm._keep = keep;
+      var dock = document.getElementById("mascotDock");
+      if (dock) {
+        var dr = dock.getBoundingClientRect();
+        keep.forEach(function (s, i) {
+          s.x = dr.left + dr.width / 2 + (i - 2) * 26;
+          s.y = dr.top - 34 - (i % 2) * 14;
+          flyTo(s.el, s.x, s.y, 0.8, 0.95, 620, 150 + i * 40);
+        });
+      }
+    });
+    /* B4 handover */
+    later(2180, function () {
+      var dock = document.getElementById("mascotDock");
+      var dr = dock ? dock.getBoundingClientRect() : null;
+      (swarm._keep || []).forEach(function (s, i) {
+        if (dr) flyTo(s.el, dr.left + dr.width / 2, dr.top + dr.height / 2, 0.25, 0, 330, i * 50);
+      });
+      chord(0.1); clink(0.28);
+    });
+    handover(WELCOME[lang()] || WELCOME.en, 2380);
+    fadeOut(2420);
+  }
+
+  if (reduced) runStatic();
+  else if (firstEver) runShort();
+  else runFull();
 })();
 </script>
 </body>
