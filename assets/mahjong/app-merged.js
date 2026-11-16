@@ -17,21 +17,44 @@
   });
   window.addEventListener("unhandledrejection", function (e) { var r = e && e.reason; log("unhandled: " + (r && r.message ? r.message : r)); });
   /* This static combined build has no server: the app's getData/saveData
-     actions (solo-mode settings & records) would otherwise hit ./actions
-     and fail with 403. Answer them locally with an empty result instead —
-     the app treats that exactly like "nothing saved yet" and keeps its
-     data in memory for the session, which is this build's documented
-     behaviour. All other requests go to the page's real fetch. */
+     actions (solo-mode settings, records and the mid-match resume
+     snapshot the app itself maintains) would otherwise hit ./actions
+     and fail with 403. They are therefore answered locally from
+     localStorage (2026-11-16 reload-persistence fix — previously the
+     shim answered { data: null } and silently DISCARDED every save,
+     which also kept the app's load gate closed, so its built-in
+     「対局の続きから再開」 resume could never engage):
+       - saveData stores args.json under a local key.
+       - getData returns { json: <stored> }, or { json: null } when
+         nothing is stored yet — the data must stay a truthy object,
+         because the app only enables its save effect after a
+         successful load.
+     All other requests go to the page's real fetch. */
+  var MJ_STORE_KEY = "arcade-mahjong-store-v1";
   var _origFetch = window.fetch ? window.fetch.bind(window) : null;
   if (_origFetch) {
     window.fetch = function (input, init) {
       try {
         var url = typeof input === "string" ? input : (input && input.url) || "";
         if (/\/actions([?#]|$)/.test(url)) {
-          return Promise.resolve(new Response(JSON.stringify({ data: null }), {
-            status: 200,
-            headers: { "content-type": "application/json" }
-          }));
+          var mjRespond = function (data) {
+            return Promise.resolve(new Response(JSON.stringify({ data: data }), {
+              status: 200,
+              headers: { "content-type": "application/json" }
+            }));
+          };
+          var mjBody = null;
+          try { mjBody = init && init.body ? JSON.parse(init.body) : null; } catch (e) {}
+          if (mjBody && mjBody.action === "saveData" && mjBody.args && typeof mjBody.args.json === "string") {
+            try { localStorage.setItem(MJ_STORE_KEY, mjBody.args.json); } catch (e) {}
+            return mjRespond(null);
+          }
+          if (mjBody && mjBody.action === "getData") {
+            var mjSaved = null;
+            try { mjSaved = localStorage.getItem(MJ_STORE_KEY); } catch (e) {}
+            return mjRespond({ json: mjSaved });
+          }
+          return mjRespond(null);
         }
       } catch (e) {}
       return _origFetch(input, init);
@@ -33054,8 +33077,8 @@ function gC() {
     let s = [0, 1, 2, 3].map(f => {
         let o = zy(f),
           l = f === 1 || f === 3,
-          c = l ? il : tp,
-          A = l ? tp : il;
+          c = l ? il : 0.92,
+          A = l ? 0.92 : il;
         return {
           x0: o.x - c / 2,
           x1: o.x + c / 2,
@@ -33089,24 +33112,73 @@ function r8() {
   if (typeof window > "u") return 2048;
   return Math.min(window.innerWidth, window.innerHeight) < 500 ? 1024 : 2048;
 }
+function __mjcpCode() {
+  let c = "";
+  try { c = window.arcadeLang ? window.arcadeLang() : ""; } catch (e) {}
+  if (!c) try { c = localStorage.getItem("arcade-lang") || ""; } catch (e) {}
+  return c;
+}
+function __mjcpL() {
+  let W = {
+      en: ["East", "South", "West", "North"],
+      ko: ["동", "남", "서", "북"],
+      zh: ["东", "南", "西", "北"],
+      zht: ["東", "南", "西", "北"],
+      es: ["Este", "Sur", "Oeste", "Norte"],
+      fr: ["Est", "Sud", "Ouest", "Nord"],
+      de: ["Ost", "Süd", "West", "Nord"],
+      pt: ["Leste", "Sul", "Oeste", "Norte"],
+      it: ["Est", "Sud", "Ovest", "Nord"]
+    },
+    K = { "東": 0, "南": 1, "西": 2, "北": 3 },
+    T = {
+      en: { you: "You · ", rest: ["Left", "tiles"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " honba · " + d + " deposits", diff: "Showing point differences (vs. you)", ri: d => "Riichi sticks ×" + d },
+      ko: { you: "당신·", rest: ["남음", "장"], rf: (w, n) => w + n + "국", hb: (h, d) => h + "본장 · 공탁 " + d, diff: "점수 차 표시 중 (당신과의 차이)", ri: d => "리치봉 ×" + d },
+      zh: { you: "你·", rest: ["剩余", "张"], rf: (w, n) => w + n + "局", hb: (h, d) => h + "本场 · 供托 " + d, diff: "分差显示中（与你的差）", ri: d => "立直棒 ×" + d },
+      zht: { you: "你·", rest: ["剩餘", "張"], rf: (w, n) => w + n + "局", hb: (h, d) => h + "本場 · 供託 " + d, diff: "分差顯示中（與你的差）", ri: d => "立直棒 ×" + d },
+      es: { you: "Tú · ", rest: ["Quedan", "fichas"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " honba · " + d + " depósitos", diff: "Diferencias de puntos (contigo)", ri: d => "Palitos riichi ×" + d },
+      fr: { you: "Toi · ", rest: ["Restants", "tuiles"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " honba · " + d + " dépôts", diff: "Écarts de points affichés (avec toi)", ri: d => "Bâtons riichi ×" + d },
+      de: { you: "Du · ", rest: ["Übrig", "Steine"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " Honba · " + d + " hinterlegt", diff: "Punktedifferenz angezeigt (zu dir)", ri: d => "Riichi-Stäbe ×" + d },
+      pt: { you: "Você · ", rest: ["Restantes", "peças"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " honba · " + d + " depósitos", diff: "Diferenças de pontos (em relação a você)", ri: d => "Palitos riichi ×" + d },
+      it: { you: "Tu · ", rest: ["Rimasti", "tessere"], rf: (w, n) => w + " " + n, hb: (h, d) => h + " honba · " + d + " depositi", diff: "Differenze punti mostrate (con te)", ri: d => "Bastoncini riichi ×" + d }
+    },
+    c = __mjcpCode(),
+    o = T[c];
+  if (!o) return null;
+  let w = W[c];
+  return {
+    you: o.you,
+    rest: o.rest,
+    diff: o.diff,
+    hb: o.hb,
+    ri: o.ri,
+    wind: ch => K[ch] !== void 0 ? w[K[ch]] : ch,
+    round: s => {
+      let m = /^([東南西北])(\d+)局$/.exec(s);
+      return m ? o.rf(w[K[m[1]]], m[2]) : s;
+    }
+  };
+}
 function f8(e, t = 2048) {
-  let n = document.createElement("canvas");
+  let ZL = __mjcpL(),
+    n = document.createElement("canvas");
   n.width = t, n.height = t;
   let i = n.getContext("2d");
-  i.scale(t / 2048, t / 2048), i.fillStyle = "#1c050a", i.fillRect(0, 0, 2048, 2048), i.strokeStyle = "#d4af37", i.lineWidth = 16, i.strokeRect(24, 24, 2000, 2000), i.strokeStyle = "rgba(212,175,55,0.5)", i.lineWidth = 5, i.strokeRect(58, 58, 1932, 1932), i.textAlign = "center", i.textBaseline = "middle", i.fillStyle = "#f5eeda", i.font = "bold 300px sans-serif", i.fillText(e.roundLabel, 1024, 330), i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText(`${e.honba}本場・供託${e.deposits}`, 1024, 512);
+  i.scale(t / 2048, t / 2048), i.fillStyle = "#1c050a", i.fillRect(0, 0, 2048, 2048), i.strokeStyle = "#d4af37", i.lineWidth = 16, i.strokeRect(24, 24, 2000, 2000), i.strokeStyle = "rgba(212,175,55,0.5)", i.lineWidth = 5, i.strokeRect(58, 58, 1932, 1932), i.textAlign = "center", i.textBaseline = "middle", i.fillStyle = "#f5eeda", i.font = "bold 300px sans-serif", i.fillText(ZL ? ZL.round(e.roundLabel) : e.roundLabel, 1024, 330), i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText(ZL ? ZL.hb(e.honba, e.deposits) : `${e.honba}本場・供託${e.deposits}`, 1024, 512);
   let s = 672;
   i.font = "bold 112px sans-serif";
-  let a = i.measureText("残り").width,
-    r = i.measureText("枚").width;
+  let a = i.measureText(ZL ? ZL.rest[0] : "残り").width,
+    r = i.measureText(ZL ? ZL.rest[1] : "枚").width;
   i.font = "bold 235px sans-serif";
   let f = i.measureText(String(e.remaining)).width,
     o = 28,
     c = 1024 - (a + o + f + o + r) / 2;
-  if (i.textAlign = "left", i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText("残り", c, s), c += a + o, i.font = "bold 235px sans-serif", i.fillStyle = "#ffffff", i.fillText(String(e.remaining), c, s + 6), c += f + o, i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText("枚", c, s), i.textAlign = "center", e.showDiff) i.font = "bold 84px sans-serif", i.fillStyle = "#fcd34d", i.fillText("点差表示中（あなたとの差）", 1024, 838);
-  if (e.deposits > 0) i.font = "bold 92px sans-serif", i.fillStyle = "#fda4af", i.fillText(`リーチ棒 ×${e.deposits}`, 1024, e.showDiff ? 952 : 838);
+  if (i.textAlign = "left", i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText(ZL ? ZL.rest[0] : "残り", c, s), c += a + o, i.font = "bold 235px sans-serif", i.fillStyle = "#ffffff", i.fillText(String(e.remaining), c, s + 6), c += f + o, i.font = "bold 112px sans-serif", i.fillStyle = "#f5f5f4", i.fillText(ZL ? ZL.rest[1] : "枚", c, s), i.textAlign = "center", e.showDiff) i.font = "bold 84px sans-serif", i.fillStyle = "#fcd34d", i.fillText(ZL ? ZL.diff : "点差表示中（あなたとの差）", 1024, 838);
+  if (e.deposits > 0) i.font = "bold 92px sans-serif", i.fillStyle = "#fda4af", i.fillText(ZL ? ZL.ri(e.deposits) : `リーチ棒 ×${e.deposits}`, 1024, e.showDiff ? 952 : 838);
   let A = (h, p, y, g) => {
     if (!h) return;
     let m = h.isSelf ? `あなた・${h.wind} ` : `${h.wind} `;
+    if (ZL) m = (h.isSelf ? ZL.you : "") + ZL.wind(h.wind) + " ";
     i.save(), i.translate(p, y), i.rotate(g), i.font = "bold 118px sans-serif";
     let d = i.measureText(m).width;
     i.font = "bold 168px sans-serif";
@@ -33194,6 +33266,66 @@ function d8(e) {
   });
   return t.size;
 }
+/* ARCADE shop tile-backs: the equipped design (drawn by the shell's
+   designs module via window.__mjBackDraw) is textured onto every
+   tile's "TileGreenBack" material — GLB templates here, the canvas
+   fallback tiles in dC — so opponents' standing tiles and the wall
+   show the real pattern (桜 petals / 青海波 waves / 黄金 crest), not
+   a tint. Re-equipping re-textures the live materials. */
+function __mjBackTex() {
+  try {
+    var id = window.__mjBackId && window.__mjBackId();
+    if (!id || !window.__mjBackDraw) return null;
+    var cv = document.createElement("canvas");
+    cv.width = 228; cv.height = 312;
+    var cx = cv.getContext("2d");
+    if (!cx) return null;
+    window.__mjBackDraw(cx, 228, 312, id);
+    var tx = new qo(cv);
+    tx.colorSpace = rs; tx.anisotropy = 8;
+    return tx;
+  } catch (e) { return null; }
+}
+function __mjBackApply(root) {
+  try {
+    /* Register every TileGreenBack material even when NO design is
+       equipped yet (tx null). The old early return meant templates
+       loaded before the player's first equip never registered, so
+       the equip-watch interval below had nothing to re-texture and
+       the table kept the plain green back forever (owner report
+       2026-11-14). Registration is harmless: with no design, the
+       material keeps its original map/color untouched. */
+    var tx = __mjBackTex();
+    if (!window.__mjMats) window.__mjMats = [];
+    root.traverse(function (n) {
+      if (!(n instanceof it)) return;
+      var ms = Array.isArray(n.material) ? n.material : [n.material];
+      for (var k = 0; k < ms.length; k++) {
+        var m = ms[k];
+        if (m && m.name === "TileGreenBack") {
+          if (m.userData.__mjOrig === undefined) m.userData.__mjOrig = m.color.getHex();
+          if (tx) { m.map = tx; m.color.set(16777215); m.needsUpdate = true; }
+          if (window.__mjMats.indexOf(m) < 0) window.__mjMats.push(m);
+        }
+      }
+    });
+  } catch (e) {}
+}
+var __mjLastId = "__init__";
+setInterval(function () {
+  try {
+    var id = window.__mjBackId ? window.__mjBackId() : null;
+    if (id === __mjLastId) return;
+    __mjLastId = id;
+    if (!window.__mjMats || !window.__mjMats.length) return;
+    var tx = __mjBackTex();
+    window.__mjMats.forEach(function (m) {
+      if (tx) { m.map = tx; m.color.set(16777215); }
+      else { m.map = null; if (m.userData.__mjOrig !== undefined) m.color.set(m.userData.__mjOrig); }
+      m.needsUpdate = true;
+    });
+  } catch (e) {}
+}, 1200);
 function dC(e) {
   let t = new ei(),
     n = new un({
@@ -33207,6 +33339,7 @@ function dC(e) {
     s = new it(new Bn(19, 26, 11), n);
   s.position.z = 2.5, t.add(s);
   let a = new it(new Bn(19, 26, 5), i);
+  try { var __btx = __mjBackTex(); if (__btx) { i.map = __btx; i.color.set(16777215); i.name = "TileGreenBack"; i.userData.__mjOrig = 1997364; if (!window.__mjMats) window.__mjMats = []; window.__mjMats.push(i); } } catch (e) {}
   a.position.z = -5.5, t.add(a);
   let r = p8[e];
   if (r) try {
@@ -33274,7 +33407,7 @@ function xC() {
             // tile. Count that as a failed load so the textured
             // fallback tile (dC) is used instead of a faceless model.
             if (d8(c) === 0) throw Error("tile face texture missing");
-            n.set(o, c), i++;
+            __mjBackApply(c), n.set(o, c), i++;
           } catch {
             Yh.push(o), n.set(o, dC(o));
           }
@@ -33503,7 +33636,7 @@ function sp(e) {
           return;
         }
         let K = r8(),
-          Be = `${K}|${JSON.stringify(oe)}`;
+          Be = `${K}|${__mjcpCode()}|${JSON.stringify(oe)}`;
         if (Be !== X) {
           X = Be;
           let he = new qo(f8(oe, K));
@@ -33560,7 +33693,9 @@ function sp(e) {
             vv.project(w), ht.push({
               i: he.handIndex,
               nx: vv.x,
-              ny: vv.y
+              ny: vv.y,
+              t: he.item ? he.item.t : -1,
+              red: he.item && he.item.red ? 1 : 0
             });
           }
           ht.sort((a, b) => a.i - b.i), window.__mjHandTiles = ht;
@@ -33689,12 +33824,12 @@ function sp(e) {
               yaw: at
             } = zy(he.playerIndex),
             vt = new ei(),
-            hn = new it(new Bn(tp, 0.028, il), new un({
+            hn = new it(new Bn(0.92, 0.028, il), new un({
               color: 16711422,
               roughness: 0.4
             }));
           hn.castShadow = !0, vt.add(hn);
-          let pn = new it(new Yo(0.02, 0.02, 0.032, 12), new un({
+          let pn = new it(new Yo(0.027, 0.027, 0.034, 12), new un({
             color: 14427686,
             roughness: 0.4
           }));
@@ -33706,9 +33841,9 @@ function sp(e) {
               x: He,
               z: At
             } = Hf(he, 0, 1.83),
-            at = new it(new Bn(1.5, 0.05, 0.07), new un({
-              color: 13938487,
-              emissive: 13938487,
+            at = new it(new Bn(1.1, 0.05, 0.07), new un({
+              color: 3127753,
+              emissive: 3127753,
               emissiveIntensity: 0.85,
               roughness: 0.3,
               metalness: 0.6
@@ -34116,7 +34251,7 @@ var $y = "solo-local",
       ...zn
     },
     preset: "雀魂式",
-    sound: !0,
+    sound: !1,
     bgm: !1,
     oneTap: !1,
     showGuide: !0,
@@ -38416,7 +38551,7 @@ function D8({
         "aria-hidden": !0,
         className: `${t ? "w-6 h-9" : "w-8 h-11"} inline-block rounded-[4px]`,
         style: {
-          background: "linear-gradient(180deg, #3fae5c 0%, #2e8b47 80%, #25753a 100%)",
+          background: (window.__mjBackCSSBg && window.__mjBackCSSBg()) || "linear-gradient(180deg, #3fae5c 0%, #2e8b47 80%, #25753a 100%)",
           boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.3)"
         }
       }, n.id);

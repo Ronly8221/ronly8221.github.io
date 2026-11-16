@@ -459,12 +459,214 @@ function chooseAiMove(state, difficulty) {
 }
 
 /* ============================================================
+   Education mode analysis — reuses the versus engine's own
+   search (no extra download). Scores are centipawns from the
+   side-to-move's point of view unless named *White.
+   ============================================================ */
+function searchRootBest(state, maxDepth, budget) {
+  const moves = legalMoves(state);
+  if (moves.length === 0) return null;
+  if (moves.length === 1) return { move: moves[0], score: evalMoveScore(state, moves[0], Math.max(1, maxDepth)) };
+  aiBudget = budget || 70000;
+  aiNodes = 0; aiStopped = false;
+  let best = null;
+  for (let depth = 1; depth <= maxDepth; depth++) {
+    const result = rootSearch(state, depth);
+    if (result) best = result;
+    if (aiStopped) break;
+  }
+  return best;
+}
+/* Exact full-window score of one candidate move, from the
+   mover's point of view, at the same depth the root search
+   uses — so a played move can be compared fairly with the
+   best move's score. */
+function evalMoveScore(state, move, depth) {
+  const next = applyMove(state, move);
+  aiNodes = 0; aiStopped = false; aiBudget = 70000;
+  const value = -search(next, Math.max(0, depth - 1), -Infinity, Infinity, 1);
+  if (aiStopped) {
+    const white = evaluateBoard(next);
+    return state.turn === "w" ? white : -white;
+  }
+  return value;
+}
+function effectiveLossCp(bestScore, afterScore) {
+  const M = MATE_SCORE - 5000;
+  if (bestScore > M && afterScore > M) return Math.max(0, Math.min(60, (bestScore - afterScore) * 10));
+  if (bestScore > M && afterScore <= M) return 800;
+  if (bestScore <= M && afterScore < -M) return 800;
+  if (afterScore > M) return 0;
+  return Math.max(0, bestScore - afterScore);
+}
+function formatEvalWhite(whiteScore) {
+  const M = MATE_SCORE - 5000;
+  if (whiteScore > M) {
+    const moves = Math.max(1, Math.ceil((MATE_SCORE - whiteScore) / 2));
+    return { text: "白に詰み筋（約" + moves + "手）", pct: 97 };
+  }
+  if (whiteScore < -M) {
+    const moves = Math.max(1, Math.ceil((MATE_SCORE + whiteScore) / 2));
+    return { text: "黒に詰み筋（約" + moves + "手）", pct: 3 };
+  }
+  const pawns = whiteScore / 100;
+  const pct = Math.max(4, Math.min(96, Math.round(100 / (1 + Math.exp(-whiteScore / 280)))));
+  const side = Math.abs(pawns) < 0.2 ? "互角" : whiteScore > 0 ? "白が有利" : "黒が有利";
+  return { text: (pawns > 0 ? "+" : "") + pawns.toFixed(1) + "（" + side + "）", pct };
+}
+function buildPvLine(state, firstMove, plies) {
+  const sans = [], lineMoves = [];
+  let cur = state;
+  for (let i = 0; i < plies; i++) {
+    if (legalMoves(cur).length === 0) break;
+    let mv = null;
+    if (i === 0 && firstMove) mv = firstMove;
+    else { const b = searchRootBest(cur, 2, 30000); if (!b) break; mv = b.move; }
+    sans.push(toSAN(cur, mv));
+    lineMoves.push(mv);
+    cur = applyMove(cur, mv);
+  }
+  return { sans, moves: lineMoves };
+}
+/* One short Japanese sentence on what a move does — used both
+   for "why is the best move good" and for praising a good
+   played move. */
+function moveReasonJa(state, move, next) {
+  const mover = state.turn;
+  const movedPiece = state.board[move.from];
+  const movedName = movedPiece ? PIECE_NAMES[kindOf(movedPiece)] : "駒";
+  if (isCheckmate(next)) return "チェックメイトになる決め手です。";
+  if (move.castle) return "キャスリングでキングを安全にし、ルークも働ける形にします。";
+  if (move.promotion) return "ポーンが" + PIECE_NAMES[move.promotion] + "に昇格します。";
+  const parts = [];
+  if (move.capture) {
+    const victimKind = move.enPassant ? "p" : (state.board[move.to] ? kindOf(state.board[move.to]) : "p");
+    if (!move.enPassant && isHanging(state, move.to)) {
+      return "相手の" + PIECE_NAMES[victimKind] + "は守られていないので、タダで取れます。";
+    }
+    parts.push("相手の" + PIECE_NAMES[victimKind] + "を取れます");
+  }
+  if (isInCheck(next, next.turn)) parts.push("チェックで相手のキングを追えます");
+  const targets = attackedEnemies(next, move, mover).filter((t) => t.kind !== "k");
+  if (targets.length >= 2) parts.push("2つの駒への両取り（フォーク）がかかります");
+  const pinned = pinnedVictim(next, move, mover);
+  if (pinned) parts.push("相手の" + PIECE_NAMES[pinned.kind] + "をキングにピン（釘付け）にします");
+  if (movedPiece && isHanging(state, move.from) && !isHanging(next, move.to)) {
+    parts.push("狙われていた" + movedName + "を安全なマスへ逃がします");
+  }
+  if (targets.length === 1 && isHanging(next, targets[0].sq) && CVAL[targets[0].kind] >= CVAL.n) {
+    parts.push("守られていない相手の" + PIECE_NAMES[targets[0].kind] + "を狙えます");
+  }
+  if (parts.length > 0) return parts.join("。") + "。";
+  const kind = movedPiece ? kindOf(movedPiece) : "p";
+  if (kind === "p") {
+    const f = fileOf(move.to), r = rankOf(move.to);
+    if ((f === 3 || f === 4) && (r === 3 || r === 4)) return "ポーンで中央（センター）を取ります。中央を押さえると駒が働きやすくなります。";
+  }
+  if ((kind === "n" || kind === "b") && state.fullmove <= 10) return "序盤の駒出し（展開）になります。軽い駒から出すのが基本です。";
+  return "エンジン評価で形勢をいちばん良く保てる手です。相手の応手まで読んだ流れは「なぜこの手？」で見られます。";
+}
+/* What the opponent's last move is aiming at: the player's
+   pieces under attack (hanging ones first), plus check. */
+function threatInfo(state, player, lastMove, lastWasOpponent) {
+  const lines = [], squares = [];
+  const opp = opponent(player);
+  if (isInCheck(state, player)) {
+    const kingSq = findKing(state.board, player);
+    if (kingSq >= 0) {
+      squares.push(kingSq);
+      const attackers = attackersOf(state, kingSq, opp)
+        .map((s) => PIECE_NAMES[kindOf(state.board[s])]);
+      lines.push("チェックされています — 相手の" + (attackers.join("と") || "駒") + "がキングを狙っています。まずチェックを外しましょう。");
+    }
+  }
+  if (lastWasOpponent && lastMove && state.board[lastMove.to]) {
+    const oppMovedName = PIECE_NAMES[kindOf(state.board[lastMove.to])];
+    const entries = [];
+    for (let sq = 0; sq < 64; sq++) {
+      const p = state.board[sq];
+      if (p == null || colorOf(p) !== player || kindOf(p) === "k") continue;
+      const attackers = attackersOf(state, sq, opp);
+      if (attackers.length === 0) continue;
+      const defenders = attackersOf(state, sq, player);
+      const hanging = defenders.length === 0;
+      const byMoved = attackers.indexOf(lastMove.to) >= 0;
+      /* Defended pieces the moved piece merely lines up on are
+         noise (a queen on h4 "attacks" half the board); a real
+         aim is a hanging piece, or one the opponent attacks
+         with more pieces than defend it. */
+      if (!hanging && !(byMoved && attackers.length > defenders.length)) continue;
+      entries.push({ sq, value: CVAL[kindOf(p)], name: PIECE_NAMES[kindOf(p)], hanging, byMoved });
+    }
+    entries.sort((a, b) => b.value - a.value);
+    for (const e of entries.slice(0, 3)) {
+      squares.push(e.sq);
+      lines.push("あなたの" + e.name + "（" + squareName(e.sq) + "）が狙われています"
+        + (e.hanging ? " — 守りがなく、このままだとタダで取られます。" : " — 相手が動かした" + oppMovedName + "も加わって、守りより攻めが多い状態です。"));
+    }
+  }
+  return { squares, lines };
+}
+/* Grade a played move against the pre-move analysis:
+   ◎ best / ○ good / ?! dubious / ? blunder, with one
+   concrete Japanese reason. */
+function judgeMoveJa(prev, move, next, ana) {
+  const bestMove = ana.bestMove;
+  const isBest = move.from === bestMove.from && move.to === bestMove.to
+    && (move.promotion || "") === (bestMove.promotion || "");
+  const afterScore = isBest ? ana.scorePOV : evalMoveScore(prev, move, 3);
+  const loss = isBest ? 0 : effectiveLossCp(ana.scorePOV, afterScore);
+  let grade, symbol, label;
+  if (isCheckmate(next) || loss <= 15) { grade = "best"; symbol = "◎"; label = "最善手"; }
+  else if (loss <= 60) { grade = "good"; symbol = "○"; label = "良手"; }
+  else if (loss <= 180) { grade = "dubious"; symbol = "?!"; label = "疑問手"; }
+  else { grade = "blunder"; symbol = "?"; label = "悪手"; }
+  let reason;
+  if (isCheckmate(next)) {
+    reason = "チェックメイトです。完璧な締めくくりでした。";
+  } else if (grade === "best" || grade === "good") {
+    const positive = moveReasonJa(prev, move, next);
+    reason = isBest
+      ? "内蔵エンジンの最善手と一致しました。" + positive
+      : grade === "best"
+        ? "最善手（" + ana.bestSan + "）と評価がほぼ同じ、最善級の手です。" + positive
+        : "最善手（" + ana.bestSan + "）とほぼ互角の良い手です。" + positive;
+  } else {
+    let specific = "";
+    const landed = next.board[move.to];
+    if (landed && kindOf(landed) !== "k" && isHanging(next, move.to) && CVAL[kindOf(landed)] >= CVAL.p) {
+      specific = "動かした" + PIECE_NAMES[kindOf(landed)] + "が " + squareName(move.to) + " で守られていません — タダで取られます。";
+    } else {
+      const oppBest = searchRootBest(next, 2, 30000);
+      if (oppBest) {
+        const oppSan = toSAN(next, oppBest.move);
+        const oppNext = applyMove(next, oppBest.move);
+        const victim = oppBest.move.capture ? next.board[oppBest.move.to] : null;
+        if (victim && isHanging(next, oppBest.move.to)) {
+          specific = "相手は " + oppSan + " で、守られていないあなたの" + PIECE_NAMES[kindOf(victim)] + "を取れます。";
+        } else if (isInCheck(oppNext, oppNext.turn)) {
+          specific = "相手に " + oppSan + " とチェックされます。";
+        } else if (bestMove.capture && isHanging(prev, bestMove.to)) {
+          const bk = kindOf(prev.board[bestMove.to] || "p");
+          specific = "最善手 " + ana.bestSan + " は、守られていない相手の" + PIECE_NAMES[bk] + "を取る手でした。";
+        } else {
+          specific = "相手の最善の応手は " + oppSan + " です。";
+        }
+      }
+    }
+    const lossText = loss >= 600 ? "6ポーン以上" : "約" + (loss / 100).toFixed(1) + "ポーン分";
+    reason = (specific ? specific + " " : "") + "最善手は " + ana.bestSan + " でした。（評価の損：" + lossText + "）";
+  }
+  return { grade, symbol, label, reason, loss, afterScore };
+}
+
+/* ============================================================
    Sound — tiny WebAudio effects, no audio files (from sound.ts).
    ============================================================ */
 const LS_MUTED = "chess-public-muted";
 let audioCtx = null;
-let muted = false;
-try { muted = window.localStorage.getItem(LS_MUTED) === "1"; } catch (e) { muted = false; }
+let muted = true; // ARCADE policy: silent until the player turns sound on in this game
+try { muted = window.localStorage.getItem(LS_MUTED) !== "0"; } catch (e) { muted = true; }
 function isMuted() { return muted; }
 function setMuted(value) {
   muted = value;
@@ -616,6 +818,131 @@ function pieceHTML(piece, lifted) {
 
 const PIECE_NAMES = { k: "キング", q: "クイーン", r: "ルーク", b: "ビショップ", n: "ナイト", p: "ポーン" };
 const LIGHT_SQ = "#cbd5e1", DARK_SQ = "#334155";
+/* Points-shop board themes: the equipped chess theme (bought with
+   ARCADE points) recolours the 2D board squares. Read live from the
+   points store on every render, so equipping applies at once. */
+const CHESS_BOARD_THEMES = { "chess-wood": ["#e8c39e", "#9a6a44"], "chess-marble": ["#f4f4f6", "#8d99ae"], "chess-neon": ["#d9f99d", "#0e7490"], "chess-obsidian": ["#c9c4d6", "#17171d"] };
+/* 3D board tint per theme: multiplies the board model's own texture
+   so the 3D board carries the same colour identity as the 2D one. */
+const CHESS_BOARD_TINTS = { "chess-wood": 0xf3d9b8, "chess-marble": 0xe9eef5, "chess-neon": 0xa8d8e6, "chess-obsidian": 0x8e8a9e };
+function chessThemeId() {
+  try { var s = JSON.parse(window.localStorage.getItem("arcade-points-v1") || "null"); var id = s && s.equipped && s.equipped.chess; if (id && CHESS_BOARD_THEMES[id]) return id; } catch (e) {}
+  return null;
+}
+function chessSqColors() {
+  var id = chessThemeId();
+  if (id) return CHESS_BOARD_THEMES[id];
+  return [LIGHT_SQ, DARK_SQ];
+}
+/* Procedural square textures: the themes are drawn surfaces, not flat
+   colours — wood grain streaks for 木目, mineral veining for 大理石,
+   a dark teal panel with a soft inner glow for ネオン (its glowing
+   grid edges are added as an inset shadow in render2D). Seeded, so a
+   square looks the same on every render and every device. */
+const __chessTexCache = {};
+function chessSeededRand(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function chessSqTexture(id, isLight) {
+  const key = id + (isLight ? "-L" : "-D");
+  if (__chessTexCache[key]) return __chessTexCache[key];
+  const cv = document.createElement("canvas"); cv.width = 128; cv.height = 128;
+  const x = cv.getContext("2d");
+  const rnd = chessSeededRand(id === "chess-wood" ? (isLight ? 7101 : 7102) : id === "chess-marble" ? (isLight ? 7201 : 7202) : id === "chess-obsidian" ? (isLight ? 7401 : 7402) : (isLight ? 7301 : 7302));
+  const base = CHESS_BOARD_THEMES[id][isLight ? 0 : 1];
+  x.fillStyle = base; x.fillRect(0, 0, 128, 128);
+  if (id === "chess-wood") {
+    for (let i = 0; i < 30; i++) {
+      const y0 = rnd() * 128, amp = 1.5 + rnd() * 3.5, dark = rnd() > 0.38;
+      x.strokeStyle = dark ? "rgba(84,50,18," + (0.10 + rnd() * 0.16) + ")" : "rgba(255,236,200," + (0.08 + rnd() * 0.10) + ")";
+      x.lineWidth = 0.8 + rnd() * 2.0;
+      x.beginPath(); x.moveTo(-4, y0);
+      x.bezierCurveTo(36, y0 + amp, 88, y0 - amp, 132, y0 + amp * 0.5); x.stroke();
+    }
+    for (let k = 0; k < 2; k++) {
+      const kx = 20 + rnd() * 88, ky = 20 + rnd() * 88;
+      x.strokeStyle = "rgba(84,50,18,0.30)"; x.lineWidth = 1.4;
+      x.beginPath(); x.ellipse(kx, ky, 3.5 + rnd() * 3, 6 + rnd() * 5, 0.4, 0, Math.PI * 2); x.stroke();
+    }
+  } else if (id === "chess-marble") {
+    const blotch = x.createRadialGradient(34, 30, 6, 34, 30, 95);
+    blotch.addColorStop(0, isLight ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.20)");
+    blotch.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = blotch; x.fillRect(0, 0, 128, 128);
+    for (let v = 0; v < 7; v++) {
+      let px = rnd() * 128, py = -6;
+      x.strokeStyle = v % 3 === 0 ? "rgba(52,60,80," + (0.28 + rnd() * 0.2) + ")" : "rgba(255,255,255," + (0.30 + rnd() * 0.25) + ")";
+      x.lineWidth = v % 3 === 0 ? 1.5 : 1.0;
+      x.beginPath(); x.moveTo(px, py);
+      while (py < 134) { py += 16 + rnd() * 20; px += (rnd() - 0.5) * 34; x.lineTo(px, py); }
+      x.stroke();
+    }
+  } else if (id === "chess-neon") {
+    if (isLight) {
+      const gl = x.createLinearGradient(0, 0, 128, 128);
+      gl.addColorStop(0, "#e7ffb0"); gl.addColorStop(1, "#bef264");
+      x.fillStyle = gl; x.fillRect(0, 0, 128, 128);
+    } else {
+      const gd = x.createRadialGradient(64, 64, 8, 64, 64, 96);
+      gd.addColorStop(0, "#0b3d4a"); gd.addColorStop(1, "#041e28");
+      x.fillStyle = gd; x.fillRect(0, 0, 128, 128);
+      x.strokeStyle = "rgba(103,232,249,0.20)"; x.lineWidth = 1.2;
+      for (let c = 0; c < 4; c++) {
+        const y0 = 18 + rnd() * 92;
+        x.beginPath(); x.moveTo(6, y0); x.lineTo(44 + rnd() * 30, y0); x.lineTo(60 + rnd() * 30, y0 + (rnd() > 0.5 ? 14 : -14)); x.stroke();
+        x.fillStyle = "rgba(103,232,249,0.5)";
+        x.beginPath(); x.arc(8 + rnd() * 112, y0, 2.2, 0, Math.PI * 2); x.fill();
+      }
+    }
+  } else if (id === "chess-obsidian") {
+    /* Obsidian glass: a deep (or pale, on light squares) polished
+       stone with gold kintsugi-style crack veins running through
+       it and a soft diagonal sheen over the top. */
+    if (isLight) {
+      const gl2 = x.createLinearGradient(0, 0, 128, 128);
+      gl2.addColorStop(0, "#d8d3e4"); gl2.addColorStop(1, "#a49db8");
+      x.fillStyle = gl2; x.fillRect(0, 0, 128, 128);
+    } else {
+      const gd2 = x.createRadialGradient(40, 34, 6, 64, 64, 110);
+      gd2.addColorStop(0, "#2c2c38"); gd2.addColorStop(1, "#0a0a10");
+      x.fillStyle = gd2; x.fillRect(0, 0, 128, 128);
+    }
+    for (let v = 0; v < 4; v++) {
+      let px = rnd() * 128, py = -4;
+      x.strokeStyle = "rgba(212,175,55," + (isLight ? 0.35 + rnd() * 0.25 : 0.5 + rnd() * 0.3) + ")";
+      x.lineWidth = 1.6;
+      x.beginPath(); x.moveTo(px, py);
+      const pts = [[px, py]];
+      while (py < 132) { py += 14 + rnd() * 18; px += (rnd() - 0.5) * 40; x.lineTo(px, py); pts.push([px, py]); }
+      x.stroke();
+      /* a thin branch cracks off one joint of the main vein */
+      const j = pts[1 + Math.floor(rnd() * Math.max(1, pts.length - 1))];
+      if (j) {
+        x.strokeStyle = "rgba(212,175,55," + (isLight ? 0.28 : 0.4) + ")";
+        x.lineWidth = 0.9;
+        x.beginPath(); x.moveTo(j[0], j[1]);
+        x.lineTo(j[0] + (rnd() - 0.5) * 52, j[1] + 12 + rnd() * 22);
+        x.stroke();
+      }
+      x.fillStyle = "rgba(247,224,138," + (isLight ? 0.5 : 0.8) + ")";
+      x.beginPath(); x.arc(pts[pts.length - 1][0], 126, 1.8, 0, Math.PI * 2); x.fill();
+    }
+    const sheen = x.createLinearGradient(0, 0, 128, 128);
+    sheen.addColorStop(0.3, "rgba(255,255,255,0)");
+    sheen.addColorStop(0.5, isLight ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.13)");
+    sheen.addColorStop(0.68, "rgba(255,255,255,0)");
+    x.fillStyle = sheen; x.fillRect(0, 0, 128, 128);
+  }
+  const url = cv.toDataURL("image/png");
+  __chessTexCache[key] = url;
+  return url;
+}
 
 /* ============================================================
    Board view — 2D slate board + optional 3D board (Poly Haven
@@ -691,9 +1018,11 @@ function displayPos(sq, orientation) {
 }
 function createBoardView(wrapEl, onSquareTap) {
   wrapEl.innerHTML = '<div class="board-grid"></div>'
-    + '<div class="board3d-wrap" hidden><div class="board3d-loading">3Dモデルを読み込み中…</div></div>';
+    + '<div class="board3d-wrap" hidden><div class="board3d-loading">3Dモデルを読み込み中…</div></div>'
+    + '<svg class="edu-arrow-svg" viewBox="0 0 8 8" aria-hidden="true" style="display:none"></svg>';
   const grid = wrapEl.children[0];
   const wrap3d = wrapEl.children[1];
+  const arrowSvg = wrapEl.children[2];
   wrap3d.tabIndex = 0;
   wrap3d.setAttribute("role", "group");
   wrap3d.setAttribute("aria-label", "3D盤面。矢印キーでマスを選び、Enterで駒の選択と移動ができます。ドラッグで回転できます。");
@@ -717,6 +1046,7 @@ function createBoardView(wrapEl, onSquareTap) {
       try { window.localStorage.setItem(LS_VIEW, mode); } catch (e) {}
       const is3D = mode === "3d";
       grid.style.display = is3D ? "none" : "";
+      if (is3D) arrowSvg.style.display = "none";
       wrap3d.hidden = !is3D;
       if (is3D) { ensure3D(); if (view.lastOpts) render3D(view.lastOpts); startLoop(); view.focus3D(); }
       else { stopLoop(); if (view.lastOpts) render2D(view.lastOpts); }
@@ -750,11 +1080,38 @@ function createBoardView(wrapEl, onSquareTap) {
   });
 
   /* ---------------- 2D rendering (original behaviour) ---------------- */
+  function drawEduArrow(opts) {
+    const arrow = opts.bestArrow;
+    if (!arrow || arrow.from == null || arrow.to == null || arrow.from === arrow.to) {
+      arrowSvg.style.display = "none";
+      arrowSvg.innerHTML = "";
+      return;
+    }
+    const a = displayPos(arrow.from, opts.orientation);
+    const b = displayPos(arrow.to, opts.orientation);
+    const x1 = a.col + 0.5, y1 = a.row + 0.5, x2 = b.col + 0.5, y2 = b.row + 0.5;
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len, uy = dy / len;
+    const ex = x2 - ux * 0.30, ey = y2 - uy * 0.30;
+    const px = -uy, py = ux;
+    const head = 0.30, half = 0.17;
+    const hx = x2 - ux * 0.06, hy = y2 - uy * 0.06;
+    arrowSvg.innerHTML =
+      '<line x1="' + x1.toFixed(2) + '" y1="' + y1.toFixed(2) + '" x2="' + ex.toFixed(2) + '" y2="' + ey.toFixed(2)
+      + '" stroke="#34d399" stroke-width="0.17" stroke-linecap="round" opacity="0.92"/>'
+      + '<polygon points="' + hx.toFixed(2) + "," + hy.toFixed(2) + " "
+      + (hx - ux * head + px * half).toFixed(2) + "," + (hy - uy * head + py * half).toFixed(2) + " "
+      + (hx - ux * head - px * half).toFixed(2) + "," + (hy - uy * head - py * half).toFixed(2)
+      + '" fill="#34d399" opacity="0.95"/>';
+    arrowSvg.style.display = "";
+  }
   function render2D(opts) {
     wrapEl.querySelectorAll(".glide-el").forEach((el) => el.remove());
     const state = opts.state, orientation = opts.orientation;
     const targetBySquare = new Map();
     for (const m of opts.targets || []) targetBySquare.set(m.to, m);
+    const threatSet = new Set(opts.threatSquares || []);
     grid.innerHTML = "";
     let glideEl = null;
     for (let row = 0; row < 8; row++) {
@@ -768,22 +1125,32 @@ function createBoardView(wrapEl, onSquareTap) {
         const isSelected = opts.selected === sq;
         const isLast = opts.lastMove && (opts.lastMove.from === sq || opts.lastMove.to === sq);
         const isCheck = opts.checkSquare === sq;
+        const isThreat = threatSet.has(sq);
         const isStar = opts.starSquare === sq;
         const hidePiece = view.glide && view.glide.to === sq;
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "cell";
         btn.disabled = !!opts.disabled;
-        btn.style.backgroundColor = isLight ? LIGHT_SQ : DARK_SQ;
+        var sqc = chessSqColors(); btn.style.backgroundColor = isLight ? sqc[0] : sqc[1];
+        var __ctid = chessThemeId();
+        if (__ctid) {
+          btn.style.backgroundImage = 'url("' + chessSqTexture(__ctid, isLight) + '")';
+          btn.style.backgroundSize = "cover";
+          if (__ctid === "chess-neon") btn.style.boxShadow = isLight ? "inset 0 0 0 1.5px rgba(190,242,100,0.85), inset 0 0 12px rgba(163,230,53,0.35)" : "inset 0 0 0 2px rgba(103,232,249,0.9), inset 0 0 16px rgba(34,211,238,0.55)";
+          if (__ctid === "chess-obsidian") btn.style.boxShadow = isLight ? "inset 0 0 0 1.5px rgba(212,175,55,0.55), inset 0 0 10px rgba(255,255,255,0.25)" : "inset 0 0 0 2px rgba(212,175,55,0.65), inset 0 0 14px rgba(212,175,55,0.18)";
+        }
         if (isSelected) btn.style.boxShadow = "inset 0 0 0 3px #38bdf8, inset 0 0 14px rgba(56,189,248,0.55)";
         else if (isStar) btn.style.boxShadow = "inset 0 0 0 3px #fbbf24, inset 0 0 16px rgba(251,191,36,0.6)";
         const labelParts = [squareName(sq)];
         if (piece) labelParts.push((colorOf(piece) === "w" ? "白" : "黒") + "の" + PIECE_NAMES[kindOf(piece)]);
+        if (isThreat) labelParts.push("相手に狙われています");
         if (target) labelParts.push("ここへ動かせます");
         btn.setAttribute("aria-label", labelParts.join(" "));
         let html = "";
         if (isLast) html += '<span class="lastmove"></span>';
         if (isCheck) html += '<span class="checkpulse"></span>';
+        if (isThreat && !isCheck) html += '<span class="threatring"></span>';
         if (col === 0) html += '<span class="coord rank" style="color:' + (isLight ? "#475569" : "#cbd5e1") + '">' + (rank + 1) + "</span>";
         if (row === 7) html += '<span class="coord file" style="color:' + (isLight ? "#475569" : "#cbd5e1") + '">' + "abcdefgh"[file] + "</span>";
         if (piece && !hidePiece) html += '<span class="piece-holder">' + pieceHTML(piece, isSelected) + "</span>";
@@ -796,6 +1163,7 @@ function createBoardView(wrapEl, onSquareTap) {
         cellEls[sq] = btn;
       }
     }
+    drawEduArrow(opts);
     if (view.glide) {
       glideEl = document.createElement("div");
       glideEl.className = "glide-el";
@@ -902,6 +1270,17 @@ function createBoardView(wrapEl, onSquareTap) {
       }).then((tpl) => {
         if (!g3) return;
         const boardObj = tpl.board.clone(true);
+        try {
+          const __tid = chessThemeId();
+          if (__tid && CHESS_BOARD_TINTS[__tid]) {
+            boardObj.traverse((o) => {
+              if (o && o.material) {
+                const mats = Array.isArray(o.material) ? o.material : [o.material];
+                for (const m of mats) { if (m && m.color) m.color.setHex(CHESS_BOARD_TINTS[__tid]); }
+              }
+            });
+          }
+        } catch (e) {}
         boardGroup.add(boardObj);
         g3.templates = tpl;
         g3.ready = true;
@@ -1014,6 +1393,13 @@ function createBoardView(wrapEl, onSquareTap) {
       if (m.capture) addHl(m.to, flatPlane(SQ3, 0xf43f5e, 0.9, true), 0.003);
       else addHl(m.to, flatPlane(SQ3 * 0.34, 0x34d399, 0.95, false), 0.003);
     }
+    for (const tsq of opts.threatSquares || []) {
+      addHl(tsq, flatPlane(SQ3 * 0.98, 0xf43f5e, 0.42, null), 0.0029);
+    }
+    if (opts.bestArrow && opts.bestArrow.from !== opts.bestArrow.to) {
+      addHl(opts.bestArrow.from, flatPlane(SQ3 * 0.98, 0x34d399, 0.30, null), 0.0031);
+      addHl(opts.bestArrow.to, flatPlane(SQ3, 0x34d399, 0.9, true), 0.0033);
+    }
     if (view.focusSq != null && view.focusSq >= 0) {
       addHl(view.focusSq, flatPlane(SQ3, 0xffffff, 0.95, true), 0.0036);
     }
@@ -1062,6 +1448,39 @@ function createBoardView(wrapEl, onSquareTap) {
     if (g3 && g3.raf) { cancelAnimationFrame(g3.raf); g3.raf = 0; }
   }
 
+  // GPU teardown for the shell's leave-game policy (see releaseGame in
+  // the shell): a built 3D board otherwise stays resident for the whole
+  // session, and accumulated WebGL residency across games is what gets
+  // the page killed mid-play under memory pressure. The game state is
+  // plain JS and untouched; the module-level GLB template cache keeps
+  // the decoded models, and three.js dispose() only frees GPU buffers
+  // (CPU-side data re-uploads on demand), so the next render3D() call
+  // rebuilds this board via ensure3D() exactly as the first open did.
+  view.release3D = function () {
+    if (!g3) return;
+    stopLoop();
+    const old = g3;
+    g3 = null;
+    try {
+      old.scene.traverse((o) => {
+        if (o.geometry) { try { o.geometry.dispose(); } catch (e) {} }
+        if (o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach((m) => {
+            for (const k in m) { const v = m[k]; if (v && v.isTexture) { try { v.dispose(); } catch (e) {} } }
+            try { m.dispose(); } catch (e) {}
+          });
+        }
+      });
+    } catch (e) {}
+    try { old.controls.dispose(); } catch (e) {}
+    try { old.renderer.dispose(); } catch (e) {}
+    try { if (typeof old.renderer.forceContextLoss === "function") old.renderer.forceContextLoss(); } catch (e) {}
+    if (old.renderer.domElement && old.renderer.domElement.parentNode) old.renderer.domElement.parentNode.removeChild(old.renderer.domElement);
+    loadingEl.hidden = false;
+    loadingEl.textContent = "3Dモデルを読み込み中…";
+  };
+
   boardViewRegistry.push(view);
   if (view.mode === "3d") view.setViewMode("3d");
   return view;
@@ -1087,6 +1506,25 @@ function initViewToggle(root, boardView) {
   });
   refreshViewToggleUI();
 }
+
+/* Shell leave-game hook: release every board's 3D scene when the
+   player leaves the chess view (the game itself, 2D or 3D state
+   included, is untouched — see view.release3D). Rebuilding needs a
+   trigger on return, because a released 3D board has no canvas to
+   tap: watch the shell view's .open class (the same pattern the
+   retro module uses) and re-run setViewMode("3d"), which re-ensures
+   the scene, re-renders the last position, and restarts the loop. */
+window.__chessRelease3D = function () {
+  for (const v of boardViewRegistry) { if (v.release3D) { try { v.release3D(); } catch (e) {} } }
+};
+(function () {
+  const chessViewEl = document.getElementById("chessView");
+  if (!chessViewEl || !window.MutationObserver) return;
+  new MutationObserver(function () {
+    if (!chessViewEl.classList.contains("open")) return;
+    for (const v of boardViewRegistry) { if (v.mode === "3d") { try { v.setViewMode("3d"); } catch (e) {} } }
+  }).observe(chessViewEl, { attributes: true, attributeFilter: ["class"] });
+})();
 
 /* Promotion picker + confetti (fx.tsx). */
 function showPromotionPicker(wrapEl, color, onPick, onCancel) {
@@ -1262,7 +1700,7 @@ function createTapMove(getState, isEnabled, onMove, onIllegalTap, renderFn) {
 const PUZZLES = [
   {
     id: "opera-mate-2",
-    title: "第1問 — 2手で詰み",
+    title: "deflection（守りの駒を逸らす）",
     intro: "白の手番。2手で黒を詰ませる手があります。駒をタップして、自分で動かして解いてみましょう。",
     source: "パリ・オペラ座、1858年（Opera Mate）の最終局面",
     theme: "deflection（守りの駒を逸らす）",
@@ -1284,7 +1722,7 @@ const PUZZLES = [
   },
   {
     id: "backrank-decoy-2",
-    title: "第2問 — 2手で詰み",
+    title: "おとりの犠牲とバックランク",
     intro: "白の手番。黒のキングは自分のポーンに囲まれて、身動きが取れません。2手で詰ませてみましょう。",
     source: "バックランク（最終段）の詰みを題材にした作題局面（python-chess で一意解を検証済み）",
     theme: "おとりの犠牲とバックランク",
@@ -1306,7 +1744,7 @@ const PUZZLES = [
   },
   {
     id: "smothered-2",
-    title: "第3問 — 2手で詰み",
+    title: "窒息詰み（スモザードメイト）",
     intro: "白の手番。黒のキングは角っこで自分の駒に囲まれています。2手で詰ませてみましょう。",
     source: "窒息詰み（スモザードメイト）を題材にした作題局面（python-chess で一意解を検証済み）",
     theme: "窒息詰み（スモザードメイト）",
@@ -1328,7 +1766,7 @@ const PUZZLES = [
   },
   {
     id: "2026-10-26-mate2-queen-rook",
-    title: "第4問 — 2手で詰み",
+    title: "クイーンとルークの詰み",
     intro: "白の手番。黒のキングの逃げ場を数えてみましょう。2手で詰ませてみましょう。",
     source: "毎日のクイズ 2026-10-26 出題分（python-chess で検証済み）",
     theme: "クイーンとルークの詰み",
@@ -1350,7 +1788,7 @@ const PUZZLES = [
   },
   {
     id: "2026-10-27-mate2-bishop-block",
-    title: "第5問 — 2手で詰み",
+    title: "合駒の強制とそらし",
     intro: "白の手番。黒のキングには安全なマスがほとんどありません。2手で詰ませてみましょう。",
     source: "毎日のクイズ 2026-10-27 出題分（python-chess で検証済み：初手は唯一手、応手は強制、詰み手も唯一）",
     theme: "合駒の強制とそらし",
@@ -1372,7 +1810,7 @@ const PUZZLES = [
   },
   {
     id: "2026-10-28-mate2-remove-guard",
-    title: "第6問 — 2手で詰み",
+    title: "守りの駒の除去",
     intro: "白の手番。詰ませたいマスを守っている駒に目をつけましょう。2手で詰ませてみましょう。",
     source: "毎日のクイズ 2026-10-28 出題分（python-chess で検証済み）",
     theme: "守りの駒の除去",
@@ -1394,7 +1832,7 @@ const PUZZLES = [
   },
   {
     id: "2026-10-29-mate2-corner-bishop",
-    title: "第7問 — 2手で詰み",
+    title: "隅への追い込み",
     intro: "白の手番。黒のキングは盤の端にいます。隅まで追い込んでみましょう。2手で詰ませてみましょう。",
     source: "毎日のクイズ 2026-10-29 出題分（python-chess で検証済み）",
     theme: "隅への追い込み",
@@ -1416,7 +1854,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-queen-rook-net",
-    title: "第8問 — 2手で詰み",
+    title: "クイーンとルークの連携",
     intro: "白の手番。クイーンとルークの連携で詰ませます。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "クイーンとルークの連携",
@@ -1438,7 +1876,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-bishop-queen-corner",
-    title: "第9問 — 2手で詰み",
+    title: "隅のキングへの詰み",
     intro: "白の手番。黒のキングは盤の端に寄っています。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "隅のキングへの詰み",
@@ -1460,7 +1898,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-capture-queen",
-    title: "第10問 — 2手で詰み",
+    title: "強い駒の除去",
     intro: "白の手番。黒には強いクイーンがいますが、それがかえって弱点になります。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "強い駒の除去",
@@ -1482,7 +1920,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-bishop-finish",
-    title: "第11問 — 2手で詰み",
+    title: "ビショップの詰み",
     intro: "白の手番。最後に詰ませるのは、静かに待っているビショップです。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "ビショップの詰み",
@@ -1504,7 +1942,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-knight-support",
-    title: "第12問 — 2手で詰み",
+    title: "ナイトに守られたクイーンの詰み",
     intro: "白の手番。盤の中央でも、守りがあればクイーンは詰ませられます。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "ナイトに守られたクイーンの詰み",
@@ -1526,7 +1964,7 @@ const PUZZLES = [
   },
   {
     id: "pool-mate2-pawn-capture",
-    title: "第13問 — 2手で詰み",
+    title: "ポーンを取りながらのチェック",
     intro: "白の手番。駒を取りながらチェックできる手があります。2手で詰ませてみましょう。",
     source: "検証済み候補プールより（python-chess で一意解を検証済み）",
     theme: "ポーンを取りながらのチェック",
@@ -1548,7 +1986,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-twqrg",
-    title: "第14問 — 2手で詰み",
+    title: "合駒を取るバックランク",
     intro: "白の手番。最終段の詰みが見えますが、黒にも受ける駒があります。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: TwqrG、Rating 849、python-chess で検証済み）",
     theme: "合駒を取るバックランク",
@@ -1570,7 +2008,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-sq6sx",
-    title: "第15問 — 2手で詰み",
+    title: "合駒を取る詰み",
     intro: "白の手番。隅へのクイーンのチェックが決め手です。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: sQ6sx、Rating 958、python-chess で検証済み）",
     theme: "合駒を取る詰み",
@@ -1592,7 +2030,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-vweuq",
-    title: "第16問 — 2手で詰み",
+    title: "ポーンの盾を崩すチェック",
     intro: "白の手番。黒のキングはポーンの盾の後ろにいます。その盾を崩しましょう。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: vwEUQ、Rating 994、python-chess で検証済み）",
     theme: "ポーンの盾を崩すチェック",
@@ -1614,7 +2052,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-5usup",
-    title: "第17問 — 2手で詰み",
+    title: "ナイトのチェックとルークの詰み",
     intro: "白の手番。ナイトのチェックとルークの詰み、2つの駒の連携です。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: 5USup、Rating 1066、python-chess で検証済み）",
     theme: "ナイトのチェックとルークの詰み",
@@ -1636,7 +2074,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-xtq4m",
-    title: "第18問 — 2手で詰み",
+    title: "ポーンを取りながらのチェック",
     intro: "白の手番。ポーンを取りながらのクイーンのチェックが決め手です。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: xtq4M、Rating 1067、python-chess で検証済み）",
     theme: "ポーンを取りながらのチェック",
@@ -1658,7 +2096,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-vwffb",
-    title: "第19問 — 2手で詰み",
+    title: "ナイトの犠牲でファイルを開く",
     intro: "白の手番。ルークの通り道をふさいでいるのは、相手のポーンです。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: vwFfB、Rating 1119、python-chess で検証済み）",
     theme: "ナイトの犠牲でファイルを開く",
@@ -1680,7 +2118,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-vwdtu",
-    title: "第20問 — 2手で詰み",
+    title: "ルークのチェックで追い出す",
     intro: "白の手番。端のルークのチェックで、キングを追い出しましょう。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: vwDtu、Rating 1228、python-chess で検証済み）",
     theme: "ルークのチェックで追い出す",
@@ -1702,7 +2140,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-osm21",
-    title: "第21問 — 2手で詰み",
+    title: "ナイトのチェックと合駒取り",
     intro: "白の手番。キングが動けない局面です。ナイトのチェックが決め手になります。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: osM21、Rating 1289、python-chess で検証済み）",
     theme: "ナイトのチェックと合駒取り",
@@ -1724,7 +2162,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-vwfiw",
-    title: "第22問 — 2手で詰み",
+    title: "クイーンの犠牲とバックランク",
     intro: "白の手番。クイーンを捨てる手が、最終段への扉を開きます。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: vwFiW、Rating 1299、python-chess で検証済み）",
     theme: "クイーンの犠牲とバックランク",
@@ -1746,7 +2184,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-sq578",
-    title: "第23問 — 2手で詰み",
+    title: "合駒を取るバックランク",
     intro: "白の手番。最終段へのチェックに、黒は最強の駒で受けてきます。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: sQ578、Rating 1380、python-chess で検証済み）",
     theme: "合駒を取るバックランク",
@@ -1768,7 +2206,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-twpdp",
-    title: "第24問 — 2手で詰み",
+    title: "ナイトのチェック",
     intro: "白の手番。キングに届かない場所から、ナイトがチェックをかけます。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: TwpDp、Rating 1393、python-chess で検証済み）",
     theme: "ナイトのチェック",
@@ -1790,7 +2228,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-1rxce",
-    title: "第25問 — 2手で詰み",
+    title: "合駒を取る詰み",
     intro: "白の手番。チェック、合駒、取り返して詰み — 覚えておきたい基本の型です。2手で詰ませてみましょう。",
     source: "Lichess パズル（PuzzleId: 1RxcE、Rating 1474、python-chess で検証済み）",
     theme: "合駒を取る詰み",
@@ -1812,7 +2250,7 @@ const PUZZLES = [
   },
   {
     id: "2026-10-30-mate2-knight-guard",
-    title: "第26問 — 2手で詰み",
+    title: "ナイトに守られたクイーンの詰み",
     intro: "白の手番。黒のクイーンを取るチェックから、ナイトに守られたクイーンで詰ませよう。",
     source: "毎日のクイズ 2026-10-30 出題分（python-chess で検証済み）",
     theme: "ナイトに守られたクイーンの詰み",
@@ -1834,7 +2272,7 @@ const PUZZLES = [
   },
   {
     id: "2026-11-02-mate2-rook-two-mates",
-    title: "第27問 — 2手で詰み",
+    title: "クイーンのチェックとルークの詰み分け",
     intro: "白の手番。クイーンのチェックで黒キングを盤の端へ追い込む2手詰めです。キングの行き先によって、ルークの詰み方が変わります。",
     source: "毎週のクイズ 2026-11-02 出題分（python-chess で検証済み）",
     theme: "クイーンのチェックとルークの詰み分け",
@@ -1848,7 +2286,7 @@ const PUZZLES = [
   },
   {
     id: "2026-11-09-mate2-split-mates",
-    title: "第28問 — 2手で詰み",
+    title: "ルークのチェックと詰み手の振り分け",
     intro: "白の手番。ルークのチェックで黒キングを左右に振り分けよう。キングの行き先によって、詰ませる駒が変わります。",
     source: "毎日のクイズ 2026-11-09 出題分（python-chess で検証済み）",
     theme: "ルークのチェックと詰み手の振り分け",
@@ -1862,7 +2300,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-cjiep",
-    title: "第29問 — 2手で詰み",
+    title: "クイーンの犠牲とバックランク",
     intro: "白の手番。黒キングは8段目に閉じ込められています。クイーンを思い切って使う初手がカギです。",
     source: "Lichess パズル（PuzzleId: cjIeP、Rating 814、python-chess で検証済み）",
     theme: "クイーンの犠牲とバックランク",
@@ -1876,7 +2314,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-cjhmt",
-    title: "第30問 — 2手で詰み",
+    title: "クイーンの侵入",
     intro: "白の手番。クイーンとルークで黒キングの周りを取り囲んでいます。キングの近くまでクイーンを寄せる初手を探してください。",
     source: "Lichess パズル（PuzzleId: cjHmt、Rating 826、python-chess で検証済み）",
     theme: "クイーンの侵入",
@@ -1890,7 +2328,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-9knqa",
-    title: "第31問 — 2手で詰み",
+    title: "ルークエンディングの詰み（合駒を取る）",
     intro: "白の手番。ルークとキングだけの終盤です。黒キングは盤の端に追い詰められています。",
     source: "Lichess パズル（PuzzleId: 9KnQa、Rating 871、python-chess で検証済み）",
     theme: "ルークエンディングの詰み（合駒を取る）",
@@ -1904,7 +2342,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-md8ge",
-    title: "第32問 — 2手で詰み",
+    title: "クイーンの詰み（隅への追い込み）",
     intro: "白の手番。黒キングは h7 の隅にいます。クイーンとナイトとルークがキング側に集まっています。",
     source: "Lichess パズル（PuzzleId: Md8gE、Rating 877、python-chess で検証済み）",
     theme: "クイーンの詰み（隅への追い込み）",
@@ -1918,7 +2356,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-fkzal",
-    title: "第33問 — 2手で詰み",
+    title: "ポーンの盾を崩す",
     intro: "白の手番。黒キングの前のポーンが1つだけ甘くなっています。そこを突く初手がカギです。",
     source: "Lichess パズル（PuzzleId: FKzAl、Rating 946、python-chess で検証済み）",
     theme: "ポーンの盾を崩す",
@@ -1932,7 +2370,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-nes2s",
-    title: "第34問 — 2手で詰み",
+    title: "ビショップを取りながらの詰み",
     intro: "白の手番。白クイーンの前に黒ビショップが立っています。思い切って取る手から始まります。",
     source: "Lichess パズル（PuzzleId: nES2s、Rating 952、python-chess で検証済み）",
     theme: "ビショップを取りながらの詰み",
@@ -1946,7 +2384,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-byg4u",
-    title: "第35問 — 2手で詰み",
+    title: "ビショップのチェック（そらし）",
     intro: "白の手番。黒キングと黒クイーンが8段目に並んでいます。ビショップの思い切った一手がカギです。",
     source: "Lichess パズル（PuzzleId: bYg4u、Rating 1106、python-chess で検証済み）",
     theme: "ビショップのチェック（そらし）",
@@ -1960,7 +2398,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-cjhos",
-    title: "第36問 — 2手で詰み",
+    title: "ビショップの犠牲（2通りの詰み分け）",
     intro: "白の手番。黒キングの前の h7 が狙い目です。ビショップを差し出す初手から、黒の応手で詰み手が変わります。",
     source: "Lichess パズル（PuzzleId: cjHoS、Rating 1125、python-chess で検証済み）",
     theme: "ビショップの犠牲（2通りの詰み分け）",
@@ -1974,7 +2412,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-neuyh",
-    title: "第37問 — 2手で詰み",
+    title: "ルークのチェックと合駒取り",
     intro: "白の手番。ルークが h ファイルを狙っています。黒クイーンの合駒を逆手に取る詰みです。",
     source: "Lichess パズル（PuzzleId: nEUYh、Rating 1186、python-chess で検証済み）",
     theme: "ルークのチェックと合駒取り",
@@ -1988,7 +2426,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-cjg6t",
-    title: "第38問 — 2手で詰み",
+    title: "クイーンのチェックとナイトの詰み",
     intro: "白の手番。クイーンのチェックで黒キングを盤の中央へ引きずり出すと、意外な駒が詰ませます。",
     source: "Lichess パズル（PuzzleId: cjG6t、Rating 1283、python-chess で検証済み）",
     theme: "クイーンのチェックとナイトの詰み",
@@ -2002,7 +2440,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-qwvzs",
-    title: "第39問 — 2手で詰み",
+    title: "ダブルチェックとナイトの詰み",
     intro: "白の手番。2つのナイトが黒キングの近くで待機しています。取る手が同時に別の駒のラインを開きます。",
     source: "Lichess パズル（PuzzleId: QWVZs、Rating 1340、python-chess で検証済み）",
     theme: "ダブルチェックとナイトの詰み",
@@ -2016,7 +2454,7 @@ const PUZZLES = [
   },
   {
     id: "lichess-mdarn",
-    title: "第40問 — 2手で詰み",
+    title: "ルークの犠牲（アナスタシアメイト型）",
     intro: "白の手番。黒キングの前のポーンにルークを差し出す、大胆な犠牲から始まります。",
     source: "Lichess パズル（PuzzleId: MdARN、Rating 1478、python-chess で検証済み）",
     theme: "ルークの犠牲（アナスタシアメイト型）",
@@ -2028,11 +2466,34 @@ const PUZZLES = [
     keyLine: "Sacrifice a rook to drag the king out — the other rook mates down the file.",
     explanation: ["初手 Rxh7+ はルークの犠牲。黒キングは取るしかなく、自分の陣地の外へ引きずり出されます。", "Kxh7 で h ファイルが開通。キングの周りは自軍の駒とポーンで塞がれています。", "2.Rh1#。残ったルークが開いたファイルを下りて詰み。ナイト e7 が逃げ道の g8 と g6 を塞ぐ、アナスタシアメイトの形です。"]
   },
+  {
+    id: "2026-11-16-mate2-quiet-rook",
+    title: "第41問 — 2手で詰み",
+    intro: "白の手番。チェックをかけ続けるだけが詰みへの道ではありません。静かな初手で黒キングを追い込む、2手詰めです。",
+    source: "毎日のクイズ 2026-11-16 出題分（python-chess で検証済み）",
+    theme: "ツークツワンク（静かな初手）",
+    fen: "3k4/8/8/8/2B3K1/R5Q1/8/8 w - - 0 1",
+    playerColor: "w",
+    mateIn: 2,
+    hints: [ "初手はチェックとは限りません。黒キングの逃げ場を全部ふさぐ、静かな一手を探そう。", "ルークを7段目に上げると、キングの逃げ道が左右2つだけに絞られます。", "初手は Ra7。キングが右に行くか左に行くかで、クイーンの詰ませ方が変わります。" ],
+    solutionUci: ["a3a7", "d8e8", "g3b8"],
+    keyLine: "The quiet rook move leaves the king only two flights — and both are covered.",
+    explanation: [ "初手は 1.Ra7。チェックではありませんが、ルークが7段目全体を押さえ、黒キングの逃げ場は e8 と c8 の2つだけになります。", "1...Ke8 には 2.Qb8#。クイーンがバックランクを押さえて詰ませます。d7 はルーク、f7 はビショップがカバーしています。", "1...Kc8 には 2.Qc7#。クイーンがキングのそばまで寄って詰ませます。c7 のクイーンは a7 のルークに守られています。黒の応手はこの2通りだけで、どちらでも詰みます。" ],
+  },
 ];
 
 /* ---------- localStorage helpers ---------- */
 const LS_QUIZ = "chess-public-quiz-progress-v1";
 const LS_VERSUS = "chess-public-versus-v1";
+/* ARCADE run-persistence convention (2026-11-14, same pass as the
+   mini games): an in-progress versus game is mirrored under
+   "arcade-chess-run-v1" so a webview reload mid-game restores the
+   position instead of silently restarting. LS_VERSUS keeps the
+   standalone app's original payload as a legacy fallback; both
+   keys hold the same {v, player, difficulty, fens, sans, ucis}
+   shape, are written together, and are cleared together when the
+   game ends or is reset to move zero. */
+const LS_RUN = "arcade-chess-run-v1";
 function loadJSON(key, fallback) {
   try {
     const raw = window.localStorage.getItem(key);
@@ -2043,6 +2504,40 @@ function loadJSON(key, fallback) {
 }
 function saveJSON(key, value) {
   try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+
+/* Quiz first-solve payment (2026-11-14): a puzzle pays 5 coins
+   the FIRST time it is ever solved; replays pay 0. The shared
+   record "arcade-quiz-paid-v1" is owned by the points module in
+   index.html and rides sync2 with a union merge, so a solve on
+   one device blocks re-earning on another. Puzzles already
+   solved before this feature existed are seeded into the record
+   silently — they were solved under the no-pay rules. */
+const LS_QUIZ_PAID = "arcade-quiz-paid-v1";
+function chessQuizPaidRec() {
+  let rec = loadJSON(LS_QUIZ_PAID, null);
+  if (!rec || typeof rec !== "object") rec = {};
+  if (!rec.solved || typeof rec.solved !== "object") rec.solved = {};
+  if (!Array.isArray(rec.solved.chess)) rec.solved.chess = [];
+  if (!Array.isArray(rec.solved.lang)) rec.solved.lang = [];
+  if (!Array.isArray(rec.solved.gquiz)) rec.solved.gquiz = [];
+  if (!rec.base || typeof rec.base !== "object") rec.base = { lang: false, gquiz: false };
+  return rec;
+}
+function payChessQuizSolve(id) {
+  const rec = chessQuizPaidRec();
+  if (rec.solved.chess.indexOf(id) >= 0) return;
+  rec.solved.chess.push(id);
+  saveJSON(LS_QUIZ_PAID, rec);
+  if (window.ARCADE_points) window.ARCADE_points.earn("chessQuizSolve");
+}
+function seedChessQuizPaid() {
+  const rec = chessQuizPaidRec();
+  let changed = false;
+  for (const p of PUZZLES) {
+    if (quizProgress[p.id] && quizProgress[p.id].solved && rec.solved.chess.indexOf(p.id) < 0) { rec.solved.chess.push(p.id); changed = true; }
+  }
+  if (changed) saveJSON(LS_QUIZ_PAID, rec);
 }
 
 /* "1. Qb8+ Nxb8 2. Rd8#" style line, honouring the FEN's move number. */
@@ -2062,11 +2557,14 @@ function esc(s) {
 }
 
 /* ============================================================
-   English gloss + live commentary. Difficult chess/English
-   words get one sparse Japanese gloss in parentheses — basic
-   words never do. The commentary is one short English sentence
-   per move in versus mode, so chess English is learned in
-   context while playing.
+   English gloss (quiz key lines) + live commentary (versus).
+   Difficult chess/English words in a puzzle's key line get one
+   sparse Japanese gloss in parentheses — basic words never do.
+   The versus commentary is one short sentence per move, written
+   in Japanese as its source text and routed through the ARCADE
+   language layer (module 31 patterns) exactly like the rest of
+   the UI — it follows the selected UI language (2026-11-15
+   repair: it used to be hard-coded English on every language).
    ============================================================ */
 const GLOSSES = [
   ["sacrifices", "犠牲"], ["sacrifice", "犠牲"], ["deflection", "そらし"],
@@ -2096,7 +2594,7 @@ function keyLineFor(puzzle) {
   return glossify(sentence);
 }
 
-const KIND_NAMES_EN = { k: "king", q: "queen", r: "rook", b: "bishop", n: "knight", p: "pawn" };
+const KIND_NAMES_JA = { k: "キング", q: "クイーン", r: "ルーク", b: "ビショップ", n: "ナイト", p: "ポーン" };
 const CVAL = { k: 10000, q: 900, r: 500, b: 330, n: 320, p: 100 };
 function pieceAttacksSquare(state, from, to) {
   const piece = state.board[from];
@@ -2193,71 +2691,70 @@ function pinnedVictim(state, move, mover) {
 function commentaryForMove(prev, move, next, player) {
   const mover = prev.turn;
   const isPlayer = mover === player;
-  const moverName = mover === "w" ? "White" : "Black";
-  const enemyName = mover === "w" ? "Black" : "White";
+  const moverName = mover === "w" ? "白" : "黒";
+  const enemyName = mover === "w" ? "黒" : "白";
   const movedPiece = prev.board[move.from];
   const movedKind = movedPiece ? kindOf(movedPiece) : "p";
-  const movedName = KIND_NAMES_EN[movedKind];
-  const say = (line) => glossify(line);
+  const movedName = KIND_NAMES_JA[movedKind];
   if (isCheckmate(next)) {
-    return say(isPlayer ? "Checkmate — that move ends the game, and you win." : "Checkmate — that move ends the game.");
+    return isPlayer ? "チェックメイト——この手で対局が終わり、あなたの勝ちです。" : "チェックメイト——この手で対局が終わりました。";
   }
-  if (isStalemate(next)) return say("That move makes a stalemate — the game is a draw.");
+  if (isStalemate(next)) return "その手でステイルメイト——引き分けです。";
   if (move.promotion) {
-    const newName = KIND_NAMES_EN[move.promotion];
-    return say(isPlayer ? "You promoted your pawn to a " + newName + "." : moverName + " promoted a pawn to a " + newName + ".");
+    const newName = KIND_NAMES_JA[move.promotion];
+    return isPlayer ? "あなたはポーンを" + newName + "に昇級させました。" : moverName + "はポーンを" + newName + "に昇級させました。";
   }
   if (move.castle) {
-    return say(isPlayer ? "You castled — your king is safer now." : moverName + " castled — the king is safer now.");
+    return isPlayer ? "あなたはキャスリングしました——キングが安全になりました。" : moverName + "はキャスリングしました——キングが安全になりました。";
   }
   const givesCheck = isInCheck(next, next.turn);
   if (move.capture) {
     const captured = move.enPassant ? "p" : (prev.board[move.to] ? kindOf(prev.board[move.to]) : "p");
-    const capturedName = KIND_NAMES_EN[captured];
+    const capturedName = KIND_NAMES_JA[captured];
     if (givesCheck) {
-      return say(isPlayer
-        ? "You took " + enemyName + "'s " + capturedName + " and give check."
-        : moverName + " took your " + capturedName + " and gives check — be careful.");
+      return isPlayer
+        ? "あなたは" + enemyName + "の" + capturedName + "を取って、チェックをかけました。"
+        : moverName + "があなたの" + capturedName + "を取って、チェックをかけてきました——気をつけて。";
     }
-    return say(isPlayer
-      ? "You took " + enemyName + "'s " + capturedName + "."
-      : moverName + " took your " + capturedName + ".");
+    return isPlayer
+      ? "あなたは" + enemyName + "の" + capturedName + "を取りました。"
+      : moverName + "があなたの" + capturedName + "を取りました。";
   }
   if (givesCheck) {
-    return say(isPlayer
-      ? "You give check — the enemy king must move."
-      : moverName + " gives check — your king must move or block.");
+    return isPlayer
+      ? "あなたがチェックをかけました——相手のキングは逃げなければなりません。"
+      : moverName + "がチェックをかけてきました——キングを逃がすか、遮る必要があります。";
   }
   const targets = attackedEnemies(next, move, mover).filter((t) => t.kind !== "k");
   if (targets.length >= 2) {
-    return say(isPlayer
-      ? "Your " + movedName + " forks two pieces at the same time."
-      : moverName + "'s " + movedName + " forks two of your pieces — be careful.");
+    return isPlayer
+      ? "あなたの" + movedName + "が2つの駒に同時に両取りをかけています。"
+      : moverName + "の" + movedName + "があなたの2つの駒に両取りをかけています——気をつけて。";
   }
   const pinned = pinnedVictim(next, move, mover);
   if (pinned) {
-    const pinnedName = KIND_NAMES_EN[pinned.kind];
-    return say(isPlayer
-      ? "Your " + movedName + " pins " + enemyName + "'s " + pinnedName + " to the king."
-      : moverName + "'s " + movedName + " pins your " + pinnedName + " to your king.");
+    const pinnedName = KIND_NAMES_JA[pinned.kind];
+    return isPlayer
+      ? "あなたの" + movedName + "が" + enemyName + "の" + pinnedName + "をキングに釘付けにしました。"
+      : moverName + "の" + movedName + "があなたの" + pinnedName + "をキングに釘付けにしています。";
   }
   if (isHanging(next, move.to)) {
-    return say(isPlayer
-      ? "Your " + movedName + " is hanging — it can be taken for free."
-      : moverName + "'s " + movedName + " is hanging — you can take it for free.");
+    return isPlayer
+      ? "あなたの" + movedName + "が無防備です——タダで取られます。"
+      : moverName + "の" + movedName + "が無防備です——タダで取れます。";
   }
   if (targets.length === 1) {
-    const victimName = KIND_NAMES_EN[targets[0].kind];
-    return say(isPlayer
-      ? "You attack " + enemyName + "'s " + victimName + "."
-      : moverName + " attacks your " + victimName + " — be careful.");
+    const victimName = KIND_NAMES_JA[targets[0].kind];
+    return isPlayer
+      ? "あなたは" + enemyName + "の" + victimName + "を攻撃しています。"
+      : moverName + "があなたの" + victimName + "を攻撃しています——気をつけて。";
   }
   if (!isPlayer) {
     for (let s = 0; s < 64; s++) {
       const p = next.board[s];
       if (p == null || colorOf(p) !== player || kindOf(p) === "k") continue;
       if (isHanging(next, s) && CVAL[kindOf(p)] >= CVAL.n) {
-        return say("Your " + KIND_NAMES_EN[kindOf(p)] + " is undefended — it can be taken for free.");
+        return "あなたの" + KIND_NAMES_JA[kindOf(p)] + "が守られていません——タダで取られます。";
       }
     }
   }
@@ -2266,30 +2763,31 @@ function commentaryForMove(prev, move, next, player) {
       const p = next.board[s];
       if (p == null || colorOf(p) === player || kindOf(p) === "k") continue;
       if (isHanging(next, s) && CVAL[kindOf(p)] >= CVAL.n && attackersOf(next, s, player).length > 0) {
-        return say(enemyName + "'s " + KIND_NAMES_EN[kindOf(p)] + " is undefended — you can take it.");
+        return enemyName + "の" + KIND_NAMES_JA[kindOf(p)] + "が守られていません——取ることができます。";
       }
     }
   }
   if (movedKind === "p") {
     const f = fileOf(move.to), r = rankOf(move.to);
     if ((f === 3 || f === 4) && (r === 3 || r === 4)) {
-      return say(isPlayer ? "You take the center with your pawn." : moverName + " takes the center with a pawn.");
+      return isPlayer ? "あなたはポーンで中央を取りました。" : moverName + "がポーンで中央を取りました。";
     }
   }
   if ((movedKind === "n" || movedKind === "b") && prev.fullmove <= 10) {
-    return say(isPlayer ? "You bring your " + movedName + " out." : moverName + " brings a " + movedName + " out.");
+    return isPlayer ? "あなたは" + movedName + "を繰り出しました。" : moverName + "が" + movedName + "を繰り出しました。";
   }
-  return say(isPlayer
-    ? "You move your " + movedName + " to " + squareName(move.to) + "."
-    : moverName + " moves the " + movedName + " to " + squareName(move.to) + ".");
+  return isPlayer
+    ? "あなたは" + movedName + "を" + squareName(move.to) + "に動かしました。"
+    : moverName + "は" + movedName + "を" + squareName(move.to) + "に動かしました。";
 }
-const START_COMMENTARY = "The game is ready — White moves first.";
+const START_COMMENTARY = "対局の準備ができました——白の手番から始まります。";
 
 /* ============================================================
    QUIZ mode
    ============================================================ */
 const quizRoot = document.getElementById("quizView");
 let quizProgress = loadJSON(LS_QUIZ, {});
+seedChessQuizPaid();
 let currentPuzzleId = PUZZLES[PUZZLES.length - 1].id;
 let solver = null; // active PuzzleSolver state
 
@@ -2300,37 +2798,389 @@ function setProgress(id, patch) {
   quizProgress[id] = Object.assign(getProgress(id), patch);
   saveJSON(LS_QUIZ, quizProgress);
 }
+// Sync merge hook (ITEM K): the points module union-merges this
+// progress record across devices; reload the in-memory copy so a
+// later setProgress save cannot overwrite the merged record.
+window.__chessQuizReload = function () { quizProgress = loadJSON(LS_QUIZ, {}); };
 
 function startMessage(puzzle) {
   const side = puzzle.playerColor === "w" ? "白" : "黒";
   return side + "の手番です。自分の駒をタップすると、動けるマスが光ります。" + puzzle.mateIn + "手で詰ませてみましょう。";
 }
 
-function renderPuzzleChips() {
-  const row = document.getElementById("puzzleChipRow");
-  if (!row) return;
-  const chips = PUZZLES.map((p, i) => {
-    const active = p.id === currentPuzzleId;
-    const isLatest = i === PUZZLES.length - 1;
-    const solvedMark = getProgress(p.id).solved ? " ✓" : "";
-    return '<button type="button" class="puzzle-chip' + (active ? " active" : "") + '" data-puzzle="' + p.id + '" aria-pressed="' + active + '">第' + (i + 1) + "問" + (isLatest && PUZZLES.length > 1 ? "・最新" : "") + solvedMark + "</button>";
-  }).join("");
-  row.innerHTML = '<span style="font-size:12px;font-weight:700;color:var(--dim)">問題：</span>' + chips;
-  row.querySelectorAll("[data-puzzle]").forEach((b) => {
-    b.addEventListener("click", () => {
-      if (b.getAttribute("data-puzzle") === currentPuzzleId) return;
-      currentPuzzleId = b.getAttribute("data-puzzle");
-      renderPuzzleChips();
-      buildSolver(document.getElementById("solverRoot"), PUZZLES.find((p) => p.id === currentPuzzleId));
-    });
+/* ============================================================
+   THEME DRILLS + COURSE NAVIGATION (2026-11-16)
+   The flat chip wall (第N問 × 40) is abolished. Navigation is
+   section → theme/group card (progress) → band row (progress)
+   → puzzle row, with progress bars at every level.
+   Section A: テーマ別ドリル — 1,536 Lichess puzzles (CC0),
+   engine-verified in the prep lane, shipped as the lazy asset
+   assets/chess-drill-data.js in solver-first form (the import
+   transform played the opponent's setup move at build time).
+   Mate drills reuse buildSolver's mate judge; the other eleven
+   themes use buildLineSolver's line-following judge.
+   Section B: 2手詰め名作コース — the legacy 40, regrouped into
+   the 11 verified theme groups below. Ids, progress records and
+   the paid registry are untouched; only display titles changed
+   (each puzzle's own theme string is now its title).
+   ============================================================ */
+const DRILL_THEME_ORDER = ["mateIn1", "mateIn2", "mateIn3", "backRankMate", "smotheredMate", "promotion", "fork", "pin", "skewer", "discoveredAttack", "deflection", "attraction", "clearance", "trappedPiece", "hangingPiece", "endgame"];
+const DRILL_THEMES = {
+  mateIn1: { name: "1手詰め", sub: "1手詰めの形を見抜く", intro: "1手で詰ませるドリルです。チェックをかける駒と、キングの逃げ場をよく見てみましょう。", closer: "1手詰めは、チェックの候補をすべて挙げて、キングの逃げ場と比べる習慣がものを言います。" },
+  mateIn2: { name: "2手詰め", sub: "2手先の詰み筋を読む", intro: "2手で詰ませるドリルです。相手の応手まで読んでから初手を指しましょう。", closer: "2手詰めは、詰ませる形から逆算するのが近道です。相手の応手は限られているので、候補を絞って読めます。" },
+  mateIn3: { name: "3手詰め", sub: "3手の詰み筋を組み立てる", intro: "3手で詰ませるドリルです。相手の応手は限られています。詰み筋を組み立ててみましょう。", closer: "3手詰めは、相手の応手を先に数えるのがコツです。逃げ場を塞ぐ手とチェックの手を組み合わせて読みます。" },
+  backRankMate: { name: "バックランクメイト", sub: "最終段の弱点を突く", intro: "バックランクメイトのドリルです。最終段（1段目・8段目）に残ったキングの弱点を突きましょう。", closer: "バックランクメイトは、キングが自分のポーンに囲まれて最終段から逃げられない形です。ルークやクイーンの最終段への侵入が決め手になります。" },
+  smotheredMate: { name: "スモザードメイト", sub: "囲まれたキングをナイトで詰ませる", intro: "スモザードメイトのドリルです。自分の駒に囲まれたキングを、ナイトで詰ませましょう。", closer: "スモザードメイトは、キングが自分の駒に囲まれて身動きできない形を、ナイトが詰ませる型です。ナイトのチェックは合駒ができないのが強みです。" },
+  promotion: { name: "プロモーション", sub: "ポーンを昇格させる手筋", intro: "プロモーション（昇格）のドリルです。ポーンを最後の段まで進めて、強い駒に変えましょう。正解の手順通りに指してください。", closer: "プロモーションは、ポーンが最後の段に届くとクイーンなどの強い駒に変わるルールです。あと1マスのポーンは、実質もう1つの強い駒として数えます。" },
+  fork: { name: "フォーク", sub: "両取りで駒得を狙う", intro: "フォーク（両取り）のドリルです。1つの駒で2つ以上の駒を同時に狙い、駒得を狙いましょう。正解の手順通りに指してください。", closer: "フォーク（両取り）は、1つの駒が2つ以上の駒を同時に狙う手筋です。特にナイトのフォークは、キングとクイーンを同時に見られる形が強力です。" },
+  pin: { name: "ピン", sub: "ピン（釘付け）を利用する", intro: "ピン（釘付け）のドリルです。後ろの強い駒を盾に、前の駒を動けなくして利用しましょう。正解の手順通りに指してください。", closer: "ピンは、駒の後ろに強い駒（キングやクイーン）がいるため、その駒が動くと後ろが取られてしまう状態です。ピンされた駒は、実質動けない駒として数えます。" },
+  skewer: { name: "スキュアー", sub: "串刺しで後ろの駒を取る", intro: "スキュアー（串刺し）のドリルです。強い駒を攻撃してどかせ、後ろの駒をいただきましょう。正解の手順通りに指してください。", closer: "スキュアーはピンの逆で、強い駒を攻撃して動かし、後ろにいた駒を取る手筋です。チェックでキングをどかせる形が代表的です。" },
+  discoveredAttack: { name: "ディスカバードアタック", sub: "どかして後ろから攻撃する", intro: "ディスカバードアタックのドリルです。駒をどかすと、後ろの駒の利きが開いて攻撃になります。正解の手順通りに指してください。", closer: "ディスカバードアタックは、前の駒を動かすと後ろの駒の利きが開く攻撃です。動かした駒自身も狙いを持つと、二重の脅威になります。" },
+  deflection: { name: "そらし", sub: "守りの駒を逸らして崩す", intro: "そらし（deflection）のドリルです。守りの駒を本来の仕事から逸らして、守りを崩しましょう。正解の手順通りに指してください。", closer: "そらし（deflection）は、守りの駒を本来の持ち場から引き離す手筋です。守る仕事と取る仕事を同時に背負った駒が狙われます。" },
+  attraction: { name: "引きつけ", sub: "引きつけてから叩く", intro: "引きつけのドリルです。相手の駒を、叩けるマスへおびき寄せてから仕掛けましょう。正解の手順通りに指してください。", closer: "引きつけは、相手の駒を都合のよいマスへおびき寄せる手筋です。犠牲でキングを引き出す形が代表的です。" },
+  clearance: { name: "クリアランス", sub: "マスとラインを空ける", intro: "クリアランスのドリルです。マスやラインを空けて、次の駒の道を作りましょう。正解の手順通りに指してください。", closer: "クリアランスは、味方の駒の通り道を空けるためにマスやラインを片付ける手筋です。邪魔な自軍の駒を、意味のある手でどかすのがポイントです。" },
+  trappedPiece: { name: "閉じ込め", sub: "逃げ場のない駒を取りに行く", intro: "閉じ込めのドリルです。逃げ場のない相手の駒を、逃げ道を塞いで取りに行きましょう。正解の手順通りに指してください。", closer: "閉じ込めは、相手の駒の逃げ道をすべて塞いで取る手筋です。特にビショップやナイトは、隅や端で動きを失いやすい駒です。" },
+  hangingPiece: { name: "タダ取り", sub: "タダの駒を拾う", intro: "タダ取りのドリルです。守られていない相手の駒（タダの駒）を見つけて拾いましょう。正解の手順通りに指してください。", closer: "タダの駒（守られていない駒）は、見つけたら取るのが原則です。指す前に、相手のタダ駒と自分のタダ駒を両方数える習慣が効きます。" },
+  endgame: { name: "終盤", sub: "終盤の読みと駒使い", intro: "終盤のドリルです。少ない駒で正確に読み、勝ち筋・有利な筋を再現しましょう。正解の手順通りに指してください。", closer: "終盤は駒が少ない分、1手の重みが増します。キング自身が攻めの駒になり、ポーンの進み方が勝敗を分けます。" },
+};
+const DRILL_KEYLINES = {
+  mateIn1: "Mate in one is a pattern you learn to see at a glance.",
+  mateIn2: "Two-move mates are built backwards from the final blow.",
+  mateIn3: "A mate in three is a short story: force, force, finish.",
+  backRankMate: "A king behind its own pawns can be mated on the back rank.",
+  smotheredMate: "A knight mates the king that its own pieces imprison.",
+  promotion: "A pawn that reaches the last rank becomes the strongest piece on the board.",
+  fork: "One move, two targets — a fork wins what one attack cannot.",
+  pin: "A pinned piece is a piece that cannot really move.",
+  skewer: "Attack the valuable piece, and the one behind it falls.",
+  discoveredAttack: "Move one piece, and the piece behind it fires.",
+  deflection: "Pull the defender away, and the guarded square falls.",
+  attraction: "Lure the piece onto the square where it can be hit.",
+  clearance: "Sometimes the strongest move just makes room.",
+  trappedPiece: "A piece with no escape squares is already half captured.",
+  hangingPiece: "An undefended piece is a gift — take it.",
+  endgame: "In the endgame, the king becomes a fighting piece.",
+};
+const DRILL_BANDS = ["800-1199", "1200-1599", "1600-1999", "2000+"];
+const COURSE_GROUPS = [
+  { key: "backrank", name: "バックランクメイト", ids: ["backrank-decoy-2", "lichess-twqrg", "lichess-vwfiw", "lichess-sq578", "lichess-cjiep"] },
+  { key: "smothered", name: "スモザードメイト", ids: ["smothered-2"] },
+  { key: "anastasia", name: "アナスタシアメイト", ids: ["lichess-mdarn"] },
+  { key: "deflection", name: "そらし・守りの除去", ids: ["opera-mate-2", "2026-10-27-mate2-bishop-block", "2026-10-28-mate2-remove-guard", "pool-mate2-capture-queen", "lichess-nes2s", "lichess-byg4u"] },
+  { key: "blocker", name: "合駒を取る", ids: ["lichess-sq6sx", "lichess-osm21", "lichess-1rxce", "lichess-9knqa", "lichess-neuyh"] },
+  { key: "corner", name: "隅のメイトネット", ids: ["2026-10-26-mate2-queen-rook", "2026-10-29-mate2-corner-bishop", "pool-mate2-queen-rook-net", "pool-mate2-bishop-queen-corner", "2026-11-02-mate2-rook-two-mates", "2026-11-09-mate2-split-mates", "lichess-md8ge"] },
+  { key: "knight", name: "ナイトの手筋", ids: ["pool-mate2-knight-support", "lichess-5usup", "lichess-twpdp", "2026-10-30-mate2-knight-guard", "lichess-cjg6t", "lichess-qwvzs"] },
+  { key: "pawnshield", name: "ポーンの盾を崩す", ids: ["pool-mate2-pawn-capture", "lichess-vweuq", "lichess-xtq4m", "lichess-fkzal"] },
+  { key: "openline", name: "犠牲でラインを開く", ids: ["lichess-vwffb", "lichess-cjhos"] },
+  { key: "queenin", name: "クイーンの侵入", ids: ["lichess-vwdtu", "lichess-cjhmt"] },
+  { key: "bishopfinish", name: "ビショップの仕上げ", ids: ["pool-mate2-bishop-finish"] },
+];
+const LS_NAV = "chess-quiz-nav-v1";
+let quizNav = loadJSON(LS_NAV, null);
+if (!quizNav || typeof quizNav !== "object") quizNav = { level: "home", theme: null, band: null, group: null, openId: null, lastByKey: {} };
+if (!quizNav.lastByKey || typeof quizNav.lastByKey !== "object") quizNav.lastByKey = {};
+function saveNav() { saveJSON(LS_NAV, quizNav); }
+function solvedCount(ids) { let n = 0; for (const id of ids) if (getProgress(id).solved) n++; return n; }
+function qzBar(done, total) {
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  return '<div class="qz-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>';
+}
+function courseGroupOf(id) {
+  for (const g of COURSE_GROUPS) if (g.ids.indexOf(id) >= 0) return g;
+  return null;
+}
+function unclassifiedPuzzles() {
+  return PUZZLES.filter((p) => !courseGroupOf(p.id));
+}
+
+/* ---------- drill data: lazy load + conversion ---------- */
+let drillState = "idle"; // idle | loading | ready | error
+let DRILL_PUZZLES = {}; // app id -> solver-ready puzzle record
+let DRILL_BY_THEME = {}; // theme -> band -> [records]
+let pendingDrillOpen = null;
+function drillToPuzzle(rec) {
+  const theme = DRILL_THEMES[rec.d];
+  const initial = parseFEN(rec.fen);
+  const sol = rec.sol.split(" ");
+  const first = matchUci(initial, sol[0]);
+  const piece = first ? initial.board[first.from] : null;
+  const kindJa = piece ? KIND_NAMES_JA[kindOf(piece)] : "駒";
+  const firstSan = first ? toSAN(initial, first) : sol[0];
+  const lineJudge = !rec.mi;
+  return {
+    id: rec.id,
+    isDrill: true,
+    drillTheme: rec.d,
+    rating: rec.r,
+    band: rec.b,
+    title: theme.name + " ・ Rating " + rec.r,
+    theme: null,
+    fen: rec.fen,
+    playerColor: rec.pc,
+    mateIn: rec.mi || 0,
+    lineJudge: lineJudge,
+    solutionUci: sol,
+    intro: theme.intro,
+    hints: [
+      "テーマは" + theme.name + "。初手は" + kindJa + "を動かします。",
+      "初手は " + squareName(first ? first.from : 0) + " の駒です。",
+      "初手は " + firstSan + " です。",
+    ],
+    keyLine: DRILL_KEYLINES[rec.d],
+    explanation: lineJudge
+      ? [theme.closer, "正解手順は上の譜の通りです。相手の応手も含め、検証済みの手順をそのまま再現するドリルです。"]
+      : [theme.closer, "上の譜は正解手順の一例です。別の手順で詰ませても正解です。"],
+    source: "Lichess パズル（PuzzleId: " + rec.pid + "、Rating " + rec.r + "、python-chess で検証済み）",
+  };
+}
+function buildDrillIndex() {
+  const data = window.__CHESS_DRILL_DATA__;
+  if (!data || !Array.isArray(data.puzzles)) { drillState = "error"; return; }
+  DRILL_PUZZLES = {};
+  DRILL_BY_THEME = {};
+  for (const rec of data.puzzles) {
+    const p = drillToPuzzle(rec);
+    DRILL_PUZZLES[p.id] = p;
+    if (!DRILL_BY_THEME[rec.d]) DRILL_BY_THEME[rec.d] = {};
+    if (!DRILL_BY_THEME[rec.d][rec.b]) DRILL_BY_THEME[rec.d][rec.b] = [];
+    DRILL_BY_THEME[rec.d][rec.b].push(p);
+  }
+  for (const t of Object.keys(DRILL_BY_THEME))
+    for (const b of Object.keys(DRILL_BY_THEME[t]))
+      DRILL_BY_THEME[t][b].sort((a, z) => a.rating - z.rating);
+  drillState = "ready";
+}
+function ensureDrillData() {
+  if (drillState === "loading" || drillState === "ready") return;
+  if (window.__CHESS_DRILL_DATA__) { buildDrillIndex(); renderQuizNav(); return; }
+  drillState = "loading";
+  const s = document.createElement("script");
+  s.src = "assets/chess-drill-data.js";
+  s.onload = function () {
+    buildDrillIndex();
+    renderQuizNav();
+    if (pendingDrillOpen) {
+      const id = pendingDrillOpen;
+      pendingDrillOpen = null;
+      if (DRILL_PUZZLES[id]) openQuizPuzzle(id, null, false);
+    }
+  };
+  s.onerror = function () { drillState = "error"; renderQuizNav(); };
+  document.head.appendChild(s);
+}
+function findQuizPuzzle(id) {
+  if (!id) return null;
+  const legacy = PUZZLES.find((p) => p.id === id);
+  if (legacy) return legacy;
+  return DRILL_PUZZLES[id] || null;
+}
+
+/* ---------- navigation rendering ---------- */
+/* Card-title auto-fit (house pattern): titles never break mid-word.
+   CSS word-break: keep-all keeps an unbroken title (e.g. a katakana
+   compound) on one line; this shrinks it from its base size until it
+   fits, down to a readable floor — past the floor it may take a
+   second line, still never mid-word. Sweeps every card/row title
+   surface the drill round built: theme cards, course group cards,
+   the unclassified card, the "new" banner and the course rows. */
+function fitQzTitles(scope) {
+  if (!scope) return;
+  scope.querySelectorAll(".qz-card-name, .qz-new-title, .qz-row-main").forEach((el) => {
+    el.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(el).fontSize) || 14;
+    const floor = 10.5;
+    let guard = 0;
+    while (el.scrollWidth > el.clientWidth + 1 && size > floor && guard < 12) {
+      size = Math.max(floor, size - 0.5);
+      el.style.fontSize = size + "px";
+      guard++;
+    }
   });
 }
+window.addEventListener("resize", () => {
+  const n = document.getElementById("quizNav");
+  if (n) fitQzTitles(n);
+});
+function renderQuizNav() {
+  const nav = document.getElementById("quizNav");
+  if (!nav) return;
+  if ((quizNav.level === "theme" || quizNav.level === "band") && drillState !== "ready") quizNav.level = "home";
+  let html = "";
+  if (quizNav.level === "theme") html = navThemeHTML();
+  else if (quizNav.level === "band") html = navBandHTML();
+  else if (quizNav.level === "group") html = navGroupHTML();
+  else html = navHomeHTML();
+  nav.innerHTML = html;
+  nav.querySelectorAll("[data-nav]").forEach((b) => b.addEventListener("click", () => {
+    const dest = b.getAttribute("data-nav");
+    if (dest === "home") { quizNav.level = "home"; }
+    else if (dest === "theme") { quizNav.level = "theme"; quizNav.theme = b.getAttribute("data-theme"); }
+    else if (dest === "band") { quizNav.level = "band"; quizNav.band = b.getAttribute("data-band"); }
+    else if (dest === "group") { quizNav.level = "group"; quizNav.group = b.getAttribute("data-group"); }
+    saveNav();
+    renderQuizNav();
+  }));
+  nav.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => {
+    openQuizPuzzle(b.getAttribute("data-open"), b.getAttribute("data-container"), true);
+  }));
+  fitQzTitles(nav);
+}
+function navHomeHTML() {
+  const latest = PUZZLES[PUZZLES.length - 1];
+  const latestSolved = getProgress(latest.id).solved;
+  let html = '<button type="button" class="qz-new" data-open="' + latest.id + '" data-container="new">'
+    + '<span class="qz-new-tag">新着</span>'
+    + '<span class="qz-new-main"><span class="qz-new-title">' + esc(latest.title) + "</span>"
+    + '<span class="qz-new-sub">' + esc(latest.source || "") + "</span></span>"
+    + (latestSolved ? '<span class="qz-check">✓</span>' : "")
+    + "</button>";
+  // Section A: theme drills
+  html += '<div class="qz-sec"><div class="qz-sec-head"><span class="qz-sec-title">テーマ別ドリル</span>';
+  if (drillState === "ready") {
+    const allIds = Object.keys(DRILL_PUZZLES);
+    const done = solvedCount(allIds);
+    html += '<span class="qz-sec-count">' + done + " / " + allIds.length + "</span></div>" + qzBar(done, allIds.length);
+    html += '<div class="qz-grid">';
+    for (const key of DRILL_THEME_ORDER) {
+      const bands = DRILL_BY_THEME[key] || {};
+      const ids = [];
+      for (const b of DRILL_BANDS) (bands[b] || []).forEach((p) => ids.push(p.id));
+      const d = solvedCount(ids);
+      html += '<button type="button" class="qz-card" data-nav="theme" data-theme="' + key + '">'
+        + '<span class="qz-card-name">' + esc(DRILL_THEMES[key].name) + "</span>"
+        + '<span class="qz-card-sub">' + esc(DRILL_THEMES[key].sub) + "</span>"
+        + '<span class="qz-card-count">' + d + " / " + ids.length + "</span>"
+        + qzBar(d, ids.length)
+        + "</button>";
+    }
+    html += "</div>";
+  } else if (drillState === "error") {
+    html += '</div><p style="margin-top:10px;font-size:13px;color:var(--dim)">データを読み込めませんでした。通信環境を確認して、もう一度開いてください。</p>';
+  } else {
+    html += '</div><p style="margin-top:10px;font-size:13px;color:var(--dim)">読み込み中…</p>';
+  }
+  html += "</div>";
+  // Section B: legacy course
+  const allLegacy = PUZZLES.map((p) => p.id);
+  const legacyDone = solvedCount(allLegacy);
+  html += '<div class="qz-sec"><div class="qz-sec-head"><span class="qz-sec-title">2手詰め名作コース</span>'
+    + '<span class="qz-sec-count">' + legacyDone + " / " + allLegacy.length + "</span></div>" + qzBar(legacyDone, allLegacy.length)
+    + '<div class="qz-grid">';
+  for (const g of COURSE_GROUPS) {
+    const d = solvedCount(g.ids);
+    html += '<button type="button" class="qz-card" data-nav="group" data-group="' + g.key + '">'
+      + '<span class="qz-card-name">' + esc(g.name) + "</span>"
+      + '<span class="qz-card-count">' + d + " / " + g.ids.length + "</span>"
+      + qzBar(d, g.ids.length)
+      + "</button>";
+  }
+  const extra = unclassifiedPuzzles();
+  if (extra.length > 0) {
+    const d = solvedCount(extra.map((p) => p.id));
+    html += '<button type="button" class="qz-card" data-nav="group" data-group="__extra">'
+      + '<span class="qz-card-name">未分類の問題</span>'
+      + '<span class="qz-card-count">' + d + " / " + extra.length + "</span>"
+      + qzBar(d, extra.length)
+      + "</button>";
+  }
+  html += "</div></div>";
+  return html;
+}
+function navThemeHTML() {
+  const key = quizNav.theme;
+  const theme = DRILL_THEMES[key];
+  const bands = DRILL_BY_THEME[key] || {};
+  const ids = [];
+  for (const b of DRILL_BANDS) (bands[b] || []).forEach((p) => ids.push(p.id));
+  const done = solvedCount(ids);
+  let html = '<button type="button" class="qz-back" data-nav="home">← 一覧に戻る</button>'
+    + '<div class="qz-sec-head" style="margin-top:12px"><span class="qz-sec-title">' + esc(theme.name) + "</span>"
+    + '<span class="qz-sec-count">' + done + " / " + ids.length + "</span></div>"
+    + '<p style="margin-top:6px;font-size:13px;color:var(--dim)">' + esc(theme.sub) + "</p>"
+    + qzBar(done, ids.length)
+    + '<div class="qz-rows">';
+  for (const b of DRILL_BANDS) {
+    const list = bands[b] || [];
+    const d = solvedCount(list.map((p) => p.id));
+    html += '<button type="button" class="qz-row" data-nav="band" data-band="' + b + '">'
+      + '<span class="qz-row-main">Rating ' + b + "</span>"
+      + '<span class="qz-row-count">' + d + " / " + list.length + "</span>"
+      + "</button>";
+  }
+  html += "</div>";
+  return html;
+}
+function navBandHTML() {
+  const key = quizNav.theme;
+  const theme = DRILL_THEMES[key];
+  const list = (DRILL_BY_THEME[key] || {})[quizNav.band] || [];
+  const done = solvedCount(list.map((p) => p.id));
+  let html = '<button type="button" class="qz-back" data-nav="theme" data-theme="' + key + '">← 一覧に戻る</button>'
+    + '<div class="qz-sec-head" style="margin-top:12px"><span class="qz-sec-title">' + esc(theme.name) + " ・ Rating " + esc(quizNav.band) + "</span>"
+    + '<span class="qz-sec-count">' + done + " / " + list.length + "</span></div>"
+    + qzBar(done, list.length)
+    + '<div class="qz-rows">';
+  for (const p of list) {
+    const solved = getProgress(p.id).solved;
+    const active = p.id === currentPuzzleId;
+    html += '<button type="button" class="qz-row' + (active ? " active" : "") + '" data-open="' + p.id + '" data-container="drill:' + key + ":" + quizNav.band + '">'
+      + '<span class="qz-dot ' + p.playerColor + '" aria-hidden="true"></span>'
+      + '<span class="qz-row-main">Rating ' + p.rating + "</span>"
+      + (solved ? '<span class="qz-check">✓ 解けました</span>' : "")
+      + "</button>";
+  }
+  html += "</div>";
+  return html;
+}
+function navGroupHTML() {
+  let name, puzzles;
+  if (quizNav.group === "__extra") {
+    name = "未分類の問題";
+    puzzles = unclassifiedPuzzles();
+  } else {
+    const g = COURSE_GROUPS.find((x) => x.key === quizNav.group) || COURSE_GROUPS[0];
+    name = g.name;
+    puzzles = g.ids.map((id) => PUZZLES.find((p) => p.id === id)).filter(Boolean);
+  }
+  const done = solvedCount(puzzles.map((p) => p.id));
+  let html = '<button type="button" class="qz-back" data-nav="home">← 一覧に戻る</button>'
+    + '<div class="qz-sec-head" style="margin-top:12px"><span class="qz-sec-title">' + esc(name) + "</span>"
+    + '<span class="qz-sec-count">' + done + " / " + puzzles.length + "</span></div>"
+    + qzBar(done, puzzles.length)
+    + '<div class="qz-rows">';
+  for (const p of puzzles) {
+    const solved = getProgress(p.id).solved;
+    const active = p.id === currentPuzzleId;
+    html += '<button type="button" class="qz-row' + (active ? " active" : "") + '" data-open="' + p.id + '" data-container="course:' + quizNav.group + '">'
+      + '<span class="qz-row-main">' + esc(p.title) + "</span>"
+      + (solved ? '<span class="qz-check">✓</span>' : "")
+      + "</button>";
+  }
+  html += "</div>";
+  return html;
+}
+function openQuizPuzzle(id, containerKey, scroll) {
+  const rec = findQuizPuzzle(id);
+  if (!rec) {
+    if (drillState !== "ready") { pendingDrillOpen = id; ensureDrillData(); }
+    return;
+  }
+  currentPuzzleId = id;
+  quizNav.openId = id;
+  if (containerKey) quizNav.lastByKey[containerKey] = id;
+  saveNav();
+  const root = document.getElementById("solverRoot");
+  if (rec.lineJudge) buildLineSolver(root, rec);
+  else buildSolver(root, rec);
+  renderQuizNav();
+  if (scroll && root) root.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 function buildQuiz() {
-  quizRoot.innerHTML =
-    '<div class="chip-row" style="margin-bottom:16px" role="group" aria-label="問題の選択" id="puzzleChipRow"></div>'
-    + '<div id="solverRoot"></div>';
-  renderPuzzleChips();
-  buildSolver(document.getElementById("solverRoot"), PUZZLES.find((p) => p.id === currentPuzzleId));
+  quizRoot.innerHTML = '<div id="quizNav"></div>' + '<div id="solverRoot" style="margin-top:24px"></div>';
+  ensureDrillData();
+  renderQuizNav();
+  const initial = findQuizPuzzle(quizNav.openId) || PUZZLES[PUZZLES.length - 1];
+  openQuizPuzzle(initial.id, null, false);
 }
 
 function buildSolver(root, puzzle) {
@@ -2349,7 +3199,7 @@ function buildSolver(root, puzzle) {
   root.innerHTML =
     '<div class="chip-row">'
     + '<span class="chip accent">' + esc(puzzle.title) + "</span>"
-    + (puzzle.theme ? '<span class="chip dim">テーマ：' + esc(puzzle.theme) + "</span>" : "")
+    + (puzzle.theme && puzzle.theme !== puzzle.title ? '<span class="chip dim">テーマ：' + esc(puzzle.theme) + "</span>" : "")
     + '<span class="chip solved" id="solvedChip" hidden>解けました</span>'
     + '<span style="font-size:12px;color:var(--dim)" id="statLine"></span>'
     + "</div>"
@@ -2455,11 +3305,13 @@ function buildSolver(root, puzzle) {
     if (plyBefore === 0) setProgress(puzzle.id, { attempts: getProgress(puzzle.id).attempts + 1 });
     const next = applyMove(cur, move);
     if (isCheckmate(next)) {
+      const firstSolve = !getProgress(puzzle.id).solved;
       game.applyAnimated(move, { silent: true, onLanded: () => { sfx.win(); fireConfetti(); } });
       sfx.check();
       st.phase = "solved";
       st.message = "詰みです！ お見事、正解です。下に解説が出ています。";
       setProgress(puzzle.id, { solved: true });
+      if (firstSolve) payChessQuizSolve(puzzle.id);
       render();
       refreshQuizChips();
       return;
@@ -2557,7 +3409,218 @@ function buildSolver(root, puzzle) {
   solver = { render };
   render();
 }
-function refreshQuizChips() { renderPuzzleChips(); }
+/* LINE-FOLLOWING JUDGE for the eleven non-mate drill themes.
+   The player must reproduce the verified solution line; the
+   opponent's replies are auto-played from that line. A player
+   move that checkmates also solves (honest mate semantics).
+   Any other deviation is shown, named, and rolled back.
+   Built on the same board machinery as buildSolver
+   (createBoardView / createGame / createTapMove), so drills get
+   the 2D/3D toggle, the promotion picker and the same sounds.
+   Payment and progress ride the shared helpers (setProgress /
+   payChessQuizSolve), exactly like legacy puzzles. */
+function buildLineSolver(root, puzzle) {
+  const initial = parseFEN(puzzle.fen);
+  const color = puzzle.playerColor;
+  const line = puzzle.solutionUci.slice();
+  const playerMovesTotal = Math.ceil(line.length / 2);
+  const st = {
+    phase: "play", // play | solved
+    message: "",
+    shakeKey: 0,
+    wrongFlash: false,
+    hintsShown: getProgress(puzzle.id).hintsUsed || 0,
+    answerShown: false,
+    thinking: false,
+  };
+  root.innerHTML =
+    '<div class="chip-row">'
+    + '<span class="chip accent">' + esc(puzzle.title) + "</span>"
+    + '<span class="chip" id="lStep"></span>'
+    + '<span class="chip solved" id="solvedChip" hidden>解けました</span>'
+    + '<span style="font-size:12px;color:var(--dim)" id="statLine"></span>'
+    + "</div>"
+    + '<p style="margin-top:12px;font-size:15px;line-height:1.7">' + esc(puzzle.intro) + "</p>"
+    + '<div class="board-tools"><span class="board-tools-label">盤面表示</span><div class="seg-group view-seg" role="group" aria-label="盤面表示切替"><button type="button" class="seg-btn small" data-view="2d" aria-pressed="true">2D</button><button type="button" class="seg-btn small" data-view="3d" aria-pressed="false">3D</button></div><span style="font-size:11px;color:var(--dim)">3Dはドラッグで回転・ピンチで拡大</span></div>'
+    + '<div id="qBoardOuter" style="position:relative;margin-top:16px"><div class="board-wrap" id="qBoard"></div></div>'
+    + '<div class="msg" id="qMsg" aria-live="polite"></div>'
+    + '<p id="qSans" style="margin-top:12px;font-size:14px;color:var(--dim)" aria-label="指し手"></p>'
+    + '<div class="btn-grid">'
+    + '<button type="button" class="btn" id="lReset">リセット</button>'
+    + '<button type="button" class="btn" id="lHint">ヒント</button>'
+    + '<button type="button" class="btn" id="lAnswer">答えを見る</button>'
+    + "</div>"
+    + '<ul id="qHints" style="list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px"></ul>'
+    + '<p style="margin-top:20px;font-size:13px;line-height:1.7;color:var(--dim)">指す前の3点チェック：① 相手の狙いは何か　② ぶら下がっている駒（タダで取られる駒）はないか　③ その手で何を失うか</p>'
+    + '<div id="qExplain"></div>';
+
+  const wrapEl = root.querySelector("#qBoard");
+  const outerEl = root.querySelector("#qBoardOuter");
+  const msgEl = root.querySelector("#qMsg");
+  const sansEl = root.querySelector("#qSans");
+  const statEl = root.querySelector("#statLine");
+  const stepEl = root.querySelector("#lStep");
+  const solvedChip = root.querySelector("#solvedChip");
+  const hintsEl = root.querySelector("#qHints");
+  const explainEl = root.querySelector("#qExplain");
+  const hintBtn = root.querySelector("#lHint");
+  const answerBtn = root.querySelector("#lAnswer");
+
+  let tap, game;
+  function render() {
+    const prog = getProgress(puzzle.id);
+    const solvedNow = st.phase === "solved" || prog.solved;
+    solvedChip.hidden = !solvedNow;
+    stepEl.hidden = st.phase === "solved";
+    stepEl.textContent = "手順 " + Math.min(Math.floor(game.moves.length / 2) + 1, playerMovesTotal) + " / " + playerMovesTotal + " 手目";
+    statEl.textContent = "挑戦回数 " + prog.attempts + " 回 ・ ヒント " + st.hintsShown + "/" + puzzle.hints.length;
+    const checkSquare = isInCheck(game.state, game.state.turn) ? findKing(game.state.board, game.state.turn) : -1;
+    boardView.render({
+      state: game.state,
+      orientation: color,
+      selected: tap.selected,
+      targets: tap.targets,
+      lastMove: game.lastMove,
+      checkSquare: checkSquare >= 0 ? checkSquare : null,
+      starSquare: st.phase === "solved" && game.lastMove ? game.lastMove.to : null,
+      disabled: st.phase !== "play" || st.thinking,
+    });
+    if (st.shakeKey > 0) {
+      wrapEl.classList.remove("board-shake");
+      void wrapEl.offsetWidth;
+      wrapEl.classList.add("board-shake");
+    }
+    msgEl.className = "msg" + (st.phase === "solved" ? " solved" : st.wrongFlash ? " wrong" : "");
+    msgEl.innerHTML = st.phase === "solved" ? '<span class="pop-in" style="font-weight:700">' + esc(st.message) + "</span>" : esc(st.message);
+    sansEl.textContent = game.sans.length > 0 ? formatSans(game.sans, initial.turn, initial.fullmove) : "";
+    hintBtn.disabled = st.hintsShown >= puzzle.hints.length;
+    hintBtn.textContent = "ヒント" + (st.hintsShown > 0 ? "（" + st.hintsShown + "/" + puzzle.hints.length + "）" : "");
+    answerBtn.disabled = st.answerShown;
+    hintsEl.innerHTML = puzzle.hints.slice(0, st.hintsShown).map((h, i) =>
+      '<li class="hint-item panel-in"><b>ヒント' + (i + 1) + "：</b>" + esc(h) + "</li>").join("");
+    if (tap.promo) {
+      const movingPiece = game.state.board[(tap.promo.moves[0] || {}).from];
+      if (movingPiece) {
+        showPromotionPicker(outerEl, game.state.turn, (k) => tap.choosePromo(k), () => tap.cancelPromo());
+      }
+    } else {
+      hidePromotionPicker(outerEl);
+    }
+    if (st.phase === "solved" || st.answerShown) {
+      let s2 = initial;
+      const sans = [];
+      for (const uci of line) {
+        const mv = matchUci(s2, uci);
+        if (!mv) break;
+        sans.push(toSAN(s2, mv));
+        s2 = applyMove(s2, mv);
+      }
+      const lineText = formatSans(sans, initial.turn, initial.fullmove);
+      explainEl.innerHTML =
+        '<section class="panel panel-in" style="margin-top:20px">'
+        + '<h2 class="font-display" style="font-size:18px;font-weight:700;margin:0">解説 — 手順のポイント</h2>'
+        + (solvedNow && puzzle.keyLine ? '<div class="keyline"><p class="keyline-label">KEY SENTENCE</p><p class="keyline-text">' + esc(puzzle.keyLine) + "</p></div>" : "")
+        + '<p style="margin-top:12px;font-size:16px;font-weight:700;letter-spacing:0.02em;color:var(--accent)">' + esc(lineText) + "</p>"
+        + puzzle.explanation.map((para) => '<p style="margin-top:12px;font-size:15px;line-height:1.75">' + esc(para) + "</p>").join("")
+        + (puzzle.source ? '<p style="margin-top:16px;font-size:12px;line-height:1.7;color:var(--dim)">出典：' + esc(puzzle.source) + "</p>" : "")
+        + (st.phase === "solved" ? '<button type="button" class="btn primary" id="lAgain" style="margin-top:16px">もう一度解く</button>' : "")
+        + "</section>";
+      const again = explainEl.querySelector("#lAgain");
+      if (again) again.addEventListener("click", reset);
+    } else {
+      explainEl.innerHTML = "";
+    }
+  }
+
+  const boardView = createBoardView(wrapEl, (sq) => { tap.handleTap(sq); });
+  initViewToggle(root, boardView);
+  game = createGame([initial], [], [], boardView, render);
+  function solveNow() {
+    if (st.phase === "solved") return;
+    const firstSolve = !getProgress(puzzle.id).solved;
+    st.phase = "solved";
+    st.thinking = false;
+    st.wrongFlash = false;
+    st.message = "正解！手順を最後まで再現できました。" + (firstSolve ? " 初クリアで +5 ポイント。" : "");
+    setProgress(puzzle.id, { solved: true });
+    if (firstSolve) payChessQuizSolve(puzzle.id);
+    sfx.win();
+    render();
+    refreshQuizChips();
+  }
+  function handleMove(move) {
+    const plyBefore = game.moves.length;
+    if (plyBefore === 0) setProgress(puzzle.id, { attempts: getProgress(puzzle.id).attempts + 1 });
+    const expected = line[plyBefore];
+    if (expected && moveToUci(move) === expected) {
+      game.applyAnimated(move);
+      if (isCheckmate(game.state)) { solveNow(); return; }
+      if (game.moves.length >= line.length) { solveNow(); return; }
+      st.thinking = true;
+      st.message = "";
+      render();
+      game.later(() => {
+        if (!wrapEl.isConnected || st.phase !== "play") return;
+        st.thinking = false;
+        const reply = matchUci(game.state, line[game.moves.length]);
+        if (reply) game.applyAnimated(reply);
+        if (game.moves.length >= line.length) { solveNow(); return; }
+        render();
+      }, 560);
+      return;
+    }
+    // Deviation: a mating move still solves; anything else is shown,
+    // named, and rolled back to the line.
+    const next = applyMove(game.state, move);
+    if (isCheckmate(next)) {
+      game.applyAnimated(move, { silent: true, onLanded: () => { sfx.win(); fireConfetti(); } });
+      sfx.check();
+      solveNow();
+      return;
+    }
+    game.applyAnimated(move, { silent: true });
+    sfx.wrong();
+    st.shakeKey += 1;
+    st.wrongFlash = true;
+    st.message = "その手は正解の手順ではありません。もう一度考えてみましょう。";
+    render();
+    game.later(() => {
+      if (!wrapEl.isConnected || st.phase !== "play") return;
+      st.wrongFlash = false;
+      game.truncate(plyBefore);
+      st.message = "";
+      render();
+    }, 950);
+  }
+  tap = createTapMove(
+    () => game.state,
+    () => st.phase === "play" && !st.thinking,
+    handleMove,
+    () => { st.shakeKey += 1; sfx.wrong(); render(); },
+    render
+  );
+  function reset() {
+    game.resetAll(initial);
+    st.phase = "play";
+    st.thinking = false;
+    st.wrongFlash = false;
+    st.message = "";
+    tap.clearSelection();
+    render();
+  }
+  root.querySelector("#lReset").addEventListener("click", reset);
+  hintBtn.addEventListener("click", () => {
+    if (st.hintsShown < puzzle.hints.length) {
+      st.hintsShown++;
+      setProgress(puzzle.id, { hintsUsed: st.hintsShown });
+    }
+    render();
+  });
+  answerBtn.addEventListener("click", () => { st.answerShown = true; render(); });
+  solver = { render };
+  render();
+}
+function refreshQuizChips() { renderQuizNav(); }
 
 /* ============================================================
    VERSUS mode — full game vs the built-in engine, saved in
@@ -2585,7 +3648,7 @@ function evaluateEnd(history, player) {
 }
 
 function buildVersus() {
-  const savedGame = loadJSON(LS_VERSUS, null);
+  const savedGame = loadJSON(LS_RUN, null) || loadJSON(LS_VERSUS, null);
   let restored = null;
   if (savedGame && savedGame.v === 1 && Array.isArray(savedGame.fens) && savedGame.fens.length > 0) restored = savedGame;
   const startState = parseFEN(START_FEN);
@@ -2608,9 +3671,33 @@ function buildVersus() {
     } catch (e) { states = [startState]; moves = []; sans = []; }
   }
   versus = { player, difficulty, thinking: false, shakeKey: 0, aiTimer: null };
+  /* Education mode (標準版): best move + grade + opponent's aim.
+     Default OFF, remembered on this device like the other
+     chess preferences. */
+  const LS_EDU = "chess-edu-mode-v1";
+  let eduOn = false;
+  try { eduOn = window.localStorage.getItem(LS_EDU) === "1"; } catch (e) {}
+  /* Points latch (2026-11-14): once education mode is switched ON
+     at any point during a game, that game can no longer earn ARCADE
+     points (chessWin / chessDraw), even if the mode is switched back
+     OFF before the end. The flag rides in the run save (see
+     persist), so a reload cannot clear it; starting a new game
+     resets it to the mode's state at that game's start. A game that
+     begins with the mode already ON is latched from the first move,
+     and a restored run keeps the flag it was saved with. */
+  let eduUsedThisGame = !!eduOn || !!(restored && restored.eduUsed);
+  /* Egg hunt (2026-11-14): bossGame = the Anorak final (strongest
+     engine, education mode sealed); sixerGame = a Sixer takeover
+     (IOI-655321) at boosted strength. Both are set in newGame. */
+  let bossGame = false, sixerGame = false, savedEduOn = null;
+  let eduAnalysis = null;   // { key, bestMove, bestSan, scorePOV, whiteScore, why }
+  let eduAnalyzing = false;
+  let eduJudge = null;      // judgeMoveJa result for the player's last move
+  let eduShowWhy = false;
+  let eduPv = null;         // { key, sans }
 
   versusRoot.innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    '<div class="vs-top" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
     + '<div class="seg-group" role="group" aria-label="手番の選択">'
     + '<button type="button" class="seg-btn small" id="vWhite">白で対戦</button>'
     + '<button type="button" class="seg-btn small" id="vBlack">黒で対戦</button>'
@@ -2620,11 +3707,24 @@ function buildVersus() {
     + '<button type="button" class="seg-btn small" data-diff="medium">ふつう</button>'
     + '<button type="button" class="seg-btn small" data-diff="hard">つよい</button>'
     + "</div></div>"
-    + '<p style="margin-top:8px;font-size:12px;color:var(--dim)">手番や強さを変えると、対局は最初からになります。</p>'
+    + '<p class="vs-note" style="margin-top:8px;font-size:12px;color:var(--dim)">手番や強さを変えると、対局は最初からになります。</p>'
+    + '<div class="edu-toggle-row"><button type="button" class="edu-toggle" id="vEduToggle" aria-pressed="false">教育モード OFF</button><span class="edu-toggle-note">ONにすると、自分の手番で常に最善手・評価・相手の狙いを表示します。</span><span class="edu-pts-note">教育モードではコインが増えも減りもしません（一度でもONにした対局はそのまま中立です）</span></div>'
+    + '<p class="edu-used-note" id="vEduUsed" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>'
     + '<div class="board-tools"><span class="board-tools-label">盤面表示</span><div class="seg-group view-seg" role="group" aria-label="盤面表示切替"><button type="button" class="seg-btn small" data-view="2d" aria-pressed="true">2D</button><button type="button" class="seg-btn small" data-view="3d" aria-pressed="false">3D</button></div><span style="font-size:11px;color:var(--dim)">3Dはドラッグで回転・ピンチで拡大</span></div>'
     + '<div id="vBoardOuter" style="position:relative;margin-top:12px"><div class="board-wrap" id="vBoard"></div></div>'
     + '<div class="msg bold" id="vStatus" aria-live="polite" style="min-height:0"></div>'
+    + '<p class="edu-result-note" id="vResultPtsNote" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>'
     + '<div class="commentary" aria-label="実況コメント"><p class="commentary-label">COMMENTARY</p><p class="commentary-text" id="vCommentary" aria-live="polite"></p></div>'
+    + '<section class="edu-panel" id="vEdu" hidden aria-label="教育モード">'
+    + '<div class="edu-head"><span class="edu-title">教育モード</span><span class="edu-engine-note">最善手は内蔵エンジン（3手読み）基準です</span></div>'
+    + '<div class="edu-eval" aria-hidden="true"><div class="edu-eval-white" id="vEduEvalWhite"></div></div>'
+    + '<p class="edu-eval-text" id="vEduEvalText"></p>'
+    + '<p class="edu-best" id="vEduBest" aria-live="polite"></p>'
+    + '<button type="button" class="btn edu-why-btn" id="vEduWhyBtn">なぜこの手？</button>'
+    + '<div class="edu-why" id="vEduWhy" hidden></div>'
+    + '<div class="edu-threat" id="vEduThreat" hidden><p class="edu-sec-label">相手の狙い</p><p class="edu-threat-text" id="vEduThreatText"></p></div>'
+    + '<div class="edu-judge" id="vEduJudge" hidden><p class="edu-sec-label">直前のあなたの手の判定</p><p class="edu-judge-text" id="vEduJudgeText"></p></div>'
+    + "</section>"
     + '<div class="btn-grid">'
     + '<button type="button" class="btn" id="vNew">最初から（新規対局）</button>'
     + '<button type="button" class="btn" id="vUndo">待った（1手分戻す）</button>'
@@ -2638,17 +3738,42 @@ function buildVersus() {
   const movesBox = versusRoot.querySelector("#vMoves");
   const movesGrid = versusRoot.querySelector("#vMovesGrid");
   const undoBtn = versusRoot.querySelector("#vUndo");
+  const eduToggleBtn = versusRoot.querySelector("#vEduToggle");
+  const eduPanel = versusRoot.querySelector("#vEdu");
+  const eduEvalWhiteEl = versusRoot.querySelector("#vEduEvalWhite");
+  const eduEvalTextEl = versusRoot.querySelector("#vEduEvalText");
+  const eduBestEl = versusRoot.querySelector("#vEduBest");
+  const eduWhyBtn = versusRoot.querySelector("#vEduWhyBtn");
+  const eduWhyEl = versusRoot.querySelector("#vEduWhy");
+  const eduThreatEl = versusRoot.querySelector("#vEduThreat");
+  const eduThreatTextEl = versusRoot.querySelector("#vEduThreatText");
+  const eduJudgeEl = versusRoot.querySelector("#vEduJudge");
+  const eduJudgeTextEl = versusRoot.querySelector("#vEduJudgeText");
+  const eduUsedEl = versusRoot.querySelector("#vEduUsed");
+  const resultPtsNoteEl = versusRoot.querySelector("#vResultPtsNote");
 
   let tap, game;
   function persist() {
-    saveJSON(LS_VERSUS, {
+    // A finished game — or one rewound to the start — is not a run
+    // in progress: clear both keys so a later reload opens a fresh
+    // board instead of resurrecting a dead run (the mini games'
+    // saveRun does the same on game over).
+    if (!game || game.moves.length === 0 || evaluateEnd(game.history, versus.player).over) {
+      try { window.localStorage.removeItem(LS_RUN); } catch (e) {}
+      try { window.localStorage.removeItem(LS_VERSUS); } catch (e) {}
+      return;
+    }
+    const payload = {
       v: 1,
       player: versus.player,
       difficulty: versus.difficulty,
       fens: game.history.map((s) => toFEN(s)),
       sans: game.sans,
       ucis: game.moves.map((m) => moveToUci(m)),
-    });
+      eduUsed: eduUsedThisGame,
+    };
+    saveJSON(LS_RUN, payload);
+    saveJSON(LS_VERSUS, payload);
   }
   let persistTimer = null;
   function schedulePersist() {
@@ -2662,6 +3787,18 @@ function buildVersus() {
       b.classList.toggle("active", b.getAttribute("data-diff") === versus.difficulty));
     const end = evaluateEnd(game.history, versus.player);
     const checkSquare = isInCheck(game.state, game.state.turn) ? findKing(game.state.board, game.state.turn) : -1;
+    /* --- education mode: threats are cheap and synchronous;
+       the best-move analysis arrives asynchronously (see
+       scheduleEduAnalysis) and is keyed to the position. --- */
+    const posKey = positionKey(game.state);
+    const isPlayerTurn = !end.over && game.state.turn === versus.player && !versus.thinking;
+    const ana = eduOn && eduAnalysis && eduAnalysis.key === posKey ? eduAnalysis : null;
+    let threat = null;
+    if (eduOn && isPlayerTurn && game.moves.length > 0) {
+      const prevState = game.history[game.history.length - 2];
+      const lastWasOpponent = prevState && prevState.turn !== versus.player;
+      threat = threatInfo(game.state, versus.player, game.lastMove, !!lastWasOpponent);
+    }
     boardView.render({
       state: game.state,
       orientation: versus.player,
@@ -2671,6 +3808,8 @@ function buildVersus() {
       checkSquare: checkSquare >= 0 ? checkSquare : null,
       starSquare: end.over && game.lastMove ? game.lastMove.to : null,
       disabled: end.over || game.state.turn !== versus.player || versus.thinking,
+      bestArrow: ana && isPlayerTurn ? { from: ana.bestMove.from, to: ana.bestMove.to } : null,
+      threatSquares: threat ? threat.squares : [],
     });
     if (versus.shakeKey > 0) {
       wrapEl.classList.remove("board-shake");
@@ -2685,8 +3824,28 @@ function buildVersus() {
     statusEl.className = "msg bold" + (end.over && end.playerWon ? " solved" : "");
     statusEl.style.minHeight = "0";
     statusEl.innerHTML = end.over ? '<span class="pop-in">' + esc(statusText) + "</span>" : esc(statusText);
+    /* ARCADE points: pay once per finished versus game (the move
+       count + result text is the run signature, so re-renders of the
+       same finished game never pay twice). Difficulty multiplies.
+       A game that used education mode at any point (eduUsedThisGame)
+       never pays — see the latch where the toggle is handled. */
+    if (window.ARCADE_points && !eduUsedThisGame) {
+      if (end.over) {
+        var ptsSig = game.moves.length + "|" + end.text;
+        if (versus.__ptsSig !== ptsSig) {
+          versus.__ptsSig = ptsSig;
+          var diffKey = versus.difficulty === "easy" ? "easy" : versus.difficulty === "hard" ? "hard" : "normal";
+          if (window.__huntEvent) window.__huntEvent(end.playerWon ? (bossGame ? "anorakWin" : "chessCleanWin") : "");
+          if (end.playerWon && sixerGame && window.__huntEvent) window.__huntEvent("sixerWin");
+          if (end.playerWon) window.ARCADE_points.earn("chessWin", { diff: diffKey });
+          else if (end.text.indexOf("引き分け") >= 0) window.ARCADE_points.earn("chessDraw", { diff: diffKey });
+        }
+      } else if (versus.__ptsSig) versus.__ptsSig = null;
+    }
     if (commentaryEl) {
       let commentaryText = START_COMMENTARY;
+      if (bossGame && game.moves.length === 0) commentaryText = "最終ボス「アノラック」との決戦。教育モードは封印されています。";
+      else if (sixerGame && game.moves.length === 0) commentaryText = "シクサー（IOI-655321）が乱入！ CPUが強化されています。";
       if (game.moves.length > 0) {
         const li = game.moves.length - 1;
         const prevS = game.history[li], lastMv = game.moves[li], nextS = game.history[li + 1];
@@ -2697,6 +3856,48 @@ function buildVersus() {
         commentaryEl.classList.remove("panel-in");
         void commentaryEl.offsetWidth;
         commentaryEl.classList.add("panel-in");
+      }
+    }
+    /* --- education panel --- */
+    eduUsedEl.hidden = !(eduUsedThisGame && !end.over);
+    resultPtsNoteEl.hidden = !(eduUsedThisGame && end.over);
+    eduToggleBtn.textContent = eduOn ? "教育モード ON" : "教育モード OFF";
+    eduToggleBtn.disabled = bossGame;
+    eduToggleBtn.setAttribute("aria-pressed", eduOn ? "true" : "false");
+    eduToggleBtn.classList.toggle("active", eduOn);
+    eduPanel.hidden = !eduOn;
+    versusRoot.classList.toggle("edu-open", eduOn);
+    if (eduOn) {
+      const ev = ana ? formatEvalWhite(ana.whiteScore) : formatEvalWhite(evaluateBoard(game.state));
+      eduEvalWhiteEl.style.width = ev.pct + "%";
+      eduEvalTextEl.textContent = "評価値 " + ev.text + (ana ? "" : "（解析中…）");
+      if (end.over) eduBestEl.textContent = "対局は終了しました。判定と解説はこのまま見られます。";
+      else if (!isPlayerTurn) eduBestEl.textContent = "相手の手番です。あなたの手番になると最善手を表示します。";
+      else if (ana) eduBestEl.innerHTML = '最善手は <span class="edu-best-san">' + esc(ana.bestSan) + "</span>（盤の緑の矢印）";
+      else eduBestEl.textContent = "最善手を解析中…";
+      eduWhyBtn.disabled = !(ana && isPlayerTurn);
+      if (eduShowWhy && ana && eduPv && eduPv.key === posKey) {
+        eduWhyEl.hidden = false;
+        eduWhyEl.innerHTML = "<b>なぜ？</b> " + esc(ana.why)
+          + '<br><span style="color:var(--dim)">最善の流れ：</span>' + esc(formatSans(eduPv.sans, game.state.turn, game.state.fullmove));
+      } else {
+        eduWhyEl.hidden = true;
+      }
+      if (threat && threat.lines.length > 0) {
+        eduThreatEl.hidden = false;
+        eduThreatTextEl.innerHTML = threat.lines.map((l) => esc(l)).join("<br>");
+      } else if (threat && isPlayerTurn && game.moves.length > 0) {
+        eduThreatEl.hidden = false;
+        eduThreatTextEl.textContent = "いまチェックはなく、タダで取られそうな駒もありません。";
+      } else {
+        eduThreatEl.hidden = true;
+      }
+      if (eduJudge) {
+        eduJudgeEl.hidden = false;
+        eduJudgeEl.setAttribute("data-grade", eduJudge.grade);
+        eduJudgeTextEl.innerHTML = '<span class="edu-judge-symbol">' + esc(eduJudge.symbol) + " " + esc(eduJudge.label) + "</span> " + esc(eduJudge.reason);
+      } else {
+        eduJudgeEl.hidden = true;
       }
     }
     undoBtn.disabled = versus.thinking || game.moves.length === 0;
@@ -2718,6 +3919,63 @@ function buildVersus() {
     } else {
       hidePromotionPicker(outerEl);
     }
+    /* Versus layout (2026-11-15 repair): the board is sized by the
+       column WIDTH and the screen scrolls when the stack is taller
+       than the viewport (see chess.css .vs-mode). When the set of
+       visible rows changes (move list appears, education panel
+       opens), the 3D canvas — which only re-reads its size on
+       window resize — is told to re-measure. */
+    const fitKey = (movesBox.hidden ? "0" : "1") + (eduOn ? "1" : "0");
+    if (versus.__fitKey !== fitKey) {
+      versus.__fitKey = fitKey;
+      requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+    }
+    if (eduOn && isPlayerTurn && !ana && !eduAnalyzing) scheduleEduAnalysis(game.state, posKey);
+  }
+  /* Best-move analysis runs off the render path: the search can
+     take a few hundred ms, so it is deferred and its result is
+     only accepted if the position is still the same. */
+  function scheduleEduAnalysis(stateSnapshot, key) {
+    eduAnalyzing = true;
+    window.setTimeout(() => {
+      eduAnalyzing = false;
+      if (!eduOn || !versus || versus.thinking) return;
+      if (positionKey(game.state) !== key || game.state.turn !== versus.player) return;
+      const best = searchRootBest(stateSnapshot, 3, 70000);
+      if (!best) return;
+      const next = applyMove(stateSnapshot, best.move);
+      eduAnalysis = {
+        key,
+        bestMove: best.move,
+        bestSan: toSAN(stateSnapshot, best.move),
+        scorePOV: best.score,
+        whiteScore: stateSnapshot.turn === "w" ? best.score : -best.score,
+        why: moveReasonJa(stateSnapshot, best.move, next),
+      };
+      eduPv = null;
+      render();
+    }, 40);
+  }
+  /* The played move is graded just after its glide lands and
+     before the AI replies, using the analysis captured before
+     the move (or a quick depth-2 fallback if the player moved
+     before the analysis finished). */
+  function scheduleJudge(prevState, move) {
+    const expectPlies = game.moves.length;
+    const expectUci = moveToUci(move);
+    window.setTimeout(() => {
+      if (!eduOn || game.moves.length !== expectPlies) return;
+      const last = game.moves[game.moves.length - 1];
+      if (!last || moveToUci(last) !== expectUci) return;
+      let ana = eduAnalysis && eduAnalysis.key === positionKey(prevState) ? eduAnalysis : null;
+      if (!ana) {
+        const best = searchRootBest(prevState, 2, 30000);
+        if (!best) return;
+        ana = { bestMove: best.move, bestSan: toSAN(prevState, best.move), scorePOV: best.score };
+      }
+      eduJudge = judgeMoveJa(prevState, move, applyMove(prevState, move), ana);
+      render();
+    }, 340);
   }
   function maybeAiMove() {
     const end = evaluateEnd(game.history, versus.player);
@@ -2740,6 +3998,7 @@ function buildVersus() {
   initViewToggle(versusRoot, boardView);
   game = createGame(states, moves, sans, boardView, render);
   function handlePlayerMove(move) {
+    const prevState = game.state;
     const next = applyMove(game.state, move);
     const nextEnd = evaluateEnd(game.history.concat([next]), versus.player);
     game.applyAnimated(move, {
@@ -2748,6 +4007,7 @@ function buildVersus() {
         maybeAiMove();
       },
     });
+    if (eduOn) scheduleJudge(prevState, move);
     schedulePersist();
   }
   tap = createTapMove(
@@ -2761,13 +4021,24 @@ function buildVersus() {
     render
   );
   function newGame(nextPlayer, nextDifficulty) {
+    var wantBoss = window.__huntBoss === "anorak";
+    if (wantBoss) window.__huntBoss = null;
+    if (wantBoss && !bossGame) savedEduOn = eduOn;
+    bossGame = wantBoss;
+    if (bossGame) { nextDifficulty = "hard"; eduOn = false; }
+    else if (savedEduOn !== null) { eduOn = savedEduOn; savedEduOn = null; }
+    sixerGame = !bossGame && !!(window.__huntSixerRoll && window.__huntSixerRoll());
+    if (sixerGame) nextDifficulty = "hard";
     if (versus.aiTimer) window.clearTimeout(versus.aiTimer);
     versus.player = nextPlayer;
     versus.difficulty = nextDifficulty;
     versus.thinking = false;
+    eduUsedThisGame = eduOn;
+    eduAnalysis = null; eduJudge = null; eduShowWhy = false; eduPv = null;
     tap.clearSelection();
     game.resetAll(startState);
     try { window.localStorage.removeItem(LS_VERSUS); } catch (e) {}
+    try { window.localStorage.removeItem(LS_RUN); } catch (e) {}
     sfx.select();
     render();
     maybeAiMove();
@@ -2783,10 +4054,40 @@ function buildVersus() {
     const plies = game.moves.length;
     const steps = game.state.turn === versus.player ? Math.min(2, plies) : 1;
     game.truncate(plies - steps);
+    eduAnalysis = null; eduJudge = null; eduShowWhy = false; eduPv = null;
     tap.clearSelection();
     sfx.select();
     render();
     schedulePersist();
+  });
+  eduToggleBtn.addEventListener("click", () => {
+    if (bossGame) return;
+    eduOn = !eduOn;
+    try { window.localStorage.setItem(LS_EDU, eduOn ? "1" : "0"); } catch (e) {}
+    /* Latch: switching the mode ON mid-game marks this game as
+       points-ineligible for good. Toggling it on only after the
+       game has ended (to review the grades) does not latch — the
+       result was already decided without it. Persist at once so a
+       reload right after toggling keeps the flag. */
+    if (eduOn && !evaluateEnd(game.history, versus.player).over) eduUsedThisGame = true;
+    if (eduOn) { eduAnalysis = null; eduShowWhy = false; }
+    sfx.select();
+    render();
+    schedulePersist();
+    requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+  });
+  eduWhyBtn.addEventListener("click", () => {
+    const key = positionKey(game.state);
+    const anaNow = eduAnalysis && eduAnalysis.key === key ? eduAnalysis : null;
+    if (!anaNow) return;
+    if (eduShowWhy && eduPv && eduPv.key === key) { eduShowWhy = false; render(); return; }
+    if (!eduPv || eduPv.key !== key) {
+      const pv = buildPvLine(game.state, anaNow.bestMove, 4);
+      eduPv = { key, sans: pv.sans };
+    }
+    eduShowWhy = true;
+    sfx.select();
+    render();
   });
   versus.render = render;
   render();
@@ -2816,9 +4117,15 @@ function setMode(mode) {
   modeVersusBtn.setAttribute("aria-pressed", !isQuiz ? "true" : "false");
   document.getElementById("quizView").hidden = !isQuiz;
   document.getElementById("versusView").hidden = isQuiz;
+  /* Versus mode switches #chessRoot into the compact flow layout
+     in chess.css (.vs-mode): board sized by column width, page
+     scrolls when the stack exceeds the viewport. The quiz tab
+     keeps the original layout. */
+  document.getElementById("chessRoot").classList.toggle("vs-mode", !isQuiz);
   if (!isQuiz && !versusBuilt) { versusBuilt = true; buildVersus(); }
   else if (!isQuiz && versus && versus.render) versus.render();
   else if (isQuiz && solver && solver.render) solver.render();
+  if (!isQuiz) requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
 }
 modeQuizBtn.addEventListener("click", () => setMode("quiz"));
 modeVersusBtn.addEventListener("click", () => setMode("versus"));
