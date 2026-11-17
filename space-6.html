@@ -16157,7 +16157,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            (it once rode into the public GitHub copy inside the
            shared base code). The assembled value is unchanged. */
         var DRIVE_API_KEY = (function () {
-  var p = [""];
+ var p = [""];
           return p.join("");
         })();
         function dlUrl(id) { return DL_BASE + encodeURIComponent(id) + "?alt=media&key=" + DRIVE_API_KEY; }
@@ -35480,7 +35480,8 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     { id: "gomoku", name: "五目の石" },
     { id: "pointer", name: "ポインター" },
     { id: "vinyl", name: "レコードデザイン" },
-    { id: "ttskin", name: "ターンテーブルの画面スキン" }
+    { id: "ttskin", name: "ターンテーブルの画面スキン" },
+    { id: "record", name: "レコード" }
   ];
   var SHOP = [
     { id: "lobby-default", cat: "lobby", name: "標準テーマ", price: 0 },
@@ -35607,7 +35608,16 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     { id: "ttskin-walnut", cat: "ttskin", name: "ウォールナット", price: 1500, desc: "ウォールナットの木目デッキ。70年代のハイファイの顔" },
     { id: "ttskin-studio", cat: "ttskin", name: "スタジオブラック", price: 1500, desc: "真っ黒なスタジオ仕様のデッキ" },
     { id: "ttskin-cream", cat: "ttskin", name: "クリームレトロ", price: 2000, desc: "クリーム色のレトロなデッキ" },
-    { id: "ttskin-midnight", cat: "ttskin", name: "ミッドナイトブルー", price: 2000, desc: "深夜の青に沈むデッキ" }
+    { id: "ttskin-midnight", cat: "ttskin", name: "ミッドナイトブルー", price: 2000, desc: "深夜の青に沈むデッキ" },
+    { id: "rec-midnight-window", cat: "record", name: "真夜中の窓辺", price: 0, desc: "ターンテーブルで再生できるレコード。ローファイな真夜中のループ" },
+    { id: "rec-marine-drive", cat: "record", name: "マリン・ドライブ", price: 0, desc: "ターンテーブルで再生できるレコード。シティポップの海辺ドライブ" },
+    { id: "rec-8bit-adventure", cat: "record", name: "8ビット・アドベンチャー", price: 0, desc: "ターンテーブルで再生できるレコード。チップチューンの冒険" },
+    { id: "rec-highway-dash", cat: "record", name: "疾走ハイウェイ", price: 0, desc: "ターンテーブルで再生できるレコード。ポップロックの疾走" },
+    { id: "rec-piano-garden", cat: "record", name: "ピアノ・ガーデン", price: 0, desc: "ターンテーブルで再生できるレコード。カノン進行のピアノ" },
+    { id: "rec-afternoon-bossa", cat: "record", name: "午後のボッサ", price: 800, desc: "ターンテーブルで再生できるレコード。ボサノバの午後のループ" },
+    { id: "rec-neon-circuit", cat: "record", name: "ネオン・サーキット", price: 1200, desc: "ターンテーブルで再生できるレコード。四つ打ちテクノのループ" },
+    { id: "rec-sea-of-stardust", cat: "record", name: "星屑の海", price: 900, desc: "ターンテーブルで再生できるレコード。星屑を漂うアンビエント", gachaOnly: true },
+    { id: "rec-slap-street", cat: "record", name: "スラップ・ストリート", price: 1500, desc: "ターンテーブルで再生できるレコード。スラップベースのファンク", gachaOnly: true }
   ];
   var GUIDE = [
     "チェス勝利： 50 コイン（教育モードを使った対局はコインが増えも減りもしません）", "チェス引き分け： 15 コイン（教育モードを使った対局はコインが増えも減りもしません）",
@@ -35867,8 +35877,22 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     "ttskin-cream": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#ecdfc6"/><circle cx="19" cy="24" r="10" fill="#17130c"/><circle cx="19" cy="24" r="3" fill="#e9b93c"/><path d="M36 13l4 9" stroke="#4a3a20" stroke-width="2" stroke-linecap="round"/></svg>',
     "ttskin-midnight": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0e1e3d"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#274a7c"/><circle cx="39" cy="14" r="1.3" fill="#dfe6f2"/><circle cx="33" cy="11" r="0.9" fill="#dfe6f2"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>'
   };
+  /* BGM record discs (2026-11-16): one disc per record, label in
+     the track's accent colour (same accent the deck morphs to). */
+  var RECORD_ART = {
+    "rec-midnight-window": "#7a68d8", "rec-marine-drive": "#38b6c9",
+    "rec-8bit-adventure": "#ffcf3f", "rec-highway-dash": "#ff7a3c",
+    "rec-piano-garden": "#6fce8b", "rec-afternoon-bossa": "#e8a04c",
+    "rec-neon-circuit": "#ff3d7e", "rec-sea-of-stardust": "#7fb2ff",
+    "rec-slap-street": "#a55eea"
+  };
+  function recordArtHTML(id) {
+    var c = RECORD_ART[id] || "#e9b93c";
+    return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#101014"/><circle cx="24" cy="24" r="15.5" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="1"/><circle cx="24" cy="24" r="12" fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/><circle cx="24" cy="24" r="7.5" fill="' + c + '"/><circle cx="24" cy="24" r="1.6" fill="#c8ccd4"/></svg>';
+  }
   function pfItemArtHTML(item) {
     if (!item) return "";
+    if (item.cat === "record") return recordArtHTML(item.id);
     if (item.cat === "vinyl" || item.cat === "ttskin") return TT_ART[item.id] || "";
     if (item.cat === "avatar") return AVATAR_ART[item.id] || "";
     if (item.cat === "cover") return COVER_ART[item.id] || "";
@@ -36317,6 +36341,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     window.__ttVinyl = store.equipped.vinyl || "vinyl-default";
     window.__ttSkin = store.equipped.ttskin || "ttskin-default";
     try { if (typeof window.__turntableCosmetics === "function") window.__turntableCosmetics(); } catch (e) {}
+    /* BGM records (2026-11-16): the equipped record is the one on
+       the turntable deck; module 67 mirrors it into the player. */
+    window.__ttRecord = store.equipped.record || null;
+    try { if (typeof window.__bgmOnEquip === "function") window.__bgmOnEquip(store.equipped.record || null); } catch (e) {}
   }
 
   /* ---------- shop ---------- */
@@ -36454,7 +36482,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       /* Pointer cards show their real cursor art; so do the
          gacha-only decorations that carry mini art. Everything
          else keeps its painted swatch (2026-11-15). */
-      var hasArt = item.cat === "avatar" || item.cat === "cover" || item.cat === "pframe" || item.cat === "pointer" || item.cat === "vinyl" || item.cat === "ttskin" || ((item.cat === "mjback" || item.cat === "fx") && !!pfItemArtHTML(item));
+      var hasArt = item.cat === "avatar" || item.cat === "cover" || item.cat === "pframe" || item.cat === "pointer" || item.cat === "vinyl" || item.cat === "ttskin" || item.cat === "record" || ((item.cat === "mjback" || item.cat === "fx") && !!pfItemArtHTML(item));
       var art = hasArt ? '<span class="pts-art" data-i18n-skip>' + pfItemArtHTML(item) + "</span>" : '<span class="pts-swatch sw-' + item.id + '" aria-hidden="true"></span>';
       var h = '<div class="pts-item' + (eq ? " is-equipped" : "") + (item.huntOnly && !owned ? " is-locked" : "") + '">' + art + '<div class="pts-item-info"><span class="pts-item-name">' + item.name + (item.price >= 2000 ? '<span class="pts-premium-tag">プレミアム</span>' : "") + '</span>' +
         (item.desc ? '<span class="pts-item-desc">' + item.desc + '</span>' : "");
@@ -40573,6 +40601,30 @@ PATTERNS.push(
   "関連ノートは3段階で示す。同じ棚にあるもの、互いに参照し合うもの、そして本文の中で名前を直接挙げているもの（いちばん強いつながり）。背骨のように残るDNAのモチーフは、読んでいる章に合わせて灯る。知識ライブラリの2Dグラフは、力任せの配置をやめ、「脳ビュー（知識の脳）の仕組み」で決めた、17の棚ごとの扇形に整列するリング配置を標準にした。配置は計算式だけで決まるので、何度開いても同じ絵になる。": ["Related notes are shown in 3 levels: same shelf, cross-referenced, and directly mentioned in text (strongest link). DNA motifs acting as the 'backbone' illuminate according to the chapter being read. The 2D graph in the library now uses the 'Brain View' logic: a fan-shaped ring alignment for each of the 17 shelves, ensuring a consistent layout regardless of how many times it's opened, as it's determined purely by calculation.", "관련 노트는 3단계로 표시됩니다. 같은 선반, 상호 참조, 그리고 본문에 직접 언급된 항목(가장 강한 연결)입니다. 척추처럼 남는 DNA 모티프는 읽고 있는 챕터에 맞춰 빛납니다. 지식 라이브러리의 2D 그래프는 강제 배치를 그만두고 '뇌 뷰(지식의 뇌) 구조'에서 결정한 17개 선반별 부채꼴 정렬을 표준으로 삼았습니다. 배치는 계산식만으로 결정되므로 몇 번을 열어도 같은 그림이 됩니다.", "相关笔记分3级展示：同一书架、相互引用、正文中直接提及（最强关联）。作为主干的DNA图案会随当前阅读的章节亮起。知识库的2D图表放弃了强制布局，改为“大脑视图”逻辑：17个书架扇形排列，由于布局完全由计算公式决定，无论打开多少次，视图始终如一。", "相關筆記分3級展示：同一書架、相互引用、正文中直接提及（最強關聯）。作為主幹的DNA圖案會隨當前閱讀的章節亮起。知識庫的2D圖表放棄了強制佈局，改為「大腦視圖」邏輯：17個書架扇形排列，由於佈局完全由計算公式決定，無論打開多少次，視圖始終如一。", "Las notas relacionadas se muestran en 3 niveles: mismo estante, referencia cruzada y mencionadas directamente en el texto (el vínculo más fuerte). Los motivos de ADN actúan como una columna vertebral y se iluminan según el capítulo leído. El gráfico 2D de la biblioteca dejó la disposición forzada y usa la lógica de 'Vista cerebral': una alineación en abanico para cada uno de los 17 estantes. Al basarse solo en cálculos, el diseño es idéntico cada vez que se abre.", "Les notes liées sont affichées en 3 niveaux : même étagère, référence croisée, et mention directe dans le texte (lien le plus fort). Les motifs ADN servent d'épine dorsale et s'illuminent selon le chapitre lu. Le graphique 2D de la bibliothèque utilise désormais la logique « Vue Cerveau » : un alignement en éventail pour chacune des 17 étagères. Comme la disposition est purement mathématique, elle est identique à chaque ouverture.", "Verwandte Notizen werden in 3 Stufen angezeigt: Gleiches Regal, Querverweise und direkte Erwähnung im Text (stärkste Verbindung). Die DNA-Motive leuchten je nach Kapitel. Das 2D-Diagramm nutzt nun die „Brain View“-Logik: eine fächerförmige Ringanordnung für jedes der 17 Regale. Da das Layout rein berechnet wird, ist das Bild bei jedem Öffnen gleich.", "Notas relacionadas são exibidas em 3 níveis: mesma prateleira, referências cruzadas e mencionadas diretamente no texto (vínculo mais forte). Motivos de DNA funcionam como uma espinha dorsal e iluminam-se conforme o capítulo. O gráfico 2D da biblioteca agora usa a lógica 'Vista Cerebral': alinhamento em leque para cada uma das 17 prateleiras. Como o layout é puramente calculado, é sempre idêntico ao abrir.", "Le note correlate sono mostrate su 3 livelli: stesso scaffale, riferimenti incrociati e citate direttamente nel testo (legame più forte). I motivi del DNA fungono da colonna vertebrale e si illuminano in base al capitolo letto. Il grafico 2D della libreria utilizza la logica 'Vista Cervello': allineamento a ventaglio per ognuno dei 17 scaffali. Poiché il layout è puramente calcolato, rimane identico a ogni apertura."],
   "検証の数字です。ノート画面の検査71項目、リング配置の検査51項目、チェスクイズの題名の検査22項目がすべて合格で、整列の格子から外れた点は0件、開き直しても配置は一致しました。同じ改造の中で直した不具合も検査しています。ホールデムは3つの画面サイズで操作列が画面内に収まり、当たり枠の発光はサイコロとルーレットで実際に光ることを確認し、卵探しの記録漏れは「保留して後で適用する」形に直し、釣りは実プレイ3投すべてで釣果がありました。": ["Verification numbers: 71 checks for notes, 51 for ring alignment, 22 for chess quiz titles—all passed. 0 deviations from grid alignment; layout matches after re-opening. Bugs fixed in the same update were also tested. Hold'em operations fit within all 3 screen sizes, highlights confirmed to glow for dice and roulette, egg-hunting records fixed to 'pending apply', and fishing confirmed successful in 3/3 test casts.", "검증 숫자입니다. 노트 화면 검사 71개, 링 정렬 검사 51개, 체스 퀴즈 제목 검사 22개 모두 합격했으며, 정렬 격자를 벗어난 점은 0건, 다시 열어도 배치는 일치했습니다. 같은 개조에서 수정한 버그들도 검사했습니다. 홀덤은 3개 화면 크기에서 조작열이 화면 내에 수용되며, 당첨 칸 발광은 주사위와 룰렛에서 실제로 빛남을 확인했고, 달걀 찾기 누락 기록은 '보류 후 나중에 적용'으로 수정했으며, 낚시는 실플레이 3번 투척 모두 조과가 있었습니다.", "验证数字：笔记画面71项检查、圆环排列51项检查、国际象棋测验标题22项检查全部通过。零项超出对齐网格，重新打开布局一致。同一改造中修复的漏洞也进行了测试。德州扑克在3种屏幕尺寸下操作列均在范围内，骰子与轮盘的发光效果已确认，寻蛋记录缺失已改为“暂存后应用”，钓鱼测试3投全部钓到鱼。", "驗證數字：筆記畫面71項檢查、圓環排列51項檢查、國際象棋測驗標題22項檢查全部通過。零項超出對齊網格，重新打開佈局一致。同一改造中修復的漏洞也進行了測試。德州撲克在3種螢幕尺寸下操作列均在範圍內，骰子與輪盤的發光效果已確認，尋蛋記錄缺失已改為「暫存後應用」，釣魚測試3投全部釣到魚。", "Números de verificación: 71 controles en notas, 51 en alineación de anillos y 22 en títulos de puzzles de ajedrez, todos aprobados. 0 desviaciones de la rejilla; el diseño coincide al reabrir. Se probaron las correcciones de errores del mismo update. En Hold'em, la interfaz cabe en los 3 tamaños de pantalla, los brillos de dados y ruleta funcionan, el registro de búsqueda de huevos se cambió a 'aplicar pendiente', y la pesca tuvo éxito en 3/3 lanzamientos de prueba.", "Chiffres de vérification : 71 contrôles sur les notes, 51 sur l'alignement des anneaux, 22 sur les titres de quiz d'échecs, tous validés. 0 écart par rapport à la grille ; la mise en page est identique à la réouverture. Les bugs corrigés ont été testés. Au Hold'em, les contrôles s'adaptent aux 3 tailles d'écran, le rétroéclairage des dés et de la roulette fonctionne, les enregistrements de chasse aux œufs sont en « application différée », et la pêche a réussi lors des 3 essais.", "Verifizierungszahlen: 71 Notiz-Prüfungen, 51 Ring-Ausrichtungs-Prüfungen, 22 Schach-Quiz-Titel—alle bestanden. 0 Abweichungen vom Raster; das Layout ist nach erneutem Öffnen identisch. Im gleichen Update behobene Fehler wurden ebenfalls getestet. Hold'em-Bedienelemente passen auf alle 3 Bildschirmgrößen, Leuchteffekte bei Würfeln/Roulette funktionieren, Eiersuche-Datensätze wurden auf „später anwenden“ korrigiert, und Fischen war in 3 von 3 Versuchen erfolgreich.", "Números de verificação: 71 checagens em notas, 51 em alinhamento de anéis e 22 em títulos de quiz de xadrez, todos aprovados. 0 desvios do grid; o layout permanece consistente ao reabrir. Bugs corrigidos na mesma atualização foram testados. No Hold'em, os controles cabem nos 3 tamanhos de tela, o brilho de dados e roleta foi confirmado, registros de caça aos ovos corrigidos para 'aplicar depois', e a pesca foi bem-sucedida em 3/3 lançamentos.", "Numeri di verifica: 71 controlli per le note, 51 per l'allineamento degli anelli, 22 per i titoli dei quiz di scacchi: tutto superato. 0 deviazioni dalla griglia; il layout corrisponde dopo la riapertura. I bug corretti nello stesso aggiornamento sono stati testati. Nel Hold'em, i comandi rientrano in tutte le 3 dimensioni dello schermo, l'illuminazione di dadi e roulette è stata confermata, i record della caccia alle uova sono stati corretti in 'applica dopo' e la pesca ha avuto successo in 3/3 lanci di prova."],
   "レコードデザイン": ["Record Design", "레코드 디자인", "唱片设计", "唱片設計", "Diseño del disco", "Design de disque", "Schallplattendesign", "Design do disco", "Design del disco"],
+  "レコード": ["Record","레코드","唱片","唱片","Disco","Disque","Schallplatte","Disco","Disco"],
+  "真夜中の窓辺": ["Midnight Window","한밤의 창가","午夜窗边","午夜窗邊","Ventana de medianoche","Fenêtre de minuit","Mitternachtsfenster","Janela da meia-noite","Finestra di mezzanotte"],
+  "マリン・ドライブ": ["Marine Drive","마린 드라이브","海洋大道","海洋大道","Paseo marítimo","Route marine","Marine Drive","Passeio marítimo","Percorso marino"],
+  "8ビット・アドベンチャー": ["8-Bit Adventure","8비트 어드벤처","8位冒险","8位元冒險","Aventura de 8 bits","Aventure 8-bit","8-Bit-Abenteuer","Aventura 8-bit","Avventura 8-bit"],
+  "午後のボッサ": ["Afternoon Bossa","오후의 보사","午后波萨","午後巴薩","Bossa de tarde","Bossa de l'après-midi","Nachmittags-Bossa","Bossa da tarde","Bossa pomeridiana"],
+  "ネオン・サーキット": ["Neon Circuit","네온 서킷","霓虹赛道","霓虹賽道","Circuito neón","Circuit néon","Neon-Schaltkreis","Circuito neon","Circuito neon"],
+  "星屑の海": ["Sea of Stardust","별가루의 바다","星尘之海","星塵之海","Mar de polvo estelar","Mer de poussière d'étoiles","Meer aus Sternenstaub","Mar de poeira estelar","Mare di polvere di stelle"],
+  "疾走ハイウェイ": ["Highway Dash","질주 하이웨이","疾驰公路","疾馳公路","Carrera en la autopista","Ruée sur l'autoroute","Highway-Rausch","Disparada na autoestrada","Corsa in autostrada"],
+  "スラップ・ストリート": ["Slap Street","슬랩 스트리트","拍击街道","拍擊街道","Calle slap","Rue slap","Slap-Straße","Rua slap","Strada slap"],
+  "ピアノ・ガーデン": ["Piano Garden","피아노 가든","钢琴花园","鋼琴花園","Jardín de piano","Jardin du piano","Klaviergarten","Jardim de piano","Giardino del pianoforte"],
+  "ターンテーブルで再生できるレコード。ローファイな真夜中のループ": ["A record playable on the turntable. Lofi midnight loops.","턴테이블에서 재생할 수 있는 레코드. 로파이한 한밤중의 루프.","可在唱片机上播放的唱片。Lo-fi深夜循环。","可在唱片機上播放的唱片。Lo-fi深夜循環。","Un disco que se puede reproducir en el tocadiscos. Un bucle lo-fi de medianoche.","Un disque jouable sur la platine. Boucle lo-fi de minuit.","Eine Schallplatte für den Plattenspieler. Ein Lo-Fi-Mitternachtsloop.","Um disco reproduzível na vitrola. Loop lo-fi de meia-noite.","Un disco riproducibile sul giradischi. Loop lo-fi di mezzanotte."],
+  "ターンテーブルで再生できるレコード。シティポップの海辺ドライブ": ["A record playable on the turntable. City pop seaside drive.","턴테이블에서 재생할 수 있는 레코드. 시티팝 해변 드라이브.","可在唱片机上播放的唱片。City Pop海边兜风。","可在唱片機上播放的唱片。City Pop海邊兜風。","Un disco que se puede reproducir en el tocadiscos. City pop para conducir junto al mar.","Un disque jouable sur la platine. City pop pour une virée en bord de mer.","Eine Schallplatte für den Plattenspieler. City-Pop für die Fahrt am Meer.","Um disco reproduzível na vitrola. City pop para dirigir à beira-mar.","Un disco riproducibile sul giradischi. City pop per una guida in riva al mare."],
+  "ターンテーブルで再生できるレコード。チップチューンの冒険": ["A record playable on the turntable. Chiptune adventure.","턴테이블에서 재생할 수 있는 레코드. 칩튠 모험.","可在唱片机上播放的唱片。8-bit芯片音乐冒险。","可在唱片機上播放的唱片。8-bit晶片音樂冒險。","Un disco que se puede reproducir en el tocadiscos. Aventura chiptune.","Un disque jouable sur la platine. Aventure chiptune.","Eine Schallplatte für den Plattenspieler. Chiptune-Abenteuer.","Um disco reproduzível na vitrola. Aventura chiptune.","Un disco riproducibile sul giradischi. Avventura chiptune."],
+  "ターンテーブルで再生できるレコード。ポップロックの疾走": ["A record playable on the turntable. Pop rock sprint.","턴테이블에서 재생할 수 있는 레코드. 팝 록 질주.","可在唱片机上播放的唱片。流行摇滚疾驰。","可在唱片機上播放的唱片。流行搖滾疾馳。","Un disco que se puede reproducir en el tocadiscos. Pop rock a toda velocidad.","Un disque jouable sur la platine. Pop rock sur l'autoroute.","Eine Schallplatte für den Plattenspieler. Pop-Rock für eine rasante Fahrt.","Um disco reproduzível na vitrola. Pop rock em alta velocidade.","Un disco riproducibile sul giradischi. Pop rock a tutto gas."],
+  "ターンテーブルで再生できるレコード。カノン進行のピアノ": ["A record playable on the turntable. Piano on a canon progression.","턴테이블에서 재생할 수 있는 레코드. 캐논 변주곡 피아노.","可在唱片机上播放的唱片。卡农钢琴曲。","可在唱片機上播放的唱片。卡農鋼琴曲。","Un disco que se puede reproducir en el tocadiscos. Piano con progresión de canon.","Un disque jouable sur la platine. Piano sur une progression de canon.","Eine Schallplatte für den Plattenspieler. Klavier mit Kanon-Akkordfolge.","Um disco reproduzível na vitrola. Piano com progressão de cânone.","Un disco riproducibile sul giradischi. Piano con progressione di canone."],
+  "ターンテーブルで再生できるレコード。ボサノバの午後のループ": ["A record playable on the turntable. A bossa nova afternoon loop.","턴테이블에서 재생할 수 있는 레코드. 보사노바 오후의 루프.","可在唱机上播放的唱片。波萨诺瓦午后的循环乐。","可在唱機上播放的唱片。波薩諾瓦午後的循環樂。","Un disco que se puede reproducir en el tocadiscos. Un bucle de bossa nova de tarde.","Un disque jouable sur le tourne-disque. Une boucle de bossa nova pour l'après-midi.","Eine Schallplatte, die auf dem Plattenspieler abgespielt werden kann. Ein Bossa-Nova-Loop für den Nachmittag.","Um disco reproduzível na vitrola. Um loop de bossa nova de tarde.","Un disco riproducibile sul giradischi. Un loop di bossa nova pomeridiano."],
+  "ターンテーブルで再生できるレコード。四つ打ちテクノのループ": ["A record playable on the turntable. A four-on-the-floor techno loop.","턴테이블에서 재생할 수 있는 레코드. 4비트 테크노 루프.","可在唱机上播放的唱片。四拍子电音循环乐。","可在唱機上播放的唱片。四拍子電音循環樂。","Un disco que se puede reproducir en el tocadiscos. Un bucle de tecno de cuatro tiempos.","Un disque jouable sur le tourne-disque. Une boucle techno 4/4.","Eine Schallplatte, die auf dem Plattenspieler abgespielt werden kann. Ein Techno-Loop mit 4/4-Takt.","Um disco reproduzível na vitrola. Um loop de techno de quatro batidas.","Un disco riproducibile sul giradischi. Un loop techno in 4/4."],
+  "ターンテーブルで再生できるレコード。星屑を漂うアンビエント": ["A record playable on the turntable. Ambient music drifting through stardust.","턴테이블에서 재생할 수 있는 레코드. 별가루를 떠도는 앰비언트.","可在唱机上播放的唱片。漂浮在星尘中的氛围音乐。","可在唱機上播放的唱片。漂浮在星塵中的氛圍音樂。","Un disco que se puede reproducir en el tocadiscos. Música ambiental a la deriva entre polvo de estrellas.","Un disque jouable sur le tourne-disque. Musique d'ambiance flottant dans la poussière d'étoiles.","Eine Schallplatte, die auf dem Plattenspieler abgespielt werden kann. Ambient-Musik, die durch Sternenstaub treibt.","Um disco reproduzível na vitrola. Música ambiente flutuando pela poeira estelar.","Un disco riproducibile sul giradischi. Musica ambient alla deriva tra la polvere di stelle."],
+  "ターンテーブルで再生できるレコード。スラップベースのファンク": ["A record playable on the turntable. A slap bass funk loop.","턴테이블에서 재생할 수 있는 레코드. 슬랩 베이스 펑크 루프.","可在唱机上播放的唱片。贝斯击弦放克循环乐。","可在唱機上播放的唱片。貝斯擊弦放克循環樂。","Un disco que se puede reproducir en el tocadiscos. Un bucle de funk con slap bass.","Un disque jouable sur le tourne-disque. Une boucle funk avec basse slap.","Eine Schallplatte, die auf dem Plattenspieler abgespielt werden kann. Ein Slap-Bass-Funk-Loop.","Um disco reproduzível na vitrola. Um loop de funk com slap bass.","Un disco riproducibile sul giradischi. Un loop funk con basso slap."],
+  "自作BGMコレクション：9枚のレコードと再生エンジン": ["Custom BGM Collection: 9 Records and Playback Engine","자작 BGM 컬렉션: 9장의 레코드와 재생 엔진","自制BGM收藏：9张唱片与播放引擎","自製BGM收藏：9張唱片與播放引擎","Colección de BGM personalizada: 9 discos y motor de reproducción","Collection de BGM personnalisée : 9 disques et moteur de lecture","Benutzerdefinierte BGM-Sammlung: 9 Schallplatten und Wiedergabe-Engine","Coleção de BGM personalizada: 9 discos e motor de reprodução","Collezione BGM personalizzata: 9 dischi e motore di riproduzione"],
+  "ターンテーブルに、ARCADE自作のBGMレコードが9枚入りました。全曲オリジナルで、曲は「ステップシーケンサー」という形式のデータで持っています。1小節を16ステップに分け、コードの押さえ方（ボイシング）、ベース、メロディ、ドラムの強さまでを数値で書き留めたもので、再生のたびに専用エンジンがその場で音を合成します。FM音源のエレピ、矩形波のチップ音、ノイズのドラムといった曲ごとの音色指定もデータに入っていて、エンジンが再現します。スウィング（跳ねるリズムの割合）も曲ごとに違い、16分音符の裏拍が少し遅れて鳴ります。": ["Nine original ARCADE BGM records have been added to the turntable. All tracks are original and stored as 'step sequencer' data. Each bar is divided into 16 steps, with data including chord voicings, bass, melody, and drum intensity recorded numerically; a dedicated engine synthesizes the sound on the fly during playback. Tone specifications like FM electric piano, square-wave chip sounds, and noise drums are also included in the data for the engine to reproduce. Swing (the ratio of the bouncing rhythm) varies by track, with the off-beats of 16th notes playing slightly delayed.","턴테이블에 ARCADE 자작 BGM 레코드 9장이 추가되었습니다. 전곡 오리지널이며 '스텝 시퀀서' 형식의 데이터로 저장되어 있습니다. 1마디를 16스텝으로 나누고, 코드 운지법(보이싱), 베이스, 멜로디, 드럼 강도까지 수치로 기록했으며 재생할 때마다 전용 엔진이 즉석에서 음을 합성합니다. FM 음원 일렉트릭 피아노, 사각파 칩 사운드, 노이즈 드럼 등 곡별 음색 정보도 데이터에 포함되어 엔진이 재현합니다. 스윙(리듬의 튐 정도)도 곡마다 다르며, 16분 음표의 뒷박자가 약간 늦게 연주됩니다.","转盘中加入了9张ARCADE自制BGM唱片。所有曲目均为原创，以“步进音序器”形式的数据存储。将1小节分为16个步进，通过数值记录了和弦按法（Voicing）、贝斯、旋律及鼓的力度，每次播放时专用引擎会实时合成声音。FM音源电钢、方波芯片音、噪音鼓等每首曲目的音色规格也包含在数据中，由引擎进行还原。Swing（律动感比例）因曲目而异，16分音符的弱拍会略微延迟响起。","轉盤中加入了9張ARCADE自製BGM唱片。所有曲目均為原創，以「步進音序器」形式的數據儲存。將1小節分為16個步進，透過數值記錄了和弦按法（Voicing）、貝斯、旋律及鼓的力度，每次播放時專用引擎會即時合成聲音。FM音源電鋼、方波晶片音、噪音鼓等每首曲目的音色規格也包含在數據中，由引擎進行還原。Swing（律動感比例）因曲目而異，16分音符的弱拍會略微延遲響起。","Se han añadido 9 discos de BGM originales de ARCADE al tocadiscos. Todas las pistas son originales y se almacenan como datos de 'secuenciador por pasos'. Cada compás se divide en 16 pasos, con datos que incluyen la digitación de acordes (voicing), bajo, melodía y la intensidad de la batería registrados numéricamente; un motor dedicado sintetiza el sonido al instante durante la reproducción. Las especificaciones de tono, como el piano eléctrico FM, los sonidos de chip de onda cuadrada y la batería de ruido, también se incluyen en los datos para que el motor los reproduzca. El swing (el ratio del ritmo de rebote) varía según la pista, con los contratiempos de las semicorcheas sonando ligeramente retrasados.","Neuf disques BGM originaux d'ARCADE ont été ajoutés à la platine. Tous les morceaux sont originaux et stockés sous forme de données de « séquenceur par étapes ». Chaque mesure est divisée en 16 étapes, avec des données incluant le voicing des accords, la basse, la mélodie et l'intensité de la batterie enregistrées numériquement ; un moteur dédié synthétise le son à la volée pendant la lecture. Les spécifications de tonalité comme le piano électrique FM, les sons de chip en onde carrée et la batterie bruitée sont également incluses dans les données pour que le moteur les reproduise. Le swing (le ratio du rythme rebondissant) varie selon le morceau, avec les contretemps des doubles croches joués avec un léger retard.","Dem Plattenspieler wurden 9 ARCADE-Original-BGM-Schallplatten hinzugefügt. Alle Titel sind Originale und werden als „Step-Sequenzer“-Daten gespeichert. Jeder Takt ist in 16 Schritte unterteilt, wobei Akkord-Voicing, Bass, Melodie und Schlagzeugintensität numerisch festgehalten sind; eine dedizierte Engine synthetisiert den Klang während der Wiedergabe in Echtzeit. Klangspezifikationen wie FM-E-Piano, Square-Wave-Chip-Sounds und Noise-Drums sind ebenfalls in den Daten enthalten und werden von der Engine reproduziert. Swing (das Verhältnis des hüpfenden Rhythmus) variiert je nach Titel, wobei die Offbeats der 16tel-Noten leicht verzögert erklingen.","Nove discos de BGM originais da ARCADE foram adicionados à vitrola. Todas as faixas são originais e armazenadas como dados de 'sequenciador de passos'. Cada compasso é dividido em 16 passos, com dados incluindo a digitação de acordes (voicing), baixo, melodia e a intensidade da bateria registrados numericamente; um motor dedicado sintetiza o som instantaneamente durante a reprodução. Especificações de timbre como piano elétrico FM, sons de chip de onda quadrada e bateria de ruído também estão incluídas nos dados para que o motor os reproduza. O swing (a proporção do ritmo de salto) varia conforme a faixa, com os contratempos das semicolcheias soando com um leve atraso.","Nove dischi BGM originali ARCADE sono stati aggiunti al giradischi. Tutti i brani sono originali e memorizzati come dati di 'step sequencer'. Ogni misura è divisa in 16 step, con dati che includono il voicing degli accordi, il basso, la melodia e l'intensità della batteria registrati numericamente; un motore dedicato sintetizza il suono in tempo reale durante la riproduzione. Le specifiche timbriche come il piano elettrico FM, i suoni chip a onda quadra e la batteria noise sono incluse nei dati affinché il motore le riproduca. Lo swing (il rapporto del ritmo rimbalzante) varia a seconda del brano, con i controtempi dei sedicesimi che suonano leggermente in ritardo."],
+  "入手方法は3通りです。5枚は最初から持っていて、2枚（午後のボッサ／ネオン・サーキット）はコインショップの新しい「レコード」棚で買い、2枚（星屑の海／スラップ・ストリート）はカプセルガチャの景品です。ガチャの表示確率は、新しい景品を含めた実際の抽選ウェイトからその場で計算しているので、景品が増えても表示と実際がずれることはありません。レコードの所有と「デッキに載せた1枚」は他の装備品と同じ仕組みで保存・同期されます。聴いているだけでコインは増えません。": ["There are 3 ways to obtain them. You start with 5, 2 (Afternoon Bossa / Neon Circuit) can be bought at the new 'Record' shelf in the Coin Shop, and 2 (Sea of Stardust / Slap Street) are prizes in the capsule gacha. The gacha display probabilities are calculated on the spot based on the actual draw weights including new prizes, so the display and actual results do not mismatch even as the number of prizes increases. Ownership of records and the 'one on the deck' are saved and synced using the same mechanism as other equipment. Listening does not increase your coins.","입수 방법은 3가지입니다. 5장은 처음부터 보유하고 있으며, 2장(오후의 보사노바/네온 서킷)은 코인 숍의 새로운 '레코드' 진열대에서 구매하고, 2장(별무리의 바다/슬랩 스트리트)은 캡슐 가챠 경품입니다. 가챠의 표시 확률은 새로운 경품을 포함한 실제 추첨 가중치를 바탕으로 즉석에서 계산하므로, 경품이 늘어나도 표시와 실제 확률이 어긋나지 않습니다. 레코드 보유 여부와 '데크에 올린 1장'은 다른 장비와 동일한 메커니즘으로 저장 및 동기화됩니다. 음악을 듣는 것만으로는 코인이 늘어나지 않습니다.","获取方式有3种。初始拥有5张，2张（午后波萨诺瓦／霓虹赛道）可在金币商店新增的“唱片”架上购买，2张（星屑之海／贝斯街区）为扭蛋机奖品。扭蛋的显示概率是根据包含新奖品在内的实际抽奖权重实时计算的，因此即使奖品增加，显示概率与实际情况也不会产生偏差。唱片的拥有情况与“卡槽中的1张”与其它装备使用相同的机制进行保存和同步。单纯听音乐不会增加金币。","獲取方式有3種。初始擁有5張，2張（午後波薩諾瓦／霓虹賽道）可在金幣商店新增的「唱片」架上購買，2張（星屑之海／貝斯街區）為扭蛋機獎品。扭蛋的顯示機率是根據包含新獎品在內的實際抽獎權重即時計算的，因此即使獎品增加，顯示機率與實際情況也不會產生偏差。唱片的擁有情況與「卡槽中的1張」與其它裝備使用相同的機制進行保存和同步。單純聽音樂不會增加金幣。","Hay 3 formas de obtenerlos. Empiezas con 5, 2 (Bossa de la tarde / Circuito neón) se pueden comprar en el nuevo estante de 'Discos' en la Tienda de Monedas, y 2 (Mar de polvo estelar / Calle slap) son premios en la gacha de cápsulas. Las probabilidades mostradas en la gacha se calculan al momento basándose en los pesos de sorteo reales, incluyendo los nuevos premios, por lo que la visualización y el resultado real no difieren aunque aumente el número de premios. La posesión de discos y 'el que está en el plato' se guardan y sincronizan con el mismo mecanismo que otros equipos. Escuchar no aumenta tus monedas.","Il existe 3 moyens de les obtenir. Vous en avez 5 au départ, 2 (Bossa de l'après-midi / Circuit néon) peuvent être achetées sur le nouveau rayon « Disques » de la boutique de pièces, et 2 (Mer de poussière d'étoiles / Rue Slap) sont des prix de la gacha à capsules. Les probabilités d'affichage de la gacha sont calculées sur place en fonction des poids de tirage réels, y compris les nouveaux prix, de sorte que l'affichage et les résultats réels ne divergent pas, même si le nombre de prix augmente. La possession de disques et « celui sur la platine » sont enregistrés et synchronisés avec le même mécanisme que les autres équipements. Écouter ne rapporte pas de pièces.","Es gibt 3 Möglichkeiten, sie zu erhalten. 5 besitzt man von Anfang an, 2 (Afternoon Bossa / Neon Circuit) können im neuen „Schallplatten“-Regal des Münzshops gekauft werden, und 2 (Stardust Sea / Slap Street) sind Preise in der Kapsel-Gacha. Die angezeigten Wahrscheinlichkeiten der Gacha werden basierend auf den tatsächlichen Ziehungsgewichten inklusive neuer Preise in Echtzeit berechnet, sodass die Anzeige und die Realität auch bei steigender Anzahl der Preise nicht voneinander abweichen. Der Besitz von Schallplatten und die „auf dem Deck befindliche Platte“ werden mit demselben Mechanismus wie andere Ausrüstungsgegenstände gespeichert und synchronisiert. Nur durch das Zuhören erhält man keine Münzen.","Existem 3 formas de obtê-los. Você começa com 5, 2 (Bossa da Tarde / Circuito Neon) podem ser comprados na nova prateleira de 'Discos' na Loja de Moedas, e 2 (Mar de Poeira Estelar / Rua Slap) são prêmios na gacha de cápsulas. As probabilidades exibidas na gacha são calculadas na hora com base nos pesos reais de sorteio, incluindo novos prêmios, portanto, a exibição e os resultados reais não divergem, mesmo com o aumento do número de prêmios. A posse de discos e 'o que está no deck' são salvos e sincronizados usando o mesmo mecanismo de outros equipamentos. Ouvir não aumenta suas moedas.","Ci sono 3 modi per ottenerli. Ne possiedi 5 dall'inizio, 2 (Bossa del pomeriggio / Circuito Neon) si possono acquistare nel nuovo scaffale 'Dischi' del Negozio Monete, e 2 (Mare di polvere di stelle / Via Slap) sono premi della gacha a capsule. Le probabilità visualizzate nella gacha sono calcolate sul momento in base ai pesi effettivi dell'estrazione, inclusi i nuovi premi, quindi la visualizzazione e i risultati reali non divergono nemmeno all'aumentare dei premi. Il possesso dei dischi e 'quello sul deck' vengono salvati e sincronizzati con lo stesso meccanismo delle altre attrezzature. Ascoltare non fa aumentare le monete."],
+  "レコードを切り替えると、デッキの雰囲気はカットではなくモーフ（滑らかな変形）で姿を変えます。共有されたFlutterの天気アプリの研究からの採用で、天気を変えると風景全体が姿を変える仕組みを、デッキのアクセントカラーに応用しました。盤面ラベルの色、ステージの光、再生チップの縁が、曲のジャンルに合わせた色へ約0.9秒かけて移ります。画面スキンを装備している場合はそちらが優先で、モーフは色の層だけに留まります。棚のカードは開くたび約80ミリ秒ずらしで立ち上がり、BPMとループ秒数の表示は切り替え時に数値がトゥイーン（アニメーションで増減）します。": ["When switching records, the deck atmosphere changes via morphing rather than cutting. Adopted from research on shared Flutter weather apps, we applied the mechanism where the entire landscape changes when weather changes to the deck's accent colors. The color of the disc label, stage lights, and playback chip edges shift over approximately 0.9 seconds to match the genre of the song. If a screen skin is equipped, it takes priority, and morphing is limited to color layers. Cards on the shelf rise up with an approx. 80ms offset each time they are opened, and the BPM and loop seconds display tween (animate) when switched.","레코드를 전환하면 데크의 분위기가 컷 방식이 아닌 모핑(부드러운 변형)을 통해 바뀝니다. Flutter 날씨 앱 연구에서 착안하여, 날씨가 변하면 풍경 전체가 바뀌는 메커니즘을 데크의 포인트 컬러에 적용했습니다. 디스크 라벨 색상, 무대 조명, 재생 칩 테두리가 곡의 장르에 맞춘 색상으로 약 0.9초에 걸쳐 변화합니다. 화면 스킨이 장착된 경우 스킨이 우선하며, 모핑은 색상 레이어에만 적용됩니다. 진열대의 카드는 열 때마다 약 80ms 간격으로 밀려 올라오며, BPM과 루프 초 단위 표시는 전환 시 수치가 트윈(애니메이션으로 증감)됩니다.","切换唱片时，卡槽氛围并非直接切断，而是通过变形（平滑过度）来转换。我们采用了共享Flutter天气应用的研究成果，将天气变化时整体景观随之改变的机制应用到了卡槽的强调色上。碟片标签颜色、舞台灯光和播放芯片的边缘会在约0.9秒内逐渐过渡至符合乐曲风格的颜色。若装备了屏幕皮肤，则优先显示皮肤，变形仅限于色彩层。货架上的卡片每次打开时会以约80毫秒的延迟依次升起，BPM和循环秒数显示在切换时会进行补间（动画增减）。","切換唱片時，卡槽氛圍並非直接切斷，而是透過變形（平滑過度）來轉換。我們採用了共享Flutter天氣應用研究成果，將天氣變化時整體景觀隨之改變的機制應用到了卡槽的強調色上。碟片標籤顏色、舞台燈光和播放晶片的邊緣會在約0.9秒內逐漸過度至符合樂曲風格的顏色。若裝備了螢幕皮膚，則優先顯示皮膚，變形僅限於色彩層。貨架上的卡片每次打開時會以約80毫秒的延遲依序升起，BPM和循環秒數顯示在切換時會進行補間（動畫增減）。","Al cambiar de disco, la atmósfera del deck cambia mediante morphing en lugar de un corte. Adoptado de investigaciones en apps de clima en Flutter, aplicamos el mecanismo por el cual el paisaje entero cambia con el clima a los colores de acento del deck. El color de la etiqueta del disco, las luces del escenario y los bordes del chip de reproducción cambian durante aproximadamente 0.9 segundos para coincidir con el género de la canción. Si hay un skin de pantalla equipado, este tiene prioridad y el morphing se limita a las capas de color. Las cartas en el estante se elevan con un desfase de aprox. 80ms cada vez que se abren, y la visualización de BPM y segundos de bucle se anima (tween) al cambiar.","Lors du changement de disque, l'atmosphère de la platine change par morphing plutôt que par coupure. Adapté des recherches sur les applis météo Flutter, nous avons appliqué le mécanisme où le paysage change selon la météo aux couleurs d'accentuation de la platine. La couleur de l'étiquette du disque, les lumières de la scène et les bords de la puce de lecture passent en environ 0,9 seconde aux couleurs correspondant au genre musical. Si un skin d'écran est équipé, il est prioritaire et le morphing se limite aux couches de couleur. Les cartes sur l'étagère s'élèvent avec un décalage d'env. 80ms à chaque ouverture, et l'affichage des BPM et des secondes de boucle s'anime (tween) lors du changement.","Beim Wechsel der Schallplatten ändert sich die Atmosphäre des Decks durch Morphing statt durch Schnitte. Basierend auf Forschungen an Flutter-Wetter-Apps haben wir den Mechanismus, bei dem sich die gesamte Landschaft bei Wetteränderungen wandelt, auf die Akzentfarben des Decks angewendet. Die Farbe des Plattenlabels, der Bühnenbeleuchtung und der Kanten des Wiedergabe-Chips verändern sich über ca. 0,9 Sekunden hinweg, um dem Genre des Songs zu entsprechen. Wenn ein Screen-Skin ausgerüstet ist, hat dieser Vorrang und das Morphing beschränkt sich auf die Farbebenen. Die Karten im Regal fahren beim Öffnen mit einem Versatz von ca. 80ms aus, und die BPM- und Loop-Sekunden-Anzeige wird beim Wechsel per Tween (Animation) aktualisiert.","Ao trocar de discos, a atmosfera do deck muda via morphing em vez de corte. Adotado de pesquisas em apps de clima em Flutter, aplicamos o mecanismo onde a paisagem inteira muda com o clima às cores de destaque do deck. A cor do rótulo do disco, luzes do palco e bordas do chip de reprodução mudam por aproximadamente 0,9 segundos para combinar com o gênero da música. Se um skin de tela estiver equipado, ele tem prioridade e o morphing se limita às camadas de cor. As cartas na prateleira sobem com um atraso de aprox. 80ms cada vez que são abertas, e a exibição de BPM e segundos de loop sofre interpolação (animação) ao mudar.","Al cambiare disco, l'atmosfera del deck cambia tramite morphing invece che con un taglio. Adottato dalle ricerche sulle app meteo Flutter, abbiamo applicato il meccanismo per cui l'intero paesaggio cambia con il meteo ai colori d'accento del deck. Il colore dell'etichetta del disco, le luci del palco e i bordi del chip di riproduzione cambiano in circa 0,9 secondi per adattarsi al genere del brano. Se è equipaggiata una skin dello schermo, questa ha la priorità e il morphing si limita ai livelli di colore. Le carte sullo scaffale si alzano con uno scarto di circa 80ms ogni volta che vengono aperte, e la visualizzazione di BPM e secondi del loop si anima (tween) durante il cambio."],
+  "検証の数字です。エンジンは4チャンネル（コード／ベース／リード／ドラム）構成で、曲データは25,296バイトの別ファイルを後読みします（本体の肥大は最小限）。ループの継ぎ目のずれは2秒間の実測で期待ステップ数との差0.3ステップ以内、検証プローブは37項目すべて合格でした。音量は全体設定のマスター音量がそのまま効き、0ならエンジンが回っていても無音です。": ["Verification stats: The engine uses a 4-channel (chord/bass/lead/drum) structure, and track data is fetched as a separate 25,296 byte file (minimizing app size). Loop junction deviation is within 0.3 steps of the expected step count over a 2-second measurement, and the verification probe passed all 37 items. Volume follows the global master volume, and if set to 0, it is silent even if the engine is running.","검증 수치입니다. 엔진은 4채널(코드/베이스/리드/드럼) 구성이며, 곡 데이터는 25,296바이트의 별도 파일을 나중에 로드합니다(본체 용량 비대화 최소화). 루프 연결 지점의 오차는 2초 실측 기준 기대 스텝 수 대비 0.3스텝 이내이며, 검증 프로브는 37개 항목 모두 통과했습니다. 음량은 전체 마스터 볼륨 설정이 그대로 적용되며, 0이면 엔진이 작동 중이라도 무음입니다.","验证数据如下：引擎采用4通道（和弦/贝斯/主旋律/鼓）构成，曲目数据作为25,296字节的独立文件进行后加载（最大限度减小本体体积）。循环衔接点的偏差在2秒实测中对比预期步进数在0.3步以内，验证探测器37项全部合格。音量直接受全局主音量控制，若设为0，即使引擎在运转也为静音。","驗證數據如下：引擎採用4通道（和弦/貝斯/主旋律/鼓）構成，曲目數據作為25,296位元組的獨立檔案進行後載入（最大限度減小本體體積）。循環銜接點的偏差在2秒實測中對比預期步進數在0.3步以內，驗證探測器37項全部合格。音量直接受全域主音量控制，若設為0，即使引擎在運轉也為靜音。","Estadísticas de verificación: El motor usa una estructura de 4 canales (acordes/bajo/lead/batería), y los datos de la pista se descargan como un archivo separado de 25,296 bytes (minimizando el tamaño de la app). La desviación en la unión del bucle es de menos de 0.3 pasos respecto al conteo esperado en una medición de 2 segundos, y la sonda de verificación pasó los 37 elementos. El volumen sigue al volumen maestro global y, si se ajusta a 0, está en silencio aunque el motor esté funcionando.","Statistiques de vérification : Le moteur utilise une structure à 4 canaux (accords/basse/lead/batterie), et les données du morceau sont récupérées en tant que fichier séparé de 25 296 octets (minimisant la taille de l'app). L'écart au point de jonction de la boucle est inférieur à 0,3 étape par rapport au nombre prévu sur une mesure de 2 secondes, et la sonde de vérification a passé les 37 éléments. Le volume suit le volume maître global ; s'il est réglé sur 0, il est silencieux même si le moteur tourne.","Verifikationsdaten: Die Engine verwendet eine 4-Kanal-Struktur (Akkord/Bass/Lead/Schlagzeug), und die Titeldaten werden als separate 25.296-Byte-Datei nachgeladen (minimale Vergrößerung der App-Größe). Die Abweichung an der Loop-Nahtstelle liegt bei einer 2-Sekunden-Messung innerhalb von 0,3 Schritten der erwarteten Schrittzahl, und die Verifizierungs-Sonde hat alle 37 Punkte bestanden. Die Lautstärke folgt der globalen Master-Lautstärke; ist sie auf 0 eingestellt, bleibt es stumm, selbst wenn die Engine läuft.","Estatísticas de verificação: O motor usa uma estrutura de 4 canais (acordes/baixo/lead/bateria), e os dados da faixa são buscados como um arquivo separado de 25.296 bytes (minimizando o tamanho do app). O desvio na junção do loop está dentro de 0,3 passos da contagem esperada em uma medição de 2 segundos, e a sonda de verificação passou em todos os 37 itens. O volume segue o volume mestre global e, se definido como 0, fica silencioso mesmo que o motor esteja rodando.","Statistiche di verifica: Il motore utilizza una struttura a 4 canali (accordi/basso/lead/batteria) e i dati del brano vengono caricati come file separato di 25.296 byte (riducendo al minimo la dimensione dell'app). La deviazione nel punto di giunzione del loop è entro 0,3 step dal conteo atteso su una misurazione di 2 secondi, e la sonda di verifica ha superato tutti i 37 elementi. Il volume segue il volume master globale e, se impostato su 0, è silenzioso anche se il motore è in funzione."],
   "ターンテーブルの画面スキン": ["Turntable Screen Skin", "턴테이블 화면 스킨", "转盘屏幕皮肤", "唱盤畫面外觀", "Aspecto de la pantalla del giradiscos", "Apparence de la platine", "Plattenspieler-Oberfläche", "Skin da tela da vitrola", "Skin schermata giradischi"],
   "クラシックブラック": ["Classic Black", "클래식 블랙", "经典黑", "經典黑", "Negro clásico", "Noir classique", "Klassisches Schwarz", "Preto clássico", "Nero classico"],
   "標準の黒いレコード盤。溝の光沢まで本物らしく": ["Standard black vinyl record. Even the grooves have a realistic sheen.", "표준 검은색 레코드판. 홈의 광택까지 실감 나게 구현", "标准黑色唱片。连唱片纹路的质感都还原得栩栩如生", "標準的黑色唱片。連溝槽的光澤都十分逼真", "Disco de vinilo negro estándar. Incluso el brillo de los surcos parece real", "Disque noir standard. Même les rainures sont réalistes.", "Die Standard-schwarze Schallplatte. Sogar der Glanz der Rillen wirkt authentisch.", "O disco preto padrão. Até o brilho dos sulcos parece real", "Disco in vinile nero standard. Con dettagli realistici anche nei solchi."],
@@ -48794,6 +48846,7 @@ PATTERNS.push(
   notesAdd("拡張と暮らし", { t: "ターンテーブルは、あなたのSpotifyで回る", b: ["拡張の新しい画面「ターンテーブル」は、あなたのSpotifyアカウントとつながるレコードプレーヤーです。つなぎ方はPKCEという認可の仕組みで、秘密鍵はアプリの中に置きません。ログインで受け取るトークンは、この端末のこのページの中だけにしまわれ、セーブデータの同期には絶対に混ざりません。再生の経路は2つあり、Premiumの人はこの画面自体がSpotify Connectの機器になって音がここで鳴り、そうでない場合はスマホやPCの再生と同期して、ジャケットと進み具合と針がそのまま映ります。", "盤面はキャンバスに描いた本気のレコードで、回転数は33と45の切り替えつき。再生が始まるとゆっくり回転が上がり、止まるとすっと落ちる、実機の立ち上がりを真似ています。針（トーンアーム）は曲の進み具合に合わせて溝の内側へ少しずつ進み、終われば持ち上がって戻ります。レーベルには再生中のジャケット写真がそのまま貼りつきます。プレーヤーの本体は画面ではなくアプリ全体に常駐するので、ゲームへ移っても音楽は止まらず、ロビーには小さな再生チップが出ます。", "レコード盤の絵柄と画面のスキンは、コインショップの装備品です。透明盤や色つき盤、真鍮コイン盤、木目のデッキなどを買って着せ替えでき、持ち物と装備は他の装備品と同じ仕組みで同期されます。検証では、ログイン用URLの合言葉（PKCE）が国際規格RFC 7636のテスト値と一致すること、トークンの保存先が1か所だけで同期データに漏れていないこと、購入と装備が再読み込み後も残ることを確かめました。ただし実アカウントでのログイン往復とPremiumの実再生だけは、あなたの端末とアカウントでしか確かめられません。"] });
   notesAdd("仕組みと同期", { t: "全体設定とマスター音量：最初は0", b: ["ロビーの右上に設定ボタンがつきました。開くと全体の音量（マスター音量）を変えられます。この音量は全ゲームの効果音、起動時の音、BGM、そしてターンテーブルの音楽まで、ARCADEのすべての音にかかる親玉です。初めて開くときは0、つまり無音から始まります。うるさいと感じたらまず自分で上げる、という置き方です。設定はこの端末の中だけに保存され、セーブデータの同期には入りません。", "裏側の苦労は、ARCADEの音の出口が1つではなかったことです。画面まわりの音は共有の音響回路、ゲームごとの音はそれぞれの回路、という具合に分かれていて、全員が出口へ直結していました。そこで、音響回路が生まれるたびにマスターのつまみ（ゲイン）を出口の手前に差し込み、行き先をそちらへ付け替える方式にしました。後から生まれる回路——レトロのエミュレータや麻雀・チェスの中の音も、同じ仕掛けで自動的に傘下に入ります。各ゲームの音ON/OFFは今まで通り、その手前で働きます。", "検証では、真新しい状態で開くと音量が0で、音響回路のマスターゲインも0であること、70に上げると再読み込み後も70のまま残ること、設定パネルがロビーと全17画面の上バーから開けることを確かめました。ターンテーブルの音量は、このマスターと画面側の音量を掛け算した値で決まります。"] });
   notesAdd("仕組みと同期", { t: "UI/UX最高品質ラウンド：そろえる、広げる、届きやすくする", b: ["ロビーのタイルの絵を1つの方式にそろえた。線だけで描かれた絵や文字だけのタイルを含め、全53タイルのうち52タイルが、色のついたバッジに描き込み済みの絵が入る形になった。残りの1つは「線画あそび」で、線で描くこと自体が遊びなので意図的に線のままにしてある。あわせて、色と形の部品を3層のトークン（基本の色→意味→部品）にまとめ、ロビーの道具やカード、設定パネルが同じ部品を共有するようにした。素材テーマ「フェルト」と「真鍮」もこの仕組みの上に乗り、切り替えると画面の枠まわりだけ素材感が変わる（ゲームの盤面は変わらない）。", "広い画面で遊び場が狭かったタイトルを広げた。ルービックキューブは最大で約518×474から約607×607へ、ブロック崩しは幅の上限を440から640へ上げて約504×600まで、スネークとシューターは操作ボタンや情報を横のレールへ移して盤を広くした。スマホでロビーの道具行が横にはみ出す不具合（中身507pxが幅332pxの箱に入っていた）は、行が縮めるよう直して解消した。ホールデムはスマホ幅で席の札が重ならないよう、席を118pxから86pxの小型にした（iPadの表示は変えていない）。", "設定に快適さの項目が増えた。テーマ、文字を大きく、点滅を止める、振動の強さ（切・標準・強）、色の見分け補助の5つで、どれも44px以上の大きな操作部品で切り替える。ロビーには街の看板のようなジャンル見出しと「NOW SHOWING」の帯が付き、今日のおすすめが上映中の映画のように出る。タップできる共通部品は、44px未満だった5種（約30〜40px）をすべて44px以上にした。なお、この回の検証は静的解析と計算によるもので、ブラウザでの実測は検証環境の障害のため行えていない。その分、数えられるものは全部数えて仕様欄に書いた。"] });
+  notesAdd("拡張と暮らし", { t: "自作BGMコレクション：9枚のレコードと再生エンジン", b: ["ターンテーブルに、ARCADE自作のBGMレコードが9枚入りました。全曲オリジナルで、曲は「ステップシーケンサー」という形式のデータで持っています。1小節を16ステップに分け、コードの押さえ方（ボイシング）、ベース、メロディ、ドラムの強さまでを数値で書き留めたもので、再生のたびに専用エンジンがその場で音を合成します。FM音源のエレピ、矩形波のチップ音、ノイズのドラムといった曲ごとの音色指定もデータに入っていて、エンジンが再現します。スウィング（跳ねるリズムの割合）も曲ごとに違い、16分音符の裏拍が少し遅れて鳴ります。", "入手方法は3通りです。5枚は最初から持っていて、2枚（午後のボッサ／ネオン・サーキット）はコインショップの新しい「レコード」棚で買い、2枚（星屑の海／スラップ・ストリート）はカプセルガチャの景品です。ガチャの表示確率は、新しい景品を含めた実際の抽選ウェイトからその場で計算しているので、景品が増えても表示と実際がずれることはありません。レコードの所有と「デッキに載せた1枚」は他の装備品と同じ仕組みで保存・同期されます。聴いているだけでコインは増えません。", "レコードを切り替えると、デッキの雰囲気はカットではなくモーフ（滑らかな変形）で姿を変えます。共有されたFlutterの天気アプリの研究からの採用で、天気を変えると風景全体が姿を変える仕組みを、デッキのアクセントカラーに応用しました。盤面ラベルの色、ステージの光、再生チップの縁が、曲のジャンルに合わせた色へ約0.9秒かけて移ります。画面スキンを装備している場合はそちらが優先で、モーフは色の層だけに留まります。棚のカードは開くたび約80ミリ秒ずらしで立ち上がり、BPMとループ秒数の表示は切り替え時に数値がトゥイーン（アニメーションで増減）します。", "検証の数字です。エンジンは4チャンネル（コード／ベース／リード／ドラム）構成で、曲データは25,296バイトの別ファイルを後読みします（本体の肥大は最小限）。ループの継ぎ目のずれは2秒間の実測で期待ステップ数との差0.3ステップ以内、検証プローブは37項目すべて合格でした。音量は全体設定のマスター音量がそのまま効き、0ならエンジンが回っていても無音です。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -53782,14 +53835,24 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     { id: "ptr-comet", cat: "pointer", price: 800, rar: 2, w: 5 },
     { id: "ptr-diamond", cat: "pointer", price: 1200, rar: 2, w: 5 },
     { id: "cov-meteor", cat: "cover", price: 1000, rar: 2, w: 5 },
-    { id: "fx-aurora", cat: "fx", price: 1500, rar: 2, w: 5 }
+    { id: "fx-aurora", cat: "fx", price: 1500, rar: 2, w: 5 },
+    /* BGM records (2026-11-16): the turntable's two gacha tracks
+       join the pool inside the existing rarity structure with the
+       standard tier weights — sea-of-stardust in the rare band
+       (w 6), slap-street (the pair's rare prize) in the super
+       band (w 5). Both ids are gachaOnly catalogue entries; the
+       rates display recomputes from these live weights, so the
+       shown odds include the new prizes exactly. */
+    { id: "rec-sea-of-stardust", cat: "record", price: 900, rar: 1, w: 6 },
+    { id: "rec-slap-street", cat: "record", price: 1500, rar: 2, w: 5 }
   ];
   var POOL_NAMES = {
     "av-gacha-dice": "サイコロ帽子", "gom-egg": "目玉焼き石", "av-ot-sushi": "寿司の相棒", "card-onigiri": "おにぎり",
     "av-pool-8ball": "8ボールの相棒", "gom-glass": "ガラス石", "av-gacha-raccoon": "アライグマの相棒", "slo-pudding": "プリンプリン",
     "av-joke-pawnking": "王冠ポーン", "av-gacha-egg": "ゴールデンエッグ", "av-gacha-777": "777の相棒",
     "ptr-wand": "星のステッキ", "ptr-moon": "三日月", "mj-ginga": "銀河", "fx-confetti": "紙吹雪", "pfr-moon": "月のフレーム",
-    "ptr-comet": "ほうき星", "ptr-diamond": "ダイヤモンド", "cov-meteor": "流星群", "fx-aurora": "オーロラリング"
+    "ptr-comet": "ほうき星", "ptr-diamond": "ダイヤモンド", "cov-meteor": "流星群", "fx-aurora": "オーロラリング",
+    "rec-sea-of-stardust": "星屑の海", "rec-slap-street": "スラップ・ストリート"
   };
   function poolItemName(it) { return POOL_NAMES[it.id] || it.id; }
   function itemArt(it) {
@@ -70196,6 +70259,7 @@ window.__BN_VIEW__ = {
     redirectLabel: { ja: "この画面が使うリダイレクトURI", en: "Redirect URI used by this screen", ko: "이 화면이 사용하는 리다이렉트 URI", zh: "此界面使用的重定向 URI", zht: "此畫面使用的重新導向 URI", es: "URI de redirección utilizada por esta pantalla", fr: "URI de redirection utilisée par cet écran", de: "Von diesem Bildschirm verwendeter Redirect-URI", pt: "URI de redirecionamento usada por esta tela", it: "URI di reindirizzamento utilizzato da questa schermata" },
     tokenNote: { ja: "トークンはこの端末のこのページにだけ保存され、同期やサーバーには送られません。", en: "Tokens are saved only on this page of this device and are not sent to sync or servers.", ko: "토큰은 이 기기의 이 페이지에만 저장되며, 동기화되거나 서버로 전송되지 않습니다.", zh: "令牌仅保存在此设备的当前页面，不会同步或发送到服务器。", zht: "權杖僅儲存在此裝置的此頁面，不會同步或傳送至伺服器。", es: "Los tokens solo se guardan en esta página de este dispositivo y no se envían a servidores ni se sincronizan.", fr: "Les jetons sont enregistrés uniquement sur cette page de cet appareil et ne sont pas synchronisés ou envoyés aux serveurs.", de: "Token werden nur auf dieser Seite auf diesem Gerät gespeichert und nicht synchronisiert oder an Server gesendet.", pt: "O token é salvo apenas nesta página deste dispositivo e não é enviado para sincronização ou servidores.", it: "I token vengono salvati solo su questa pagina del dispositivo e non vengono inviati a server o sincronizzati." },
     openSpotifyFirst: { ja: "再生できるデバイスがありません。スマホやPCでSpotifyを開いてから選んでください。", en: "No playable devices found. Please open Spotify on your smartphone or PC first, then select it.", ko: "재생할 수 있는 기기가 없습니다. 스마트폰이나 PC에서 Spotify를 실행한 후 선택해 주세요.", zh: "没有可用的播放设备。请先在手机或电脑上打开 Spotify 后再进行选择。", zht: "沒有可播放的裝置。請在手機或電腦上開啟 Spotify 後再選擇。", es: "No hay dispositivos disponibles para reproducir. Abre Spotify en tu teléfono o PC y selecciónalo.", fr: "Aucun appareil disponible pour la lecture. Veuillez ouvrir Spotify sur votre smartphone ou PC, puis effectuez une sélection.", de: "Kein wiedergabefähiges Gerät gefunden. Bitte öffnen Sie Spotify auf Ihrem Smartphone oder PC und wählen Sie es dann aus.", pt: "Não há dispositivos disponíveis para reprodução. Abra o Spotify no seu celular ou PC e selecione um.", it: "Nessun dispositivo disponibile per la riproduzione. Apri Spotify sul tuo smartphone o PC e seleziona un dispositivo." },
+    bgmStatus: { ja: "ARCADEレコード", en: "ARCADE Records", ko: "ARCADE 레코드", zh: "ARCADE 唱片", zht: "ARCADE 唱片", es: "Discos ARCADE", fr: "Disques ARCADE", de: "ARCADE-Schallplatten", pt: "Discos ARCADE", it: "Dischi ARCADE" },
     demoTrack: { ja: "デモトラック", en: "Demo Track", ko: "데모 트랙", zh: "演示曲目", zht: "示範曲目", es: "Pista de demostración", fr: "Piste démo", de: "Demotrack", pt: "Faixa de demonstração", it: "Traccia demo" },
     demoArtist: { ja: "ARCADEターンテーブル デモ", en: "ARCADE Turntable Demo", ko: "ARCADE 턴테이블 데모", zh: "ARCADE 唱机演示", zht: "ARCADE 唱盤示範", es: "Giradiscos ARCADE Demo", fr: "Platine vinyle ARCADE Démo", de: "ARCADE Plattenspieler Demo", pt: "Toca-discos ARCADE Demo", it: "Giradischi ARCADE Demo" }
   };
@@ -70215,7 +70279,8 @@ window.__BN_VIEW__ = {
     localVol: 0.8, rpm: 33,
     playlists: [], recents: [],
     notice: "", error: "",
-    vinyl: "vinyl-default", skin: "ttskin-default"
+    vinyl: "vinyl-default", skin: "ttskin-default",
+    bgmAccent: ""
   };
   try { var lv = parseFloat(localStorage.getItem(VOL_KEY)); if (isFinite(lv)) S.localVol = Math.max(0, Math.min(1, lv)); } catch (e) {}
   try { S.vinyl = window.__ttVinyl || S.vinyl; S.skin = window.__ttSkin || S.skin; } catch (e) {}
@@ -70309,6 +70374,7 @@ window.__BN_VIEW__ = {
       .catch(function () { S.error = L("authErrorTitle") + ": network"; renderAll(); });
   }
   function logout() {
+    try { if (window.__bgmCtl) window.__bgmCtl("suspend"); } catch (e) {}
     try { localStorage.removeItem(TOK_KEY); } catch (e) {}
     if (sdkPlayer) { try { sdkPlayer.disconnect(); } catch (e) {} sdkPlayer = null; }
     S.auth = "out"; S.mode = "none"; S.track = null; S.isPlaying = false; S.sdkReady = false; S.sdkTried = false;
@@ -70456,6 +70522,7 @@ window.__BN_VIEW__ = {
 
   /* ---------------- transport ---------------- */
   function ctl(action, arg) {
+    if (S.mode === "bgm" && window.__bgmCtl) { window.__bgmCtl(action, arg); return; }
     if (S.mode === "demo") {
       if (action === "seek") { S.progressMs = arg || 0; S.fetchedAt = Date.now(); renderAll(); return; }
       demoControl(action); return;
@@ -70503,6 +70570,7 @@ window.__BN_VIEW__ = {
   /* ---------------- demo mode ---------------- */
   var demoTimer = null;
   function demo(track) {
+    try { if (window.__bgmCtl) window.__bgmCtl("suspend"); } catch (e) {}
     S.mode = "demo";
     S.track = track || { name: L("demoTrack"), artists: L("demoArtist"), album: "ARCADE", art: "", durationMs: 214000, uri: "" };
     S.progressMs = 0; S.fetchedAt = Date.now(); S.isPlaying = true;
@@ -70694,6 +70762,7 @@ window.__BN_VIEW__ = {
   }
   function dispProgress() {
     if (!S.track) return 0;
+    if (S.mode === "bgm") return Math.max(0, Math.min(S.track.durationMs || 0, S.progressMs));
     var p = S.progressMs;
     if (S.isPlaying && S.mode !== "demo") p += Date.now() - S.fetchedAt;
     return Math.max(0, Math.min(S.track.durationMs || 0, p));
@@ -70728,9 +70797,9 @@ window.__BN_VIEW__ = {
   }
   function renderAll() {
     if (!els.built) return;
-    var on = S.auth === "in" || S.mode === "demo";
+    var on = S.auth === "in" || S.mode === "demo" || S.mode === "bgm";
     els.dot.className = "tt-dot" + (on ? " on" : "");
-    els.statusTxt.textContent = S.mode === "demo" ? L("demoMode") : (S.auth === "in" ? L("connected") : L("notConnected"));
+    els.statusTxt.textContent = S.mode === "bgm" ? L("bgmStatus") : (S.mode === "demo" ? L("demoMode") : (S.auth === "in" ? L("connected") : L("notConnected")));
     els.acct.textContent = S.accountName || "";
     els.prem.hidden = !(S.auth === "in" && S.premium);
     els.connect.hidden = S.auth === "in";
@@ -70762,7 +70831,7 @@ window.__BN_VIEW__ = {
     document.getElementById("ttRpm33").className = S.rpm === 33 ? "on" : "";
     document.getElementById("ttRpm45").className = S.rpm === 45 ? "on" : "";
     // chip
-    var showChip = !!S.track && (S.auth === "in" || S.mode === "demo") && !(viewEl && viewEl.classList.contains("open"));
+    var showChip = !!S.track && (S.auth === "in" || S.mode === "demo" || S.mode === "bgm") && !(viewEl && viewEl.classList.contains("open"));
     els.chip.hidden = !showChip;
     if (showChip) {
       els.chipTitle.textContent = S.track.name + " — " + S.track.artists;
@@ -70856,7 +70925,7 @@ window.__BN_VIEW__ = {
       ctx.save(); ctx.clip(); ctx.drawImage(artImg, -lr, -lr, lr * 2, lr * 2); ctx.restore();
     } else {
       ctx.fillStyle = d.label; ctx.fill();
-      ctx.fillStyle = d.labelText; ctx.font = "800 " + Math.round(W * 0.038) + "px sans-serif";
+      ctx.fillStyle = (S.mode === "bgm" && S.bgmAccent) ? S.bgmAccent : d.labelText; ctx.font = "800 " + Math.round(W * 0.038) + "px sans-serif";
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText(d.coin ? "1UP" : "ARCADE", 0, -W * 0.012);
       ctx.font = "600 " + Math.round(W * 0.02) + "px sans-serif";
@@ -70972,6 +71041,22 @@ window.__BN_VIEW__ = {
     login: login, logout: logout, demo: demo, stopDemo: stopDemo,
     setFixture: function (t) { S.mode = "sync"; S.track = t; S.progressMs = 0; S.fetchedAt = Date.now(); S.isPlaying = true; renderAll(); },
     applyCosmetics: applyCosmetics, enter: enter, ctl: ctl,
+    /* BGM mode feed (module 67): the original-BGM engine mirrors
+       its deck state here so the deck, tonearm, transport and
+       chip all present the record like any other source. */
+    bgmSync: function (st) {
+      if (st && st.track) {
+        S.mode = "bgm";
+        S.track = st.track; S.isPlaying = !!st.playing;
+        S.progressMs = st.progressMs || 0; S.fetchedAt = Date.now();
+        S.deviceName = "ARCADE Turntable"; S.deviceHere = true;
+        if (st.accent) S.bgmAccent = st.accent;
+      } else if (S.mode === "bgm") {
+        S.mode = S.auth === "in" ? "sync" : "none";
+        S.track = null; S.isPlaying = false; S.bgmAccent = "";
+      }
+      renderAll();
+    },
     els: function () { return { view: viewEl, canvas: els.canvas, chip: els.chip, root: root }; }
   };
 })();
@@ -71241,6 +71326,691 @@ window.__BN_VIEW__ = {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", buildBand);
   else buildBand();
   setTimeout(buildBand, 1200);
+})();
+</script>
+<script>/* ============================================================
+   Module 67 — Original BGM records: WebAudio sequencer engine
+   + the turntable's record shelf. (2026-11-16, BGM round.)
+
+   Nine original tracks (~/workspace/arcade-bgm/tracks.json)
+   ship as the lazy asset assets/bgm-data.js and are played by
+   a step-sequencer engine built here: chord pads from the
+   written voicings, bass, lead and velocity-sensitive drums,
+   per-track swing on the off-16ths, timbre hints mapped to
+   FM / pulse-wave / saw voices. Loops are seamless — the
+   scheduler works in absolute AudioContext time, so a loop
+   boundary is just the next step.
+
+   The player is app-level: module 65's turntable screen gains
+   a "bgm" mode fed through window.__turntable.bgmSync, so the
+   deck, tonearm and the now-playing chip all show the record
+   and playback continues across screens. The master volume is
+   module 64's (this engine's context is fitted like every
+   other); volume 0 / mute = silent. Nothing here earns points.
+
+   Ownership rides the shop store (arcade-points-v1) exactly
+   like other cosmetics: default tracks are always owned, the
+   two shop tracks are catalogue items in the レコード
+   category, the two gacha tracks arrive via the capsule pool.
+   The equipped record (equipped.record) is the one on the
+   deck; it persists and syncs like any equipped cosmetic.
+
+   Research adoption (2026-11-16 Flutter weather-UI study):
+   switching records MORPHS the deck's accent layer — stage
+   glow, title glow, chip border and the canvas label tint
+   ease to the new track's genre accent (CSS transitions +
+   a JS colour lerp on the canvas side). Accent layer only:
+   equipped screen skins keep their backgrounds and borders,
+   so skins win by construction. Shelf cards rise in with an
+   ~80 ms stagger on open; the BPM / loop-length readouts
+   tween on a switch (ARCADE_motion.countUp, silenced).
+
+   Probe surface: window.__bgm { state, play, pause, stop,
+   setDeck, tracks }.
+   ============================================================ */
+(function () {
+  "use strict";
+  var RM = false;
+  try { RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) {}
+
+  /* ---------------- strings ---------------- */
+  var STR = {
+    shelfTitle: { ja: "レコード棚", en: "Record Shelf", ko: "레코드 선반", zh: "唱片架", zht: "唱片架", es: "Estante de discos", fr: "Étagère à disques", de: "Schallplattenregal", pt: "Prateleira de discos", it: "Scaffale dischi" },
+    shelfNote: { ja: "持っているレコードはタップでデッキに載ります", en: "Tap an owned record to put it on the deck", ko: "보유 레코드를 탭하면 덱에 올립니다", zh: "点击已拥有的唱片即可放入唱机", zht: "點擊已擁有的唱片即可放入唱機", es: "Toca un disco para ponerlo en el plato", fr: "Touchez un disque pour le mettre sur la platine", de: "Tippe auf eine Schallplatte, um sie aufzulegen", pt: "Toque em um disco para colocá-lo no toca-discos", it: "Tocca un disco per metterlo sul piatto" },
+    onDeck: { ja: "デッキに載っています", en: "On the deck", ko: "덱에 있음", zh: "已放入唱机", zht: "已放入唱機", es: "En el plato", fr: "Sur la platine", de: "Aufgelegt", pt: "No toca-discos", it: "Sul piatto" },
+    nowPlaying: { ja: "再生中", en: "Playing", ko: "재생 중", zh: "播放中", zht: "播放中", es: "Reproduciendo", fr: "Lecture en cours", de: "Wiedergabe", pt: "Reproduzindo", it: "In riproduzione" },
+    tapToPlay: { ja: "タップで再生", en: "Tap to play", ko: "탭하여 재생", zh: "点击播放", zht: "點擊播放", es: "Toca para reproducir", fr: "Touchez pour lire", de: "Tippen zum Abspielen", pt: "Toque para reproduzir", it: "Tocca per riprodurre" },
+    owned: { ja: "所有済み", en: "Owned", ko: "보유 중", zh: "已拥有", zht: "已擁有", es: "Poseído", fr: "Possédé", de: "Im Besitz", pt: "Possuído", it: "Posseduto" },
+    lockedShop: { ja: "ショップで購入", en: "Buy in the shop", ko: "상점에서 구매", zh: "从商店购买", zht: "從商店購買", es: "Comprar en tienda", fr: "Acheter en boutique", de: "Im Shop kaufen", pt: "Comprar na loja", it: "Acquista nel negozio" },
+    lockedGacha: { ja: "ガチャで入手", en: "From the gacha", ko: "가챠로 획득", zh: "通过扭蛋获得", zht: "透過轉蛋獲得", es: "Obtener de gacha", fr: "Obtenir via gacha", de: "Über Gacha erhalten", pt: "Obter via gacha", it: "Ottieni dal gacha" },
+    rareTag: { ja: "レア", en: "Rare", ko: "레어", zh: "稀有", zht: "稀有", es: "Raro", fr: "Rare", de: "Selten", pt: "Raro", it: "Raro" },
+    seconds: { ja: "秒", en: "s", ko: "초", zh: "秒", zht: "秒", es: "s", fr: "s", de: "Sek.", pt: "s", it: "s" },
+    loopWord: { ja: "ループ", en: "loop", ko: "루프", zh: "循环", zht: "循環", es: "Bucle", fr: "Boucle", de: "Schleife", pt: "Loop", it: "Loop" },
+    coinsWord: { ja: "コイン", en: "coins", ko: "코인", zh: "硬币", zht: "硬幣", es: "Monedas", fr: "Pièces", de: "Münzen", pt: "Moedas", it: "Monete" }
+  };
+  var TITLES = {
+    "midnight-window": { ko: "한밤의 창가", zh: "午夜窗边", zht: "午夜窗邊", es: "Ventana de medianoche", fr: "Fenêtre de minuit", de: "Mitternachtsfenster", pt: "Janela da meia-noite", it: "Finestra di mezzanotte" },
+    "marine-drive": { ko: "마린 드라이브", zh: "海洋大道", zht: "海洋大道", es: "Paseo marítimo", fr: "Route marine", de: "Marine Drive", pt: "Passeio marítimo", it: "Percorso marino" },
+    "8bit-adventure": { ko: "8비트 어드벤처", zh: "8位冒险", zht: "8位元冒險", es: "Aventura de 8 bits", fr: "Aventure 8-bit", de: "8-Bit-Abenteuer", pt: "Aventura 8-bit", it: "Avventura 8-bit" },
+    "afternoon-bossa": { ko: "오후의 보사", zh: "午后波萨", zht: "午後巴薩", es: "Bossa de tarde", fr: "Bossa de l'après-midi", de: "Nachmittags-Bossa", pt: "Bossa da tarde", it: "Bossa pomeridiana" },
+    "neon-circuit": { ko: "네온 서킷", zh: "霓虹赛道", zht: "霓虹賽道", es: "Circuito neón", fr: "Circuit néon", de: "Neon-Schaltkreis", pt: "Circuito neon", it: "Circuito neon" },
+    "sea-of-stardust": { ko: "별가루의 바다", zh: "星尘之海", zht: "星塵之海", es: "Mar de polvo estelar", fr: "Mer de poussière d'étoiles", de: "Meer aus Sternenstaub", pt: "Mar de poeira estelar", it: "Mare di polvere di stelle" },
+    "highway-dash": { ko: "질주 하이웨이", zh: "疾驰公路", zht: "疾馳公路", es: "Carrera en la autopista", fr: "Ruée sur l'autoroute", de: "Highway-Rausch", pt: "Disparada na autoestrada", it: "Corsa in autostrada" },
+    "slap-street": { ko: "슬랩 스트리트", zh: "拍击街道", zht: "拍擊街道", es: "Calle slap", fr: "Rue slap", de: "Slap-Straße", pt: "Rua slap", it: "Strada slap" },
+    "piano-garden": { ko: "피아노 가든", zh: "钢琴花园", zht: "鋼琴花園", es: "Jardín de piano", fr: "Jardin du piano", de: "Klaviergarten", pt: "Jardim de piano", it: "Giardino del pianoforte" }
+  };
+  function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
+  function L(key) { var e = STR[key]; if (!e) return key; return e[lang()] || e.ja || key; }
+  function titleOf(t) {
+    var l = lang();
+    if (l === "ja") return t.title_ja;
+    if (l === "en") return t.title_en;
+    var m = TITLES[t.id];
+    return (m && m[l]) || t.title_en;
+  }
+
+  /* ---------------- data (lazy asset) ---------------- */
+  var DATA = null, loadPromise = null;
+  function loadData() {
+    if (DATA) return Promise.resolve(DATA);
+    if (loadPromise) return loadPromise;
+    loadPromise = new Promise(function (res) {
+      var s = document.createElement("script");
+      s.src = "assets/bgm-data.js";
+      s.onload = function () { DATA = window.__ARCADE_BGM_DATA__ || null; res(DATA); };
+      s.onerror = function () { res(null); };
+      document.head.appendChild(s);
+    });
+    return loadPromise;
+  }
+  function trackById(id) {
+    if (!DATA) return null;
+    for (var i = 0; i < DATA.tracks.length; i++) if (DATA.tracks[i].id === id) return DATA.tracks[i];
+    return null;
+  }
+  function trackOfItem(itemId) {
+    if (!DATA) return null;
+    for (var i = 0; i < DATA.tracks.length; i++) if (DATA.tracks[i].itemId === itemId) return DATA.tracks[i];
+    return null;
+  }
+
+  /* ---------------- ownership (shop store, read-only here) ---------------- */
+  function pointsStore() {
+    try { return JSON.parse(localStorage.getItem("arcade-points-v1") || "null") || {}; } catch (e) { return {}; }
+  }
+  function isOwned(t) {
+    if (!t) return false;
+    if (t.unlock === "default") return true;
+    var st = pointsStore();
+    return (st.owned || []).indexOf(t.itemId) >= 0;
+  }
+  function equippedItemId() {
+    var st = pointsStore();
+    return (st.equipped && st.equipped.record) || null;
+  }
+  function ownedTracks() {
+    if (!DATA) return [];
+    return DATA.tracks.filter(isOwned);
+  }
+
+  /* ================================================================
+     ENGINE — a lookahead step scheduler in absolute ctx time.
+     Each generation of playback owns a voice bus; stopping or
+     switching fades that bus out and disconnects it, so no
+     scheduled tail can leak into the next track (no orphans).
+     ================================================================ */
+  var AC = null, bus = null, noiseBuf = null, waveCache = {};
+  var eng = {
+    track: null, playing: false, timer: null,
+    anchorStep: 0, anchorTime: 0, nextStep: 0,
+    stepsScheduled: 0, loopsScheduled: 0, vb: null, pausedPos: 0
+  };
+  function stepDur(t) { return 60 / t.bpm / 4; }
+  function totalSteps(t) { return t.bars * 16; }
+  function loopDur(t) { return stepDur(t) * totalSteps(t); }
+  function stepOffset(t, k) {
+    var sd = stepDur(t), s = k % 16, bar = Math.floor(k / 16);
+    var off = (bar * 16 + Math.floor(s / 2) * 2) * sd;
+    if (s % 2 === 1) off += 2 * sd * (t.swing / 100);
+    return off;
+  }
+  function timeOf(absStep) {
+    var t = eng.track, T = totalSteps(t), ld = loopDur(t);
+    var dLoop = Math.floor(absStep / T) - Math.floor(eng.anchorStep / T);
+    return eng.anchorTime + dLoop * ld + stepOffset(t, absStep % T) - stepOffset(t, eng.anchorStep % T);
+  }
+  function ensureCtx() {
+    if (AC) return true;
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (window.__arcadeFitAudio) { try { window.__arcadeFitAudio(AC); } catch (e) {} }
+      bus = AC.createGain(); bus.gain.value = 0.9; bus.connect(AC.destination);
+      noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
+      var d = noiseBuf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      return true;
+    } catch (e) { return false; }
+  }
+  function mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  function pulseWave(duty) {
+    var key = "p" + duty;
+    if (waveCache[key]) return waveCache[key];
+    var N = 48, real = new Float32Array(N + 1), imag = new Float32Array(N + 1);
+    for (var n = 1; n <= N; n++) {
+      var A = 4 / (n * Math.PI) * Math.sin(n * Math.PI * duty);
+      real[n] = A * Math.cos(n * Math.PI * duty);
+      imag[n] = A * Math.sin(n * Math.PI * duty);
+    }
+    var w = AC.createPeriodicWave(real, imag, { disableNormalization: false });
+    waveCache[key] = w; return w;
+  }
+  function newVoiceBus() {
+    var g = AC.createGain(); g.gain.value = 1; g.connect(bus);
+    return g;
+  }
+  function killVoiceBus() {
+    var old = eng.vb; eng.vb = null;
+    if (!old || !AC) return;
+    try {
+      var now = AC.currentTime;
+      old.gain.cancelScheduledValues(now);
+      old.gain.setValueAtTime(old.gain.value, now);
+      old.gain.linearRampToValueAtTime(0, now + 0.09);
+      setTimeout(function () { try { old.disconnect(); } catch (e) {} }, 350);
+    } catch (e) {}
+  }
+  /* ---- voices (vb = the generation's voice bus) ---- */
+  function adsrGain(vb, t0, peak, a, d, sustain, rel, dur) {
+    var g = AC.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t0 + a);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * sustain), t0 + a + d);
+    var end = t0 + Math.max(a + d, dur);
+    g.gain.setValueAtTime(Math.max(0.0002, peak * sustain), end);
+    g.gain.exponentialRampToValueAtTime(0.0001, end + rel);
+    g.connect(vb);
+    return g;
+  }
+  function osc(type, freq, t0, stopT, wave) {
+    var o = AC.createOscillator();
+    if (wave) o.setPeriodicWave(wave); else o.type = type;
+    o.frequency.setValueAtTime(freq, t0);
+    o.start(t0); o.stop(stopT);
+    return o;
+  }
+  function vKick(vb, t0, v) {
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(155, t0);
+    o.frequency.exponentialRampToValueAtTime(44, t0 + 0.11);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.9 * v, t0 + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.26);
+    o.connect(g); g.connect(vb); o.start(t0); o.stop(t0 + 0.3);
+  }
+  function noiseHit(vb, t0, v, filterType, freq, q, dur, peak) {
+    var src = AC.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    src.playbackRate.value = 0.9 + Math.random() * 0.2;
+    var f = AC.createBiquadFilter(); f.type = filterType; f.frequency.value = freq; f.Q.value = q;
+    var g = AC.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak * v, t0 + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f); f.connect(g); g.connect(vb);
+    src.start(t0, Math.random() * 0.5); src.stop(t0 + dur + 0.05);
+  }
+  function vSnare(vb, t0, v) {
+    noiseHit(vb, t0, v, "bandpass", 1800, 0.9, 0.13, 0.5);
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = "triangle"; o.frequency.setValueAtTime(190, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.22 * v, t0 + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.07);
+    o.connect(g); g.connect(vb); o.start(t0); o.stop(t0 + 0.09);
+  }
+  function vHat(vb, t0, v) { noiseHit(vb, t0, v, "highpass", 7500, 0.7, 0.05, 0.26); }
+  function vBass(vb, t0, midi, dur, kind, v) {
+    var f = mtof(midi);
+    if (kind === "fm-slap") {
+      var car = AC.createOscillator(), mod = AC.createOscillator(), mg = AC.createGain(), g = AC.createGain();
+      car.type = "sine"; car.frequency.setValueAtTime(f, t0);
+      mod.type = "sine"; mod.frequency.setValueAtTime(f * 3.99, t0);
+      var idx = f * (0.6 + 2.4 * v);
+      mg.gain.setValueAtTime(idx, t0);
+      mg.gain.exponentialRampToValueAtTime(Math.max(1, f * 0.15), t0 + 0.09);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.5 * v, t0 + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(0.28, dur));
+      mod.connect(mg); mg.connect(car.frequency); car.connect(g); g.connect(vb);
+      mod.start(t0); mod.stop(t0 + Math.max(0.3, dur) + 0.05);
+      car.start(t0); car.stop(t0 + Math.max(0.3, dur) + 0.05);
+      var sub = osc("sine", f, t0, t0 + Math.max(0.3, dur) + 0.05);
+      var sg = AC.createGain();
+      sg.gain.setValueAtTime(0.0001, t0);
+      sg.gain.exponentialRampToValueAtTime(0.22 * v, t0 + 0.006);
+      sg.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(0.28, dur));
+      sub.disconnect(); sub.connect(sg); sg.connect(vb);
+      return;
+    }
+    var o = osc(kind === "sine" ? "sine" : "triangle", f, t0, t0 + dur + 0.1);
+    var fl = AC.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = kind === "sine" ? 500 : 950; fl.Q.value = 0.4;
+    var g2 = adsrGain(vb, t0, 0.5 * v, 0.006, 0.09, 0.75, 0.06, dur);
+    o.disconnect(); o.connect(fl); fl.connect(g2);
+  }
+  function fmNote(vb, t0, f, ratio, idx0, idxT, peak, dec) {
+    var car = AC.createOscillator(), mod = AC.createOscillator(), mg = AC.createGain(), g = AC.createGain();
+    car.type = "sine"; car.frequency.setValueAtTime(f, t0);
+    mod.type = "sine"; mod.frequency.setValueAtTime(f * ratio, t0);
+    mg.gain.setValueAtTime(idx0, t0);
+    mg.gain.exponentialRampToValueAtTime(Math.max(0.5, idx0 * 0.08), t0 + idxT);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dec);
+    mod.connect(mg); mg.connect(car.frequency); car.connect(g); g.connect(vb);
+    mod.start(t0); mod.stop(t0 + dec + 0.05);
+    car.start(t0); car.stop(t0 + dec + 0.05);
+  }
+  function vChord(vb, t0, voicing, kind, dur) {
+    var i, f;
+    if (kind === "fm-epiano") {
+      for (i = 0; i < voicing.length; i++) fmNote(vb, t0, mtof(voicing[i]), 1, mtof(voicing[i]) * 1.9, 0.5, 0.15, 1.7);
+      return;
+    }
+    if (kind === "saw-stab") {
+      for (i = 0; i < voicing.length; i++) {
+        f = mtof(voicing[i]);
+        var o = osc("sawtooth", f, t0, t0 + 0.3);
+        var o2 = osc("sawtooth", f * 1.003, t0, t0 + 0.3);
+        var fl = AC.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 2400;
+        var g = adsrGain(vb, t0, 0.11, 0.004, 0.16, 0.25, 0.05, 0.2);
+        o.disconnect(); o2.disconnect(); o.connect(fl); o2.connect(fl); fl.connect(g);
+      }
+      return;
+    }
+    /* saw-pad / saw-pad-sidechain: slow stack, optional beat ducking */
+    var peak = 0.085, atk = Math.min(0.32, dur * 0.35);
+    for (i = 0; i < voicing.length; i++) {
+      f = mtof(voicing[i]);
+      var g2 = AC.createGain();
+      g2.gain.setValueAtTime(0.0001, t0);
+      g2.gain.linearRampToValueAtTime(peak, t0 + atk);
+      if (kind === "saw-pad-sidechain") {
+        var beat = stepDur(eng.track) * 4, nb = Math.floor(dur / beat);
+        for (var b = 0; b <= nb; b++) {
+          var tb = t0 + b * beat;
+          if (tb > t0 + 0.01) g2.gain.linearRampToValueAtTime(peak * 0.32, tb + 0.012);
+          if (tb + 0.15 < t0 + dur) g2.gain.linearRampToValueAtTime(peak, tb + 0.15);
+        }
+      }
+      g2.gain.setValueAtTime(peak, t0 + Math.max(atk, dur - 0.22));
+      g2.gain.linearRampToValueAtTime(0.0001, t0 + dur + 0.18);
+      var fl2 = AC.createBiquadFilter(); fl2.type = "lowpass"; fl2.frequency.value = 1250; fl2.Q.value = 0.3;
+      var oa = osc("sawtooth", f * 0.9985, t0, t0 + dur + 0.25);
+      var ob = osc("sawtooth", f * 1.0015, t0, t0 + dur + 0.25);
+      oa.disconnect(); ob.disconnect(); oa.connect(fl2); ob.connect(fl2); fl2.connect(g2); g2.connect(vb);
+    }
+  }
+  function vArp(vb, t0, midi) {
+    var o = osc(null, mtof(midi), t0, t0 + 0.16, pulseWave(0.25));
+    var g = adsrGain(vb, t0, 0.17, 0.002, 0.07, 0.3, 0.03, 0.1);
+    o.disconnect(); o.connect(g);
+  }
+  function vLead(vb, t0, midi, dur, kind, v) {
+    var f = mtof(midi), o, g, fl;
+    if (kind === "fm-bell") { fmNote(vb, t0, f, 3.51, f * 2.6, 1.6, 0.3 * v, 2.3); return; }
+    if (kind === "fm-epiano") { fmNote(vb, t0, f, 1, f * 1.9, 0.5, 0.3 * v, Math.max(0.8, dur)); return; }
+    if (kind === "sine") {
+      o = osc("sine", f, t0, t0 + dur + 0.15);
+      var lfo = AC.createOscillator(), lg = AC.createGain();
+      lfo.frequency.value = 5.2; lg.gain.setValueAtTime(0, t0);
+      lg.gain.linearRampToValueAtTime(f * 0.004, t0 + Math.min(0.35, dur));
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start(t0); lfo.stop(t0 + dur + 0.15);
+      g = adsrGain(vb, t0, 0.32 * v, 0.012, 0.12, 0.65, 0.09, dur);
+      o.disconnect(); o.connect(g); return;
+    }
+    if (kind === "saw-detuned") {
+      var o1 = osc("sawtooth", f * 0.996, t0, t0 + dur + 0.12);
+      var o2 = osc("sawtooth", f * 1.004, t0, t0 + dur + 0.12);
+      fl = AC.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 2700;
+      g = adsrGain(vb, t0, 0.17 * v, 0.008, 0.1, 0.6, 0.07, dur);
+      o1.disconnect(); o2.disconnect(); o1.connect(fl); o2.connect(fl); fl.connect(g); return;
+    }
+    var duty = kind === "pulse12.5" ? 0.125 : kind === "pulse25" ? 0.25 : 0.5;
+    o = osc(null, f, t0, t0 + dur + 0.1, pulseWave(duty));
+    g = adsrGain(vb, t0, 0.24 * v, 0.004, 0.08, 0.62, 0.05, dur);
+    o.disconnect(); o.connect(g);
+  }
+  function scheduleStep(absStep) {
+    var t = eng.track, vb = eng.vb; if (!t || !vb) return;
+    var T = totalSteps(t), k = absStep % T, bar = Math.floor(k / 16), s = k % 16;
+    var t0 = timeOf(absStep), sd = stepDur(t);
+    var dr = t.drums[bar];
+    if (dr.kick[s] > 0) vKick(vb, t0, dr.kick[s] / 127);
+    if (dr.snare[s] > 0) vSnare(vb, t0, dr.snare[s] / 127);
+    if (dr.hat[s] > 0) vHat(vb, t0, dr.hat[s] / 127);
+    var bn = t.bass[bar][s];
+    if (bn !== null && bn !== undefined) vBass(vb, t0, bn, sd * 1.8, t.timbre.bass, 0.95);
+    var ln = t.lead[bar][s];
+    if (ln !== null && ln !== undefined) vLead(vb, t0, ln, sd * 1.9, t.timbre.lead, 0.9);
+    var ck = t.timbre.chords;
+    if (ck === "pulse25-arp") {
+      var vo = t.chords[bar].voicing, idx = absStep % (vo.length * 2);
+      vArp(vb, t0, vo[idx % vo.length] + (idx >= vo.length ? 12 : 0));
+    } else if (t.chord_steps.indexOf(s) >= 0) {
+      var nx = 16;
+      for (var j = 0; j < t.chord_steps.length; j++) if (t.chord_steps[j] > s) { nx = t.chord_steps[j]; break; }
+      vChord(vb, t0, t.chords[bar].voicing, ck, (nx - s) * sd);
+    }
+    eng.stepsScheduled = absStep + 1;
+    eng.loopsScheduled = Math.floor(absStep / T);
+  }
+  function tick() {
+    if (!eng.playing || !AC) return;
+    var ahead = AC.currentTime + 0.15, guard = 0;
+    while (guard++ < 96 && timeOf(eng.nextStep) < ahead) { scheduleStep(eng.nextStep); eng.nextStep++; }
+  }
+  function engPlay(t, fromStep) {
+    if (!ensureCtx()) return false;
+    if (AC.state === "suspended") { try { AC.resume(); } catch (e) {} }
+    if (eng.timer) { clearInterval(eng.timer); eng.timer = null; }
+    killVoiceBus();
+    eng.track = t;
+    eng.vb = newVoiceBus();
+    eng.anchorStep = Math.floor(fromStep || 0);
+    eng.anchorTime = AC.currentTime + 0.08;
+    eng.nextStep = eng.anchorStep;
+    eng.stepsScheduled = eng.anchorStep;
+    eng.loopsScheduled = Math.floor(eng.anchorStep / totalSteps(t));
+    eng.playing = true; eng.pausedPos = 0;
+    tick();
+    eng.timer = setInterval(tick, 42);
+    return true;
+  }
+  function positionSteps() {
+    var t = eng.track; if (!t || !AC) return eng.pausedPos || 0;
+    if (!eng.playing) return eng.pausedPos || 0;
+    var T = totalSteps(t), ld = loopDur(t);
+    var elapsed = AC.currentTime - eng.anchorTime;
+    var base = Math.floor(eng.anchorStep / T) * T + stepOffset(t, eng.anchorStep % T) / stepDur(t);
+    var pos = (base + elapsed / stepDur(t)) % T;
+    return pos < 0 ? pos + T : pos;
+  }
+  function engPause() {
+    if (!eng.playing) return;
+    eng.pausedPos = positionSteps();
+    eng.playing = false;
+    if (eng.timer) { clearInterval(eng.timer); eng.timer = null; }
+    killVoiceBus();
+  }
+  function engStop() {
+    eng.playing = false; eng.pausedPos = 0;
+    if (eng.timer) { clearInterval(eng.timer); eng.timer = null; }
+    killVoiceBus();
+  }
+
+  /* ================================================================
+     DECK GLUE — deck state mirrored into module 65 (bgm mode),
+     accent morph, and the record shelf UI.
+     ================================================================ */
+  var deckId = null;             // track id on the deck (or null)
+  var accentCur = null;          // [r,g,b] currently displayed (lerps)
+  var accentGoal = null;         // [r,g,b] of the deck record
+  function hexRgb(hex) {
+    var n = parseInt(hex.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function applyAccent(t) {
+    accentGoal = t ? hexRgb(t.accent) : null;
+    if (!accentCur || RM) accentCur = accentGoal;
+    var view = document.getElementById("turntableView");
+    if (view && t) {
+      view.style.setProperty("--tt-accent", t.accent);
+      view.style.setProperty("--tt-accent-glow", t.accentGlow);
+      view.setAttribute("data-bgm-accent", t.id);
+    } else if (view) {
+      view.removeAttribute("data-bgm-accent");
+    }
+  }
+  function accentNow() {
+    if (!accentGoal) return "";
+    if (accentCur) {
+      for (var i = 0; i < 3; i++) accentCur[i] += (accentGoal[i] - accentCur[i]) * 0.32;
+    } else accentCur = accentGoal;
+    var c = accentCur || accentGoal;
+    return "rgb(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + ")";
+  }
+  var bgmEngaged = false;
+  function ttSync() {
+    if (!window.__turntable || !window.__turntable.bgmSync) return;
+    var t = deckId ? trackById(deckId) : null;
+    if (!t) { window.__turntable.bgmSync(null); return; }
+    if (!bgmEngaged) {
+      /* An actively playing Spotify source keeps the deck until
+         the user actually engages a record. */
+      var st = null;
+      try { st = window.__turntable.state(); } catch (e) {}
+      if (st && (st.mode === "sdk" || st.mode === "sync") && st.isPlaying) return;
+    }
+    var T = totalSteps(t), ld = loopDur(t);
+    var frac = (positionSteps() % T) / T;
+    window.__turntable.bgmSync({
+      track: {
+        name: titleOf(t), artists: "CHRISTOPHER STUDIO",
+        album: t.genre + " · BPM " + t.bpm,
+        art: "", durationMs: Math.round(ld * 1000), uri: "bgm:" + t.id
+      },
+      playing: eng.playing,
+      progressMs: Math.round(frac * ld * 1000),
+      accent: accentNow()
+    });
+  }
+  function playBgm(id) {
+    loadData().then(function () {
+      var t = trackById(id);
+      if (!t || !isOwned(t)) return;
+      deckId = id; bgmEngaged = true; applyAccent(t);
+      if (engPlay(t, 0)) { ttSync(); renderShelf(false); }
+    });
+  }
+  function pauseBgm() { engPause(); ttSync(); renderShelf(false); }
+  function stepRecord(dir) {
+    var owned = ownedTracks();
+    if (!owned.length) return;
+    var idx = -1;
+    for (var i = 0; i < owned.length; i++) if (owned[i].id === deckId) idx = i;
+    var next = owned[(idx + dir + owned.length) % owned.length];
+    if (!next || next.id === deckId) return;
+    var pts = window.ARCADE_points;
+    if (pts && equippedItemId() !== next.itemId) { try { pts.equip(next.itemId); } catch (e) {} }
+    playBgm(next.id);
+  }
+  window.__bgmCtl = function (action, arg) {
+    if (action === "toggle") {
+      if (!deckId) return;
+      if (eng.playing) pauseBgm(); else playBgm(deckId);
+    } else if (action === "next") stepRecord(1);
+    else if (action === "prev") stepRecord(-1);
+    else if (action === "seek") {
+      var t = deckId ? trackById(deckId) : null;
+      if (t) {
+        var frac = Math.max(0, Math.min(0.999, (arg || 0) / (loopDur(t) * 1000)));
+        if (eng.playing) { if (engPlay(t, frac * totalSteps(t))) { ttSync(); } }
+        else { eng.track = t; eng.pausedPos = frac * totalSteps(t); ttSync(); }
+      }
+    } else if (action === "stop" || action === "suspend") {
+      engStop();
+      if (window.__turntable && window.__turntable.bgmSync) window.__turntable.bgmSync(null);
+      renderShelf(false);
+    }
+  };
+  /* Called by module 26's applyCosmetics whenever the equipped
+     record changes (shop equip, preset apply, sync merge).
+     applyCosmetics also fires for unrelated purchases, so the
+     hook is idempotent: an unchanged value is a no-op. */
+  var lastEquipItem = undefined;
+  window.__bgmOnEquip = function (itemId) {
+    if (itemId === lastEquipItem) return;
+    lastEquipItem = itemId;
+    loadData().then(function () {
+      var t = itemId ? trackOfItem(itemId) : null;
+      if (!t) {
+        deckId = null; engStop(); applyAccent(null);
+        if (window.__turntable && window.__turntable.bgmSync) window.__turntable.bgmSync(null);
+        renderShelf(false);
+        return;
+      }
+      var wasPlaying = eng.playing;
+      deckId = t.id; bgmEngaged = true; applyAccent(t);
+      if (wasPlaying) engPlay(t, 0);
+      ttSync(); renderShelf(false);
+    });
+  };
+
+  /* ---------------- shelf UI ---------------- */
+  var css = [
+    ".bgm-shelf{margin-top:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 12px 14px}",
+    ".bgm-shelf h3{margin:0 0 2px;font-size:15px;color:#eef1f8;letter-spacing:.03em}",
+    ".bgm-shelf .bgm-note{font-size:12px;color:#9aa3b5;margin:0 0 10px;line-height:1.55}",
+    ".bgm-deckline{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12.5px;color:#c6cdd9;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 10px;margin-bottom:10px}",
+    ".bgm-deckline .bgm-eq-dot{width:8px;height:8px;border-radius:50%;background:var(--tt-accent,#e9b93c);flex:none;transition:background-color .9s ease}",
+    ".bgm-deckline b{color:#eef1f8}",
+    ".bgm-deckline .bgm-num{font-variant-numeric:tabular-nums;color:#eef1f8;font-weight:700}",
+    ".bgm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px}",
+    ".bgm-card{display:flex;flex-direction:column;gap:5px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;cursor:pointer;color:#e9edf6;min-height:44px}",
+    ".bgm-card:active{transform:scale(.98)}",
+    ".bgm-card.on{border-color:var(--tt-accent,#e9b93c);box-shadow:0 0 0 1.5px var(--tt-accent,#e9b93c),0 0 18px -4px var(--tt-accent-glow,transparent)}",
+    ".bgm-card.locked{opacity:.62;cursor:default}",
+    ".bgm-card .bgm-disc{width:52px;height:52px;flex:none}",
+    ".bgm-card .bgm-name{font-size:13px;font-weight:800;line-height:1.3;overflow-wrap:anywhere}",
+    ".bgm-card .bgm-sub{font-size:11px;color:#9aa3b5;line-height:1.45;overflow-wrap:anywhere}",
+    ".bgm-card .bgm-badge{font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 8px;align-self:flex-start;background:rgba(255,255,255,.1);color:#c6cdd9}",
+    ".bgm-card .bgm-badge.play{background:var(--tt-accent,#e9b93c);color:#171106}",
+    ".bgm-card .bgm-badge.rare{background:#8b5cf6;color:#fff}",
+    "@keyframes bgmRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}",
+    ".bgm-card.rise{animation:bgmRise .45s ease both}",
+    /* mood morph: accent layer only (stage glow / title glow /
+       chip border / seek accent). Skin backgrounds & borders
+       are never touched, so equipped skins keep priority. */
+    "#turntableView .tt-stage{transition:box-shadow .9s ease}",
+    "#turntableView[data-bgm-accent] .tt-stage{box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 16px 34px rgba(0,0,0,.4),0 0 68px -10px var(--tt-accent-glow,transparent)}",
+    "#turntableView .tt-info .tt-title{transition:text-shadow .9s ease}",
+    "#turntableView[data-bgm-accent] .tt-info .tt-title{text-shadow:0 0 24px var(--tt-accent-glow,transparent)}",
+    "#turntableView[data-bgm-accent] .tt-seek{accent-color:var(--tt-accent,#1db954)}",
+    "#ttChip{transition:border-color .9s ease}",
+    "@media (prefers-reduced-motion: reduce){.bgm-card.rise{animation:none}#turntableView .tt-stage,#turntableView .tt-info .tt-title,#ttChip{transition:none}}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.id = "arcade-bgm-style";
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  function discSVG(t) {
+    return '<svg class="bgm-disc" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#101014"/><circle cx="26" cy="26" r="19" fill="none" stroke="#ffffff" stroke-opacity="0.13" stroke-width="1"/><circle cx="26" cy="26" r="15" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1"/><circle cx="26" cy="26" r="9.5" fill="' + t.accent + '"/><circle cx="26" cy="26" r="1.8" fill="#c8ccd4"/></svg>';
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  var lastBpm = 0, lastSec = 0;
+  function renderShelf(animate) {
+    var wrap = document.querySelector("#ttRoot .tt-wrap");
+    if (!wrap || !DATA) return;
+    var shelf = document.getElementById("bgmShelf");
+    if (!shelf) {
+      shelf = document.createElement("section");
+      shelf.id = "bgmShelf";
+      shelf.className = "bgm-shelf";
+      var main = wrap.querySelector(".tt-main");
+      if (main && main.nextSibling) wrap.insertBefore(shelf, main.nextSibling);
+      else wrap.appendChild(shelf);
+      shelf.addEventListener("click", function (ev) {
+        var card = ev.target && ev.target.closest ? ev.target.closest(".bgm-card") : null;
+        if (!card) return;
+        var t = trackById(card.getAttribute("data-id"));
+        if (!t || !isOwned(t)) return;
+        if (deckId === t.id && equippedItemId() === t.itemId) {
+          if (eng.playing) pauseBgm(); else playBgm(t.id);
+          return;
+        }
+        var pts = window.ARCADE_points;
+        if (pts && equippedItemId() !== t.itemId) { try { pts.equip(t.itemId); } catch (e) {} }
+        playBgm(t.id);
+      });
+    }
+    var deck = deckId ? trackById(deckId) : null;
+    var h = "<h3>" + esc(L("shelfTitle")) + '</h3><p class="bgm-note">' + esc(L("shelfNote")) + "</p>";
+    h += '<div class="bgm-deckline"><span class="bgm-eq-dot"></span>' +
+      (deck
+        ? "<span>" + esc(L("onDeck")) + "：</span><b>" + esc(titleOf(deck)) + "</b><span>· BPM </span><span class=\"bgm-num\" id=\"bgmDeckBpm\">" + deck.bpm + "</span><span>· </span><span class=\"bgm-num\" id=\"bgmDeckSec\">" + loopDur(deck).toFixed(1) + "</span><span>" + esc(L("seconds")) + " " + esc(L("loopWord")) + "</span>" + (eng.playing ? "<span>· " + esc(L("nowPlaying")) + "</span>" : "")
+        : "<span>" + esc(L("tapToPlay")) + "</span>") +
+      "</div>";
+    h += '<div class="bgm-grid">';
+    DATA.tracks.forEach(function (t, i) {
+      var owned = isOwned(t), on = deckId === t.id;
+      var badge;
+      if (!owned) badge = '<span class="bgm-badge">' + (t.unlock === "shop" ? "🔒 " + esc(L("lockedShop")) + " · " + t.price + " " + esc(L("coinsWord")) : "🔒 " + esc(L("lockedGacha"))) + "</span>";
+      else if (on && eng.playing) badge = '<span class="bgm-badge play">' + esc(L("nowPlaying")) + "</span>";
+      else if (on) badge = '<span class="bgm-badge play">' + esc(L("onDeck")) + "</span>";
+      else badge = '<span class="bgm-badge">' + esc(L("owned")) + "</span>";
+      if (t.rare) badge += ' <span class="bgm-badge rare">' + esc(L("rareTag")) + "</span>";
+      h += '<button type="button" class="bgm-card' + (on ? " on" : "") + (owned ? "" : " locked") + (animate && !RM ? " rise" : "") + '" data-id="' + t.id + '"' +
+        (animate && !RM ? ' style="animation-delay:' + (i * 80) + 'ms"' : "") +
+        (owned ? "" : ' aria-disabled="true"') + ">" +
+        discSVG(t) +
+        '<span class="bgm-name">' + esc(titleOf(t)) + "</span>" +
+        '<span class="bgm-sub">' + esc(t.genre) + " · BPM " + t.bpm + " · " + loopDur(t).toFixed(1) + esc(L("seconds")) + "</span>" +
+        "<span>" + badge + "</span></button>";
+    });
+    h += "</div>";
+    shelf.innerHTML = h;
+    /* tween the deck readouts on a switch (numbers only) */
+    if (deck && window.ARCADE_motion && !RM) {
+      var bEl = document.getElementById("bgmDeckBpm"), sEl = document.getElementById("bgmDeckSec");
+      if (bEl && lastBpm && lastBpm !== deck.bpm) window.ARCADE_motion.countUp(bEl, deck.bpm, { from: lastBpm, duration: 450, sound: null, format: function (n) { return String(Math.round(n)); } });
+      if (sEl && lastSec && Math.abs(lastSec - loopDur(deck)) > 0.05) window.ARCADE_motion.countUp(sEl, loopDur(deck), { from: lastSec, duration: 450, sound: null, format: function (n) { return n.toFixed(1); } });
+    }
+    if (deck) { lastBpm = deck.bpm; lastSec = loopDur(deck); }
+    /* chip border follows the accent (chip lives outside the view) */
+    var chip = document.getElementById("ttChip");
+    if (chip) chip.style.borderColor = deck ? deck.accent : "";
+  }
+
+  /* ---------------- init ---------------- */
+  var syncTimer = setInterval(function () {
+    if (deckId && DATA) { ttSync(); }
+  }, 200);
+  loadData().then(function () {
+    if (!DATA) return;
+    var eq = equippedItemId();
+    var t = eq ? trackOfItem(eq) : null;
+    if (t && isOwned(t)) { deckId = t.id; eng.track = t; applyAccent(t); }
+    renderShelf(false);
+    ttSync();
+  });
+  if (window.__turntable && window.__turntable.enter) {
+    var origEnter = window.__turntable.enter;
+    window.__turntable.enter = function () { origEnter(); renderShelf(true); ttSync(); };
+  }
+  window.addEventListener("pagehide", function () { engStop(); if (syncTimer) clearInterval(syncTimer); });
+
+  window.__bgm = {
+    state: function () {
+      var t = eng.track;
+      return {
+        deck: deckId, trackId: t ? t.id : null, playing: eng.playing,
+        stepsScheduled: eng.stepsScheduled, loops: eng.loopsScheduled,
+        posSteps: Math.round(positionSteps() * 100) / 100,
+        stepDur: t ? stepDur(t) : null, totalSteps: t ? totalSteps(t) : null,
+        ctxState: AC ? AC.state : "none",
+        ctxTime: AC ? AC.currentTime : 0,
+        masterGain: AC && AC.__arcadeMasterGain ? AC.__arcadeMasterGain.gain.value : null,
+        destIsMaster: AC ? AC.destination === AC.__arcadeMasterGain : false,
+        timerLive: !!eng.timer,
+        owned: DATA ? DATA.tracks.map(function (x) { return isOwned(x); }) : [],
+        equippedItem: equippedItemId()
+      };
+    },
+    play: playBgm, pause: pauseBgm,
+    stop: function () { window.__bgmCtl("stop"); },
+    tracks: function () { return DATA ? DATA.tracks.map(function (t) { return { id: t.id, itemId: t.itemId, unlock: t.unlock, owned: isOwned(t), bpm: t.bpm, bars: t.bars }; }) : []; }
+  };
 })();
 </script>
 </body>
