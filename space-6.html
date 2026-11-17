@@ -6492,6 +6492,69 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     }
   </style>
   <style>
+    /* ================= UI/UX round (2026-11-16): unified icon system =====
+       ONE grammar for every lobby tile glyph, at the grade of the best
+       existing tiles (分解ボード chip, 四目ならべ board, 釣り図鑑）:
+       a saturated two-stop badge in the title's hue with the standard
+       shadow stack (coloured outer shadow + inset top highlight +
+       inset bottom shade), holding a FILLED multi-tone illustration
+       (SVG scene or CSS art) — never a bare single-colour line icon,
+       never a floating letter on a transparent badge. Pictorial
+       identity glyphs that anchor a designed hover composition stay
+       （チェス ♞ piece cycle, 麻雀 發， スロット 777 reels, バカラ B with
+       dealt cards, ビデオポーカー J+ with lamp+card, 神経衰弱 ? card
+       flip). Per-tile signature hover motions are untouched.
+       線画あそび keeps its line motif BY DESIGN (the game is line
+       figures; its draw-on hover is the signature) — it joins the
+       system through the deep neon badge + glow treatment. */
+    .game-tile .glyph-lib { background: linear-gradient(150deg, #4c3482, #2a1c52); color: #ffd9e6; box-shadow: 0 10px 18px rgba(76, 52, 130, 0.42), inset 0 -5px 8px rgba(16, 8, 40, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.28); }
+    .game-tile .glyph-notes { background: linear-gradient(150deg, #1d5a70, #0d3040); color: #c9f2ec; box-shadow: 0 10px 18px rgba(20, 80, 100, 0.42), inset 0 -5px 8px rgba(4, 24, 34, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.26); display: flex; align-items: center; justify-content: center; }
+    .game-tile .glyph-hunt { background: linear-gradient(150deg, #eda93f, #b96f14); color: #fff7e0; box-shadow: 0 10px 18px rgba(185, 111, 20, 0.42), inset 0 -5px 8px rgba(110, 62, 4, 0.45), inset 0 4px 6px rgba(255, 255, 255, 0.4); display: flex; align-items: center; justify-content: center; }
+    .game-tile .glyph-gacha { background: linear-gradient(150deg, #e7547c, #c22e56); color: #ffeef4; box-shadow: 0 10px 18px rgba(194, 46, 86, 0.42), inset 0 -5px 8px rgba(110, 14, 40, 0.45), inset 0 4px 6px rgba(255, 255, 255, 0.35); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 3.9s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-trophy { background: linear-gradient(150deg, #8a5a1d, #5f3c10); color: #ffedc0; box-shadow: 0 10px 18px rgba(120, 78, 16, 0.44), inset 0 -5px 8px rgba(50, 30, 2, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 4.1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-album { background: linear-gradient(150deg, #3f9ec9, #256d94); color: #eaf7ff; box-shadow: 0 10px 18px rgba(37, 109, 148, 0.42), inset 0 -5px 8px rgba(10, 50, 76, 0.45), inset 0 4px 6px rgba(255, 255, 255, 0.35); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 4.3s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-room { background: linear-gradient(150deg, #9a5f8a, #63355c); color: #ffedf6; box-shadow: 0 10px 18px rgba(120, 60, 105, 0.42), inset 0 -5px 8px rgba(52, 18, 46, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-league { background: linear-gradient(150deg, #4a6db5, #2f4a80); color: #e8efff; box-shadow: 0 10px 18px rgba(47, 74, 128, 0.42), inset 0 -5px 8px rgba(14, 26, 56, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 3.7s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-vip { background: linear-gradient(150deg, #5b2a86, #341452); color: #f3e2ff; box-shadow: 0 10px 18px rgba(70, 30, 120, 0.44), inset 0 -5px 8px rgba(24, 4, 48, 0.52), inset 0 4px 6px rgba(255, 255, 255, 0.26); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 4.2s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-turntable { background: linear-gradient(150deg, #3d3d48, #1d1d24); color: #f0ead8; box-shadow: 0 10px 18px rgba(24, 24, 32, 0.46), inset 0 -5px 8px rgba(0, 0, 0, 0.55), inset 0 4px 6px rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; animation-name: glyphFloat; animation-duration: 4.4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-fish { background: linear-gradient(150deg, #2b7fb8, #175a85); box-shadow: 0 10px 18px rgba(23, 90, 133, 0.4), inset 0 -5px 8px rgba(6, 40, 66, 0.45), inset 0 4px 6px rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; }
+    .game-tile .glyph-gom { background: linear-gradient(150deg, #caa050, #96702a); box-shadow: 0 10px 18px rgba(150, 112, 42, 0.4), inset 0 -5px 8px rgba(84, 60, 12, 0.4), inset 0 4px 6px rgba(255, 255, 255, 0.35); display: flex; align-items: center; justify-content: center; }
+    .game-tile .glyph-hl { background: linear-gradient(150deg, #1d3a6e, #0d1e40); color: #9fd8ff; box-shadow: 0 10px 18px rgba(20, 50, 110, 0.44), inset 0 -5px 8px rgba(2, 10, 30, 0.55), inset 0 4px 6px rgba(255, 255, 255, 0.22); }
+    .game-tile .glyph-hl svg { filter: drop-shadow(0 0 3px rgba(120, 200, 255, 0.75)); }
+    /* Casino-2 + racing tiles: the glyph divs were classless — floating
+       spans on a transparent box. Each now carries its own badge. */
+    .game-tile .glyph-holdem { background: radial-gradient(120% 120% at 50% 30%, #2fae62, #14663a); box-shadow: 0 10px 18px rgba(20, 102, 58, 0.42), inset 0 -5px 8px rgba(4, 50, 24, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.3); animation-name: glyphFloat; animation-duration: 4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-war { background: linear-gradient(150deg, #a02c3a, #6e1622); box-shadow: 0 10px 18px rgba(130, 25, 40, 0.42), inset 0 -5px 8px rgba(60, 4, 14, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.28); animation-name: glyphFloat; animation-duration: 3.8s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-war .war-vs { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; margin: 0 -4px; position: relative; z-index: 2; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe9a0, #e8a91c); color: #6e5410; font-size: 8.5px; font-weight: 900; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4), inset 0 -1.5px 2.5px rgba(120, 78, 0, 0.5); }
+    .game-tile .glyph-craps { background: radial-gradient(120% 120% at 50% 30%, #25a35a, #0f6034); box-shadow: 0 10px 18px rgba(15, 96, 52, 0.42), inset 0 -5px 8px rgba(3, 44, 20, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.3); animation-name: glyphFloat; animation-duration: 4.1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-sicbo { background: linear-gradient(150deg, #8e2438, #5c1220); box-shadow: 0 10px 18px rgba(110, 20, 38, 0.42), inset 0 -5px 8px rgba(44, 2, 12, 0.52), inset 0 4px 6px rgba(255, 255, 255, 0.26); animation-name: glyphFloat; animation-duration: 3.9s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-bigsix { background: linear-gradient(150deg, #33477d, #1f2c52); box-shadow: 0 10px 18px rgba(31, 44, 82, 0.42), inset 0 -5px 8px rgba(6, 12, 32, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.26); animation-name: glyphFloat; animation-duration: 4.3s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-bigsix > span { border: 2.5px solid #e8b93c; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.45); }
+    .game-tile .glyph-lottery { background: linear-gradient(150deg, #c9452f, #8e2418); box-shadow: 0 10px 18px rgba(150, 40, 26, 0.42), inset 0 -5px 8px rgba(70, 10, 4, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.3); position: relative; animation-name: glyphFloat; animation-duration: 4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-lottery .lot-ticket { position: absolute; width: 40px; height: 26px; border-radius: 3px; background: linear-gradient(160deg, #fffdf4, #f3e9c8); transform: rotate(-9deg); box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3), inset 0 0 0 1px #e2d5a8; }
+    .game-tile .glyph-lottery .lot-disc { position: relative; z-index: 1; }
+    .game-tile .glyph-pachi { background: linear-gradient(150deg, #1d3a6e, #0e1e40); box-shadow: 0 10px 18px rgba(16, 34, 74, 0.44), inset 0 -5px 8px rgba(2, 8, 26, 0.55), inset 0 4px 6px rgba(255, 255, 255, 0.22); animation-name: glyphFloat; animation-duration: 3.7s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-keiba { background: linear-gradient(150deg, #3f9e4d, #1e6b2f); box-shadow: 0 10px 18px rgba(30, 107, 47, 0.42), inset 0 -5px 8px rgba(8, 52, 18, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.32); animation-name: glyphFloat; animation-duration: 4.2s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-keirin { background: linear-gradient(150deg, #e07f2e, #b3540f); box-shadow: 0 10px 18px rgba(179, 84, 15, 0.42), inset 0 -5px 8px rgba(92, 40, 2, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.34); animation-name: glyphFloat; animation-duration: 3.8s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-kyotei { background: linear-gradient(150deg, #2b83c4, #175a8a); box-shadow: 0 10px 18px rgba(23, 90, 138, 0.42), inset 0 -5px 8px rgba(6, 42, 70, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.32); animation-name: glyphFloat; animation-duration: 4.1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-auto { background: linear-gradient(150deg, #6a7280, #434a56); box-shadow: 0 10px 18px rgba(60, 66, 78, 0.42), inset 0 -5px 8px rgba(16, 20, 28, 0.5), inset 0 4px 6px rgba(255, 255, 255, 0.3); animation-name: glyphFloat; animation-duration: 3.9s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    .game-tile .glyph-sports { background: linear-gradient(150deg, #43a05f, #2a7043); box-shadow: 0 10px 18px rgba(42, 112, 67, 0.42), inset 0 -5px 8px rgba(12, 54, 26, 0.48), inset 0 4px 6px rgba(255, 255, 255, 0.32); animation-name: glyphFloat; animation-duration: 4.3s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    /* The book page-turn overlay and the quiz ? overlay belonged to the
+       old line icons; the brain / quiz-card glyphs retire them. The
+       brain gets a soft pulse as its tile-hot motion instead of the
+       book's page-open rotate. */
+    #tileGrid .glyph-lib::after { content: none; animation: none; }
+    #tileGrid .glyph-gq::after { content: none; animation: none; }
+    #tileGrid .glyph-lib svg { transform-origin: 50% 50%; animation: hovBrainPulse 2.8s ease-in-out infinite; animation-play-state: var(--tileplay, paused); }
+    @keyframes hovBrainPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+    @media (prefers-reduced-motion: reduce) {
+      .glyph-gacha, .glyph-trophy, .glyph-album, .glyph-room, .glyph-league, .glyph-vip, .glyph-turntable,
+      .glyph-holdem, .glyph-war, .glyph-craps, .glyph-sicbo, .glyph-bigsix, .glyph-lottery, .glyph-pachi,
+      .glyph-keiba, .glyph-keirin, .glyph-kyotei, .glyph-auto, .glyph-sports,
+      #tileGrid .glyph-lib svg { animation: none !important; }
+    }
+  </style>
+  <style>
     /* ================= Text / layout hygiene + selection clarity
        (2026-11-14 final pass) =================
        Shared rules so no screen can regress into the shop bug:
@@ -6721,7 +6784,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn rb" id="openRubik">ルービックキューブで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="マインスイーパー" style="--i:11">
-              <div class="glyph glyph-mns" aria-hidden="true" data-i18n-skip><svg width="36" height="36" viewBox="0 0 34 34" fill="none" stroke="#33304a" stroke-width="2.6" stroke-linecap="round"><path d="M17 4.5v25M4.5 17h25M8.2 8.2l17.6 17.6M25.8 8.2L8.2 25.8"/><circle cx="17" cy="17" r="7.6" fill="#33304a" stroke="none"/><circle cx="14.2" cy="14.2" r="2.2" fill="#ffffff" opacity="0.9" stroke="none"/></svg></div>
+              <div class="glyph glyph-mns" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5v30M5 20h30M9.4 9.4l21.2 21.2M30.6 9.4L9.4 30.6" stroke="#33304a" stroke-width="3.4" stroke-linecap="round"/><circle cx="20" cy="20" r="8.6" fill="#33304a"/><circle cx="16.8" cy="16.6" r="2.5" fill="#ffffff" opacity="0.92"/></svg></div>
               <h2>マインスイーパー</h2>
               <p class="sub">地雷を避けてマスを開く初級9×9パズル</p>
               <span class="tile-count" data-count-for="mines" hidden></span>
@@ -6754,7 +6817,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             <h2 class="genre-head"><span class="genre-name">アクション</span><span class="genre-count">9</span></h2>
             <div class="tile-grid" data-genre-grid="action">
   <section class="game-tile" aria-label="CUBEFALL 3D" style="--i:3">
-              <div class="glyph glyph-cf" aria-hidden="true" data-i18n-skip><svg width="36" height="36" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M17 3.5 29 10v14L17 30.5 5 24V10Z"/><path d="M5 10l12 6.5L29 10"/><path d="M17 16.5v14"/></svg></div>
+              <div class="glyph glyph-cf" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 34 11.5 20 19 6 11.5Z" fill="#ffe066"/><path d="M6 11.5 20 19v17L6 28.5Z" fill="#ffd21f"/><path d="M34 11.5 20 19v17l14-7.5Z" fill="#e0a800"/><path d="M20 4 34 11.5 20 19 6 11.5Z M20 19v17" fill="none" stroke="#26262b" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
               <h2>CUBEFALL 3D</h2>
               <p class="sub">解けていくルービックキューブの3Dパズル</p>
               <span class="tile-count" data-count-for="cubefall" hidden></span>
@@ -6863,84 +6926,84 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn vp" id="openVideopoker">ビデオポーカーで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="テキサスホールデム" style="--i:22">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(-8deg)">A♠</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(7deg);margin-left:-7px">K♥</span></div>
+              <div class="glyph glyph-holdem" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(-8deg)">A♠</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(7deg);margin-left:-7px">K♥</span></div>
               <h2>テキサスホールデム</h2>
               <p class="sub">6人卓ノーリミット・ポーカー（AI対戦）</p>
               <span class="tile-count" data-count-for="holdem" hidden></span>
               <button type="button" class="play-btn vp" id="openHoldem">ホールデムで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="クラップス" style="--i:23">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:6px;padding:2px 7px;font-weight:800;transform:rotate(-7deg)">⚄</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:6px;padding:2px 7px;font-weight:800;transform:rotate(6deg);margin-left:3px">⚂</span></div>
+              <div class="glyph glyph-craps" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-8 13 20)"><rect x="4" y="11" width="18" height="18" rx="4" fill="#ffffff"/><circle cx="9" cy="16" r="1.9" fill="#26262e"/><circle cx="17" cy="16" r="1.9" fill="#26262e"/><circle cx="13" cy="20" r="1.9" fill="#26262e"/><circle cx="9" cy="24" r="1.9" fill="#26262e"/><circle cx="17" cy="24" r="1.9" fill="#26262e"/></g><g transform="rotate(7 27 20)"><rect x="18" y="11" width="18" height="18" rx="4" fill="#d63d45"/><circle cx="23" cy="16" r="1.9" fill="#ffffff"/><circle cx="27" cy="20" r="1.9" fill="#ffffff"/><circle cx="31" cy="24" r="1.9" fill="#ffffff"/></g></svg></div>
               <h2>クラップス</h2>
               <p class="sub">2つのダイスの本格カジノテーブル</p>
               <span class="tile-count" data-count-for="craps" hidden></span>
               <button type="button" class="play-btn rou" id="openCraps">クラップスで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="カジノウォー" style="--i:24">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(-8deg)">A♠</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(7deg);margin-left:-7px">K♥</span></div>
+              <div class="glyph glyph-war" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(-8deg)">A♠</span><span class="war-vs">VS</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:4px;padding:1px 5px;font-weight:800;transform:rotate(7deg)">K♥</span></div>
               <h2>カジノウォー</h2>
               <p class="sub">1枚勝負、タイなら戦争か降伏か</p>
               <span class="tile-count" data-count-for="casinowar" hidden></span>
               <button type="button" class="play-btn bac" id="openCasinowar">カジノウォーで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="シックポー" style="--i:25">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:5px;padding:1px 6px;font-weight:800">⚀</span><span style="display:inline-block;background:#f7f3e8;color:#26262e;border-radius:5px;padding:1px 6px;font-weight:800;margin-left:2px">⚃</span><span style="display:inline-block;background:#f7f3e8;color:#c0272d;border-radius:5px;padding:1px 6px;font-weight:800;margin-left:2px">⚅</span></div>
+              <div class="glyph glyph-sicbo" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="2.5" y="12" width="11.5" height="11.5" rx="2.8" fill="#ffffff"/><circle cx="8.2" cy="17.7" r="1.8" fill="#c0272d"/><rect x="14.2" y="12" width="11.5" height="11.5" rx="2.8" fill="#ffffff"/><circle cx="17.2" cy="15" r="1.3" fill="#26262e"/><circle cx="22.7" cy="15" r="1.3" fill="#26262e"/><circle cx="17.2" cy="20.5" r="1.3" fill="#26262e"/><circle cx="22.7" cy="20.5" r="1.3" fill="#26262e"/><rect x="26" y="12" width="11.5" height="11.5" rx="2.8" fill="#ffffff"/><circle cx="29" cy="15" r="1.3" fill="#26262e"/><circle cx="34.5" cy="15" r="1.3" fill="#26262e"/><circle cx="31.7" cy="17.7" r="1.3" fill="#26262e"/><circle cx="29" cy="20.5" r="1.3" fill="#26262e"/><circle cx="34.5" cy="20.5" r="1.3" fill="#26262e"/><path d="M6 29.5c4.5 2.2 9.5 3.2 14 3.2s9.5-1 14-3.2" stroke="#ffd166" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></div>
               <h2>シックポー</h2>
               <p class="sub">3つのダイスの出目に賭ける（豪式）</p>
               <span class="tile-count" data-count-for="sicbo" hidden></span>
               <button type="button" class="play-btn slo" id="openSicbo">シックポーで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="ビッグシックス" style="--i:26">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:conic-gradient(#c0272d 0 40deg,#e8b93c 40deg 110deg,#2563eb 110deg 200deg,#3fae5a 200deg 290deg,#c0272d 290deg 360deg);align-items:center;justify-content:center;color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.6)">$</span></div>
+              <div class="glyph glyph-bigsix" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:conic-gradient(#c0272d 0 40deg,#e8b93c 40deg 110deg,#2563eb 110deg 200deg,#3fae5a 200deg 290deg,#c0272d 290deg 360deg);align-items:center;justify-content:center;color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.6)">$</span></div>
               <h2>ビッグシックス</h2>
               <p class="sub">54マスの大車輪を回す</p>
               <span class="tile-count" data-count-for="bigsix" hidden></span>
               <button type="button" class="play-btn bj" id="openBigsix">ビッグシックスで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="宝くじ" style="--i:27">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:#b3382e;color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:20px">当</span></div>
+              <div class="glyph glyph-lottery" aria-hidden="true" data-i18n-skip><span class="lot-ticket"></span><span class="lot-disc" style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:#b3382e;color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:20px">当</span></div>
               <h2>宝くじ</h2>
               <p class="sub">6桁の番号で一攫千金（1枚10コイン）</p>
               <span class="tile-count" data-count-for="lottery" hidden></span>
               <button type="button" class="play-btn bac" id="openLottery">宝くじで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="パチンコ" style="--i:28">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#131c2c;border:2px solid #5cc8ff;align-items:center;justify-content:center;color:#ffd968;font-weight:800;font-size:19px">777</span></div>
+              <div class="glyph glyph-pachi" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#131c2c;border:2px solid #5cc8ff;align-items:center;justify-content:center;color:#ffd968;font-weight:800;font-size:19px">777</span></div>
               <h2>パチンコ</h2>
               <p class="sub">玉を打って始動口と図柄で勝負</p>
               <span class="tile-count" data-count-for="pachinko" hidden></span>
               <button type="button" class="play-btn vp" id="openPachinko">パチンコで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="競馬" style="--i:29">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#2e7d32;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px">馬</span></div>
+              <div class="glyph glyph-keiba" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M13.5 21.5L10.5 34l5-2.8L18.5 34l-1-12.5Z" fill="#2b6cb0"/><path d="M26.5 21.5L29.5 34l-5-2.8L21.5 34l1-12.5Z" fill="#2563eb"/><circle cx="12.9" cy="9.4" r="3.1" fill="#e7547c"/><circle cx="20" cy="6.8" r="3.1" fill="#e7547c"/><circle cx="27.1" cy="9.4" r="3.1" fill="#e7547c"/><circle cx="29.4" cy="15.5" r="3.1" fill="#e7547c"/><circle cx="10.6" cy="15.5" r="3.1" fill="#e7547c"/><circle cx="20" cy="14.5" r="8.6" fill="#d63d45"/><circle cx="20" cy="14.5" r="5.2" fill="#ffd166"/><circle cx="20" cy="14.5" r="1.9" fill="#d99a1f"/></svg></div>
               <h2>競馬</h2>
               <p class="sub">12頭立て・単勝から三連単まで馬券8種</p>
               <span class="tile-count" data-count-for="keiba" hidden></span>
               <button type="button" class="play-btn rou" id="openKeiba">競馬で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="競輪" style="--i:30">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#d96c27;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px">輪</span></div>
+              <div class="glyph glyph-keirin" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15.5" fill="none" stroke="#26262e" stroke-width="3.2"/><circle cx="20" cy="20" r="12.4" fill="none" stroke="#ffd9a0" stroke-width="1" opacity="0.7"/><path d="M20 8v24M8 20h24M11.5 11.5l17 17M28.5 11.5l-17 17" stroke="#f2f5f9" stroke-width="1.5"/><circle cx="20" cy="20" r="3.4" fill="#ffd166" stroke="#b97e14" stroke-width="1.2"/></svg></div>
               <h2>競輪</h2>
               <p class="sub">9車のライン勝負・車券7種</p>
               <span class="tile-count" data-count-for="keirin" hidden></span>
               <button type="button" class="play-btn bj" id="openKeirin">競輪で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="競艇" style="--i:31">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#2470a8;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px">艇</span></div>
+              <div class="glyph glyph-kyotei" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M28 19.8h5.2" stroke="#f2f5f9" stroke-width="2" stroke-linecap="round"/><rect x="15" y="18.4" width="10" height="5.6" rx="2" fill="#1d5a8a"/><circle cx="20" cy="15.2" r="3" fill="#ffd166"/><path d="M6 24h28l-3.4 6.4a3 3 0 0 1-2.6 1.6H13a3 3 0 0 1-2.7-1.7Z" fill="#f2f5f9"/><path d="M6 24h28l-1.1 2.2H7.3Z" fill="#e2703a"/><path d="M3.5 35.5c3-1.6 6-1.6 9 0s6 1.6 9 0 6-1.6 9 0 3.5-1.1 4.5-.5" stroke="#bfe6ff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></div>
               <h2>競艇</h2>
               <p class="sub">6艇フライングスタート・舟券7種</p>
               <span class="tile-count" data-count-for="kyotei" hidden></span>
               <button type="button" class="play-btn bac" id="openKyotei">競艇で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="オートレース" style="--i:32">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:10px;background:#5a5f6a;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px">速</span></div>
+              <div class="glyph glyph-auto" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M7 25.5A13 13 0 0 1 33 25.5Z" fill="#eef1f6"/><path d="M8.2 21.5A13 13 0 0 1 31.8 21.5L20 18.8Z" fill="#e8503a"/><path d="M19.5 19.5h10.8a3 3 0 0 1 3 3v.6a3 3 0 0 1-3 3H19.5Z" fill="#2b3444"/><path d="M21.5 21.2h6" stroke="#7fc8bc" stroke-width="1.6" stroke-linecap="round"/><rect x="6.2" y="28.6" width="27.6" height="3.6" rx="1.8" fill="#c8cfda"/><circle cx="12" cy="30.4" r="0.9" fill="#8a94a3"/><circle cx="16.5" cy="30.4" r="0.9" fill="#8a94a3"/></svg></div>
               <h2>オートレース</h2>
               <p class="sub">ハンデ戦の8車・車券7種</p>
               <span class="tile-count" data-count-for="autorace" hidden></span>
               <button type="button" class="play-btn vp" id="openAutorace">オートレースで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="スポーツベット" style="--i:33">
-              <div class="glyph" aria-hidden="true" data-i18n-skip><span style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:#3f7fbf;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px">13</span></div>
+              <div class="glyph glyph-sports" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><clipPath id="gi-bclip"><circle cx="20" cy="20" r="15"/></clipPath><circle cx="20" cy="20" r="15" fill="#ffffff"/><g clip-path="url(#gi-bclip)"><path d="M20 13.5l5.2 3.8-2 6.1h-6.4l-2-6.1Z" fill="#26262e"/><path d="M20 5.2v8.3M33.4 12.6l-8.2 4.7M29.3 31.2l-6.1-7.8M10.7 31.2l6.1-7.8M6.6 12.6l8.2 4.7" stroke="#9aa3ad" stroke-width="1.3"/><path d="M13 2.5h14l-2.5 5.5h-9Z" fill="#26262e" opacity="0.92"/><path d="M1.5 24l6.5-1.5 2 5.5-5 3.5Z" fill="#26262e" opacity="0.92"/><path d="M38.5 24L32 22.5l-2 5.5 5 3.5Z" fill="#26262e" opacity="0.92"/></g><circle cx="20" cy="20" r="15" fill="none" stroke="#c8cfda" stroke-width="1.2"/></svg></div>
               <h2>スポーツベット</h2>
               <p class="sub">toto式13試合＋固定オッズのパーレイ</p>
               <span class="tile-count" data-count-for="sportsbet" hidden></span>
@@ -6952,7 +7015,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             <h2 class="genre-head"><span class="genre-name">レトロ・外部</span><span class="genre-count">3</span></h2>
             <div class="tile-grid" data-genre-grid="retro">
   <section class="game-tile tile-retro" aria-label="レトロゲーム" style="--i:2">
-              <div class="glyph glyph-retro" aria-hidden="true" data-i18n-skip><svg width="36" height="36" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="9" width="29" height="16" rx="8"/><path d="M10.5 14v6M7.5 17h6"/><circle cx="23.5" cy="14.8" r="0.4" fill="currentColor"/><circle cx="26.8" cy="18.6" r="0.4" fill="currentColor"/><circle cx="23.5" cy="14.8" r="1.7"/><circle cx="26.8" cy="18.6" r="1.7"/></svg></div>
+              <div class="glyph glyph-retro" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="11" width="34" height="18" rx="9" fill="#e8503a"/><rect x="3" y="11" width="34" height="18" rx="9" fill="none" stroke="#c73e2a" stroke-width="1.4"/><path d="M11.5 15.5v9M7 20h9" stroke="#fff2e9" stroke-width="3" stroke-linecap="round"/><circle cx="29.5" cy="17" r="2.6" fill="#ffd166"/><circle cx="24.8" cy="22.6" r="2.6" fill="#4aa8dd"/><circle cx="17" cy="26.2" r="1.1" fill="#ffd9cf"/><circle cx="21.5" cy="26.2" r="1.1" fill="#ffd9cf"/></svg></div>
               <h2>レトロゲーム</h2>
               <p class="sub">ファイルをドラッグ＆ドロップで遊ぶエミュレータ</p>
               <span class="tile-count" data-count-for="retro" hidden></span>
@@ -6991,7 +7054,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn lq" id="openLangQuiz">語学クイズで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="クイズ" style="--i:23">
-              <div class="glyph glyph-gq" aria-hidden="true" data-i18n-skip><span class="gq-q">?</span></div>
+              <div class="glyph glyph-gq" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="4.5" width="24" height="31" rx="3.5" fill="#ffffff"/><rect x="8" y="4.5" width="24" height="31" rx="3.5" fill="none" stroke="#e07f2e" stroke-width="1.4"/><text x="20" y="20.5" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="15" fill="#e2703a">?</text><circle cx="13.5" cy="27" r="1.7" fill="none" stroke="#c9c2ae" stroke-width="1.2"/><path d="M17.5 27h9" stroke="#d8d2c0" stroke-width="1.8" stroke-linecap="round"/><circle cx="13.5" cy="31.8" r="1.7" fill="#43c465"/><path d="M17.5 31.8h6.5" stroke="#d8d2c0" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <h2>クイズ</h2>
               <p class="sub">マナー・知識・科学など9ジャンルの総合クイズ（1回5問）</p>
               <span class="tile-count" data-count-for="gquiz" hidden></span>
@@ -7005,20 +7068,20 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn bd" id="openBoard">分解ボードで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="知識ライブラリ" style="--i:22">
-              <div class="glyph glyph-lib" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M17 8.5C14.8 6.4 11.4 5.4 6.5 5.8v20.4c4.9-.4 8.3.6 10.5 2.7 2.2-2.1 5.6-3.1 10.5-2.7V5.8C22.6 5.4 19.2 6.4 17 8.5Z"/><path d="M17 8.5v20.4"/></svg></div>
+              <div class="glyph glyph-lib" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20.5 5.4c2-1.9 5.1-2.4 7.8-1.3 3.2-.9 6.8 1 8 4.1 2 1 3.2 3.2 2.9 5.6 1 2.2.5 4.9-1.2 6.5-.1 2.4-1.7 4.5-4 5.2-.9 1.9-3 3-5.1 2.9-1.7 1.1-4 1.2-5.8.3-2 .8-4.3.4-5.9-1-2.2-.4-3.9-2-4.1-4.2C5 28.3 3.6 26.2 3.8 23.9 2.2 22.1 1.9 19.3 2.9 17 2.1 14.4 3.4 11.7 5.9 10.5 6.4 7.7 8.8 5.9 11.6 6 13.4 4.5 17.2 4.7 20.5 5.4Z" fill="#f6a9bd"/><path d="M13.2 10.8c1.7-.8 3.7-.3 4.8 1.2M26.8 9.8c1.8.3 3.2 1.7 3.6 3.4M10.2 18.2c1.7-1 3.8-.7 5.2.7M24.2 17.8c1.8-1.2 4.1-1 5.7.4M14.6 26.6c1.5 1 3.5 1 5 0" stroke="#d96b8c" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="17.5" cy="14.5" r="1.2" fill="#ffe3ec"/><circle cx="24.5" cy="22.5" r="1.2" fill="#ffe3ec"/><circle cx="15" cy="21.5" r="1" fill="#ffe3ec"/></svg></div>
               <h2>知識ライブラリ</h2>
               <p class="sub">リール候補のネタ帳をジャンル別に読める図書館</p>
               <span class="tile-count" data-count-for="library" hidden></span>
               <button type="button" class="play-btn lib" id="openLibrary">知識ライブラリを開く</button>
             </section>
   <section class="game-tile" aria-label="制作ノート" style="--i:24">
-              <div class="glyph glyph-notes" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M7 4.5h15.5L27 9v20.5H7z"/><path d="M22 4.5V9.5H27"/><path d="M11 15h12M11 20h12M11 25h7.5"/></svg></div>
+              <div class="glyph glyph-notes" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M17.6 8.2h4.8M15.5 20h9M17.6 31.8h4.8" stroke="#ffd166" stroke-width="2.2" stroke-linecap="round"/><path d="M14 4c12 5.3 12 10.7 0 16-12 5.3-12 10.7 0 16" fill="none" stroke="#3fd2c5" stroke-width="2.8" stroke-linecap="round"/><path d="M26 4c-12 5.3-12 10.7 0 16 12 5.3 12 10.7 0 16" fill="none" stroke="#ff9a66" stroke-width="2.8" stroke-linecap="round"/><circle cx="20" cy="12" r="1.7" fill="#ffffff" opacity="0.9"/><circle cx="20" cy="28" r="1.7" fill="#ffffff" opacity="0.9"/></svg></div>
               <h2>制作ノート</h2>
               <p class="sub">このゲーム集を作り上げた知識と技術の記録</p>
               <button type="button" class="play-btn lib" id="openNotes">制作ノートを読む</button>
             </section>
   <section class="game-tile" aria-label="卵探し" style="--i:25">
-              <div class="glyph glyph-hunt" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M17 4.5c4.4 0 9.5 7.6 9.5 14.3 0 5.9-4.2 9.7-9.5 9.7s-9.5-3.8-9.5-9.7C7.5 12.1 12.6 4.5 17 4.5Z"/><path d="M11.5 20.5l3.5 2.6 3.4-2.7 3.4 2.7 3.2-2.5"/></svg></div>
+              <div class="glyph glyph-hunt" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="gi-egg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffedb0"/><stop offset="1" stop-color="#f2ac2e"/></linearGradient></defs><ellipse cx="20" cy="35" rx="9" ry="2.2" fill="#8a5a10" opacity="0.35"/><path d="M20 3.5c5 0 10.5 8.4 10.5 15.8 0 6.6-4.7 10.9-10.5 10.9S9.5 25.9 9.5 19.3C9.5 11.9 15 3.5 20 3.5Z" fill="url(#gi-egg)"/><circle cx="15.5" cy="12" r="1.3" fill="#e09a1f" opacity="0.55"/><circle cx="24.5" cy="16" r="1.1" fill="#e09a1f" opacity="0.5"/><circle cx="17" cy="24" r="1.2" fill="#e09a1f" opacity="0.45"/><path d="M13.5 20.5l3.4 2.5 3.3-2.6 3.3 2.6 3-2.4" stroke="#a86e14" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
               <h2>卵探し</h2>
               <p class="sub">三つの鍵と三つの門の先にある、誰かの挑戦状</p>
               <button type="button" class="play-btn lib" id="openHunt">卵探しを開く</button>
@@ -7029,43 +7092,43 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             <h2 class="genre-head"><span class="genre-name">拡張</span><span class="genre-count">6</span></h2>
             <div class="tile-grid" data-genre-grid="expansion">
   <section class="game-tile" aria-label="カプセルガチャ" style="--i:26">
-              <div class="glyph glyph-gacha" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="17" cy="13" r="9"/><path d="M8 13h18M12 28h10M17 22v6"/><circle cx="13.5" cy="10" r="2.4"/><circle cx="20.5" cy="15.5" r="2.4"/></svg></div>
+              <div class="glyph glyph-gacha" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 19a12 12 0 0 1 24 0Z" fill="#bfe6ff"/><circle cx="15" cy="13.5" r="3.4" fill="#ef5d60"/><circle cx="24.5" cy="11" r="3" fill="#ffd166"/><circle cx="21" cy="16.5" r="2.8" fill="#5b8def"/><path d="M9.5 15.5A12 12 0 0 1 20 7.2" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/><rect x="6.5" y="19" width="27" height="3" rx="1.5" fill="#8e2438"/><rect x="9" y="22" width="22" height="13" rx="2.5" fill="#d63d5c"/><circle cx="20" cy="26.8" r="2.6" fill="#ffd166" stroke="#b98a1e" stroke-width="1"/><rect x="15.5" y="30.8" width="9" height="3.4" rx="1.4" fill="#8e2438"/><circle cx="20" cy="32.5" r="1.4" fill="#ffd166"/></svg></div>
               <h2>カプセルガチャ</h2>
               <p class="sub">1回100コイン。回して、跳ねて、開封</p>
               <button type="button" class="play-btn lib" id="expOpenGacha">ガチャを回す</button>
             </section>
   <section class="game-tile" aria-label="実績とトロフィー棚" style="--i:27">
-              <div class="glyph glyph-trophy" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M11 5h12v6a6 6 0 0 1-12 0z"/><path d="M11 7H6.5a4.5 4.5 0 0 0 4.6 6M23 7h4.5a4.5 4.5 0 0 1-4.6 6"/><path d="M17 17v5M11.5 28h11M17 22l-2.5 6h5z"/></svg></div>
+              <div class="glyph glyph-trophy" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="gi-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset="0.55" stop-color="#f2c14e"/><stop offset="1" stop-color="#d99a1f"/></linearGradient></defs><path d="M11 8H6.4a5.2 5.2 0 0 0 5.6 6.4M29 8h4.6a5.2 5.2 0 0 1-5.6 6.4" stroke="#e3aa2e" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M11 5h18v7.5a9 9 0 0 1-18 0Z" fill="url(#gi-gold)"/><path d="M20 8.6l1.4 2.9 3.2.5-2.3 2.2.5 3.2-2.8-1.5-2.8 1.5.5-3.2-2.3-2.2 3.2-.5Z" fill="#fff3c4"/><rect x="18" y="21.2" width="4" height="4.4" fill="#d99a1f"/><path d="M13.5 30.4h13l-1.6-4.8H15.1Z" fill="url(#gi-gold)"/><rect x="11.5" y="30.4" width="17" height="3" rx="1.2" fill="#b97e14"/><path d="M33.5 3.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8Z" fill="#fff3c4"/></svg></div>
               <h2>実績・トロフィー棚</h2>
               <p class="sub">梯子型の蓄積。称号はバッジだけ</p>
               <button type="button" class="play-btn lib" id="expOpenTrophy">トロフィー棚を見る</button>
             </section>
   <section class="game-tile" aria-label="思い出アルバム" style="--i:28">
-              <div class="glyph glyph-album" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><rect x="5" y="7" width="24" height="20" rx="2"/><circle cx="12.5" cy="14" r="2.2"/><path d="M5 23l7-5 5 4 4-3 8 6"/></svg></div>
+              <div class="glyph glyph-album" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="5.5" y="7" width="29" height="26" rx="2.5" fill="#ffffff"/><rect x="8.5" y="10" width="23" height="20" rx="1.5" fill="#a8d8f0"/><circle cx="14.5" cy="15.5" r="2.6" fill="#ffd166"/><path d="M8.5 30l7.5-8 5.5 5.5 4-3.8 6 6.3Z" fill="#3f9e6e"/><path d="M19.8 30l4.9-5.6 3.2 3.2 3.6 2.4Z" fill="#2f7d54"/></svg></div>
               <h2>思い出アルバム</h2>
               <p class="sub">実イベントからだけ生まれる記念記録</p>
               <button type="button" class="play-btn lib" id="expOpenAlbum">アルバムを開く</button>
             </section>
   <section class="game-tile" aria-label="マイルーム" style="--i:29">
-              <div class="glyph glyph-room" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M5 15L17 5l12 10"/><path d="M9 13v15h16V13"/><rect x="20" y="19" width="6" height="5"/></svg></div>
+              <div class="glyph glyph-room" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 18.5L20 6l16 12.5-3.4 2.6L20 12.4l-12.6 8.7Z" fill="#e2703a"/><rect x="10" y="19" width="20" height="15" fill="#fff3d6"/><rect x="17.4" y="24" width="5.4" height="10" rx="0.8" fill="#b5651d"/><circle cx="21.6" cy="29" r="0.8" fill="#ffd166"/><rect x="12" y="22.5" width="4.6" height="4.6" rx="0.7" fill="#ffd166" stroke="#d99a1f" stroke-width="0.8"/><rect x="24" y="22.5" width="4.2" height="6.4" rx="0.7" fill="#7fc8bc"/><path d="M24 27h4.2M26.1 22.5v6.4" stroke="#4a9a8c" stroke-width="0.7"/><path d="M32 34v-3.2" stroke="#3f9e6e" stroke-width="1.4" stroke-linecap="round"/><circle cx="32" cy="29.6" r="1.9" fill="#43c465"/></svg></div>
               <h2>マイルーム</h2>
               <p class="sub">トロフィーと水槽のあるジオラマの部屋</p>
               <button type="button" class="play-btn lib" id="expOpenRoom">部屋に入る</button>
             </section>
   <section class="game-tile" aria-label="勝ち抜きリーグ" style="--i:30">
-              <div class="glyph glyph-league" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M6 28V16M13 28V11M20 28V7M27 28V13"/><path d="M4 28h27"/></svg></div>
+              <div class="glyph glyph-league" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3v10" stroke="#dfe6ee" stroke-width="1.8" stroke-linecap="round"/><path d="M20 3.4l7.5 2.1L20 7.6Z" fill="#ef5d60"/><rect x="15" y="16" width="10" height="18" rx="1.5" fill="#f2c14e"/><rect x="5.5" y="22" width="9.5" height="12" rx="1.5" fill="#cfd8e3"/><rect x="25" y="25" width="9.5" height="9" rx="1.5" fill="#d99a5b"/><text x="20" y="30" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="10" fill="#7a5410">1</text><text x="10.2" y="31.5" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8.5" fill="#5a6a7d">2</text><text x="29.8" y="33" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8.5" fill="#7a4410">3</text></svg></div>
               <h2>勝ち抜きリーグ</h2>
               <p class="sub">連勝でステージが進み、相手が強くなる</p>
               <button type="button" class="play-btn lib" id="expOpenLeague">リーグに挑む</button>
             </section>
   <section class="game-tile" aria-label="カジノVIPルーム" style="--i:31">
-              <div class="glyph glyph-vip" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M7 24l-2-12 8 6 4-10 4 10 8-6-2 12z"/><path d="M7 28h20"/></svg></div>
+              <div class="glyph glyph-vip" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="gi-gold2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset="1" stop-color="#dda01f"/></linearGradient></defs><path d="M6 27.5L4.5 12l8.5 6L20 8l7 10 8.5-6L34 27.5Z" fill="url(#gi-gold2)"/><circle cx="4.5" cy="10.5" r="2" fill="#ffd166"/><circle cx="20" cy="6.5" r="2.2" fill="#ffd166"/><circle cx="35.5" cy="10.5" r="2" fill="#ffd166"/><rect x="6" y="27.5" width="28" height="5" rx="1.6" fill="#b97e14"/><circle cx="13" cy="30" r="1.7" fill="#ef5d60"/><circle cx="20" cy="30" r="1.7" fill="#5b8def"/><circle cx="27" cy="30" r="1.7" fill="#43c465"/></svg></div>
               <h2>カジノVIPルーム</h2>
               <p class="sub">達人ランクで開く、スポットライトの舞台</p>
               <button type="button" class="play-btn lib" id="expOpenVip">VIPルームへ</button>
             </section>
   <section class="game-tile" aria-label="ターンテーブル" style="--i:32">
-              <div class="glyph glyph-turntable" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="14" cy="17" r="10"/><circle cx="14" cy="17" r="3.4"/><path d="M24 6l3.5 8.5M27.5 14.5l-4.5 1.8"/></svg></div>
+              <div class="glyph glyph-turntable" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="17.5" cy="20" r="14.5" fill="#17171d"/><circle cx="17.5" cy="20" r="11" fill="none" stroke="#34343f" stroke-width="1.1"/><circle cx="17.5" cy="20" r="8.4" fill="none" stroke="#2b2b36" stroke-width="1.1"/><circle cx="17.5" cy="20" r="5.4" fill="#e8b93c"/><circle cx="17.5" cy="20" r="1.3" fill="#f7f3e8"/><circle cx="33" cy="6" r="2.7" fill="#cfd4dc"/><path d="M31.8 8.2L22.8 16.8" stroke="#cfd4dc" stroke-width="2.2" stroke-linecap="round"/><rect x="19.9" y="15.2" width="5.8" height="3.4" rx="1" transform="rotate(49 22.8 16.9)" fill="#8f96a3"/></svg></div>
               <h2>ターンテーブル</h2>
               <p class="sub">Spotifyとつながるレコード盤。ゲームのBGMに</p>
               <span class="tile-count" data-count-for="turntable" hidden></span>
@@ -9354,6 +9417,31 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                  over the bottom rail. */
               @container (max-width: 560px) {
                 #holdemView .hd-table { aspect-ratio: 10.5 / 13.5; }
+              }
+              /* UI/UX round (2026-11-16, scope 4b): at phone width the
+                 fixed 118px seat boxes overlapped — adjacent top
+                 seats sit 28% of the table width apart (~100px at
+                 358px), less than the 118px box. Compact phone seats:
+                 86px boxes (centres then clear each other), smaller
+                 avatar/cards, name ellipsised. iPad (container above
+                 560px) is untouched. Geometry verified arithmetically
+                 in the round's STATUS (no seat pair overlaps in 2D). */
+              @container (max-width: 560px) {
+                #holdemView .hd-seat { width: 86px; }
+                #holdemView .hd-avatar { width: 34px; height: 34px; }
+                #holdemView .hd-name { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                #holdemView .hd-style { font-size: 9px; }
+                #holdemView .hd-stack { font-size: 10.5px; }
+                #holdemView .hd-cards { min-height: 30px; }
+                #holdemView .hd-card { width: 22px; height: 31px; }
+                #holdemView .hd-card .r { font-size: 11px; } #holdemView .hd-card .s { font-size: 9.5px; }
+                #holdemView .hd-seat.hero .hd-card { width: 34px; height: 47px; }
+                #holdemView .hd-seat.hero .hd-card .r { font-size: 15px; } #holdemView .hd-seat.hero .hd-card .s { font-size: 12.5px; }
+                #holdemView .hd-board { min-height: 50px; gap: 4px; }
+                #holdemView .hd-board .hd-card { width: 34px; height: 47px; }
+                #holdemView .hd-board .hd-card .r { font-size: 15px; } #holdemView .hd-board .hd-card .s { font-size: 12.5px; }
+                #holdemView .hd-potbox { font-size: 12px; padding: 2px 10px; }
+                #holdemView .hd-tell { top: -20px; font-size: 15px; }
               }
               #holdemView .hd-readout[hidden] { display: none; }
               #holdemView .hd-readout .hd-ro-name { font-weight: 800; color: #ffe9a8; letter-spacing: .06em; }
@@ -12267,6 +12355,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           homeView.style.display = "none";
           Object.keys(genreViews).forEach(function (k) { genreViews[k].classList.remove("open"); });
           Object.keys(views).forEach(function (k) { views[k].view.classList.toggle("open", k === key); });
+          /* UI/UX round (2026-11-16): a game opening replaces any
+             subview (league / VIP / profile / shop / ranking).
+             Subviews live outside the views registry, so they kept
+             .open underneath and the flex column split the height
+             between the two layers — the league→chess launch showed
+             exactly that, the board clipped to a thin slice. */
+          document.querySelectorAll(".subview.open").forEach(function (sv) { sv.classList.remove("open"); });
           current = key;
           bumpPlayCount(key);
           if (key === "rubik" && window.__rubik) window.__rubik.enter();
@@ -12354,6 +12449,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           pauseCubefall();
           closeFocus();
           Object.keys(views).forEach(function (k) { views[k].view.classList.remove("open"); });
+          document.querySelectorAll(".subview.open").forEach(function (sv) { sv.classList.remove("open"); });
           Object.keys(genreViews).forEach(function (k) { genreViews[k].classList.toggle("open", k === key); });
           homeView.style.display = "none";
           current = null;
@@ -16061,7 +16157,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            (it once rode into the public GitHub copy inside the
            shared base code). The assembled value is unchanged. */
         var DRIVE_API_KEY = (function () {
-          var p = [""];
+  var p = [""];
           return p.join("");
         })();
         function dlUrl(id) { return DL_BASE + encodeURIComponent(id) + "?alt=media&key=" + DRIVE_API_KEY; }
@@ -25665,11 +25761,16 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       function fit() {
         var w = stage.clientWidth, h = stage.clientHeight;
         if (!w || !h) return;
-        var cw = Math.max(220, Math.min(w, 440, h * (LW / LH)));
+        /* UI/UX round: the old 440px cap left the breakout stage
+           half-empty on wide screens. Cap raised to 640 and the
+           backing store scales with the CSS size (k) so the bitmap
+           stays crisp; all drawing stays in logical LW x LH units. */
+        var cw = Math.max(220, Math.min(w, 640, h * (LW / LH)));
         var dpr = window.devicePixelRatio || 1;
+        var k = Math.max(1, cw / LW);
         canvas.style.width = cw + "px"; canvas.style.height = (cw * LH / LW) + "px";
-        canvas.width = Math.round(LW * dpr); canvas.height = Math.round(LH * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        canvas.width = Math.round(LW * dpr * k); canvas.height = Math.round(LH * dpr * k);
+        ctx.setTransform(dpr * k, 0, 0, dpr * k, 0, 0);
         draw();
       }
       function ballSpeed() { return (295 + (level - 1) * 32 + Math.min(60, score * 0.05)) * BRK_SPD; }
@@ -40503,6 +40604,10 @@ PATTERNS.push(
   "拡張の新しい画面「ターンテーブル」は、あなたのSpotifyアカウントとつながるレコードプレーヤーです。つなぎ方はPKCEという認可の仕組みで、秘密鍵はアプリの中に置きません。ログインで受け取るトークンは、この端末のこのページの中だけにしまわれ、セーブデータの同期には絶対に混ざりません。再生の経路は2つあり、Premiumの人はこの画面自体がSpotify Connectの機器になって音がここで鳴り、そうでない場合はスマホやPCの再生と同期して、ジャケットと進み具合と針がそのまま映ります。": ["The new expansion screen, Turntable, is a record player that connects to your Spotify account. It uses an authorization mechanism called PKCE, and the secret key is not stored within the app. The token received upon login is kept only on this device and within this specific page, and it is never mixed into the save data synchronization. There are two playback paths: for Premium users, this screen itself acts as a Spotify Connect device and plays audio directly, while others sync with playback on their smartphone or PC, displaying the jacket art, playback progress, and needle movement in real time.", "확장의 새로운 화면인 턴테이블은 당신의 Spotify 계정과 연결되는 레코드 플레이어입니다. 연결 방식은 PKCE라는 인가 방식을 사용하며, 비밀 키는 앱 내에 저장하지 않습니다. 로그인 시 수신하는 토큰은 이 단말기의 이 페이지 내에만 보관되며, 세이브 데이터 동기화에는 절대 포함되지 않습니다. 재생 경로는 2가지가 있는데, Premium 사용자는 이 화면 자체가 Spotify Connect 기기가 되어 소리가 여기서 출력되며, 그렇지 않은 경우에는 스마트폰이나 PC의 재생과 동기화되어 앨범 재킷과 진행 상황, 바늘이 그대로 표시됩니다.", "扩展功能的新界面「唱机」是一款能与您的Spotify账户连接的唱片播放器。连接方式采用了名为PKCE的授权机制，私钥不会保存在应用程序中。登录时获取的令牌仅被存放在本终端的此页面内，绝不会混入存档数据的同步中。播放途径有两种：Premium用户可以将此界面本身作为Spotify Connect设备，声音会直接在此处播放；若非Premium用户，则会与手机或PC的播放同步，界面上会实时显示专辑封面、进度以及唱针位置。", "擴充功能的全新頁面「唱盤」是一款能與你的 Spotify 帳號連結的黑膠唱片機。連接方式採用名為 PKCE 的授權機制，密鑰不會存放在應用程式內。登入時收到的 Token 僅會保存在該裝置的此頁面中，絕對不會混入存檔資料的同步作業。播放路徑分為兩種，Premium 使用者可將此頁面本身作為 Spotify Connect 的裝置直接在此發聲；若非 Premium 使用者，則會與手機或電腦的播放內容同步，顯示原本的專輯封面、播放進度以及唱針位置。", "La nueva pantalla de expansión «tocadiscos» es un reproductor de discos que se conecta a tu cuenta de Spotify. La forma de conexión utiliza un mecanismo de autorización llamado PKCE, y la clave secreta no se almacena dentro de la aplicación. El token recibido al iniciar sesión se guarda únicamente en esta página de este dispositivo y nunca se mezcla con la sincronización de datos guardados. Existen dos rutas de reproducción: si eres usuario Premium, esta pantalla funciona como un dispositivo de Spotify Connect y el sonido se reproduce aquí mismo; de lo contrario, se sincroniza con la reproducción de tu teléfono o PC, mostrando la portada, el progreso y la aguja tal cual.", "Le nouvel écran d'extension « Platine » est un lecteur de disques qui se connecte à votre compte Spotify. La connexion s'effectue via un mécanisme d'autorisation appelé PKCE, et aucune clé privée n'est stockée dans l'application. Les jetons reçus lors de la connexion sont conservés uniquement sur cet appareil et sur cette page, et ne sont absolument jamais mélangés à la synchronisation des données de sauvegarde. Il existe deux modes de lecture : les abonnés Premium peuvent utiliser cet écran comme un appareil Spotify Connect afin que le son soit diffusé directement ici, tandis que pour les autres, l'interface se synchronise avec la lecture sur smartphone ou PC, reflétant fidèlement la pochette, l'avancement et la position de l'aiguille.", "Der neue Erweiterungsbildschirm ‚Plattenspieler‘ ist ein Plattenspieler, der sich mit Ihrem Spotify-Konto verbindet. Die Verbindung erfolgt über einen Autorisierungsmechanismus namens PKCE, wobei der private Schlüssel nicht in der App gespeichert wird. Das beim Login empfangene Token wird ausschließlich auf diesem Gerät und auf dieser Seite gespeichert und wird niemals mit der Synchronisierung der Speicherdaten vermischt. Es gibt zwei Wiedergabewege: Für Premium-Nutzer fungiert dieser Bildschirm selbst als Spotify Connect-Gerät und der Ton wird hier ausgegeben. Andernfalls wird die Wiedergabe mit dem Smartphone oder PC synchronisiert, wobei das Cover, der Fortschritt und die Nadel direkt angezeigt werden.", "A nova tela de expansão «Toca-discos» é um reprodutor de discos que se conecta à sua conta do Spotify. O método de conexão utiliza o mecanismo de autorização PKCE, e a chave secreta não é armazenada no aplicativo. O token recebido no login é guardado apenas nesta página deste dispositivo e nunca é misturado à sincronização de dados salvos. Existem dois caminhos de reprodução: os usuários Premium podem utilizar esta tela como um dispositivo Spotify Connect, fazendo com que o som saia por aqui, enquanto os demais usuários podem sincronizar com a reprodução do smartphone ou PC, exibindo a capa, o progresso e a agulha de forma correspondente.", "La nuova schermata di espansione «Giradischi» è un lettore di dischi che si collega al tuo account Spotify. Il metodo di connessione utilizza il meccanismo di autorizzazione PKCE e la chiave segreta non viene memorizzata all'interno dell'app. Il token ricevuto al momento dell'accesso viene conservato esclusivamente in questa pagina e su questo dispositivo, e non viene mai incluso nella sincronizzazione dei dati di salvataggio. Esistono due percorsi di riproduzione: per gli utenti Premium, questa schermata funge da dispositivo Spotify Connect e l'audio viene riprodotto direttamente qui; in caso contrario, si sincronizza con la riproduzione dello smartphone o del PC, mostrando la copertina, l'avanzamento del brano e la puntina in tempo reale."],
   "盤面はキャンバスに描いた本気のレコードで、回転数は33と45の切り替えつき。再生が始まるとゆっくり回転が上がり、止まるとすっと落ちる、実機の立ち上がりを真似ています。針（トーンアーム）は曲の進み具合に合わせて溝の内側へ少しずつ進み、終われば持ち上がって戻ります。レーベルには再生中のジャケット写真がそのまま貼りつきます。プレーヤーの本体は画面ではなくアプリ全体に常駐するので、ゲームへ移っても音楽は止まらず、ロビーには小さな再生チップが出ます。": ["The disc is an authentic-looking record drawn on a canvas, with a switchable rotation speed of 33 and 45. It mimics the startup of a real machine, with rotation slowly increasing when playback begins and dropping smoothly when it stops. The needle (tonearm) advances little by little toward the inner groove as the song progresses, then lifts and returns when finished. The jacket art of the track currently playing is applied directly to the label. Since the player unit resides in the entire app rather than just the screen, the music does not stop when moving to a game, and a small playback chip appears in the lobby.", "반면은 캔버스에 그린 진지한 레코드로, 회전수는 33과 45로 전환할 수 있습니다. 재생이 시작되면 천천히 회전이 올라가고 멈추면 자연스럽게 떨어지는 등 실기기의 구동 방식을 모방했습니다. 바늘(톤암)은 곡의 진행 상황에 맞춰 홈 안쪽으로 조금씩 이동하며, 끝나면 들어 올려져 돌아옵니다. 라벨에는 재생 중인 재킷 사진이 그대로 붙습니다. 플레이어 본체는 화면이 아닌 앱 전체에 상주하므로 게임으로 이동해도 음악은 멈추지 않으며, 로비에는 작은 재생 칩이 표시됩니다.", "唱盘是绘制在画布上的写实唱片，转速支持33与45的切换。当播放开始时转速会缓慢上升，停止时则会平滑下降，还原了实体唱机的启动效果。唱针（唱臂）会随着歌曲进度一点点向沟槽内侧移动，播放结束时会自动抬起并归位。唱片标签上会直接贴上当前播放的专辑封面。由于播放器主体是驻留在整个应用程序而非仅限当前界面，因此即便切换到游戏界面音乐也不会停止，大厅中也会显示出一个小的播放插件。", "盤面是繪製於畫布上的本格黑膠唱片，具備 33 與 45 轉的切換功能。開始播放時轉速會緩慢提升，停止時則會自然減速，完美模擬了實體機器的運作方式。唱針（唱臂）會隨著曲目的播放進度逐漸向溝槽內側移動，結束時則會自動抬起並返回。唱片標籤上會直接貼上播放中的專輯封面。由於播放器主體是常駐在整個應用程式而非單一畫面上，因此切換至遊戲時音樂也不會停止，在大廳畫面中亦會顯示小巧的播放晶片。", "El disco está dibujado minuciosamente sobre un lienzo y cuenta con un selector de velocidad de 33 y 45 revoluciones. Al iniciar la reproducción, la velocidad aumenta gradualmente y al detenerse, desciende suavemente, imitando el arranque de un equipo real. La aguja (brazo fonocaptor) avanza poco a poco hacia el interior de los surcos según el progreso de la canción y, al finalizar, se levanta y regresa a su posición. La carátula del álbum en reproducción queda adherida directamente a la etiqueta del disco. El reproductor permanece residente no solo en la pantalla, sino en toda la aplicación, por lo que la música no se detiene al cambiar a un juego y aparece un pequeño chip de reproducción en el lobby.", "Le disque est une véritable reproduction dessinée sur canevas, avec une commutation de vitesse entre 33 et 45 tours. Le démarrage simule une machine réelle, avec une accélération progressive au lancement et une décélération fluide à l'arrêt. L'aiguille (le bras de lecture) se déplace lentement vers l'intérieur du sillon au rythme de la chanson, puis se soulève et revient à sa position initiale une fois la piste terminée. La pochette du titre en cours s'affiche directement sur l'étiquette du disque. Le lecteur réside en permanence dans toute l'application plutôt que sur un seul écran, ce qui permet à la musique de continuer même si vous passez à un jeu, avec un petit widget de lecture qui apparaît dans le lobby.", "Die Platte ist eine auf eine Leinwand gezeichnete echte Schallplatte mit einer Umschaltmöglichkeit zwischen 33 und 45 Umdrehungen pro Minute. Wenn die Wiedergabe beginnt, steigt die Drehzahl langsam an, und beim Stoppen fällt sie sanft ab, was das Anlaufverhalten eines echten Geräts imitiert. Die Nadel (Tonarm) bewegt sich je nach Fortschritt des Liedes allmählich weiter in Richtung der Rillen und hebt sich ab und kehrt zurück, sobald das Lied endet. Auf dem Label wird das Cover des aktuell abgespielten Titels direkt angezeigt. Der Player selbst bleibt nicht nur auf dem Bildschirm, sondern ist in der gesamten App präsent, sodass die Musik auch beim Wechsel zum Spiel nicht stoppt und in der Lobby ein kleiner Wiedergabe-Chip erscheint.", "O disco é uma gravação realista desenhada em tela, com alternância entre 33 e 45 rotações. Ao iniciar a reprodução, a rotação aumenta gradualmente, e ao parar, ela diminui suavemente, imitando o comportamento de um aparelho real. A agulha (braço fonocaptor) avança pouco a pouco em direção ao centro do sulco conforme a música progride e, ao terminar, ela levanta e retorna à posição inicial. A capa da música em reprodução é aplicada diretamente ao selo do disco. Como o corpo do player reside em todo o aplicativo e não apenas na tela, a música não para ao mudar para o jogo, e um pequeno chip de reprodução aparece no lobby.", "Il disco è un vinile autentico disegnato su tela, con velocità di rotazione selezionabile tra 33 e 45 giri. L'avvio simula quello di un dispositivo reale, con una rotazione che accelera gradualmente all'inizio e rallenta dolcemente alla fine. La puntina (braccio di lettura) si sposta gradualmente verso l'interno del solco in base all'avanzamento della canzone, per poi sollevarsi e tornare in posizione una volta terminata. Sull'etichetta viene applicata la copertina del brano in riproduzione. Il corpo del lettore rimane residente non solo nella schermata, ma nell'intera app: la musica non si interrompe passando ai giochi e nella lobby viene visualizzato un piccolo chip di riproduzione."],
   "レコード盤の絵柄と画面のスキンは、コインショップの装備品です。透明盤や色つき盤、真鍮コイン盤、木目のデッキなどを買って着せ替えでき、持ち物と装備は他の装備品と同じ仕組みで同期されます。検証では、ログイン用URLの合言葉（PKCE）が国際規格RFC 7636のテスト値と一致すること、トークンの保存先が1か所だけで同期データに漏れていないこと、購入と装備が再読み込み後も残ることを確かめました。ただし実アカウントでのログイン往復とPremiumの実再生だけは、あなたの端末とアカウントでしか確かめられません。": ["The patterns of the vinyl record and the screen skins are items from the Coin Shop. You can buy and equip transparent discs, colored discs, brass coin discs, wood-grain decks, and more; items and equipment are synchronized using the same system as other equipment. During verification, we confirmed that the login URL password (PKCE) matches the test values for the international standard RFC 7636, that the token is saved in only one location and does not leak into synchronized data, and that purchases and equipment remain after reloading. Please note, however, that the login round trip with a real account and actual playback for Premium can only be verified on your own device and account.", "레코드판의 무늬와 화면 스킨은 코인 숍의 장비품입니다. 투명판이나 유색판, 황동 코인판, 나뭇결 데크 등을 구매해 커스터마이징할 수 있으며, 소지품과 장비는 다른 장비품과 동일한 방식으로 동기화됩니다. 검증에서는 로그인용 URL의 암호(PKCE)가 국제 규격 RFC 7636의 테스트 값과 일치하는지, 토큰의 저장소가 한곳뿐이며 동기화 데이터로 유출되지 않았는지, 구매와 장착 상태가 재로드 후에도 유지되는지를 확인했습니다. 단, 실제 계정을 통한 로그인 왕복과 Premium의 실제 재생만은 사용자의 단말기와 계정에서만 확인할 수 있습니다.", "唱片的设计与界面皮肤均属于金币商店的装备品。您可以购买透明唱片、彩色唱片、黄铜币唱片、木纹底座等进行装扮，其持有物品与装备将通过与其它装备品相同的机制进行同步。在验证过程中，我们确认了登录用URL的口令（PKCE）与国际标准RFC 7636的测试值一致，令牌的保存位置仅有一处且不会泄露到同步数据中，以及购买和装备的状态在重新加载后依然保留。但有关真实账户的登录往返以及Premium的实际播放功能，只能由您在自己的终端与账户上进行确认。", "唱片盤面的圖案與畫面外觀皆可從硬幣商店購買並裝備。你可以購買透明盤、彩色盤、黃銅硬幣盤或木紋機身等進行更換，其持有物與裝備皆透過與其他裝備品相同的機制進行同步。我們已驗證登入用 URL 的密語（PKCE）與國際標準 RFC 7636 的測試值一致、Token 的儲存位置僅限一處且不會洩漏至同步資料中，以及購買與裝備狀態在重新載入後仍會保留。不過，涉及真實帳號的登入往返以及 Premium 的實際播放功能，僅能由你的裝置與帳號進行確認。", "El diseño del disco y la apariencia de la pantalla son accesorios de la tienda de monedas. Puedes comprar discos transparentes, de colores, de monedas de latón, bases con vetas de madera, entre otros, para personalizarlo; la posesión y el equipamiento se sincronizan con el mismo sistema que otros accesorios. Durante las pruebas, se verificó que la contraseña (PKCE) de la URL de inicio de sesión coincida con los valores de prueba del estándar internacional RFC 7636, que el almacenamiento del token sea en un solo lugar sin filtrarse a los datos sincronizados, y que la compra y el equipamiento persistan tras recargar. Sin embargo, el viaje de ida y vuelta del inicio de sesión con una cuenta real y la reproducción real de Premium solo pueden ser verificados por tu propio dispositivo y cuenta.", "Les motifs des disques et les habillages de l'écran sont des équipements disponibles dans la boutique de pièces. Vous pouvez acheter et personnaliser des disques transparents, colorés, en laiton, ou des platines à texture bois, les objets et équipements étant synchronisés via le même système que les autres éléments. Lors des tests, nous avons vérifié que le mot de passe de l'URL de connexion (PKCE) correspond aux valeurs de test de la norme internationale RFC 7636, que le jeton est stocké dans un emplacement unique sans fuite vers les données synchronisées, et que les achats et équipements persistent après un rechargement. Toutefois, les allers-retours de connexion avec un compte réel et la lecture effective en Premium ne peuvent être vérifiés qu'avec votre propre appareil et votre propre compte.", "Die Muster der Schallplatten und die Bildschirm-Skins sind Ausrüstungsgegenstände aus dem Münz-Shop. Sie können transparente oder farbige Platten, Messing-Platten, Decks mit Holzmaserung usw. kaufen, um das Design zu ändern. Der Besitz und die Ausrüstung werden nach dem gleichen Prinzip wie bei anderen Ausrüstungsgegenständen synchronisiert. Bei der Überprüfung wurde sichergestellt, dass das Passwort für die Login-URL (PKCE) mit dem Testwert des internationalen Standards RFC 7636 übereinstimmt, dass das Token nur an einer Stelle gespeichert wird und nicht in die synchronisierten Daten gelangt, und dass Käufe und Ausrüstung auch nach einem Neustart erhalten bleiben. Bitte beachten Sie jedoch, dass der Login-Vorgang mit einem echten Konto und die tatsächliche Wiedergabe bei Premium nur auf Ihrem Gerät und mit Ihrem Konto verifiziert werden können.", "As artes dos discos e os visuais da tela são equipamentos da Loja de Moedas. É possível comprar e personalizar discos transparentes ou coloridos, discos de moedas de latão, decks com textura de madeira, entre outros, sendo que os itens e equipamentos são sincronizados com o mesmo sistema dos outros itens. Durante a verificação, confirmamos que a senha da URL de login (PKCE) corresponde aos valores de teste do padrão internacional RFC 7636, que o local de armazenamento do token é único e não vaza para os dados de sincronização, e que as compras e equipamentos permanecem após a recarga. No entanto, o fluxo de ida e volta do login com conta real e a reprodução real do Premium só podem ser verificados no seu próprio dispositivo e conta.", "Il motivo del disco e la skin della schermata sono elementi equipaggiabili dal negozio di monete. È possibile acquistare e personalizzare il giradischi con dischi trasparenti o colorati, dischi in moneta di ottone, deck con venature del legno e altro ancora; gli oggetti posseduti e quelli equipaggiati vengono sincronizzati con lo stesso sistema degli altri elementi di gioco. Durante la verifica, abbiamo confermato che la parola chiave (PKCE) dell'URL di accesso corrisponde al valore di test dello standard internazionale RFC 7636, che il token viene salvato in un'unica posizione senza fuoriuscire nei dati di sincronizzazione e che gli acquisti e l'equipaggiamento rimangono dopo il ricaricamento. Tuttavia, il round-trip di accesso con l'account reale e la riproduzione effettiva di Premium possono essere verificati solo sul tuo dispositivo e con il tuo account."],
+  "UI/UX最高品質ラウンド：そろえる、広げる、届きやすくする": ["UI/UX Highest Quality Round: Unifying, Expanding, and Improving Accessibility", "UI/UX 최고 품질 라운드: 통일하기, 넓히기, 접근하기 쉽게 만들기", "UI/UX最高品质回顾：统一化、扩大化、提升易用性", "UI/UX最高品質測試回合：統一、擴展、提升易用性", "Ronda de máxima calidad UI/UX: unificar, ampliar y facilitar el acceso", "Cycle de qualité UI/UX : unifier, agrandir, faciliter l'accès", "UI/UX-Qualitätsrunde: Vereinheitlichen, Erweitern, Erreichbarkeit verbessern", "Rodada de alta qualidade de UI/UX: unificar, ampliar e tornar acessível", "Round di alta qualità UI/UX: uniformare, espandere, rendere accessibile"],
+  "ロビーのタイルの絵を1つの方式にそろえた。線だけで描かれた絵や文字だけのタイルを含め、全53タイルのうち52タイルが、色のついたバッジに描き込み済みの絵が入る形になった。残りの1つは「線画あそび」で、線で描くこと自体が遊びなので意図的に線のままにしてある。あわせて、色と形の部品を3層のトークン（基本の色→意味→部品）にまとめ、ロビーの道具やカード、設定パネルが同じ部品を共有するようにした。素材テーマ「フェルト」と「真鍮」もこの仕組みの上に乗り、切り替えると画面の枠まわりだけ素材感が変わる（ゲームの盤面は変わらない）。": ["We unified the tile icons in the lobby into a single format. Including line-art icons and text-only tiles, 52 out of the 53 total tiles now feature detailed illustrations within colored badges. The remaining one is 『Line Drawing Game』; as the act of drawing lines is the gameplay itself, it was intentionally left as line art. Concurrently, we consolidated color and shape components into a 3-layer token system (Base Color → Meaning → Component), ensuring that lobby tools, cards, and setting panels share the same components. The material themes 『Felt』 and 『Brass』 also operate on this framework, so when switched, only the screen borders change in texture (the game board remains unchanged).", "로비 타일의 그림을 하나의 방식으로 통일했습니다. 선으로만 그려진 그림이나 글자만 있는 타일을 포함하여, 총 53개의 타일 중 52개가 색상이 들어간 배지에 채색된 그림이 들어가는 형태로 바뀌었습니다. 나머지 하나는 ‘선화 놀이’로, 선으로 그리는 것 자체가 놀이이므로 의도적으로 선 그대로 두었습니다. 아울러 색과 모양 부품을 3계층의 토큰(기본 색상→의미→부품)으로 정리하여, 로비의 도구와 카드, 설정 패널이 동일한 부품을 공유하도록 했습니다. 소재 테마인 ‘펠트’와 ‘황동’도 이 시스템을 기반으로 하며, 전환 시 화면 테두리 부분의 소재감만 변경됩니다(게임 판은 변경되지 않습니다).", "大厅磁贴图标已统一为同一种样式。包含纯线条绘制和纯文字的磁贴在内，全53个磁贴中已有52个变更为带有彩色徽章及绘制图像的形式。剩下的1个为《线画游戏》，由于用线绘制本身就是游戏的核心玩法，因此刻意保留了线条样式。与此同时，将颜色和形状组件整合为3层代币（基础颜色→语义→组件），使大厅的工具、卡片和设置面板能够共享相同的零件。素材主题“毛毡”和“黄铜”也基于此机制运行，切换时仅画面边框的材质感会发生变化（游戏棋盘面保持不变）。", "我們統一了大廳磚塊圖示的呈現方式。包含原本僅以線條繪製或僅有文字的磚塊，在總共53個磚塊中，已有52個統一為彩色徽章搭配繪製圖案的形式。剩下的1個為「線畫遊戲」，由於用線條描繪本身即是遊戲核心，因此刻意保留為線條樣式。同時，我們將顏色與形狀元件整合為3層設計標記（基礎顏色→語意→零件），讓大廳的工具、卡片與設定面板能夠共用相同的零件。素材主題「毛氈」與「黃銅」也建構於此機制之上，切換時僅會改變畫面邊框周圍的質感（遊戲盤面則維持不變）。", "Hemos unificado el diseño de los iconos de los mosaicos en el vestíbulo. Incluyendo los iconos trazados solo con líneas y los que solo contienen texto, 52 de los 53 mosaicos ahora siguen el formato de una insignia de color con una ilustración detallada en su interior. La excepción es «Juego de líneas», donde el acto de dibujar con líneas es parte del juego, por lo que se mantuvo así deliberadamente. Asimismo, hemos organizado los elementos de color y forma en 3 capas de tokens (color base → significado → componente), de modo que las herramientas, cartas y paneles de configuración del vestíbulo compartan los mismos elementos. Los temas de materiales «fieltro» y «latón» también se basan en este sistema, por lo que al cambiar el tema, solo cambia la textura del marco de la pantalla (el tablero de juego permanece igual).", "Nous avons unifié le style des vignettes dans le lobby. En incluant les tuiles composées uniquement de lignes ou de texte, 52 des 53 tuiles adoptent désormais un badge coloré contenant une illustration détaillée. La seule exception est « Ligne à dessin », conservée telle quelle intentionnellement car le dessin au trait constitue le cœur du jeu. Parallèlement, nous avons regroupé les éléments de couleur et de forme dans des jetons à 3 niveaux (couleur de base → signification → composant), afin que les outils, cartes et panneaux de configuration du lobby partagent les mêmes éléments. Les thèmes « Feutre » et « Laiton » reposent également sur ce système : lors d'un changement, seule la texture des bordures d'écran est modifiée (le plateau de jeu reste inchangé).", "Die Kachelgrafiken in der Lobby wurden auf einen einheitlichen Standard gebracht. Von insgesamt 53 Kacheln wurden 52 in Form von farbigen Badges mit detaillierten Grafiken neu gestaltet, einschließlich der Kacheln, die zuvor nur aus Linien oder Text bestanden. Die verbleibende Ausnahme ist »Linien-Spiel«, da das Zeichnen mit Linien selbst Teil des Spielprinzips ist und daher absichtlich beibehalten wurde. Zudem wurden Farb- und Formkomponenten in einer 3-schichtigen Token-Struktur (Basisfarbe → Bedeutung → Komponente) zusammengefasst, sodass Lobby-Tools, Karten und Einstellungsmenüs dieselben Elemente nutzen. Die Materialthemen »Filz« und »Messing« basieren nun ebenfalls auf diesem System; ein Wechsel ändert lediglich die Textur der Bildschirmrahmen (das Spielfeld bleibt unverändert).", "Padronizamos as ilustrações dos blocos do saguão. Incluindo os blocos que utilizam apenas linhas ou apenas texto, 52 dos 53 blocos agora apresentam ilustrações detalhadas dentro de distintivos coloridos. O último bloco restante é o »Linhas«, que foi mantido intencionalmente com apenas linhas, pois desenhar com traços faz parte da própria mecânica de jogo. Além disso, organizamos os componentes de cores e formas em 3 camadas de tokens (cor base → significado → componente), fazendo com que as ferramentas, cartas e painéis de configuração do saguão compartilhem os mesmos elementos. Os temas de materiais »Feltro« e »Latão« também foram integrados a esse sistema, de modo que, ao alternar entre eles, apenas a textura das bordas da tela muda (o tabuleiro do jogo permanece inalterado).", "Abbiamo uniformato le illustrazioni delle tessere nella lobby. Includendo tessere con soli tratti o scritte, 52 delle 53 tessere totali ora presentano un'illustrazione completa all'interno di un badge colorato. L'unica eccezione è «Disegno a tratteggio», lasciata intenzionalmente così poiché il tratto stesso è parte integrante del gioco. Parallelamente, abbiamo raggruppato gli elementi di colore e forma in tre livelli di token (colore base → significato → componente), in modo che gli strumenti, le carte e i pannelli delle impostazioni della lobby condividano i medesimi componenti. Anche i temi dei materiali «feltro» e «ottone» si basano su questo sistema: passando da uno all'altro, cambia solo la trama dei bordi dello schermo (la superficie di gioco rimane invariata)."],
+  "広い画面で遊び場が狭かったタイトルを広げた。ルービックキューブは最大で約518×474から約607×607へ、ブロック崩しは幅の上限を440から640へ上げて約504×600まで、スネークとシューターは操作ボタンや情報を横のレールへ移して盤を広くした。スマホでロビーの道具行が横にはみ出す不具合（中身507pxが幅332pxの箱に入っていた）は、行が縮めるよう直して解消した。ホールデムはスマホ幅で席の札が重ならないよう、席を118pxから86pxの小型にした（iPadの表示は変えていない）。": ["We expanded the play areas for titles that felt cramped on wide screens. Rubik’s Cube was increased from a maximum of approximately 518×474 to approximately 607×607, Block Breaker had its width limit increased from 440 to 640, reaching approximately 504×600, and for Snake and Shooter, we moved control buttons and information to side rails to widen the board. We fixed a bug where the lobby tool row protruded on smartphones (where 507px content was placed in a 332px container) by allowing the row to shrink. For Holdem, we reduced seat tags from 118px to 86px so they do not overlap on smartphone widths (iPad display remains unchanged).", "넓은 화면에서 놀이 공간이 좁았던 타이틀을 확장했습니다. 루빅스 큐브는 최대 약 518×474에서 약 607×607로, 벽돌 깨기는 가로 폭 상한을 440에서 640으로 높여 약 504×600까지, 스네이크와 슈터는 조작 버튼이나 정보를 측면 레일로 옮겨 판을 넓혔습니다. 스마트폰에서 로비의 도구 행이 가로로 삐져나가는 결함(내용물 507px이 폭 332px의 상자에 들어가 있던 현상)은 행이 줄어들 수 있도록 수정하여 해결했습니다. 홀덤은 스마트폰 폭에서 좌석 태그가 겹치지 않도록 좌석을 118px에서 86px로 소형화했습니다(iPad의 표시는 변경하지 않았습니다).", "扩大了在宽屏显示中游戏区域过窄的游戏标题。魔方游戏最大尺寸从约518×474扩大至约607×607，打砖块游戏的宽度上限从440提高至640，达到约504×600，贪吃蛇和射击游戏通过将操作按钮及信息移至侧边导轨，进一步拓宽了棋盘面。针对手机端大厅工具行溢出的故障（内容为507px的组件被放进了宽332px的盒子中），已通过调整行缩放逻辑予以解决。德州扑克为了防止在手机宽度下座位标签重叠，将座位大小从118px缩减至86px（iPad的显示未作更改）。", "我們擴展了在寬螢幕上遊戲區域過小的項目。魔術方塊從最大約518×474擴展至約607×607，打磚塊將寬度上限由440提升至640，使版面達到約504×600，貪食蛇與射擊遊戲則將操作按鈕與資訊移至側邊軌道，藉此拓寬盤面。針對手機版大廳工具列會超出邊界的問題（原本內容507px被強行置入332px寬的容器中），我們已修正為可縮放行列來解決。德州撲克為了在手機寬度下不讓座位標籤重疊，將座位大小從118px縮小至86px（iPad顯示方式未變動）。", "Hemos ampliado las áreas de juego de los títulos que se veían pequeñas en pantallas grandes. El cubo de Rubik pasó de un máximo de aproximadamente 518×474 a unos 607×607, el rompebloques aumentó su límite de ancho de 440 a 640, alcanzando unos 504×600, y en Snake y Shooter, hemos movido los botones de control y la información a rieles laterales para ampliar el tablero. El error en el que la fila de herramientas del vestíbulo se desbordaba en los teléfonos (el contenido de 507px estaba en una caja de 332px de ancho) se ha resuelto ajustando la fila para que pueda reducirse. En Holdem, para evitar que las fichas de asiento se superpongan en el ancho de un smartphone, hemos reducido el tamaño de los asientos de 118px a 86px (la visualización en iPad no ha cambiado).", "Nous avons agrandi les zones de jeu sur les écrans larges. Pour le Rubik's Cube, la taille est passée d'environ 518×474 à environ 607×607 au maximum ; pour le Casse-briques, la largeur limite est passée de 440 à 640, permettant une taille d'environ 504×600 ; pour le Snake et le Shooter, les boutons de commande et les informations ont été déplacés vers des rails latéraux pour élargir le plateau. Le bug d'affichage sur smartphone où la ligne d'outils du lobby dépassait de l'écran (le contenu de 507px tenait dans une boîte de 332px) a été corrigé en permettant à la ligne de se réduire. Au Holdem, les jetons de siège sont passés de 118px à 86px afin d'éviter qu'ils ne se chevauchent sur les écrans de smartphones (l'affichage sur iPad reste inchangé).", "Bei Titeln mit eingeschränktem Spielbereich auf breiten Bildschirmen wurde dieser vergrößert. Der Zauberwürfel wurde von maximal ca. 518×474 auf ca. 607×607 erweitert, die Breitenbegrenzung bei Breakout von 440 auf 640 angehoben (auf ca. 504×600), und bei Snake sowie Shooter wurden Steuerungsbuttons und Informationen in seitliche Leisten verschoben, um das Spielfeld zu vergrößern. Der Fehler, bei dem in der Lobby die Werkzeugleiste auf Smartphones über den Rand hinausragte (Inhalt von 507px in einem 332px breiten Kasten), wurde durch eine flexible Breitenanpassung der Leiste behoben. Bei Holdem wurden die Sitzplatz-Chips von 118px auf 86px verkleinert, damit sie sich bei Smartphone-Breite nicht überlappen (die iPad-Anzeige blieb unverändert).", "Ampliamos as áreas de jogo que eram pequenas em telas largas. O Cubo Mágico aumentou de aproximadamente 518×474 para cerca de 607×607, o jogo de quebrar blocos teve seu limite de largura aumentado de 440 para 640, alcançando cerca de 504×600, e no jogo da Cobrinha e no Shooter, os botões de controle e as informações foram movidos para trilhos laterais para expandir o tabuleiro. Resolvemos o problema em que a linha de ferramentas do saguão transbordava no celular (o conteúdo de 507px estava inserido em uma caixa de 332px de largura) ajustando a linha para que ela pudesse ser reduzida. No Holdem, para evitar que as fichas de assento se sobreponham na largura do celular, os assentos foram reduzidos de 118px para 86px (a exibição no iPad não foi alterada).", "Abbiamo ampliato le aree di gioco che risultavano ridotte sugli schermi ampi. Il Cubo di Rubik è passato da circa 518×474 a circa 607×607, il Breakout ha visto il limite di larghezza salire da 440 a 640, raggiungendo circa 504×600, mentre in Snake e Shooter abbiamo spostato i pulsanti di controllo e le informazioni su binari laterali per ampliare il tabellone. Il problema per cui le righe degli strumenti della lobby fuoriuscivano su smartphone (un contenuto da 507px era inserito in una scatola da 332px) è stato risolto permettendo alle righe di restringersi. In Holdem, per evitare che le etichette dei posti si sovrapponessero nella larghezza dello smartphone, abbiamo ridotto i posti da 118px a 86px (la visualizzazione su iPad rimane invariata)."],
+  "設定に快適さの項目が増えた。テーマ、文字を大きく、点滅を止める、振動の強さ（切・標準・強）、色の見分け補助の5つで、どれも44px以上の大きな操作部品で切り替える。ロビーには街の看板のようなジャンル見出しと「NOW SHOWING」の帯が付き、今日のおすすめが上映中の映画のように出る。タップできる共通部品は、44px未満だった5種（約30〜40px）をすべて44px以上にした。なお、この回の検証は静的解析と計算によるもので、ブラウザでの実測は検証環境の障害のため行えていない。その分、数えられるものは全部数えて仕様欄に書いた。": ["We added a Comfort section to Settings. This includes five items: Theme, Enlarge Text, Stop Flashing, Vibration Strength (Off/Standard/Strong), and Color Vision Support, all of which are toggled using large control components of 44px or larger. The lobby now features genre headings reminiscent of city signs and a 『NOW SHOWING』 banner, displaying today’s recommendations like a movie currently in theaters. All 5 types of tappable common components that were under 44px (approximately 30–40px) have been updated to 44px or larger. Note that verification for this round was based on static analysis and calculations; actual measurements in a browser could not be performed due to issues in the verification environment. To compensate, we counted everything that could be counted and included it in the specifications.", "설정에 쾌적함 관련 항목이 추가되었습니다. 테마, 글자 크게 보기, 깜빡임 멈춤, 진동 강도(끔·표준·강), 색상 식별 보조 등 5가지이며, 모두 44px 이상의 큰 조작 부품으로 전환할 수 있습니다. 로비에는 거리의 간판 같은 장르 머리말과 NOW SHOWING 띠가 추가되어, 오늘의 추천 게임이 상영 중인 영화처럼 나타납니다. 탭할 수 있는 공통 부품은 44px 미만이었던 5종(약 30~40px)을 모두 44px 이상으로 수정했습니다. 참고로 이번 회차의 검증은 정적 분석과 계산에 의한 것이며, 브라우저 실측은 검증 환경의 장애로 인해 진행하지 못했습니다. 그만큼 셀 수 있는 것은 전부 세어 사양란에 기재했습니다.", "设置中增加了舒适度选项。包含主题、增大文字、停止闪烁、震动强度（关闭·标准·强）以及颜色识别辅助共5项，均通过44px以上的大型操作组件进行切换。大厅中加入了类似街道招牌的分类标题和 NOW SHOWING 的横幅，今日推荐会像电影上映般显示出来。所有可点击的通用组件中，原本小于44px的5种（约30～40px）已全部调整为44px以上。此外，本次验证基于静态分析与计算，由于验证环境故障，未在浏览器中进行实测。为此，所有能统计的数值均已清点并记录在规格栏中。", "設定選單中增加了舒適度相關項目。包含主題、放大文字、停止閃爍、震動強度（關・標準・強）以及色彩辨識輔助共5項，每一項皆透過44px以上的大型操作元件進行切換。大廳新增了如同城市招牌般的分類標題與 NOW SHOWING 橫幅，今日推薦會像上映中的電影般顯示。至於可點擊的共用元件，原本有5種小於44px（約30〜40px），現在已全數調整為44px以上。此外，本次驗證是基於靜態分析與計算所得，由於驗證環境發生障礙，並未進行瀏覽器實際測量。因此，凡是能計算的項目，我們皆已全數統計並記錄於規格欄中。", "Se han añadido elementos de comodidad a la configuración. Se trata de cinco opciones: temas, ampliar texto, detener parpadeos, intensidad de vibración (apagado, estándar, fuerte) y ayuda para distinguir colores; todos ellos se conmutan mediante componentes de control grandes de 44px o más. El vestíbulo ahora incluye encabezados de género similares a los letreros de una ciudad y una banda de NOW SHOWING, de modo que las recomendaciones del día aparecen como si fuera una película en cartelera. En cuanto a los componentes comunes que se pueden tocar, los 5 tipos que medían menos de 44px (aprox. 30–40px) han sido ajustados a 44px o más. Cabe señalar que la verificación de esta ronda se realizó mediante análisis estático y cálculos, y no se pudo llevar a cabo la medición real en el navegador debido a problemas en el entorno de pruebas. Por ello, hemos contado todo lo que es contable y lo hemos documentado en la sección de especificaciones.", "De nouvelles options de confort ont été ajoutées aux paramètres : Thème, Agrandir le texte, Arrêter le clignotement, Intensité des vibrations (Arrêt/Standard/Fort) et Aide à la distinction des couleurs. Ces 5 options se règlent via de larges éléments de contrôle de 44px minimum. Le lobby est désormais doté d'en-têtes de genre rappelant des enseignes de ville et d'une bannière « NOW SHOWING », affichant les recommandations du jour comme dans un cinéma. Les 5 types d'éléments cliquables communs qui mesuraient moins de 44px (environ 30 à 40px) ont tous été portés à 44px ou plus. À noter que cette vérification a été effectuée par analyse statique et calculs, les mesures réelles dans le navigateur n'ayant pu être réalisées en raison d'une panne de l'environnement de test. En compensation, tous les éléments quantifiables ont été comptés et inscrits dans la section des spécifications.", "Die Einstellungen wurden um Punkte zur Verbesserung des Komforts ergänzt. Es gibt nun fünf Optionen: Themen, Text vergrößern, Blinken stoppen, Vibrationsstärke (Aus·Standard·Stark) und Hilfsmittel zur Farbunterscheidung, die alle über große Bedienelemente von mindestens 44px umgeschaltet werden können. Die Lobby erhielt Genre-Überschriften im Stil von Stadtschildern sowie ein »NOW SHOWING«-Band, über das die Empfehlungen des Tages wie in einem Kino präsentiert werden. Alle fünf gemeinsamen Komponenten, die zuvor unter 44px lagen (ca. 30–40px), wurden auf mindestens 44px vergrößert. Hinweis: Die Validierung dieser Runde erfolgte durch statische Analyse und Berechnungen; tatsächliche Messungen im Browser konnten aufgrund einer Störung der Testumgebung nicht durchgeführt werden. Dafür wurde alles, was zählbar ist, vollständig erfasst und in den Spezifikationen aufgeführt.", "Adicionamos itens de conforto às configurações. São cinco opções: tema, aumentar texto, parar intermitência, intensidade da vibração (desligado, padrão, forte) e auxílio para distinção de cores, sendo todas alternadas por componentes de controle grandes com 44px ou mais. O saguão agora conta com cabeçalhos de gênero semelhantes a letreiros de rua e uma faixa »NOW SHOWING«, exibindo as recomendações do dia como se fossem filmes em cartaz. Todos os 5 tipos de componentes comuns que podiam ser tocados e tinham menos de 44px (aproximadamente 30-40px) foram ajustados para 44px ou mais. Ressalta-se que a verificação desta rodada foi baseada em análise estática e cálculos, não sendo possível realizar medições práticas no navegador devido a falhas no ambiente de teste. Por isso, tudo o que pôde ser contado foi contabilizado e registrado nas especificações.", "Sono state aggiunte voci dedicate alla comodità nelle impostazioni. Le cinque opzioni (tema, ingrandimento caratteri, disattivazione lampeggiamento, intensità vibrazione (spenta/standard/forte), ausilio per la distinzione dei colori) sono attivabili tramite grandi elementi di controllo da 44px o più. La lobby ora presenta intestazioni di genere simili a insegne cittadine e una fascia «NOW SHOWING», che mostra i consigli del giorno come un film in programmazione. Tutti i 5 componenti comuni cliccabili che erano inferiori a 44px (circa 30–40px) sono stati portati a 44px o più. Si noti che la verifica di questo round è basata su analisi statica e calcoli, poiché le misurazioni effettive nel browser non sono state possibili a causa di guasti nell'ambiente di test. Per compensare, abbiamo contato tutto ciò che era possibile contare e lo abbiamo riportato nelle specifiche."],
   "全体設定とマスター音量：最初は0": ["Global Settings and Master Volume: Starting at 0", "전체 설정과 마스터 음량: 초기값은 0", "全局设置与主音量：初始值为0", "整體設定與主音量：初始值為0", "Configuración general y volumen maestro: comienza en 0", "Paramètres globaux et volume principal : départ à 0", "Globale Einstellungen und Master-Lautstärke: Start bei 0", "Configurações gerais e volume master: começando em 0", "Impostazioni generali e volume master: inizialmente a 0"],
   "ロビーの右上に設定ボタンがつきました。開くと全体の音量（マスター音量）を変えられます。この音量は全ゲームの効果音、起動時の音、BGM、そしてターンテーブルの音楽まで、ARCADEのすべての音にかかる親玉です。初めて開くときは0、つまり無音から始まります。うるさいと感じたらまず自分で上げる、という置き方です。設定はこの端末の中だけに保存され、セーブデータの同期には入りません。": ["A settings button has been added to the top right of the lobby. Opening it allows you to change the overall volume (master volume). This volume is the master control that affects all sounds in ARCADE, including sound effects for all games, startup sounds, BGM, and even the turntable music. It starts at 0—that is, silent—when opened for the first time. The design philosophy is that if you find it too loud, you increase it yourself. These settings are saved only on this device and are not included in save data synchronization.", "로비 오른쪽 상단에 설정 버튼이 추가되었습니다. 버튼을 누르면 전체 음량(마스터 음량)을 조절할 수 있습니다. 이 음량은 모든 게임의 효과음, 시작 시의 소리, BGM, 그리고 턴테이블 음악까지, ARCADE의 모든 소리를 관장하는 상위 설정입니다. 처음 열었을 때는 0, 즉 무음 상태에서 시작합니다. 시끄럽다고 느껴지면 직접 볼륨을 올리는 방식입니다. 설정은 해당 기기에만 저장되며, 세이브 데이터 동기화에는 포함되지 않습니다.", "大厅右上角新增了设置按钮。点击即可调整全局音量（主音量）。该音量是控制ARCADE内所有声音的“总指挥”，涵盖了所有游戏的音效、启动音、背景音乐，以及唱机（turntable）的音乐。初次打开时默认为0，即从静音状态开始。这是一种若用户感到吵闹则需自行调大的设计思路。该设置仅保存在本地设备中，不会被计入存档同步范围内。", "大廳的右上角新增了設定按鈕。打開後可以調整整體音量（主音量）。此音量是涵蓋所有遊戲音效、啟動音效、背景音樂，甚至是轉盤音樂的 ARCADE 所有聲音的總開關。初次打開時預設為 0，也就是從靜音狀態開始。採用的是若覺得吵，請先自行調高的設計。此設定僅保存於本機端，不會包含在存檔同步中。", "Se ha añadido un botón de configuración en la parte superior derecha del lobby. Al abrirlo, se puede cambiar el volumen general (volumen maestro). Este volumen es el controlador principal que afecta a todos los sonidos de ARCADE, incluidos los efectos de sonido de todos los juegos, el sonido de inicio, la música de fondo y hasta la música del tocadiscos. La primera vez que se abre comienza en 0, es decir, en silencio. La idea es que, si al usuario le parece ruidoso, sea él mismo quien lo suba. Esta configuración se guarda solo en el dispositivo actual y no se incluye en la sincronización de datos guardados.", "Un bouton de réglages a été ajouté en haut à droite du lobby. Une fois ouvert, il permet de modifier le volume global (volume principal). Ce volume est le maître qui contrôle tous les sons d'ARCADE, y compris les effets sonores de tous les jeux, le son au démarrage, la musique de fond et même la musique de la platine. Lors de la première ouverture, il est réglé sur 0, c'est-à-dire en mode silencieux. L'idée est que si l'utilisateur trouve le son trop fort, c'est à lui de l'augmenter. Ces paramètres sont enregistrés uniquement sur cet appareil et ne sont pas inclus dans la synchronisation des données de sauvegarde.", "Oben rechts in der Lobby wurde ein Einstellungssymbol hinzugefügt. Wenn man es öffnet, lässt sich die Gesamtlautstärke (Master-Lautstärke) anpassen. Diese Lautstärke ist die übergeordnete Steuerung für alle Töne in ARCADE, einschließlich der Soundeffekte aller Spiele, des Start-Sounds, der Hintergrundmusik und der Musik des Plattenspielers. Beim ersten Öffnen steht sie auf 0, beginnt also lautlos. Das Konzept dahinter ist, dass man die Lautstärke selbst erhöht, falls es einem zu leise ist. Die Einstellungen werden nur lokal auf diesem Gerät gespeichert und nicht in die Synchronisierung der Spielstände einbezogen.", "Adicionamos um botão de configurações no canto superior direito do lobby. Ao abri-lo, você pode alterar o volume geral (volume master). Este volume é o controlador principal que afeta todos os sons do ARCADE, incluindo efeitos sonoros de todos os jogos, som de inicialização, música de fundo e até mesmo a música do toca-discos. Quando aberto pela primeira vez, ele começa em 0, ou seja, no silêncio. A lógica é que, se o usuário achar barulhento, ele mesmo pode aumentar. As configurações são salvas apenas neste dispositivo e não são incluídas na sincronização de dados salvos.", "È stato aggiunto un pulsante di impostazioni in alto a destra nella lobby. Aprendolo è possibile modificare il volume complessivo (volume master). Questo volume è il controllo principale che agisce su tutti i suoni di ARCADE, inclusi gli effetti sonori di tutti i giochi, il suono all'avvio, la musica di sottofondo e persino la musica del giradischi. Quando viene aperto per la prima volta, inizia da 0, ovvero in silenzio. L'impostazione è pensata in modo che, se l'utente lo trova troppo rumoroso, sia lui stesso ad alzarlo. Le impostazioni vengono salvate solo su questo dispositivo e non vengono incluse nella sincronizzazione dei dati di salvataggio."],
   "裏側の苦労は、ARCADEの音の出口が1つではなかったことです。画面まわりの音は共有の音響回路、ゲームごとの音はそれぞれの回路、という具合に分かれていて、全員が出口へ直結していました。そこで、音響回路が生まれるたびにマスターのつまみ（ゲイン）を出口の手前に差し込み、行き先をそちらへ付け替える方式にしました。後から生まれる回路——レトロのエミュレータや麻雀・チェスの中の音も、同じ仕掛けで自動的に傘下に入ります。各ゲームの音ON/OFFは今まで通り、その手前で働きます。": ["The difficulty behind the scenes was that ARCADE did not have just one audio output. Sounds around the screen were on a shared audio circuit, while sounds for each game were on their own separate circuits, and all of them were connected directly to the output. Therefore, we adopted a system where a master knob (gain) is inserted just before the output every time an audio circuit is created, and the destination is rerouted through it. Circuits created later—such as retro emulators or sounds within Mahjong and Chess—are also automatically brought under this umbrella using the same mechanism. The ON/OFF setting for each game's sound continues to function as before, operating upstream of this.", "개발 과정에서의 어려움은 ARCADE의 소리 출력구가 하나가 아니었다는 점입니다. 화면 주변의 소리는 공용 음향 회로, 게임별 소리는 각각의 회로와 같이 나누어져 있었고, 모두가 출력구에 직결된 상태였습니다. 그래서 음향 회로가 생성될 때마다 마스터 노브(게인)를 출력구 앞에 삽입하고, 목적지를 그쪽으로 변경하는 방식을 채택했습니다. 나중에 생성되는 회로인 레트로 에뮬레이터나 마작·체스 내의 소리도 같은 장치를 통해 자동으로 통제 범위에 들어옵니다. 각 게임의 소리 ON/OFF는 이전과 마찬가지로 그 이전 단계에서 작동합니다.", "幕后的难点在于，ARCADE的音频出口并非只有一个。界面相关的声音使用的是共享音频电路，而各游戏的声音则使用各自独立的电路，它们原本都直接连接到出口。为此，我们采用了在每个音频电路生成时，在其出口前端插入一个主旋钮（增益）并将去向重新导向该旋钮的方式。后续生成的电路——如复古游戏模拟器以及麻将、国际象棋中的音效，也能通过相同的机制自动纳入管辖范围。各游戏原本的音量开关功能依旧照常，作用于该机制的前端。", "背後的開發困難在於 ARCADE 的聲音輸出出口並非只有一個。介面周邊的聲音屬於共享音響電路，而各個遊戲的聲音則有各自獨立的電路，原本各個聲音都是直接連接至出口。因此，我們採取了當音響電路產生時，便在出口前方插入主旋鈕（增益）並將路徑重新導向該處的機制。後續新增的電路——例如復古遊戲模擬器或麻將、西洋棋內的聲音，也能透過相同的機制自動納入管理。各遊戲的聲音開關（ON/OFF）則如同以往，在該機制之前運作。", "La dificultad técnica fue que los sonidos de ARCADE no tenían una única salida. Los sonidos de la interfaz estaban en un circuito de audio compartido, mientras que los sonidos de cada juego tenían sus propios circuitos, y todos estaban conectados directamente a la salida. Por ello, implementamos un método en el que, cada vez que se genera un circuito de audio, se inserta una perilla maestra (ganancia) antes de la salida y se redirige el flujo hacia ella. Los circuitos que se crean posteriormente —como el emulador retro o los sonidos dentro del mahjong y ajedrez— también se incorporan automáticamente bajo el mismo sistema. El encendido/apagado del sonido de cada juego sigue funcionando igual que antes, antes de pasar por este control.", "La difficulté technique résidait dans le fait qu'ARCADE n'avait pas qu'une seule sortie audio. Le son de l'interface était géré par un circuit acoustique partagé, tandis que les sons de chaque jeu dépendaient de leurs propres circuits, tous connectés directement à la sortie. Par conséquent, nous avons mis en place un système où, à chaque création d'un circuit acoustique, un bouton principal (gain) est inséré juste avant la sortie pour rediriger le signal. Les circuits créés ultérieurement — comme ceux des émulateurs rétro ou les sons du Mahjong et des échecs — sont automatiquement intégrés sous cette gestion grâce au même mécanisme. L'activation ou la désactivation du son pour chaque jeu continue de fonctionner comme avant, en amont de ce réglage.", "Die größte Herausforderung bei der Umsetzung war, dass ARCADE nicht nur einen einzigen Tonausgang hatte. Die Klänge rund um die Benutzeroberfläche und die Töne der einzelnen Spiele liefen über verschiedene Schaltkreise, die alle direkt mit dem Ausgang verbunden waren. Daher haben wir ein Verfahren eingeführt, bei dem bei der Erstellung jedes Audiokreises ein Master-Regler (Gain) vor dem Ausgang zwischengeschaltet und die Verbindung entsprechend umgeleitet wird. Auch später hinzugefügte Schaltkreise – wie etwa Retro-Emulatoren oder Sounds in Mahjong und Schach – werden durch denselben Mechanismus automatisch unter diese Steuerung gestellt. Die Ein-/Ausschaltfunktion für die einzelnen Spiele bleibt wie bisher davor geschaltet.", "O esforço nos bastidores foi que o ARCADE não tinha apenas uma saída de som. O som ao redor da tela utilizava um circuito de áudio compartilhado, enquanto os sons de cada jogo utilizavam seus próprios circuitos, e todos estavam conectados diretamente à saída. Portanto, adotamos um método onde, sempre que um circuito de áudio é criado, inserimos um botão master (ganho) antes da saída e redirecionamos o destino para ele. Circuitos criados posteriormente — como emuladores retrô ou sons dentro de Mahjong e Xadrez — também entram automaticamente sob o mesmo mecanismo. O LIGAR/DESLIGAR do som de cada jogo funciona como antes, antes desse estágio.", "La difficoltà tecnica è stata che i punti di uscita del suono di ARCADE non erano uno solo. I suoni dell'interfaccia erano gestiti da un circuito audio condiviso, mentre i suoni di ogni gioco avevano circuiti separati, e tutti erano collegati direttamente all'uscita. Per risolvere, abbiamo adottato un metodo in cui, ogni volta che viene creato un circuito audio, viene inserita una manopola master (gain) prima dell'uscita e la destinazione viene reindirizzata lì. Anche i circuiti creati successivamente — come gli emulatori retro o i suoni di Mahjong e Scacchi — vengono automaticamente inclusi sotto questo controllo con lo stesso meccanismo. L'attivazione/disattivazione del suono di ogni singolo gioco continua a funzionare, come prima, a monte di questo processo."],
@@ -48688,6 +48793,7 @@ PATTERNS.push(
     notesAdd("仕組みと同期", { t: "脳ビューが知識ライブラリになった：棚画面の廃止と全幅化", b: ["知識ライブラリの独立した棚画面を目的地として廃止し、脳ビュー自体を知識ライブラリにした。全1,551件のタイトル・本文検索は脳ビューの棚リストへ移植し、複数キーワードのAND検索、全9言語の翻訳文も検索対象、ヒット件数の表示まで旧画面と同等に揃えた。棚レールをタップしたときは検索を解除してから該当の棚へスクロールする。脳ビューの戻るボタンはロビーへ戻る形に改め、「?game=library」のディープリンクも脳ビューに着地する。旧画面のコードとデータ層は残してあるが、到達できる導線はすべて断った（脳ビューの記事パネルが使うデータ層は共有のため無傷）。", "制作ノート画面をワイド画面で全幅化した。従来は最大720pxの中央カラムで、幅1180pxの画面では左右に約230pxずつ空白ができていた。761px以上の幅では左右の余白を16pxにまで広げ、概要・一覧・記事の3つのズーム段階すべてで画面いっぱいに読める。スマホ幅の見た目は従来どおり変えていない。", "ビリヤードの3Dプレイ画面も全幅化した。従来は「高さから逆算した幅」の上限に縛られ、幅1180pxの画面でもキャンバスは約520px（画面の44%）までしか広がらなかった。新しいフィット処理はステージの実寸（ボールのトレイと操作デッキのあいだの高さ）を測ってキャンバスとカメラのアスペクト比を決め、視点距離もアスペクト比で補正する。通常視点でも真上視点でも、レールを含めたテーブル全体が常時収まる。"] });
   notesAdd("拡張と暮らし", { t: "ターンテーブルは、あなたのSpotifyで回る", b: ["拡張の新しい画面「ターンテーブル」は、あなたのSpotifyアカウントとつながるレコードプレーヤーです。つなぎ方はPKCEという認可の仕組みで、秘密鍵はアプリの中に置きません。ログインで受け取るトークンは、この端末のこのページの中だけにしまわれ、セーブデータの同期には絶対に混ざりません。再生の経路は2つあり、Premiumの人はこの画面自体がSpotify Connectの機器になって音がここで鳴り、そうでない場合はスマホやPCの再生と同期して、ジャケットと進み具合と針がそのまま映ります。", "盤面はキャンバスに描いた本気のレコードで、回転数は33と45の切り替えつき。再生が始まるとゆっくり回転が上がり、止まるとすっと落ちる、実機の立ち上がりを真似ています。針（トーンアーム）は曲の進み具合に合わせて溝の内側へ少しずつ進み、終われば持ち上がって戻ります。レーベルには再生中のジャケット写真がそのまま貼りつきます。プレーヤーの本体は画面ではなくアプリ全体に常駐するので、ゲームへ移っても音楽は止まらず、ロビーには小さな再生チップが出ます。", "レコード盤の絵柄と画面のスキンは、コインショップの装備品です。透明盤や色つき盤、真鍮コイン盤、木目のデッキなどを買って着せ替えでき、持ち物と装備は他の装備品と同じ仕組みで同期されます。検証では、ログイン用URLの合言葉（PKCE）が国際規格RFC 7636のテスト値と一致すること、トークンの保存先が1か所だけで同期データに漏れていないこと、購入と装備が再読み込み後も残ることを確かめました。ただし実アカウントでのログイン往復とPremiumの実再生だけは、あなたの端末とアカウントでしか確かめられません。"] });
   notesAdd("仕組みと同期", { t: "全体設定とマスター音量：最初は0", b: ["ロビーの右上に設定ボタンがつきました。開くと全体の音量（マスター音量）を変えられます。この音量は全ゲームの効果音、起動時の音、BGM、そしてターンテーブルの音楽まで、ARCADEのすべての音にかかる親玉です。初めて開くときは0、つまり無音から始まります。うるさいと感じたらまず自分で上げる、という置き方です。設定はこの端末の中だけに保存され、セーブデータの同期には入りません。", "裏側の苦労は、ARCADEの音の出口が1つではなかったことです。画面まわりの音は共有の音響回路、ゲームごとの音はそれぞれの回路、という具合に分かれていて、全員が出口へ直結していました。そこで、音響回路が生まれるたびにマスターのつまみ（ゲイン）を出口の手前に差し込み、行き先をそちらへ付け替える方式にしました。後から生まれる回路——レトロのエミュレータや麻雀・チェスの中の音も、同じ仕掛けで自動的に傘下に入ります。各ゲームの音ON/OFFは今まで通り、その手前で働きます。", "検証では、真新しい状態で開くと音量が0で、音響回路のマスターゲインも0であること、70に上げると再読み込み後も70のまま残ること、設定パネルがロビーと全17画面の上バーから開けることを確かめました。ターンテーブルの音量は、このマスターと画面側の音量を掛け算した値で決まります。"] });
+  notesAdd("仕組みと同期", { t: "UI/UX最高品質ラウンド：そろえる、広げる、届きやすくする", b: ["ロビーのタイルの絵を1つの方式にそろえた。線だけで描かれた絵や文字だけのタイルを含め、全53タイルのうち52タイルが、色のついたバッジに描き込み済みの絵が入る形になった。残りの1つは「線画あそび」で、線で描くこと自体が遊びなので意図的に線のままにしてある。あわせて、色と形の部品を3層のトークン（基本の色→意味→部品）にまとめ、ロビーの道具やカード、設定パネルが同じ部品を共有するようにした。素材テーマ「フェルト」と「真鍮」もこの仕組みの上に乗り、切り替えると画面の枠まわりだけ素材感が変わる（ゲームの盤面は変わらない）。", "広い画面で遊び場が狭かったタイトルを広げた。ルービックキューブは最大で約518×474から約607×607へ、ブロック崩しは幅の上限を440から640へ上げて約504×600まで、スネークとシューターは操作ボタンや情報を横のレールへ移して盤を広くした。スマホでロビーの道具行が横にはみ出す不具合（中身507pxが幅332pxの箱に入っていた）は、行が縮めるよう直して解消した。ホールデムはスマホ幅で席の札が重ならないよう、席を118pxから86pxの小型にした（iPadの表示は変えていない）。", "設定に快適さの項目が増えた。テーマ、文字を大きく、点滅を止める、振動の強さ（切・標準・強）、色の見分け補助の5つで、どれも44px以上の大きな操作部品で切り替える。ロビーには街の看板のようなジャンル見出しと「NOW SHOWING」の帯が付き、今日のおすすめが上映中の映画のように出る。タップできる共通部品は、44px未満だった5種（約30〜40px）をすべて44px以上にした。なお、この回の検証は静的解析と計算によるもので、ブラウザでの実測は検証環境の障害のため行えていない。その分、数えられるものは全部数えて仕様欄に書いた。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -53993,12 +54099,13 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         '<p class="exp-note">' + T("bestStreak") + "： " + (EXP.league.bests[run.game] || 0) + " ／ 現在 " + run.streak + "連勝</p>" +
         '<button type="button" class="exp-bigbtn" id="leagueContinue">▶ ' + esc(g0 ? leagueGameName(g0) : run.game) + "</button></section>";
     }
-    h += '<section class="pts-card">';
+    /* UI/UX round (2026-11-16): each title is its own card (the
+       old single wrapping card read as a plain list). Records and
+       the [data-league] challenge wiring are unchanged. */
     LEAGUE_GAMES.forEach(function (g) {
-      h += '<div class="league-card"><div><div class="lg-name">' + esc(leagueGameName(g)) + '</div><div class="lg-best">' + T("bestStreak") + "： " + (EXP.league.bests[g.key] || 0) + '</div></div>' +
-        '<button type="button" class="pts-btn equip" data-league="' + g.key + '">' + T("startRun") + "</button></div>";
+      h += '<section class="pts-card league-game-card"><div class="league-card"><div><div class="lg-name">' + esc(leagueGameName(g)) + '</div><div class="lg-best">' + T("bestStreak") + "： " + (EXP.league.bests[g.key] || 0) + '</div></div>' +
+        '<button type="button" class="pts-btn equip" data-league="' + g.key + '">' + T("startRun") + "</button></div></section>";
     });
-    h += "</section>";
     root.innerHTML = h;
     var cont = document.getElementById("leagueContinue");
     if (cont) cont.addEventListener("click", function () { launchLeagueGame(EXP.league.run); });
@@ -54020,16 +54127,68 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   function launchLeagueGame(run) {
     if (!run) return;
     run.awaiting = true; run.pendingWin = false; run.pendingDraw = false; saveExp();
-    if (typeof window.__openArcadeView === "function") window.__openArcadeView(run.game);
     var diff = stageDiff(run.stage);
-    setTimeout(function () {
-      var view = document.getElementById(run.game + "View");
-      if (view) {
-        var btn = view.querySelector('.diff-btn[data-diff="' + diff + '"]');
-        if (btn) btn.click();
-      }
-    }, 700);
+    closeExp();
+    if (typeof window.__openArcadeView === "function") window.__openArcadeView(run.game);
+    /* UI/UX round (2026-11-16): drive each title's OWN versus
+       entry until the match itself is live. The old code clicked
+       a generic .diff-btn inside the view after 700ms — chess is
+       a quiz/versus hub whose versus app has no .diff-btn, so the
+       click missed and the player landed on the QUIZ side;
+       billiards has mode tabs and numeric diff buttons, so the
+       click missed and the player landed in PRACTICE mode;
+       reversi / connect4 / gomoku got the difficulty but were
+       left sitting on the start overlay. Poll (200ms, ~6s max)
+       because the chess app loads and binds asynchronously. */
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      var done = false;
+      try { done = leagueDriveStart(run.game, diff); } catch (e) {}
+      if (done || tries > 30) clearInterval(iv);
+    }, 200);
     pluck(587, 0, 0.4);
+  }
+  function leagueDriveStart(game, diff) {
+    if (game === "chess") {
+      var vv = document.getElementById("versusView");
+      if (!vv) return false;
+      if (vv.hidden) { var mv = document.getElementById("modeVersus"); if (mv) mv.click(); return false; }
+      var mapped = diff === "normal" ? "medium" : diff;
+      var db = vv.querySelector('[data-diff="' + mapped + '"]');
+      if (!db) return false;
+      db.click(); /* the versus app's own handler: newGame() — a fresh match at this strength */
+      return true;
+    }
+    if (game === "reversi" || game === "connect4" || game === "gomoku") {
+      var view = document.getElementById(game + "View");
+      if (!view) return false;
+      var btn = view.querySelector('.diff-btn[data-diff="' + diff + '"]');
+      if (!btn) return false;
+      btn.click();
+      var reset = document.getElementById(game === "reversi" ? "revReset" : game === "connect4" ? "c4Reset" : "gomReset");
+      if (reset) reset.click(); /* reset(false): fresh board, the match is live */
+      return true;
+    }
+    if (game === "billiards") {
+      var bview = document.getElementById("billiardsView");
+      if (!bview) return false;
+      var guide = document.getElementById("poolGuideToggle");
+      /* League runs are no-assist by the league's own rule: with
+         the aim guide ON the match is latched as assisted at the
+         break and can never pay the win, so turn it off first
+         (the toggle stays visible; switching it back on voids
+         the run, as the league note says). */
+      if (guide && guide.getAttribute("aria-pressed") === "true") guide.click();
+      var lv = diff === "easy" ? "0" : diff === "hard" ? "2" : "1";
+      var db2 = bview.querySelector('.pool-diff-btn[data-diff="' + lv + '"]');
+      if (db2) db2.click();
+      var vsBtn = document.getElementById("poolModeVs");
+      if (!vsBtn) return false;
+      vsBtn.click(); /* setMode("vs") -> startMatch(): the match begins */
+      return true;
+    }
+    return true;
   }
 
   /* ================= VIP room ================= */
@@ -66182,7 +66341,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       ".plate-cell .p-name{font-size:12px;margin-top:4px;line-height:1.35}",
       ".plate-cell .p-date{font-size:10.5px;color:#93a3c8}",
       ".plate-cell:not(.got){opacity:.45;filter:grayscale(.7)}",
-      ".meta-btn{background:#2c4a8a;color:#fff;border:1px solid #4a74c9;border-radius:10px;padding:8px 13px;font-size:13.5px;cursor:pointer}",
+      ".meta-btn{background:#2c4a8a;color:#fff;border:1px solid #4a74c9;border-radius:10px;padding:8px 13px;font-size:13.5px;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center}",
       ".meta-btn.ghosty{background:#141e36;color:#aebadd;border-color:#26355c}",
       ".meta-btnrow{display:flex;flex-wrap:wrap;gap:8px}",
       ".snd-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#121b31;border:1px solid #22345e;border-radius:12px;padding:10px 12px;margin:0 0 8px;color:#e8ecf6;cursor:pointer;font-size:14.5px}",
@@ -66196,12 +66355,12 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       ".meta-ghost-chip{position:absolute;top:calc(env(safe-area-inset-top,0px) + 106px);left:50%;transform:translateX(-50%);z-index:60;pointer-events:none;background:rgba(10,16,30,.92);border:1px solid #4a74c9;border-radius:13px;padding:8px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;color:#e8ecf6;box-shadow:0 8px 24px rgba(0,0,0,.45);max-width:92%}",
       ".mgc-state.ahead{color:#6fe3a1;font-weight:700}.mgc-state.behind{color:#f08a8a}.mgc-state.tied{color:#ffd97a}",
       "#metaProfileRoot .meta-card{margin-top:10px}",
-      ".lobby-tools{margin:0 0 12px;background:rgba(9,13,26,.62);border:1px solid #2c3d68;border-radius:15px;padding:12px;color:#e8ecf6}",
+      ".lobby-tools{margin:0 0 12px;background:rgba(9,13,26,.62);border:1px solid #2c3d68;border-radius:15px;padding:12px;color:#e8ecf6;min-width:0}",
       ".lobby-tools .lt-search{width:100%;box-sizing:border-box;background:#0d1425;color:#e8ecf6;border:1px solid #2c3d68;border-radius:11px;padding:10px 13px;font-size:15px}",
       ".lt-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}",
-      ".lt-chip{background:#131e38;color:#aebadd;border:1px solid #26355c;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}",
+      ".lt-chip{background:#131e38;color:#aebadd;border:1px solid #26355c;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:44px;display:inline-flex;align-items:center}",
       ".lt-chip.on{background:#2c4a8a;color:#fff;border-color:#4a74c9}",
-      ".lt-row{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-top:9px;padding-bottom:2px}",
+      ".lt-row{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-top:9px;padding-bottom:2px;min-width:0;max-width:100%}",
       ".lt-chip{white-space:nowrap;flex:0 0 auto}",
       ".lt-today{background:linear-gradient(135deg,#1a2a52,#14263f);border:1px solid #3c5ea8;border-radius:14px;padding:12px 14px;margin-top:10px;box-shadow:0 14px 34px rgba(0,0,0,.45)}",
       ".lt-today #ltTodayGo{min-width:52px;min-height:52px;font-size:19px;border-radius:12px}",
@@ -69645,14 +69804,27 @@ window.__BN_VIEW__ = {
    Public surface (also the probe hooks):
      window.__arcadeMasterVol()      -> effective gain 0..1
      window.__arcadeSetMaster(volPercent, muted?)
-     window.__arcadeSettingsState()  -> {vol, muted, loaded, contexts}
+     window.__arcadeSettingsState()  -> {vol, muted, loaded, contexts, + comfort fields}
      window.__arcadeSettingsOpen() / __arcadeSettingsClose()
      window.__arcadeOnMasterChange(cb)
+     window.__arcadeComfort         -> live comfort snapshot (module 66)
+
+   UI/UX ROUND ADDITION (2026-11-16): this panel is also the home
+   of the C-9 material themes and the C-11 comfort pack — theme
+   (standard / casino felt / brass & wood), large text, flashing
+   off, vibration strength, colour-vision care. Same device-local
+   key, same never-synced rule; older saves ({vol, muted} only)
+   load with comfort defaults. Effects live in module 66 (token
+   bundles + comfort classes on <html>); this module owns state,
+   persistence and the panel. Vibration is fitted by wrapping
+   navigator.vibrate once and scaling patterns by the setting.
    ============================================================ */
 (function () {
   "use strict";
   var KEY = "arcade-settings-v1";
-  var state = { vol: 0, muted: false, loaded: false };
+  var THEMES = ["standard", "felt", "brass"];
+  var VIBS = ["off", "std", "strong"];
+  var state = { vol: 0, muted: false, loaded: false, theme: "standard", textLarge: false, noFlash: false, vibrate: "std", colorCare: false };
   try {
     var raw = localStorage.getItem(KEY);
     if (raw) {
@@ -69661,13 +69833,55 @@ window.__BN_VIEW__ = {
         state.vol = Math.max(0, Math.min(100, Math.round(p.vol)));
         state.muted = !!p.muted;
         state.loaded = true;
+        if (THEMES.indexOf(p.theme) >= 0) state.theme = p.theme;
+        state.textLarge = !!p.textLarge;
+        state.noFlash = !!p.noFlash;
+        if (VIBS.indexOf(p.vibrate) >= 0) state.vibrate = p.vibrate;
+        state.colorCare = !!p.colorCare;
       }
     }
   } catch (e) {}
   function effective() { return state.muted ? 0 : state.vol / 100; }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({ vol: state.vol, muted: state.muted })); state.loaded = true; } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ vol: state.vol, muted: state.muted, theme: state.theme, textLarge: state.textLarge, noFlash: state.noFlash, vibrate: state.vibrate, colorCare: state.colorCare })); state.loaded = true; } catch (e) {}
   }
+
+  /* ---------------- comfort + theme application ---------------- */
+  var vibOrig = null;
+  function applyVibrate() {
+    try {
+      if (!("vibrate" in navigator)) return;
+      if (!vibOrig) vibOrig = navigator.vibrate.bind(navigator);
+      navigator.vibrate = function (pattern) {
+        if (state.vibrate === "off") return false;
+        if (state.vibrate === "strong") {
+          var sc = function (n) { return Math.round(n * 1.6); };
+          pattern = Array.isArray(pattern) ? pattern.map(sc) : sc(pattern || 0);
+        }
+        try { return vibOrig(pattern); } catch (e) { return false; }
+      };
+    } catch (e) {}
+  }
+  function applyComfort() {
+    var root = document.documentElement;
+    if (state.theme === "standard") root.removeAttribute("data-mat-theme");
+    else root.setAttribute("data-mat-theme", state.theme);
+    root.classList.toggle("a11y-lg", !!state.textLarge);
+    root.classList.toggle("no-flash", !!state.noFlash);
+    root.classList.toggle("a11y-cbc", !!state.colorCare);
+    window.__arcadeComfort = { theme: state.theme, textLarge: state.textLarge, noFlash: state.noFlash, vibrate: state.vibrate, colorCare: state.colorCare };
+    applyVibrate();
+  }
+  function setComfort(patch) {
+    if (!patch) return;
+    if (THEMES.indexOf(patch.theme) >= 0) state.theme = patch.theme;
+    if (typeof patch.textLarge === "boolean") state.textLarge = patch.textLarge;
+    if (typeof patch.noFlash === "boolean") state.noFlash = patch.noFlash;
+    if (VIBS.indexOf(patch.vibrate) >= 0) state.vibrate = patch.vibrate;
+    if (typeof patch.colorCare === "boolean") state.colorCare = patch.colorCare;
+    save(); applyComfort(); syncPanel();
+  }
+  window.__arcadeSetComfort = setComfort;
 
   /* ---------------- master gain fitting ---------------- */
   var contexts = [];
@@ -69725,18 +69939,34 @@ window.__BN_VIEW__ = {
   window.__arcadeSetMaster = setMaster;
   window.__arcadeOnMasterChange = function (cb) { if (typeof cb === "function") listeners.push(cb); };
   window.__arcadeSettingsState = function () {
-    return { vol: state.vol, muted: state.muted, loaded: state.loaded, contexts: contexts.length };
+    return { vol: state.vol, muted: state.muted, loaded: state.loaded, contexts: contexts.length, theme: state.theme, textLarge: state.textLarge, noFlash: state.noFlash, vibrate: state.vibrate, colorCare: state.colorCare };
   };
 
   /* ---------------- strings (self-contained, module 61 pattern) ---------------- */
   var STR = {
     settings: { ja: "設定", en: "Settings", ko: "설정", zh: "设置", zht: "設定", es: "Ajustes", fr: "Paramètres", de: "Einstellungen", pt: "Configurações", it: "Impostazioni" },
     masterVolume: { ja: "全体の音量", en: "Master Volume", ko: "전체 음량", zh: "总音量", zht: "整體音量", es: "Volumen general", fr: "Volume général", de: "Gesamtlautstärke", pt: "Volume geral", it: "Volume generale" },
-    masterNote: { ja: "すべてのゲーム・ブート・BGMの音量です。この端末にだけ保存されます。", en: "This is the volume for all game boot BGM. It is saved only on this device.", ko: "모든 게임 부트 BGM의 음량입니다. 이 기기에만 저장됩니다.", zh: "所有游戏启动 BGM 的音量。仅保存在此设备中。", zht: "這是所有遊戲啟動背景音樂的音量。僅儲存在此裝置。", es: "Este es el volumen de toda la BGM de arranque de los juegos. Solo se guarda en este dispositivo.", fr: "Volume de toute la BGM de démarrage des jeux. Enregistré uniquement sur cet appareil.", de: "Dies ist die Lautstärke aller Boot-BGM der Spiele. Sie wird nur auf diesem Gerät gespeichert.", pt: "Este é o volume de toda a música de inicialização do jogo. Ele é salvo apenas neste dispositivo.", it: "Volume di tutte le BGM di avvio dei giochi. Salvato solo su questo dispositivo." },
+    masterNote: { ja: "すべてのゲーム・ブート・BGMの音量です。この端末にだけ保存されます。", en: "Adjusts volume for all game sounds, boots, and BGM. Saved only on this device.", ko: "모든 게임, 부팅, 배경음악의 볼륨입니다. 이 기기에만 저장됩니다.", zh: "所有游戏、启动画面和背景音乐的音量。仅保存在此设备上。", zht: "調整所有遊戲、啟動畫面及背景音樂音量。設定僅儲存於本機裝置。", es: "Volumen maestro para efectos, inicio y música. Solo se guarda en este dispositivo.", fr: "Volume général pour le jeu, le démarrage et la musique. Enregistré uniquement sur cet appareil.", de: "Regelt die Lautstärke von Spiel-, Boot- und Hintergrundmusik. Einstellungen werden nur auf diesem Gerät gespeichert.", pt: "Volume geral do jogo e da música de inicialização. Salvo apenas neste dispositivo.", it: "Volume di gioco, boot e BGM. Salvato solo su questo dispositivo." },
     mute: { ja: "ミュート", en: "Mute", ko: "음소거", zh: "静音", zht: "靜音", es: "Silenciar", fr: "Muet", de: "Stummschalten", pt: "Silenciar", it: "Disattiva audio" },
     unmute: { ja: "ミュート解除", en: "Unmute", ko: "음소거 해제", zh: "取消静音", zht: "取消靜音", es: "Activar sonido", fr: "Réactiver le son", de: "Stummschaltung aufheben", pt: "Ativar som", it: "Riattiva audio" },
     close: { ja: "閉じる", en: "Close", ko: "닫기", zh: "关闭", zht: "關閉", es: "Cerrar", fr: "Fermer", de: "Schließen", pt: "Fechar", it: "Chiudi" },
-    openSettings: { ja: "設定を開く", en: "Open Settings", ko: "설정 열기", zh: "打开设置", zht: "開啟設定", es: "Abrir ajustes", fr: "Ouvrir les paramètres", de: "Einstellungen öffnen", pt: "Abrir configurações", it: "Apri impostazioni" }
+    openSettings: { ja: "設定を開く", en: "Open Settings", ko: "설정 열기", zh: "打开设置", zht: "開啟設定", es: "Abrir ajustes", fr: "Ouvrir les paramètres", de: "Einstellungen öffnen", pt: "Abrir configurações", it: "Apri impostazioni" },
+    theme: { ja: "テーマ（素材）", en: "Theme", ko: "테마", zh: "主题（材质）", zht: "主題（素材）", es: "Tema", fr: "Thème (matériaux)", de: "Design", pt: "Tema", it: "Tema" },
+    themeStandard: { ja: "スタンダード", en: "Standard", ko: "표준", zh: "标准", zht: "標準", es: "Estándar", fr: "Standard", de: "Standard", pt: "Padrão", it: "Standard" },
+    themeFelt: { ja: "カジノフェルト", en: "Casino Felt", ko: "카지노 펠트", zh: "赌场毛毡", zht: "賭場絨布", es: "Fieltro de casino", fr: "Feutre de casino", de: "Casinofilz", pt: "Feltro de cassino", it: "Panno da casinò" },
+    themeBrass: { ja: "真鍮と木", en: "Brass & Wood", ko: "황동과 나무", zh: "黄铜与木", zht: "黃銅與木材", es: "Latón y madera", fr: "Laiton et bois", de: "Messing und Holz", pt: "Latão e madeira", it: "Ottone e legno" },
+    comfort: { ja: "快適さ", en: "Comfort", ko: "편의성", zh: "舒适度", zht: "舒適度", es: "Comodidad", fr: "Confort", de: "Komfort", pt: "Conforto", it: "Comfort" },
+    textSize: { ja: "文字の大きさ", en: "Text Size", ko: "글자 크기", zh: "字体大小", zht: "文字大小", es: "Tamaño de texto", fr: "Taille du texte", de: "Textgröße", pt: "Tamanho do texto", it: "Dimensioni testo" },
+    sizeStandard: { ja: "標準", en: "Standard", ko: "보통", zh: "标准", zht: "標準", es: "Estándar", fr: "Standard", de: "Standard", pt: "Padrão", it: "Standard" },
+    sizeLarge: { ja: "大きい", en: "Large", ko: "크게", zh: "大", zht: "較大", es: "Grande", fr: "Grand", de: "Groß", pt: "Grande", it: "Grande" },
+    flashOff: { ja: "点滅をオフ", en: "Disable Flashing", ko: "점멸 끄기", zh: "关闭闪烁", zht: "關閉閃爍", es: "Desactivar destellos", fr: "Désactiver le flash", de: "Blinken aus", pt: "Desativar brilho", it: "Disattiva lampeggio" },
+    vibration: { ja: "振動", en: "Vibration", ko: "진동", zh: "振动", zht: "震動", es: "Vibración", fr: "Vibrations", de: "Vibration", pt: "Vibração", it: "Vibrazione" },
+    vibOff: { ja: "オフ", en: "Off", ko: "끄기", zh: "关闭", zht: "關閉", es: "Desactivado", fr: "Désactivé", de: "Aus", pt: "Desligado", it: "Disattivata" },
+    vibStandard: { ja: "標準", en: "Standard", ko: "보통", zh: "标准", zht: "標準", es: "Estándar", fr: "Standard", de: "Standard", pt: "Padrão", it: "Standard" },
+    vibStrong: { ja: "強い", en: "Strong", ko: "강하게", zh: "强", zht: "強烈", es: "Intensa", fr: "Forte", de: "Stark", pt: "Intensa", it: "Forte" },
+    colorCare: { ja: "色覚への配慮", en: "Color Vision Aid", ko: "색약 모드", zh: "色觉辅助", zht: "色彩輔助", es: "Accesibilidad visual", fr: "Accessibilité visuelle", de: "Farbenblindheitsmodus", pt: "Acessibilidade de cor", it: "Accessibilità colori" },
+    on: { ja: "オン", en: "On", ko: "켜기", zh: "开", zht: "開啟", es: "Activado", fr: "Activé", de: "Ein", pt: "Ligado", it: "Attivato" },
+    off: { ja: "オフ", en: "Off", ko: "끄기", zh: "关", zht: "關閉", es: "Desactivado", fr: "Désactivé", de: "Aus", pt: "Desligado", it: "Disattivato" }
   };
   function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
   function L(key) { var e = STR[key]; if (!e) return key; return e[lang()] || e.ja || key; }
@@ -69748,7 +69978,22 @@ window.__BN_VIEW__ = {
     ".subbar .settings-mini:active{transform:scale(.94)}",
     "#settingsOverlay{position:fixed;inset:0;z-index:8600;background:rgba(4,6,12,.55);display:flex;justify-content:flex-end;align-items:flex-start;padding:64px 14px 14px}",
     "#settingsOverlay[hidden]{display:none}",
-    "#settingsPanel{background:#12172a;border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.55);width:min(400px,calc(100vw - 28px));padding:16px 18px 14px;color:#eef1f8}",
+    "#settingsPanel{background:#12172a;border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.55);width:min(400px,calc(100vw - 28px));max-height:calc(100vh - 92px);overflow-y:auto;padding:16px 18px 14px;color:#eef1f8}",
+    ".set-sec{margin-top:16px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}",
+    ".set-sec-t{font-size:13.5px;font-weight:700;margin-bottom:9px}",
+    ".set-swatches{display:flex;gap:8px}",
+    ".set-swatch{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:7px;cursor:pointer;min-height:44px;color:#e8ecf4}",
+    ".set-swatch.on{border-color:#e9b93c;box-shadow:0 0 0 1.5px #e9b93c}",
+    ".sw-prev{display:block;height:30px;border-radius:7px;overflow:hidden;margin-bottom:6px}",
+    ".sw-prev i{display:block;height:8px}",
+    ".sw-prev b{display:block;width:12px;height:12px;border-radius:50%;margin:5px auto 0}",
+    ".set-swatch .sw-name{font-size:12px;font-weight:700;display:block}",
+    ".set-seg{display:flex;gap:6px;flex:1}",
+    ".set-seg button{flex:1;min-height:44px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#e8ecf4;border-radius:10px;font-size:13px;cursor:pointer;padding:6px 4px}",
+    ".set-seg button.on{background:#2c4a8a;border-color:#4a74c9;color:#fff;font-weight:800}",
+    ".set-toggle{min-width:78px;min-height:44px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#e8ecf4;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;flex:none}",
+    ".set-toggle.on{background:#2c4a8a;border-color:#4a74c9;color:#fff}",
+    ".set-row .set-lab{font-size:13.5px;font-weight:600;flex:1}",
     "#settingsPanel h2{margin:0 0 4px;font-size:17px;letter-spacing:.02em;display:flex;align-items:center;gap:8px}",
     "#settingsPanel .set-close{margin-left:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#e8ecf4;border-radius:999px;min-width:36px;height:36px;font-size:15px;cursor:pointer}",
     ".set-row{display:flex;align-items:center;gap:10px;margin-top:14px}",
@@ -69766,6 +70011,7 @@ window.__BN_VIEW__ = {
 
   /* ---------------- panel ---------------- */
   var overlay = null, slider = null, valEl = null, muteBtn = null, titleEl = null, labelEl = null, noteEl = null, closeBtn = null;
+  var swatches = null, textSegBtns = null, vibSegBtns = null, flashBtn = null, colorBtn = null;
   function buildPanel() {
     if (overlay) return;
     overlay = document.createElement("div");
@@ -69781,6 +70027,20 @@ window.__BN_VIEW__ = {
       '<button type="button" class="set-mute" id="setMuteBtn" aria-label="Mute">🔊</button>' +
       '<input type="range" class="set-vol" id="setVolRange" min="0" max="100" step="1" value="0">' +
       '<span class="set-val" id="setVolVal">0%</span></div>' +
+      '<div class="set-sec"><div class="set-sec-t" id="setThemeT"></div>' +
+      '<div class="set-swatches" id="setSwatches">' +
+      '<button type="button" class="set-swatch" data-theme="standard" aria-pressed="true"><span class="sw-prev" style="background:var(--p-ink-850,#12172a)"><i style="background:var(--p-line-400,#4a74c9)"></i><b style="background:var(--p-gold-400,#e9b93c)"></b></span><span class="sw-name" data-k="themeStandard"></span></button>' +
+      '<button type="button" class="set-swatch" data-theme="felt" aria-pressed="false"><span class="sw-prev" style="background:var(--p-felt-900,#0e2a1e)"><i style="background:#d9a441"></i><b style="background:var(--p-felt-600,#1e7a4c)"></b></span><span class="sw-name" data-k="themeFelt"></span></button>' +
+      '<button type="button" class="set-swatch" data-theme="brass" aria-pressed="false"><span class="sw-prev" style="background:var(--p-wood-900,#241708)"><i style="background:var(--p-gold-400,#e9b93c)"></i><b style="background:var(--p-wood-600,#96622a)"></b></span><span class="sw-name" data-k="themeBrass"></span></button>' +
+      '</div></div>' +
+      '<div class="set-sec"><div class="set-sec-t" id="setComfortT"></div>' +
+      '<div class="set-row"><span class="set-lab" id="setTextSizeLab"></span><span class="set-seg" id="setTextSeg">' +
+      '<button type="button" data-v="std" aria-pressed="true"></button><button type="button" data-v="large" aria-pressed="false"></button></span></div>' +
+      '<div class="set-row"><span class="set-lab" id="setFlashLab"></span><button type="button" class="set-toggle" id="setFlashBtn" aria-pressed="false"></button></div>' +
+      '<div class="set-row"><span class="set-lab" id="setVibLab"></span><span class="set-seg" id="setVibSeg">' +
+      '<button type="button" data-v="off" aria-pressed="false"></button><button type="button" data-v="std" aria-pressed="true"></button><button type="button" data-v="strong" aria-pressed="false"></button></span></div>' +
+      '<div class="set-row"><span class="set-lab" id="setColorLab"></span><button type="button" class="set-toggle" id="setColorBtn" aria-pressed="false"></button></div>' +
+      '</div>' +
       '<p class="set-note"></p></div>';
     document.body.appendChild(overlay);
     slider = overlay.querySelector("#setVolRange");
@@ -69790,6 +70050,16 @@ window.__BN_VIEW__ = {
     labelEl = overlay.querySelector(".set-label");
     noteEl = overlay.querySelector(".set-note");
     closeBtn = overlay.querySelector(".set-close");
+    swatches = overlay.querySelectorAll(".set-swatch");
+    swatches.forEach(function (b) { b.addEventListener("click", function () { setComfort({ theme: b.getAttribute("data-theme") }); }); });
+    textSegBtns = overlay.querySelectorAll("#setTextSeg button");
+    textSegBtns.forEach(function (b) { b.addEventListener("click", function () { setComfort({ textLarge: b.getAttribute("data-v") === "large" }); }); });
+    vibSegBtns = overlay.querySelectorAll("#setVibSeg button");
+    vibSegBtns.forEach(function (b) { b.addEventListener("click", function () { setComfort({ vibrate: b.getAttribute("data-v") }); }); });
+    flashBtn = overlay.querySelector("#setFlashBtn");
+    flashBtn.addEventListener("click", function () { setComfort({ noFlash: !state.noFlash }); });
+    colorBtn = overlay.querySelector("#setColorBtn");
+    colorBtn.addEventListener("click", function () { setComfort({ colorCare: !state.colorCare }); });
     slider.addEventListener("input", function () {
       var v = parseInt(slider.value, 10) || 0;
       setMaster(v, v === 0 ? state.muted : false);
@@ -69811,6 +70081,18 @@ window.__BN_VIEW__ = {
     muteBtn.setAttribute("aria-label", state.muted ? L("unmute") : L("mute"));
     if (document.activeElement !== slider) slider.value = String(state.vol);
     valEl.textContent = (state.muted ? "0" : state.vol) + "%";
+    var tT = overlay.querySelector("#setThemeT"); if (tT) tT.textContent = L("theme");
+    var cT = overlay.querySelector("#setComfortT"); if (cT) cT.textContent = L("comfort");
+    overlay.querySelectorAll(".sw-name").forEach(function (s) { s.textContent = L(s.getAttribute("data-k")); });
+    if (swatches) swatches.forEach(function (b) { var on = b.getAttribute("data-theme") === state.theme; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+    var tsl = overlay.querySelector("#setTextSizeLab"); if (tsl) tsl.textContent = L("textSize");
+    if (textSegBtns) textSegBtns.forEach(function (b) { var isLarge = b.getAttribute("data-v") === "large"; b.textContent = L(isLarge ? "sizeLarge" : "sizeStandard"); var on = isLarge === !!state.textLarge; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+    var fll = overlay.querySelector("#setFlashLab"); if (fll) fll.textContent = L("flashOff");
+    if (flashBtn) { flashBtn.textContent = L(state.noFlash ? "on" : "off"); flashBtn.classList.toggle("on", !!state.noFlash); flashBtn.setAttribute("aria-pressed", state.noFlash ? "true" : "false"); }
+    var vbl = overlay.querySelector("#setVibLab"); if (vbl) vbl.textContent = L("vibration");
+    if (vibSegBtns) vibSegBtns.forEach(function (b) { var v = b.getAttribute("data-v"); b.textContent = L(v === "off" ? "vibOff" : v === "strong" ? "vibStrong" : "vibStandard"); var on = v === state.vibrate; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+    var cll = overlay.querySelector("#setColorLab"); if (cll) cll.textContent = L("colorCare");
+    if (colorBtn) { colorBtn.textContent = L(state.colorCare ? "on" : "off"); colorBtn.classList.toggle("on", !!state.colorCare); colorBtn.setAttribute("aria-pressed", state.colorCare ? "true" : "false"); }
   }
   function openPanel() { buildPanel(); syncPanel(); overlay.hidden = false; try { slider.focus({ preventScroll: true }); } catch (e) {} }
   function closePanel() { if (overlay) overlay.hidden = true; }
@@ -69838,6 +70120,7 @@ window.__BN_VIEW__ = {
       bars[i].appendChild(btn);
     }
   }
+  applyComfort();
   bindLobbyButton();
   injectSubbarButtons();
   // Views can be re-rendered rarely; one late re-inject pass is cheap insurance.
@@ -70691,6 +70974,273 @@ window.__BN_VIEW__ = {
     applyCosmetics: applyCosmetics, enter: enter, ctl: ctl,
     els: function () { return { view: viewEl, canvas: els.canvas, chip: els.chip, root: root }; }
   };
+})();
+</script>
+<script>/* ============================================================
+   Module 66 — UI/UX top-quality round (2026-11-16, office #370).
+
+   1. DESIGN TOKENS, three layers (primitive -> semantic ->
+      component) as CSS custom properties. Components consume
+      SEMANTIC tokens only. The dark chrome surfaces (lobby tools,
+      meta cards, settings panel, turntable) are re-pointed at the
+      tokens; the standard theme's values are the app's existing
+      colours, so nothing changes visually until a theme is picked.
+      Background family: #070A12.
+   2. MATERIAL THEMES (idea C-9): felt / brass token bundles on
+      <html data-mat-theme>. A theme is a material set — surface
+      weave, trim metal, glow colour — applied to the chrome only,
+      never to a game board. The settings panel (module 64) owns
+      the picker; its swatches are painted with the live tokens,
+      which is the preview.
+   3. COMFORT PACK CSS (idea C-11): the state lives in module 64;
+      this module ships the effects —
+        html.a11y-lg    large text (shared prose/components +15%)
+        html.no-flash   flashing off (win-glow pulse, simon pad
+                        flashes, cabinet lamps, laser blinks stop;
+                        slow idle motion is NOT flashing and stays)
+        html.a11y-cbc   colour-vision care (Okabe-Ito accent swap
+                        + shape/text redundancy on state chips)
+   4. LOBBY STREET (idea C-8): genre heads become hanging signs,
+      each genre group gets a pool of light, and a NOW SHOWING
+      marquee band (today's pick, computed from the same play-count
+      store module 60 uses) tops the street. Tile arrangement and
+      per-tile motions are untouched.
+   5. TAP-TARGET FLOOR: shared interactive classes whose own rules
+      measured under 44px get a 44px floor here (BN-147 lists the
+      before/after numbers).
+
+   No game logic, no save keys, no points, no economy. Style plus
+   one marquee node. Gesture-claiming: none added.
+   ============================================================ */
+(function () {
+  "use strict";
+
+  var css = [
+    /* ---------- 1. tokens: primitive -> semantic -> component ---------- */
+    ":root{",
+    "  --p-ink-950:#070a12; --p-ink-900:#0d1425; --p-ink-850:#12172a; --p-ink-800:#131e38; --p-ink-700:#2c4a8a;",
+    "  --p-line-600:#26355c; --p-line-400:#4a74c9;",
+    "  --p-paper-50:#eef1f8; --p-paper-300:#aebadd; --p-paper-500:#8494b8;",
+    "  --p-gold-400:#e9b93c; --p-gold-300:#ffd166; --p-spot-500:#1db954; --p-danger-400:#ef5d60;",
+    "  --p-felt-900:#0e2a1e; --p-felt-800:#14382a; --p-felt-600:#1e7a4c; --p-felt-line:#2c5c46;",
+    "  --p-wood-900:#241708; --p-wood-800:#33200d; --p-wood-600:#96622a; --p-wood-line:#6e451c;",
+    "  --surface-base:var(--p-ink-950); --surface-panel:var(--p-ink-850); --surface-raised:var(--p-ink-800); --surface-accent:var(--p-ink-700);",
+    "  --border-soft:var(--p-line-600); --border-strong:var(--p-line-400);",
+    "  --text-hi:var(--p-paper-50); --text-mid:var(--p-paper-300); --text-dim:var(--p-paper-500);",
+    "  --accent:var(--p-gold-400); --accent-hi:var(--p-gold-300); --accent-live:var(--p-spot-500); --danger:var(--p-danger-400);",
+    "  --trim:var(--p-line-400); --glow:rgba(74,116,201,.35); --weave:none;",
+    "  --btn-primary-bg:var(--surface-accent); --btn-primary-border:var(--border-strong);",
+    "  --chip-bg:var(--surface-raised); --chip-border:var(--border-soft); --chip-on-bg:var(--surface-accent);",
+    "  --panel-bg:var(--surface-panel); --panel-border:var(--border-soft);",
+    "}",
+    /* colour-vision care: Okabe-Ito accents (colour + shape, never colour alone) */
+    "html.a11y-cbc{ --accent:#e69f00; --accent-hi:#f0c040; --accent-live:#009e73; --danger:#d55e00; --border-strong:#0072b2; --trim:#0072b2; --glow:rgba(0,114,178,.35); }",
+    "html.a11y-cbc .lt-chip.on{ box-shadow:inset 0 -3px 0 var(--accent-hi); font-weight:800; }",
+    "html.a11y-cbc .meta-btn{ text-decoration:underline; text-underline-offset:3px; }",
+
+    /* ---------- 2. material themes (chrome only, never boards) ---------- */
+    "html[data-mat-theme='felt']{ --surface-panel:var(--p-felt-900); --surface-raised:var(--p-felt-800); --surface-accent:var(--p-felt-600); --border-soft:var(--p-felt-line); --border-strong:#d9a441; --trim:#d9a441; --glow:rgba(217,164,65,.30); --weave:repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 2px, transparent 2px 4px), repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 2px, transparent 2px 4px); }",
+    "html[data-mat-theme='brass']{ --surface-panel:var(--p-wood-900); --surface-raised:var(--p-wood-800); --surface-accent:var(--p-wood-600); --border-soft:var(--p-wood-line); --border-strong:#e8b93c; --trim:#e8b93c; --glow:rgba(232,185,60,.32); --weave:repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 2px, transparent 2px 5px); }",
+    ".lobby-tools, .meta-card{ background-color:var(--surface-panel); background-image:var(--weave); border-color:var(--border-soft); box-shadow:0 0 24px var(--glow); }",
+    "#settingsPanel{ background-color:var(--surface-panel); background-image:var(--weave); border-color:var(--border-soft); }",
+    ".lt-chip{ background:var(--chip-bg); border-color:var(--chip-border); }",
+    ".lt-chip.on{ background:var(--chip-on-bg); border-color:var(--border-strong); }",
+    ".meta-btn{ background:var(--btn-primary-bg); border-color:var(--btn-primary-border); }",
+
+    /* ---------- 3. comfort: large text ---------- */
+    "html.a11y-lg .game-tile .sub{ font-size:15px; line-height:1.7; }",
+    "html.a11y-lg .game-tile h2{ font-size:19px; }",
+    "html.a11y-lg .lt-chip{ font-size:14.5px; }",
+    "html.a11y-lg .meta-btn{ font-size:15px; }",
+    "html.a11y-lg .set-note{ font-size:13.5px; line-height:1.7; }",
+    "html.a11y-lg #settingsPanel .set-row label{ font-size:15px; }",
+    "html.a11y-lg .cz-msg{ font-size:16px; line-height:1.7; }",
+    "html.a11y-lg .cz-betinfo{ font-size:14.5px; line-height:1.7; }",
+    "html.a11y-lg .note{ font-size:13.5px; line-height:1.7; }",
+    "html.a11y-lg .feat li{ font-size:15px; line-height:1.7; }",
+    "html.a11y-lg .lib-body, html.a11y-lg .bn-article{ font-size:16.5px; line-height:1.8; }",
+
+    /* ---------- 3b. comfort: flashing off (rapid luminance oscillation only) ---------- */
+    "html.no-flash .wg-win{ animation:none !important; }",
+    "html.no-flash #tileGrid .glyph-sim i{ animation:none !important; }",
+    "html.no-flash #tileGrid .glyph-vp::before{ animation:none !important; opacity:0 !important; }",
+    "html.no-flash #tileGrid .glyph-sho::after{ animation:none !important; opacity:0 !important; }",
+    "html.no-flash #tileGrid .glyph-mns{ animation:none !important; }",
+    "@media (prefers-reduced-motion: reduce){ .street-band .sb-dot{ animation:none !important; } }",
+
+    /* ---------- 4. lobby street ---------- */
+    ".genre-group{ position:relative; }",
+    ".genre-group::before{ content:''; position:absolute; left:50%; top:-6px; width:min(680px,92%); height:120px; transform:translateX(-50%); background:radial-gradient(50% 100% at 50% 0%, rgba(255,205,110,.13), rgba(255,205,110,0) 70%); pointer-events:none; }",
+    ".genre-head{ position:relative; background:linear-gradient(168deg, #1a2440, #0d1425); border:1px solid var(--border-soft); border-radius:11px; padding:9px 14px 10px; box-shadow:0 6px 14px rgba(2,6,18,.35), inset 0 1px 0 rgba(255,255,255,.08), 0 0 18px var(--glow); }",
+    ".genre-head::before{ content:''; position:absolute; left:14px; right:14px; top:0; height:3px; border-radius:0 0 3px 3px; background:linear-gradient(90deg, transparent, var(--trim), transparent); opacity:.85; }",
+    ".genre-head .genre-name{ color:var(--text-hi); letter-spacing:.04em; }",
+    ".genre-head .genre-count{ background:linear-gradient(160deg, #f2c14e, #c8922a); color:#3a2703; border-radius:7px; padding:1px 8px; box-shadow:inset 0 -2px 3px rgba(110,70,0,.45), inset 0 1px 2px rgba(255,255,255,.6); }",
+    ".street-band{ display:flex; align-items:center; gap:10px; margin:0 0 12px; padding:10px 14px; border-radius:13px; background:linear-gradient(168deg, #1a2440, #0d1425); border:1px solid var(--border-soft); color:var(--text-hi); box-shadow:0 6px 14px rgba(2,6,18,.35), 0 0 18px var(--glow); min-width:0; }",
+    ".street-band .sb-tag{ flex:none; font-size:10.5px; font-weight:900; letter-spacing:.14em; color:#0d1425; background:linear-gradient(160deg, #ffd166, #e8a91c); border-radius:6px; padding:3px 7px; box-shadow:inset 0 -2px 3px rgba(120,78,0,.4); }",
+    ".street-band .sb-dot{ flex:none; width:8px; height:8px; border-radius:50%; background:var(--accent-live); box-shadow:0 0 8px var(--accent-live); animation:sbPulse 2.2s ease-in-out infinite; }",
+    "@keyframes sbPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }",
+    "html.no-flash .street-band .sb-dot{ animation:none !important; }",
+    ".street-band .sb-title{ font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }",
+    ".street-band .sb-reason{ color:var(--text-mid); font-size:12px; white-space:nowrap; }",
+    ".street-band .sb-go{ margin-left:auto; flex:none; min-height:44px; display:inline-flex; align-items:center; background:var(--surface-accent); color:#fff; border:1px solid var(--border-strong); border-radius:10px; padding:8px 14px; font-size:13.5px; font-weight:700; cursor:pointer; }",
+    "@media (max-width:560px){ .street-band .sb-reason{ display:none; } }",
+
+    /* ---------- 5. tap-target floor for shared components ---------- */
+    ".back-btn{ min-height:44px; min-width:44px; }",
+    ".subbar .settings-mini{ min-width:44px; height:44px; }",
+    "#settingsPanel .set-close{ min-width:44px; height:44px; }",
+    ".tt-btn{ min-height:44px; }",
+
+    /* ---------- 6. play-area fill (wide screens): stages take the
+       space the screen offers, like the billiards fix did. Game
+       logic and the Rubik's manipulation parameters are untouched —
+       only boxes and rails move. ---------- */
+    "@media (min-width:900px){",
+    "  #rubikRoot .rb-inner{ max-width:780px; }",
+    "  #rubikRoot .rb-canvas-wrap{ max-width:680px; max-height:74vh; }",
+    "  .w3-wrap{ width:min(94vw, 560px); }",
+    "  .snk-root{ display:grid; grid-template-columns:1fr 92px; grid-template-rows:auto auto 1fr auto; grid-template-areas:'diff diff' 'hud hud' 'stage pad' 'note note'; column-gap:10px; }",
+    "  .snk-root #snkDiffSlot{ grid-area:diff; }",
+    "  .snk-root .w1-hud{ grid-area:hud; }",
+    "  .snk-root .snk-stage{ grid-area:stage; }",
+    "  .snk-root .snk-pad{ grid-area:pad; margin-top:0; align-self:center; }",
+    "  .snk-root .snk-pad-row{ flex-direction:column; }",
+    "  .snk-root .w1-note{ grid-area:note; }",
+    "  .sho-root{ display:grid; grid-template-columns:158px 1fr; grid-template-rows:auto auto 1fr; grid-template-areas:'diff diff' 'hud stage' 'note stage'; column-gap:12px; }",
+    "  .sho-root #shoDiffSlot{ grid-area:diff; }",
+    "  .sho-root .w1-hud{ grid-area:hud; flex-direction:column; align-items:stretch; gap:8px; }",
+    "  .sho-root .w3-stage{ grid-area:stage; }",
+    "  .sho-root .w1-note{ grid-area:note; }",
+    "}",
+    /* ---------- 7. expansion views on the dark token theme
+       (2026-11-16 real-device report): the six EXP subviews
+       (gacha / trophy / album / my room / league / VIP) still wore
+       the legacy light "clay" subview theme — pale lavender page,
+       white cards — floating off the dark app. Scoped to those
+       six view ids ONLY: the profile / points / ranking subviews
+       keep their established clay look. Everything below reads
+       the token vars, so the material themes apply here too.
+       The my-room diorama and the gacha machine are artwork and
+       keep their own colours; only the page, frame and chrome
+       convert. ---------- */
+    "#gachaView,#trophyView,#albumView,#myroomView,#leagueView,#vipView{ background:linear-gradient(170deg,var(--surface-base),var(--surface-panel)); color:var(--text-hi); }",
+    "#gachaView .subbar,#trophyView .subbar,#albumView .subbar,#myroomView .subbar,#leagueView .subbar,#vipView .subbar{ background:var(--surface-panel); border-bottom:1px solid var(--border-soft); }",
+    "#gachaView .subbar .gname,#trophyView .subbar .gname,#albumView .subbar .gname,#myroomView .subbar .gname,#leagueView .subbar .gname,#vipView .subbar .gname{ color:var(--text-hi); }",
+    "#gachaView .back-btn,#trophyView .back-btn,#albumView .back-btn,#myroomView .back-btn,#leagueView .back-btn,#vipView .back-btn{ background:var(--surface-raised); color:var(--text-hi); border:1px solid var(--border-soft); box-shadow:none; }",
+    "#gachaView .pts-card,#trophyView .pts-card,#albumView .pts-card,#myroomView .pts-card,#leagueView .pts-card,#vipView .pts-card{ background:var(--panel-bg); border:1px solid var(--border-soft); box-shadow:0 10px 24px rgba(0,0,0,.35); color:var(--text-hi); }",
+    "#gachaView .pts-h,#trophyView .pts-h,#albumView .pts-h,#myroomView .pts-h,#leagueView .pts-h,#vipView .pts-h{ color:var(--text-hi); }",
+    "#gachaView .pts-stat,#trophyView .pts-stat,#albumView .pts-stat,#myroomView .pts-stat,#leagueView .pts-stat,#vipView .pts-stat{ background:var(--surface-raised); }",
+    "#gachaView .pts-stat-label,#trophyView .pts-stat-label,#albumView .pts-stat-label,#myroomView .pts-stat-label,#leagueView .pts-stat-label,#vipView .pts-stat-label{ color:var(--text-mid); }",
+    "#gachaView .pts-stat-val,#trophyView .pts-stat-val,#albumView .pts-stat-val,#myroomView .pts-stat-val,#leagueView .pts-stat-val,#vipView .pts-stat-val{ color:var(--text-hi); }",
+    "#gachaView .pts-stat-val .pts-rank,#trophyView .pts-stat-val .pts-rank,#albumView .pts-stat-val .pts-rank,#myroomView .pts-stat-val .pts-rank,#leagueView .pts-stat-val .pts-rank,#vipView .pts-stat-val .pts-rank{ background:var(--surface-accent); color:var(--text-hi); }",
+    "#gachaView .pts-next,#trophyView .pts-next,#albumView .pts-next,#myroomView .pts-next,#leagueView .pts-next,#vipView .pts-next{ color:var(--text-mid); }",
+    "#gachaView .pts-track,#trophyView .pts-track,#albumView .pts-track,#myroomView .pts-track,#leagueView .pts-track,#vipView .pts-track{ background:var(--surface-accent); }",
+    "#gachaView .pts-item,#trophyView .pts-item,#albumView .pts-item,#myroomView .pts-item,#leagueView .pts-item,#vipView .pts-item{ background:var(--surface-raised); border-color:var(--border-soft); box-shadow:none; }",
+    "#gachaView .pts-item-name,#trophyView .pts-item-name,#albumView .pts-item-name,#myroomView .pts-item-name,#leagueView .pts-item-name,#vipView .pts-item-name{ color:var(--text-hi); }",
+    "#gachaView .pts-item-price,#trophyView .pts-item-price,#albumView .pts-item-price,#myroomView .pts-item-price,#leagueView .pts-item-price,#vipView .pts-item-price{ color:var(--text-mid); }",
+    "#gachaView .exp-note,#trophyView .exp-note,#albumView .exp-note,#myroomView .exp-note,#leagueView .exp-note,#vipView .exp-note{ color:var(--text-mid); }",
+    "#gachaView .exp-h,#trophyView .exp-h,#albumView .exp-h,#myroomView .exp-h,#leagueView .exp-h,#vipView .exp-h{ color:var(--text-hi); }",
+    "#gachaView .exp-rate,#trophyView .exp-rate,#albumView .exp-rate,#myroomView .exp-rate,#leagueView .exp-rate,#vipView .exp-rate{ background:var(--surface-accent); color:var(--text-hi); }",
+    "#gachaView .exp-rate.rare,#trophyView .exp-rate.rare,#albumView .exp-rate.rare,#myroomView .exp-rate.rare,#leagueView .exp-rate.rare,#vipView .exp-rate.rare{ background:#0c4a6e; color:#bae6fd; }",
+    "#gachaView .exp-rate.super,#trophyView .exp-rate.super,#albumView .exp-rate.super,#myroomView .exp-rate.super,#leagueView .exp-rate.super,#vipView .exp-rate.super{ background:#713f12; color:#fde68a; }",
+    "#gachaView .exp-cell,#trophyView .exp-cell,#albumView .exp-cell,#myroomView .exp-cell,#leagueView .exp-cell,#vipView .exp-cell{ background:var(--surface-raised); border-color:var(--border-soft); color:var(--text-hi); }",
+    "#gachaView .exp-cell-sub,#trophyView .exp-cell-sub,#albumView .exp-cell-sub,#myroomView .exp-cell-sub,#leagueView .exp-cell-sub,#vipView .exp-cell-sub{ color:var(--text-mid); }",
+    "#gachaView .rung,#trophyView .rung,#albumView .rung,#myroomView .rung,#leagueView .rung,#vipView .rung{ background:var(--surface-raised); border-color:var(--border-soft); color:var(--text-hi); }",
+    "#gachaView .rung.unlocked,#trophyView .rung.unlocked,#albumView .rung.unlocked,#myroomView .rung.unlocked,#leagueView .rung.unlocked,#vipView .rung.unlocked{ background:#2a2113; border-color:#e9b93c; }",
+    "#gachaView .rung .rung-ic,#trophyView .rung .rung-ic,#albumView .rung .rung-ic,#myroomView .rung .rung-ic,#leagueView .rung .rung-ic,#vipView .rung .rung-ic{ background:var(--surface-accent); }",
+    "#gachaView .rung-bar,#trophyView .rung-bar,#albumView .rung-bar,#myroomView .rung-bar,#leagueView .rung-bar,#vipView .rung-bar{ background:var(--surface-accent); }",
+    "#gachaView .rung-desc,#trophyView .rung-desc,#albumView .rung-desc,#myroomView .rung-desc,#leagueView .rung-desc,#vipView .rung-desc{ color:var(--text-mid); }",
+    "#gachaView .rung-title,#trophyView .rung-title,#albumView .rung-title,#myroomView .rung-title,#leagueView .rung-title,#vipView .rung-title{ color:#fbbf24; }",
+    "#gachaView .mem-item,#trophyView .mem-item,#albumView .mem-item,#myroomView .mem-item,#leagueView .mem-item,#vipView .mem-item{ background:#2a2113; color:var(--text-hi); }",
+    "#gachaView .mem-date,#trophyView .mem-date,#albumView .mem-date,#myroomView .mem-date,#leagueView .mem-date,#vipView .mem-date{ color:var(--text-mid); }",
+    "#gachaView .mem-detail,#trophyView .mem-detail,#albumView .mem-detail,#myroomView .mem-detail,#leagueView .mem-detail,#vipView .mem-detail{ color:var(--text-mid); }",
+    "#leagueView .league-game-card{ padding:12px 14px; }",
+    "#gachaView .league-card,#trophyView .league-card,#albumView .league-card,#myroomView .league-card,#leagueView .league-card,#vipView .league-card{ background:var(--surface-raised); border-color:var(--border-soft); color:var(--text-hi); }",
+    "#leagueView .league-card{ margin-bottom:0; }",
+    "#gachaView .lg-best,#trophyView .lg-best,#albumView .lg-best,#myroomView .lg-best,#leagueView .lg-best,#vipView .lg-best{ color:var(--text-mid); }",
+    "#gachaView .pts-btn.equip,#trophyView .pts-btn.equip,#albumView .pts-btn.equip,#myroomView .pts-btn.equip,#leagueView .pts-btn.equip,#vipView .pts-btn.equip{ background:#ffd94d; color:#37220a; }",
+    "#gachaView .pts-btn.unequip,#trophyView .pts-btn.unequip,#albumView .pts-btn.unequip,#myroomView .pts-btn.unequip,#leagueView .pts-btn.unequip,#vipView .pts-btn.unequip{ background:#0f9d63; border-color:#0b6e46; color:#ffffff; box-shadow:0 3px 0 #0b6e46; }",
+    "#gachaView .bench-row,#trophyView .bench-row,#albumView .bench-row,#myroomView .bench-row,#leagueView .bench-row,#vipView .bench-row{ border-bottom-color:var(--border-soft); }",
+    "#gachaView .bench-row .bench-name,#trophyView .bench-row .bench-name,#albumView .bench-row .bench-name,#myroomView .bench-row .bench-name,#leagueView .bench-row .bench-name,#vipView .bench-row .bench-name{ color:var(--text-hi); }",
+    "#gachaView .bench-row .bench-prog,#trophyView .bench-row .bench-prog,#albumView .bench-row .bench-prog,#myroomView .bench-row .bench-prog,#leagueView .bench-row .bench-prog,#vipView .bench-row .bench-prog{ color:var(--text-mid); }",
+    "#gachaView .bench-row .bench-ic,#trophyView .bench-row .bench-ic,#albumView .bench-row .bench-ic,#myroomView .bench-row .bench-ic,#leagueView .bench-row .bench-ic,#vipView .bench-row .bench-ic{ color:var(--text-mid); }",
+    "#gachaView .bench-row.done .bench-ic,#trophyView .bench-row.done .bench-ic,#albumView .bench-row.done .bench-ic,#myroomView .bench-row.done .bench-ic,#leagueView .bench-row.done .bench-ic,#vipView .bench-row.done .bench-ic{ color:#4ade80; }",
+    "#myroomView .room-stage{ border-color:var(--border-soft); }",
+    /* ---------- 8. board height fit (2026-11-16 real-device
+       report): boards sized by width alone overflow short panes
+       (iPad split view) — the chess versus board ran 59px past an
+       820px viewport and the gomoku board grew to 1156px at full
+       iPad width, never fully visible. Cap both boards by the
+       viewport height as well; the chessRoot scroller remains as
+       the backstop below the floor. Phone sizes are width-bound
+       and unchanged. ---------- */
+    "#chessRoot.vs-mode #vBoardOuter .board-wrap{ width:min(100%, max(240px, calc(100dvh - 372px))); }",
+    "#gomokuView .gom-board{ width:min(100%, calc(100dvh - 290px)); margin-left:auto; margin-right:auto; }",
+    /* ---------- 9. last target floors (browser audit, final):
+       the lobby top chrome measured under 44px — topbar chips
+       42px, the top action buttons (ranking / shop / settings)
+       33px, the tile favourite star 31px, lobby-tool chips 40px
+       wide. Floors only; glyphs and layout are unchanged (the
+       star's hit box grows invisibly — its button is transparent
+       and anchored to the tile's top-right corner). ---------- */
+    ".remote-chip,.lang-chip,.pf-chip{ min-height:44px; }",
+    ".top-rank-btn,.top-shop-btn,.settings-gear-btn{ min-height:44px; }",
+    ".tile-fav{ min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; }",
+    ".lt-chip{ min-width:44px; }"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.id = "arcade-uiux-style";
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  /* ---------- NOW SHOWING band (today's pick, same rule as module 60:
+     prefer an unplayed tile, else a least-played one; the pick is
+     recomputed from the shared play-count store, read-only) ---------- */
+  var STR = {
+    bandPlay: { ja: "遊ぶ", en: "Play", ko: "플레이", zh: "开始游戏", zht: "開始遊戲", es: "Jugar", fr: "Jouer", de: "Spielen", pt: "Jogar", it: "Gioca" },
+    bandReasonNew: { ja: "今日のおすすめ・まだ遊んでいないタイトル", en: "Recommended: Unplayed Titles", ko: "오늘의 추천: 아직 플레이하지 않은 게임", zh: "今日推荐：未体验的游戏", zht: "今日推薦：尚未遊玩的遊戲", es: "Sugerencias: Títulos nuevos", fr: "Recommandé : nouveaux titres", de: "Empfohlen für heute: Noch nicht gespielt", pt: "Recomendação do dia: títulos novos", it: "Consigliati di oggi: titoli nuovi" },
+    bandReasonLeast: { ja: "今日のおすすめ・最近ごぶさたのタイトル", en: "Recommended: One You Haven't Played in a While", ko: "오늘의 추천: 오랜만에 플레이하는 게임", zh: "今日推荐：久未游玩的游戏", zht: "今日推薦：許久未玩的遊戲", es: "Sugerencias: Hace mucho que no juegas", fr: "Recommandé : titres oubliés", de: "Empfohlen für heute: Lange nicht gespielt", pt: "Recomendação do dia: jogue novamente", it: "Consigliati di oggi: titoli meno recenti" }
+  };
+  function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
+  function L(key) { var e = STR[key]; if (!e) return key; return e[lang()] || e.ja || key; }
+  function buildBand() {
+    if (document.getElementById("streetBand")) return;
+    var grid = document.getElementById("tileGrid");
+    if (!grid || !grid.parentElement) return;
+    var counts = {};
+    try { counts = JSON.parse(localStorage.getItem("arcade-play-counts") || "{}") || {}; } catch (e) { counts = {}; }
+    var tiles = Array.prototype.slice.call(grid.querySelectorAll(".game-tile"));
+    var keyOf = function (t) { var c = t.querySelector("[data-count-for]"); return c ? c.getAttribute("data-count-for") : null; };
+    var named = tiles.filter(function (t) { return !!keyOf(t); });
+    if (!named.length) return;
+    var unplayed = named.filter(function (t) { return !(counts[keyOf(t)] > 0); });
+    var pool = unplayed.length ? unplayed : named.slice().sort(function (a, b) { return (counts[keyOf(a)] || 0) - (counts[keyOf(b)] || 0); }).slice(0, 6);
+    var day = Math.floor(Date.now() / 86400000);
+    var tile = pool[day % pool.length];
+    var titleEl = tile.querySelector("h2");
+    var playBtn = tile.querySelector(".play-btn");
+    if (!titleEl || !playBtn) return;
+    var band = document.createElement("div");
+    band.className = "street-band";
+    band.id = "streetBand";
+    band.innerHTML =
+      '<span class="sb-dot" aria-hidden="true"></span>' +
+      '<span class="sb-tag">NOW SHOWING</span>' +
+      '<span class="sb-title"></span>' +
+      '<span class="sb-reason"></span>' +
+      '<button type="button" class="sb-go"></button>';
+    band.querySelector(".sb-title").textContent = titleEl.textContent;
+    band.querySelector(".sb-reason").textContent = L(unplayed.length ? "bandReasonNew" : "bandReasonLeast");
+    var go = band.querySelector(".sb-go");
+    go.textContent = L("bandPlay");
+    go.addEventListener("click", function () { playBtn.click(); });
+    var tools = document.getElementById("lobbyTools");
+    if (tools && tools.parentElement === grid.parentElement) tools.insertAdjacentElement("afterend", band);
+    else grid.parentElement.insertBefore(band, grid);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", buildBand);
+  else buildBand();
+  setTimeout(buildBand, 1200);
 })();
 </script>
 </body>
