@@ -3265,7 +3265,7 @@
          board) could not be reached by any swipe. Same treatment:
          fill the stage, scroll inside, vertical swipes scroll. */
       .cz2-root, .hd-root,
-      #reversiMpRoot, #connect4MpRoot, #chessMpRoot, #mahjongMpRoot {
+      #reversiMpRoot, #connect4MpRoot, #chessMpRoot, #mahjongMpRoot, #checkersMpRoot, #shogiMpRoot {
         position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto;
         touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
       }
@@ -6768,7 +6768,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                detail cards used. -->
           <div id="tileGrid">
           <section class="genre-group" data-genre="board">
-            <h2 class="genre-head"><span class="genre-name">ボード・対戦</span><span class="genre-count">5</span></h2>
+            <h2 class="genre-head"><span class="genre-name">ボード・対戦</span><span class="genre-count">7</span></h2>
             <div class="tile-grid" data-genre-grid="board">
   <section class="game-tile" aria-label="チェス" style="--i:0">
               <div class="glyph glyph-chess" aria-hidden="true" data-i18n-skip>♞</div>
@@ -6804,6 +6804,20 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <p class="sub">15×15の盤で5つ並べる CPU対戦</p>
               <span class="tile-count" data-count-for="gomoku" hidden></span>
               <button type="button" class="play-btn gom" id="openGomoku">五目ならべで遊ぶ</button>
+            </section>
+  <section class="game-tile" aria-label="チェッカー" style="--i:16">
+              <div class="glyph glyph-chk" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#9e6a41"/><path d="M11 3h8v8h-8zM27 3h8v8h-8zM19 11h8v8h-8zM3 11h8v8H3zM11 19h8v8h-8zM27 19h8v8h-8zM19 27h8v8h-8zM3 27h8v8H3z" fill="#ecd2a0"/><circle cx="15" cy="23" r="3.4" fill="#26262e"/><circle cx="23" cy="15" r="3.4" fill="#f7f6f0" stroke="#c9c2ae"/></svg></div>
+              <h2>チェッカー</h2>
+              <p class="sub">取れる駒は必ず取る、ジャンプ連鎖の CPU対戦</p>
+              <span class="tile-count" data-count-for="checkers" hidden></span>
+              <button type="button" class="play-btn chk" id="openCheckers">チェッカーで遊ぶ</button>
+            </section>
+  <section class="game-tile" aria-label="将棋" style="--i:17">
+              <div class="glyph glyph-sho" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><polygon points="19,3 33,12 29,35 9,35 5,12" fill="#e9cb8a" stroke="#8a5a2a" stroke-width="1.4"/><text x="19" y="27" text-anchor="middle" font-size="15" font-weight="700" fill="#2a1c08" font-family="serif">歩</text></svg></div>
+              <h2>将棋</h2>
+              <p class="sub">持ち駒あり・正式ルールの CPU対戦</p>
+              <span class="tile-count" data-count-for="shogi" hidden></span>
+              <button type="button" class="play-btn sho" id="openShogi">将棋で遊ぶ</button>
             </section>
             </div>
           </section>
@@ -8212,6 +8226,82 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               </div>
             </div>
             <p class="w1-note">ルール： 先手はあなた（黒）です。勝利 30 コイン／引き分け 10 コイン（難易度で倍率が付きます）。教育モードを使った対局はコインが増えも減りもしません。</p>
+          </div>
+        </div>
+      </div>
+      <div class="gameview" id="checkersView" aria-label="チェッカー画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">チェッカー</span>
+          <span class="gtag">CPU対戦・8×8</span>
+        </div>
+        <div class="stage">
+          <div class="stage-msg" id="checkersMsg" role="alert"></div>
+          <div class="w1-root chk-root" id="checkersRoot">
+            <div id="chkDiffSlot"></div>
+            <div class="w1-hud">
+              <span class="w1-chip" id="chkCapLine">あなた（黒） 12 枚 ／ CPU（白） 12 枚</span>
+              <span class="w1-flex"></span>
+              <button type="button" class="w1-hbtn" id="chkReset">はじめから</button>
+            </div>
+            <p class="w2-status" id="chkStatus">あなた（黒）の番です</p>
+            <div class="rev-assist-row">
+              <button type="button" class="w1-hbtn" id="chkEduToggle" aria-pressed="false">教育モード OFF</button>
+              <span class="rev-assist-note">おすすめ手・形勢・相手の狙いを表示します。教育モードを使った対局はコインが増えも減りもしません（マルチプレイでは使えません）</span>
+            </div>
+            <p class="rev-edu-panel" id="chkEduPanel" hidden></p>
+            <p class="rev-assist-used" id="chkAssistUsed" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>
+            <div class="chk-wrap">
+              <div class="chk-board" id="chkBoard" role="grid" aria-label="チェッカーの盤面"></div>
+              <div class="w1-overlay" id="chkOverlay">
+                <div class="w1-ov-card">
+                  <h3 id="chkOvTitle">チェッカー</h3>
+                  <p id="chkOvText">相手の駒をすべて取るか、動けなくすれば勝ちです。取れる駒があるときは必ず取らなければならず、連続で取れるときは1手で続けて取ります。</p>
+                  <button type="button" class="w1-bigbtn" id="chkOvBtn">スタート</button>
+                </div>
+              </div>
+            </div>
+            <p class="w1-note">ルール： 先手はあなた（黒）です。勝利 30 コイン／引き分け 10 コイン（難易度で倍率が付きます）。教育モードを使った対局はコインが増えも減りもしません。</p>
+          </div>
+        </div>
+      </div>
+      <div class="gameview" id="shogiView" aria-label="将棋画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">将棋</span>
+          <span class="gtag">CPU対戦・正式ルール</span>
+        </div>
+        <div class="stage">
+          <div class="stage-msg" id="shogiMsg" role="alert"></div>
+          <div class="w1-root shg-root" id="shogiRoot">
+            <div id="shgDiffSlot"></div>
+            <div class="w1-hud">
+              <span class="w1-chip">あなた（先手）</span>
+              <span class="w1-chip">CPU（後手）</span>
+              <span class="w1-flex"></span>
+              <button type="button" class="w1-hbtn" id="shgReset">はじめから</button>
+            </div>
+            <p class="w2-status" id="shgStatus">あなた（先手）の番です</p>
+            <div class="rev-assist-row">
+              <button type="button" class="w1-hbtn" id="shgEduToggle" aria-pressed="false">教育モード OFF</button>
+              <span class="rev-assist-note">おすすめ手・形勢・相手の狙いを表示します。教育モードを使った対局はコインが増えも減りもしません（マルチプレイでは使えません）</span>
+            </div>
+            <p class="rev-edu-panel" id="shgEduPanel" hidden></p>
+            <p class="rev-assist-used" id="shgAssistUsed" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>
+            <div class="shg-wrap">
+              <div><span class="shg-hand-lab">CPUの持ち駒</span><div id="shgHandOpp"></div></div>
+              <div class="shg-board" id="shgBoard" role="grid" aria-label="将棋の盤面"></div>
+              <div class="shg-promo" id="shgPromoBar" hidden></div>
+              <div><span class="shg-hand-lab">あなたの持ち駒（タップで選択）</span><div id="shgHandMine"></div></div>
+              <div class="w1-overlay" id="shgOverlay">
+                <div class="w1-ov-card">
+                  <h3 id="shgOvTitle">将棋</h3>
+                  <p id="shgOvText">相手の玉を詰ませれば勝ちです。取った駒は持ち駒として打てます（二歩・打ち歩詰め・行き場のない駒は打てません）。</p>
+                  <button type="button" class="w1-bigbtn" id="shgOvBtn">スタート</button>
+                </div>
+              </div>
+            </div>
+            <p class="w1-note">ルール： 先手はあなたです。勝利 30 コイン／引き分け 10 コイン（難易度で倍率が付きます）。教育モードを使った対局はコインが増えも減りもしません。</p>
           </div>
         </div>
       </div>
@@ -9879,6 +9969,36 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         <div class="stage">
           <div id="connect4MpRoot"></div>
           <div class="stage-msg" id="connect4MpMsg" role="alert">
+            <span>プライベート対戦を読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
+            <button type="button" class="reload-btn" data-reload>再読み込み</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="gameview" id="checkersMpView" aria-label="チェッカー・プライベート対戦画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">チェッカー・プライベート対戦</span>
+          <span class="gtag">友達だけのコード対戦</span>
+        </div>
+        <div class="stage">
+          <div id="checkersMpRoot"></div>
+          <div class="stage-msg" id="checkersMpMsg" role="alert">
+            <span>プライベート対戦を読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
+            <button type="button" class="reload-btn" data-reload>再読み込み</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="gameview" id="shogiMpView" aria-label="将棋・プライベート対戦画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname">将棋・プライベート対戦</span>
+          <span class="gtag">友達だけのコード対戦</span>
+        </div>
+        <div class="stage">
+          <div id="shogiMpRoot"></div>
+          <div class="stage-msg" id="shogiMpMsg" role="alert">
             <span>プライベート対戦を読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
             <button type="button" class="reload-btn" data-reload>再読み込み</button>
           </div>
@@ -11929,6 +12049,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                    ready: function () { return !!window.__connect4; } },
           gomoku: { view: document.getElementById("gomokuView"), msg: document.getElementById("gomokuMsg"),
                    ready: function () { return !!window.__gomoku; } },
+          checkers: { view: document.getElementById("checkersView"), msg: document.getElementById("checkersMsg"),
+                   ready: function () { return !!window.__checkers; } },
+          shogi: { view: document.getElementById("shogiView"), msg: document.getElementById("shogiMsg"),
+                   ready: function () { return !!window.__shogi; } },
           fishing: { view: document.getElementById("fishingView"), msg: document.getElementById("fishingMsg"),
                    ready: function () { return !!window.__fishing; } },
           memory: { view: document.getElementById("memoryView"), msg: document.getElementById("memoryMsg"),
@@ -11953,6 +12077,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                    ready: function () { return !!window.__boardMp; } },
           connect4mp: { view: document.getElementById("connect4MpView"), msg: document.getElementById("connect4MpMsg"),
                    ready: function () { return !!window.__boardMp; } },
+          checkersmp: { view: document.getElementById("checkersMpView"), msg: document.getElementById("checkersMpMsg"),
+                   ready: function () { return !!window.__checkersMp; } },
+          shogimp: { view: document.getElementById("shogiMpView"), msg: document.getElementById("shogiMpMsg"),
+                   ready: function () { return !!window.__shogiMp; } },
           chessmp: { view: document.getElementById("chessMpView"), msg: document.getElementById("chessMpMsg"),
                    ready: function () { return !!window.__chessMp; } },
           mahjongmp: { view: document.getElementById("mahjongMpView"), msg: document.getElementById("mahjongMpMsg"),
@@ -12426,6 +12554,8 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           if (key === "reversi" && window.__reversi) window.__reversi.enter();
           if (key === "connect4" && window.__connect4) window.__connect4.enter();
           if (key === "gomoku" && window.__gomoku) window.__gomoku.enter();
+          if (key === "checkers" && window.__checkers) window.__checkers.enter();
+          if (key === "shogi" && window.__shogi) window.__shogi.enter();
           if (key === "fishing" && window.__fishing) window.__fishing.enter();
           if (key === "memory" && window.__memory) window.__memory.enter();
           if (key === "sudoku" && window.__sudoku) window.__sudoku.enter();
@@ -12560,6 +12690,8 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         document.getElementById("openReversi").addEventListener("click", function () { openGame("reversi"); });
         document.getElementById("openConnect4").addEventListener("click", function () { openGame("connect4"); });
         document.getElementById("openGomoku").addEventListener("click", function () { openGame("gomoku"); });
+        document.getElementById("openCheckers").addEventListener("click", function () { openGame("checkers"); });
+        document.getElementById("openShogi").addEventListener("click", function () { openGame("shogi"); });
         document.getElementById("openFishing").addEventListener("click", function () { openGame("fishing"); });
         document.getElementById("openMemory").addEventListener("click", function () { openGame("memory"); });
         document.getElementById("openSudoku").addEventListener("click", function () { openGame("sudoku"); });
@@ -32420,7 +32552,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
        registry, so a title played on another device counts here
        even when this build shows no tile for it. Utility views
        (points shop / ranking) are not titles and are excluded. */
-    var CANONICAL_TITLES = ["chess", "mahjong", "reversi", "connect4", "gomoku", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "library", "fishing", "board"];
+    var CANONICAL_TITLES = ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "library", "fishing", "board"];
     // Self-healing (builder #6, 12.11a): any tile actually present in this
     // build's grid joins the registry, so the denominator can never again
     // silently lag the grid the way it did when the Phase-8 titles shipped
@@ -35750,6 +35882,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     connect4Win: { pts: 30, diff: true, label: "四目ならべ勝利" },
     gomokuWin: { pts: 30, label: "五目ならべ勝利", diff: true },
     gomokuDraw: { pts: 10, label: "五目ならべ引き分け", diff: true },
+    checkersWin: { pts: 30, label: "チェッカー勝利", diff: true },
+    checkersDraw: { pts: 10, label: "チェッカー引き分け", diff: true },
+    shogiWin: { pts: 30, label: "将棋勝利", diff: true },
+    shogiDraw: { pts: 10, label: "将棋引き分け", diff: true },
     fishing: { scoreDiv: 1, cap: 30, label: "釣り図鑑" },
     langquiz: { pts: 10, perBonus: 1, label: "語学クイズ完走" },
     quizComplete: { pts: 10, perBonus: 1, label: "クイズ完走" },
@@ -49207,6 +49343,8 @@ PATTERNS.push(
   notesAdd("仕組みと同期", { t: "リモコンのQRとカーソル：スマホがマウスになる", b: ["リモコンのペアリングにQRコードが付きました。表示側のホームカードに出るQRをスマホで読むと、ペアリングコード入りのリンクが開き、コードが自動で入力されて接続まで進みます。QRは外部サービスを使わず、ARCADEの中で図形を計算して描いています（誤り訂正レベルM、最大213バイト）。ペアリングコードが外のサーバーに送られることはありません。", "カーソルモードも入りました。スマホ側で「カーソル」を選ぶとタッチパッドになり、指を滑らすと表示側に矢印カーソルが動きます。タップ＝クリック、長押し＝ドラッグ、2本指の上下＝スクロール。カーソルがボタンの上に来ると輪が光り、タイルのホバー演出もそのまま効きます。傾きで動かす「ジャイロ（実験）」もあり、「中心に戻す」ボタンでずれを直せます。十字キーの方式も今まで通り残っています。", "検証の数字です。QRは読み取り側の検査プログラムで往復確認し、長さ1〜213バイトの10種類の文すべてが元通り読め、誤り訂正の検査値は全ブロック0でした。カーソルの送信は33ミリ秒に1回までにまとめ、表示側は毎フレームなめらかに追います。ただし、2台の実機での通し確認はこの環境ではできていません（ペアリング自体は以前に実機で成立を確認済み）。"] });
   notesAdd("仕組みと同期", { t: "マイセットアップ：設定と装備の持ち運び", b: ["自分の設定を持ち運べるようになりました。全体設定とターンテーブルの「マイセットアップ」から、音量と快適設定（テーマ・文字の大きさ・点滅オフ・振動・色の見分け補助）と、いま装備しているコスメを、1つのテキストに書き出せます。コピーして別の端末で読み込めば、同じ設定と装備が再現されます。", "読み込みは厳しく確かめます。形式の違うテキストは受け付けず、音量は0〜100の範囲に丸め、テーマなどの選択肢は決まった値だけを通します。持っていないコスメは装備せず、名前をその場で報告します。ポイント（残高・累計）には、書き出しでも読み込みでも一切触りません。", "検証の数字です。書き出したテキストを読み戻す往復テストで、設定7項目と装備が元通りになること、未所持の装備が名前つきで「スキップ」と報告されること、壊れたテキストと別アプリのテキストが弾かれること、音量999が100に丸まることを確かめました。往復の処理は、ポイントの保存データに触れる命令を1つも含みません。"] });
   notesAdd("仕組みと同期", { t: "分解ボードの極端プリセット：定格・最大・限界", b: ["分解ボード（3枚）に「極端プリセット」が付きました。各ボードに3つの状態（定格／最大・全開／限界寄りの状態）があり、押すと分解の開き具合がその状態の値へ跳び、関係する部品が光って、他の部品は薄くなります。あわせて、その状態の事実が読み物カードに出ます。仕組みが「秒で読める」ようにするための見せ方です。", "中身は全部、ボードに既にある部品解説からの事実だけです。たとえばESP32-S3基板の「電圧低下」は、レギュレータの解説にある「高すぎると壊れ、低すぎると動きません」が元。Flipper Zeroの「無線全開」は、Sub-GHz（315/433/868/915MHz）、NFC（13.56MHz）、RFID（125kHz）、赤外線LED3つの解説から。Raspberry Pi Picoの「電池駆動」は、上げることも下げることもできるRT6150の解説から作りました。解説に無い状態（短絡など）は作っていません。", "検証の数字です。プリセットは3ボード×3状態＝9つ。関係部品として指定したIDは、3ボードの全32部品（11＋12＋9）の中に実在すること、読み物カードの数値が部品解説の原文と一致することを、1つずつ照合しました。プリセットは表示だけの仕掛けで、クイズやコインには触りません。"] });
+    notesAdd("ゲームごとの制作メモ", { t: "チェッカー：強制取りと連続ジャンプのエンジン", b: ["チェッカーはアメリカ式（イギリス式）ルールで、取れる駒があるときは必ず取らなければならず、連続ジャンプは1手として全部つなげます。合法手の生成は「取れる手があるか」を先に調べ、ある場合はジャンプの最長連鎖だけを手として返します。途中でキングになった駒はその場で手番が終わる、本式の細部まで寄せました。", "AIは3段階です。やさしいは1手先の駒得だけを見る設定で、連続ジャンプの先は読めません。ふつうは4手先、むずかしいは7手先までアルファベータ探索で読み、取る手が残っている局面では読みを自動で延長します（取る・取られるの応酬を途中で打ち切らないため）。むずかしいの1手は実測で約50ミリ秒でした。", "勝敗は「全部取る」か「相手を動けなくする（詰み）」で決まり、駒を取らず歩も進めない手が80半手続くと引き分けです。検証では、強制取りの提示と拒否、連続ジャンプ、キング化、詰み勝ち、引き分けカウンタまで16項目の自動テストを全部通しました。"] });
+    notesAdd("ゲームごとの制作メモ", { t: "将棋：完全ルールエンジンと読みの速さ", b: ["将棋は持ち駒・成り・千日手・持将棋まで入れた完全ルールです。打てない手を3つとも生成の段階で落とします：二歩（同じ筋の歩を数える）、行き場のないマス（歩・香は1段目、桂は1〜2段目）、打ち歩詰め（歩を打って王手になったときだけ、相手の合法手を全部数えて詰みかどうかを確かめる）。最初の局面の合法手は30手ちょうどで、教科書の数字と一致しました。", "AIは評価関数（駒の価値＋持ち駒の割り増し＋玉の守りの厚さ）にアルファベータ探索を組み合わせ、取る手だけを先に読む静止探索を足しています。読みの深さは、やさしいは1手先の評価だけ、ふつうは2手、むずかしいは3手です。応答が重くならないよう探索ノードに上限（ふつう6万、むずかしい16万）を付け、むずかしいの1手は序盤で約80ミリ秒、中盤で約420ミリ秒でした（実測）。", "千日手は同じ局面の4回目で判定し、王手をかけ続けた側が負けになります。持将棋は簡易ルール（両方の玉が敵陣に入り、両者24点以上で引き分け）として、ルール画面にも簡略版であることを明記しました。AI対ランダムの対局が合法手だけで最後まで進むことも自動テストで確認しています（全16項目）。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -50454,6 +50592,154 @@ Object.assign(D, {
 });
 
   /* ---------- engine ---------- */
+
+  /* ---------- versus expansion supplement (2026-11-17): CHECKERS + SHOGI ----------
+     All UI strings of the two new versus titles in the nine
+     translation languages, plus regex patterns for the composed
+     strings (education panels, piece counts, coordinates). */
+  Object.assign(D, {
+  "チェッカー": ["Checkers","체커","跳棋","跳棋","Damas","Dames","Dame","Damas","Dama"],
+  "取れる駒は必ず取る、ジャンプ連鎖の CPU対戦": ["CPU match: Forced captures, chain jumps","CPU 대전: 강제 캡처, 점프 연쇄","CPU对战：强制吃子，连锁跳跃","CPU對戰：強制吃子，連鎖跳躍","CPU: Capturas obligatorias, saltos en cadena","CPU : Captures forcées, sauts en chaîne","CPU-Match: Pflichtschlagen, Ketten-Sprünge","CPU: Capturas forçadas, saltos em cadeia","CPU: Catture obbligatorie, salti a catena"],
+  "チェッカーで遊ぶ": ["Play Checkers","체커 플레이","游玩跳棋","遊玩跳棋","Jugar a las Damas","Jouer aux Dames","Dame spielen","Jogar Damas","Gioca a Dama"],
+  "将棋": ["Shogi","장기","将棋","將棋","Shogi","Shogi","Shogi","Shogi","Shogi"],
+  "持ち駒あり・正式ルールの CPU対戦": ["CPU match: Standard rules with drops","CPU 대전: 말 집기 포함 공식 룰","CPU对战：含持子（打入）的标准规则","CPU對戰：含持子（打入）的標準規則","CPU: Reglas oficiales con piezas en mano","CPU : Règles officielles avec parachutage","CPU-Match: Offizielle Regeln mit Einsetzen","CPU: Regras oficiais com peças em mão","CPU: Regole ufficiali con pezzi in mano"],
+  "将棋で遊ぶ": ["Play Shogi","장기 플레이","游玩将棋","遊玩將棋","Jugar al Shogi","Jouer au Shogi","Shogi spielen","Jogar Shogi","Gioca a Shogi"],
+  "チェッカー画面": ["Checkers Screen","체커 화면","跳棋界面","跳棋畫面","Pantalla de Damas","Écran Dames","Dame-Bildschirm","Tela de Damas","Schermata Dama"],
+  "将棋画面": ["Shogi Screen","장기 화면","将棋界面","將棋畫面","Pantalla de Shogi","Écran Shogi","Shogi-Bildschirm","Tela de Shogi","Schermata Shogi"],
+  "チェッカー・プライベート対戦画面": ["Checkers Private Match Screen","체커 비공개 대전 화면","跳棋私人对战界面","跳棋私人對戰畫面","Pantalla de partida privada de Damas","Écran match privé Dames","Dame-Privatspiel-Bildschirm","Tela de partida privada de Damas","Schermata partita privata Dama"],
+  "将棋・プライベート対戦画面": ["Shogi Private Match Screen","장기 비공개 대전 화면","将棋私人对战界面","將棋私人對戰畫面","Pantalla de partida privada de Shogi","Écran match privé Shogi","Shogi-Privatspiel-Bildschirm","Tela de partida privada de Shogi","Schermata partita privata Shogi"],
+  "チェッカー・プライベート対戦": ["Checkers Private Match","체커 비공개 대전","跳棋私人对战","跳棋私人對戰","Partida privada de Damas","Match privé Dames","Dame-Privatspiel","Partida privada de Damas","Partita privata Dama"],
+  "将棋・プライベート対戦": ["Shogi Private Match","장기 비공개 대전","将棋私人对战","將棋私人對戰","Partida privada de Shogi","Match privé Shogi","Shogi-Privatspiel","Partida privada de Shogi","Partita privata Shogi"],
+  "CPU対戦・正式ルール": ["CPU Match: Standard Rules","CPU 대전: 공식 룰","CPU对战：标准规则","CPU對戰：標準規則","CPU: Reglas oficiales","CPU : Règles officielles","CPU-Match: Offizielle Regeln","CPU: Regras oficiais","CPU: Regole ufficiali"],
+  "相手の駒をすべて取るか、動けなくすれば勝ちです。取れる駒があるときは必ず取らなければならず、連続で取れるときは1手で続けて取ります。": ["Capture all opponent pieces or block their movement to win. You must capture if possible, and chain captures count as one turn.","상대의 말을 모두 잡거나 움직이지 못하게 하면 승리합니다. 잡을 수 있는 말이 있다면 반드시 잡아야 하며, 연속으로 잡을 수 있을 땐 한 번에 이어서 잡습니다.","吃光对方棋子或使其无法移动即获胜。有棋子可吃时必须吃，可连续吃子时算作一手。","吃光對手棋子或使其無法移動即獲勝。有棋子可吃時必須吃，可連續吃子時算作一手。","Captura todas las piezas del oponente o bloquéalas para ganar. Debes capturar si es posible, y las capturas en cadena cuentan como un turno.","Capturez toutes les pièces adverses ou bloquez-les pour gagner. Vous devez capturer si possible, et les captures en chaîne comptent pour un tour.","Schlage alle gegnerischen Steine oder blockiere sie, um zu gewinnen. Du musst schlagen, wenn möglich, und Kettenzüge zählen als ein Zug.","Capture todas as peças do oponente ou bloqueie-as para vencer. Você deve capturar se possível, e as capturas em cadeia contam como um turno.","Cattura tutti i pezzi dell'avversario o bloccali per vincere. Devi catturare se possibile, e le catture in catena contano come una sola mossa."],
+  "相手の玉を詰ませれば勝ちです。取った駒は持ち駒として打てます（二歩・打ち歩詰め・行き場のない駒は打てません）。": ["Checkmate the opponent's King to win. Captured pieces can be dropped as your own (No Nifu, Uchi-fu-zume, or immobile pieces).","상대의 왕을 외통수로 만들면 승리합니다. 잡은 말은 자신의 말로 다시 놓을 수 있습니다 (이후, 우치후즈메, 갈 곳 없는 말은 놓을 수 없음).","将对方王将“诘”死即获胜。捕获的棋子可作为手中棋子打入（不可二步、打步诘、或打入无路可走的棋子）。","將對手王將「詰」死即獲勝。捕獲的棋子可作為手中棋子打入（不可二步、打步詰、或打入無路可走的棋子）。","Haz jaque mate al Rey del oponente para ganar. Las piezas capturadas pueden volver a colocarse (Prohibido Nifu, Uchi-fu-zume o piezas sin salida).","Faites échec et mat au Roi adverse pour gagner. Les pièces capturées peuvent être réutilisées (Nifu, Uchi-fu-zume et pièces sans issue interdits).","Setze den gegnerischen König schachmatt, um zu gewinnen. Geschlagene Steine können wieder eingesetzt werden (Kein Nifu, Uchi-fu-zume oder unbewegliche Steine).","Dê xeque-mate no Rei do oponente para vencer. As peças capturadas podem ser reinseridas (Proibido Nifu, Uchi-fu-zume ou peças sem saída).","Dai scacco matto al Re avversario per vincere. I pezzi catturati possono essere riutilizzati (Vietati Nifu, Uchi-fu-zume e pezzi senza via d'uscita)."],
+  "先手はあなたです。勝利 30 コイン／引き分け 10 コイン（難易度で倍率が付きます）。教育モードを使った対局はコインが増えも減りもしません。": ["You move first. Win: 30 coins / Draw: 10 coins (Difficulty multipliers apply). Coins are not earned or lost in Training Mode.","당신이 선공입니다. 승리 30 코인 / 무승부 10 코인 (난이도에 따라 배율 적용). 교육 모드 대국 시 코인은 변동되지 않습니다.","你是先手。胜利 30 金币／平局 10 金币（难度有倍率加成）。训练模式不计金币。","你是先手。勝利 30 金幣／平局 10 金幣（難度有倍率加成）。訓練模式不計金幣。","Mueves primero. Victoria: 30 monedas / Empate: 10 monedas (se aplican multiplicadores de dificultad). No se ganan ni pierden monedas en el Modo Entrenamiento.","Vous jouez en premier. Victoire : 30 pièces / Nul : 10 pièces (multiplicateurs de difficulté appliqués). Aucune pièce gagnée ou perdue en Mode Entraînement.","Du ziehst zuerst. Sieg: 30 Münzen / Unentschieden: 10 Münzen (Schwierigkeitsmultiplikatoren gelten). Im Trainingsmodus werden keine Münzen verdient oder verloren.","Você joga primeiro. Vitória: 30 moedas / Empate: 10 moedas (multiplicadores de dificuldade aplicados). Nenhuma moeda é ganha ou perdida no Modo Treino.","Muovi per primo. Vittoria: 30 monete / Pareggio: 10 monete (si applicano moltiplicatori di difficoltà). Non si guadagnano né perdono monete in Modalità Allenamento."],
+  "CPUの持ち駒": ["CPU's pieces","CPU의 말","CPU的手中棋子","CPU的手中棋子","Piezas del CPU","Pièces du CPU","CPU-Steine","Peças do CPU","Pezzi del CPU"],
+  "あなたの持ち駒（タップで選択）": ["Your pieces (tap to select)","내 말 (탭하여 선택)","你的手中棋子（点击选择）","你的手中棋子（點擊選擇）","Tus piezas (toca para seleccionar)","Vos pièces (appuyez pour sélectionner)","Deine Steine (zum Auswählen tippen)","Suas peças (toque para selecionar)","I tuoi pezzi (tocca per selezionare)"],
+  "おすすめ手・形勢・相手の狙いを表示します。教育モードを使った対局はコインが増えも減りもしません（マルチプレイでは使えません）": ["Shows recommended moves, board position, and opponent's intentions. Training mode does not affect coins (unavailable in multiplayer).","추천 수, 형세, 상대의 의도를 표시합니다. 교육 모드 대국 시 코인은 변동되지 않습니다 (멀티플레이 사용 불가).","显示推荐棋步、局势及对手意图。训练模式不计金币（联机模式不可用）。","顯示推薦棋步、局勢及對手意圖。訓練模式不計金幣（聯機模式不可用）。","Muestra movimientos recomendados, posición y objetivos del oponente. El modo entrenamiento no afecta a las monedas (no disponible en multijugador).","Affiche les coups recommandés, la position et les intentions adverses. Le mode entraînement n'affecte pas les pièces (non disponible en multijoueur).","Zeigt empfohlene Züge, Spielstellung und gegnerische Absichten. Trainingsmodus hat keinen Einfluss auf Münzen (nicht im Multiplayer verfügbar).","Mostra jogadas recomendadas, posição e intenções do oponente. O modo treino não afeta as moedas (indisponível no multijogador).","Mostra mosse consigliate, posizione e intenzioni dell'avversario. La modalità allenamento non influisce sulle monete (non disponibile in multiplayer)."],
+  "あなた（先手）": ["You (First)","당신 (선공)","你（先手）","你（先手）","Tú (Primero)","Vous (Premier)","Du (Erster)","Você (Primeiro)","Tu (Primo)"],
+  "CPU（後手）": ["CPU (Second)","CPU (후공)","CPU（后手）","CPU（後手）","CPU (Segundo)","CPU (Second)","CPU (Zweiter)","CPU (Segundo)","CPU (Secondo)"],
+  "相手の駒をすべて取るか、動けなくしました。お見事です。": ["You captured or blocked all opponent pieces. Excellent!","상대의 말을 모두 잡거나 움직이지 못하게 했습니다. 훌륭합니다!","已吃光对方棋子或使其无法移动。干得漂亮！","已吃光對手棋子或使其無法移動。幹得漂亮！","Has capturado o bloqueado todas las piezas del oponente. ¡Excelente!","Vous avez capturé ou bloqué toutes les pièces adverses. Excellent !","Du hast alle gegnerischen Steine geschlagen oder blockiert. Hervorragend!","Você capturou ou bloqueou todas as peças do oponente. Excelente!","Hai catturato o bloccato tutti i pezzi dell'avversario. Eccellente!"],
+  "駒をすべて取られるか、動けなくなりました。取れる駒は必ず取るのが鉄則です。": ["All your pieces were captured or blocked. Always remember: you must capture if possible.","모든 말을 잡히거나 움직일 수 없게 되었습니다. 잡을 수 있는 말은 반드시 잡아야 합니다.","你的棋子被吃光或无法移动。切记：有棋可吃时必须吃。","你的棋子被吃光或無法移動。切記：有棋可吃時必須吃。","Tus piezas fueron capturadas o bloqueadas. Recuerda siempre: debes capturar si es posible.","Toutes vos pièces ont été capturées ou bloquées. Rappelez-vous : vous devez capturer si possible.","Deine Steine wurden alle geschlagen oder blockiert. Denke daran: Wenn du schlagen kannst, musst du es tun.","Suas peças foram capturadas ou bloqueadas. Lembre-se sempre: você deve capturar se possível.","I tuoi pezzi sono stati tutti catturati o bloccati. Ricorda: devi catturare se possibile."],
+  "40手ルール（取らず・進めずが続いた）で引き分けです。": ["Draw by 40-move rule (no captures or piece advancements).","40수 규칙에 따라 무승부입니다 (말을 잡거나 전진하지 않음).","因40回合规则（无吃子或无前进）平局。","因40回合規則（無吃子或無前進）平局。","Empate por la regla de 40 movimientos (sin capturas ni avances).","Match nul par la règle des 40 coups (pas de captures ni d'avancées).","Unentschieden durch die 40-Züge-Regel (keine Schläge oder Fortschritte).","Empate pela regra dos 40 lances (sem capturas ou avanços).","Pareggio per la regola delle 40 mosse (nessuna cattura o avanzamento)."],
+  "教育モード： あなたの番になると、おすすめ手・形勢の評価・相手の狙いを表示します。": ["Training Mode: Shows recommended moves, position evaluation, and opponent's intentions on your turn.","교육 모드: 당신의 차례가 되면 추천 수, 형세 평가, 상대의 의도를 표시합니다.","训练模式：轮到你时，显示推荐棋步、局势评价及对手意图。","訓練模式：輪到你時，顯示推薦棋步、局勢評價及對手意圖。","Modo Entrenamiento: Muestra movimientos recomendados, evaluación de posición e intenciones del oponente durante tu turno.","Mode Entraînement : Affiche les coups recommandés, l'évaluation de la position et les intentions adverses à votre tour.","Trainingsmodus: Zeigt empfohlene Züge, Stellungsbewertung und gegnerische Absichten während deines Zugs.","Modo Treino: Mostra jogadas recomendadas, avaliação de posição e intenções do oponente no seu turno.","Modalità Allenamento: Mostra mosse consigliate, valutazione della posizione e intenzioni dell'avversario durante il tuo turno."],
+  "教育モード： 動かせる駒がありません。": ["Training Mode: No moves available.","교육 모드: 움직일 수 있는 말이 없습니다.","训练模式：无棋可走。","訓練模式：無棋可走。","Modo Entrenamiento: No hay movimientos disponibles.","Mode Entraînement : Aucun coup disponible.","Trainingsmodus: Keine Züge möglich.","Modo Treino: Nenhuma jogada disponível.","Modalità Allenamento: Nessuna mossa disponibile."],
+  "取れる駒があるので、必ず取らなければなりません。": ["You must capture a piece.","잡을 수 있는 말이 있으므로 반드시 잡아야 합니다.","有可吃的棋子，必须吃子。","有可吃的棋子，必須吃子。","Debes capturar una pieza.","Vous devez capturer une pièce.","Du musst eine Figur schlagen.","Você deve capturar uma peça.","Devi catturare un pezzo."],
+  "相手の狙い： CPUは駒を前へ進めて陣形を整える構えです。": ["Opponent's Goal: CPU is advancing pieces to organize its formation.","상대의 전략: CPU가 말을 전진시켜 진형을 정비하고 있습니다.","对手目标：CPU正推进棋子以整顿阵型。","對手目標：CPU正推進棋子以整頓陣型。","Objetivo del rival: La CPU avanza piezas para organizar su formación.","Objectif adverse : Le CPU avance ses pièces pour organiser sa formation.","Ziel des Gegners: Die CPU rückt vor, um ihre Formation zu ordnen.","Objetivo do oponente: A CPU está avançando peças para organizar sua formação.","Obiettivo avversario: La CPU avanza i pezzi per organizzare la formazione."],
+  "相手の狙い： CPUに有効な手がほとんどありません。": ["Opponent's Goal: The CPU has few effective moves.","상대의 전략: CPU에게 유효한 수가 거의 없습니다.","对手目标：CPU几乎没有有效的应对手段。","對手目標：CPU幾乎沒有有效的應對手段。","Objetivo del rival: La CPU apenas tiene movimientos efectivos.","Objectif adverse : Le CPU a peu de coups efficaces.","Ziel des Gegners: Die CPU hat kaum effektive Züge.","Objetivo do oponente: A CPU quase não tem movimentos eficazes.","Obiettivo avversario: La CPU ha poche mosse efficaci."],
+  "あなた（先手）の番です": ["Your turn (Sente).","당신(선수)의 차례입니다.","轮到你了（先手）。","輪到你了（先手）。","Tu turno (Sente).","À votre tour (Sente).","Du bist dran (Sente).","Sua vez (Sente).","Tocca a te (Sente)."],
+  "王手！ あなた（先手）の番です": ["Check! Your turn (Sente).","왕수! 당신(선수)의 차례입니다.","将军！轮到你了（先手）。","將軍！輪到你了（先手）。","¡Jaque! Tu turno (Sente).","Échec ! À votre tour (Sente).","Schach! Du bist dran (Sente).","Xeque! Sua vez (Sente).","Scacco! Tocca a te (Sente)."],
+  "詰ませました（または相手に指せる手がなくなりました）。お見事です。": ["Checkmate (or opponent has no moves). Well played!","외통수(또는 상대가 둘 곳이 없습니다). 훌륭합니다.","将死（或对手无子可动）。干得漂亮！","將死（或對手無子可動）。幹得漂亮！","Jaque mate (o el rival no tiene movimientos). ¡Bien jugado!","Échec et mat (ou l'adversaire n'a plus de coups). Bien joué !","Schachmatt (oder der Gegner kann nicht ziehen). Gut gemacht!","Xeque-mate (ou o oponente não tem mais movimentos). Bem jogado!","Scacco matto (o l'avversario non ha più mosse). Ben fatto!"],
+  "詰まされました。王様の逃げ道と守りの金銀がポイントです。": ["You were checkmated. Focus on king safety and defending pieces.","외통수를 당했습니다. 왕의 도주로와 수비하는 금/은 장기가 중요합니다.","被将死。注意王的逃生路线和防守的金银棋子。","被將死。注意王的逃生路線和防守的金銀棋子。","Te dieron jaque mate. La clave es la ruta de escape del Rey y defender con Oro/Plata.","Échec et mat. La clé est la fuite du Roi et la défense avec les Or/Argent.","Schachmatt. Achte auf Fluchtwege für den König und die Verteidigung durch Gold/Silber.","Você levou xeque-mate. O segredo é a fuga do Rei e defender com Ouro/Prata.","Sei stato messo sotto scacco matto. Punta sulla fuga del Re e sulla difesa con Oro/Argento."],
+  "千日手（同じ局面が4回）または持将棋（簡易ルール）で引き分けです。": ["Draw by repetition (4 times) or impasse (simple rules).","천일수(같은 국면 4회) 또는 지장기(간이 룰)로 무승부입니다.","千日手（同局面4次）或持棋（简易规则）平局。","千日手（同局面4次）或持棋（簡易規則）平局。","Empate por repetición (4 veces) o impasse (reglas simples).","Match nul par répétition (4 fois) ou impasse (règles simples).","Remis durch Wiederholung (4x) oder Impasse (einfache Regeln).","Empate por repetição (4 vezes) ou impasse (regras simples).","Pareggio per ripetizione (4 volte) o impasse (regole semplici)."],
+  "成りますか？": ["Promote?","승격할까요?","是否升级？","是否升級？","¿Promocionar?","Promouvoir ?","Befördern?","Promover?","Promuovere?"],
+  "成る": ["Promote","승격","升级","升級","Promocionar","Promouvoir","Befördern","Promover","Promuovere"],
+  "成らない": ["Do not promote","승격 안 함","不升级","不升級","No promocionar","Ne pas promouvoir","Nicht befördern","Não promover","Non promuovere"],
+  "持ち駒なし": ["No pieces in hand","보유한 말 없음","手中无棋","手中無棋","Sin piezas en mano","Aucune pièce en main","Keine Figuren auf der Hand","Sem peças na mão","Nessun pezzo in mano"],
+  "教育モード： 指せる手がありません。": ["Tutorial Mode: No legal moves.","교육 모드: 둘 수 있는 수가 없습니다.","教学模式：没有可移动的棋子。","教學模式：沒有可移動的棋子。","Modo Tutorial: No hay movimientos legales.","Mode Tutoriel : Aucun coup légal.","Lernmodus: Keine gültigen Züge.","Modo Tutorial: Sem movimentos legais.","Modalità Tutorial: Nessuna mossa legale."],
+  "相手の狙い： CPUは次に王手をかける構えです。": ["Opponent's aim: CPU is preparing to check.","상대 전략: CPU가 체크를 노리고 있습니다.","对手意图：CPU准备进行将军。","對手意圖：CPU準備進行將軍。","Objetivo del rival: El CPU prepara un jaque.","Objectif adverse : Le CPU prépare un échec.","Gegnerische Absicht: Der CPU bereitet ein Schach vor.","Objetivo do oponente: A CPU está se preparando para xeque.","Obiettivo avversario: La CPU prepara uno scacco."],
+  "相手の狙い： CPUは陣形を整えながら攻め駒を前進させる構えです。": ["Opponent's aim: CPU is advancing pieces while reinforcing its position.","상대 전략: CPU가 진형을 갖추며 공격 기물을 전진시킵니다.","对手意图：CPU正在整顿阵型并推进进攻棋子。","對手意圖：CPU正在整頓陣型並推進進攻棋子。","Objetivo del rival: El CPU avanza sus piezas reforzando su posición.","Objectif adverse : Le CPU avance ses pièces tout en renforçant sa position.","Gegnerische Absicht: Der CPU rückt vor und verstärkt seine Position.","Objetivo do oponente: A CPU avança peças reforçando sua posição.","Obiettivo avversario: La CPU avanza i pezzi rafforzando la posizione."],
+  "相手の狙い： CPUに指せる手がありません。": ["Opponent's aim: CPU has no moves.","상대 전략: CPU가 둘 수 있는 수가 없습니다.","对手意图：CPU无法行棋。","對手意圖：CPU無法行棋。","Objetivo del rival: El CPU no tiene movimientos.","Objectif adverse : Le CPU n'a aucun coup possible.","Gegnerische Absicht: Der CPU kann nicht ziehen.","Objetivo do oponente: A CPU não tem movimentos.","Obiettivo avversario: La CPU non ha mosse."],
+  "王手がかかっています。あなたの番です": ["Check! Your turn.","체크입니다. 당신의 차례입니다.","将军！轮到你了。","將軍！輪到你了。","¡Jaque! Es tu turno.","Échec ! À vous de jouer.","Schach! Sie sind am Zug.","Xeque! É a sua vez.","Scacco! Tocca a te."],
+  "相手に王手がかかっています": ["Opponent is in check.","상대에게 체크입니다.","对方被将军了。","對方被將軍了。","El rival está en jaque.","L'adversaire est en échec.","Der Gegner steht im Schach.","Oponente em xeque.","L'avversario è sotto scacco."],
+  "チェッカー勝利": ["Checkers Win","체커 승리","跳棋胜利","跳棋勝利","Victoria en damas","Victoire aux dames","Dame-Sieg","Vitória em damas","Vittoria a dama"],
+  "チェッカー引き分け": ["Checkers Draw","체커 무승부","跳棋平局","跳棋平局","Empate en damas","Match nul aux dames","Dame-Unentschieden","Empate em damas","Pareggio a dama"],
+  "将棋勝利": ["Shogi Win","장기 승리","将棋胜利","將棋勝利","Victoria en shogi","Victoire au shogi","Shogi-Sieg","Vitória em shogi","Vittoria a shogi"],
+  "将棋引き分け": ["Shogi Draw","장기 무승부","将棋平局","將棋平局","Empate en shogi","Match nul au shogi","Shogi-Unentschieden","Empate em shogi","Pareggio a shogi"],
+  "チェッカーのルール": ["Checkers Rules","체커 규칙","跳棋规则","跳棋規則","Reglas de damas","Règles des dames","Dame-Regeln","Regras de damas","Regole di dama"],
+  "相手の駒をすべて取るか、相手が1つも動けなくすれば勝ちです（アメリカ式／イギリス式ルール）。": ["Capture all opponent pieces or block them from moving to win (American/British rules).","상대 기물을 모두 잡거나 움직이지 못하게 하면 승리합니다(미국식/영국식 규칙).","吃光所有对手棋子或让对方无法移动即获胜（美式/英式规则）。","吃光所有對手棋子或讓對方無法移動即獲勝（美式/英式規則）。","Captura todas las piezas del rival o bloquéalas para ganar (reglas americanas/británicas).","Capturez toutes les pièces adverses ou bloquez-les pour gagner (règles américaines/britanniques).","Schlagen Sie alle gegnerischen Steine oder blockieren Sie sie, um zu gewinnen (amerikanische/britische Regeln).","Capture todas as peças do oponente ou bloqueie-as para vencer (regras americanas/britânicas).","Cattura tutti i pezzi avversari o bloccali per vincere (regole americane/britanniche)."],
+  "自分の駒をタップして選び、光ったマスへ進みます。ふつうの駒は斜め前にだけ進めますが、相手の駒を飛び越えて取れるマスがあるときは、必ず取らなければなりません。": ["Tap to select your piece and move to highlighted squares. Normal pieces move diagonally forward. You must jump and capture opponent pieces if possible.","기물을 탭하여 선택하고 빛나는 칸으로 이동하세요. 일반 기물은 대각선 앞으로만 이동하며, 상대 기물을 넘어서 잡을 수 있다면 반드시 잡아야 합니다.","点击选择棋子并移动到高亮格。普通棋子只能斜向前移动；若有可跳过并吃掉对方棋子的格，则必须吃子。","點擊選擇棋子並移動到高亮格。普通棋子只能斜向前移動；若有可跳過並吃掉對方棋子的格，則必須吃子。","Toca una pieza para seleccionarla y muévela a las casillas iluminadas. Las piezas normales se mueven en diagonal hacia adelante; si puedes saltar sobre una pieza rival, es obligatorio hacerlo.","Touchez une pièce pour la sélectionner et déplacez-la sur les cases en surbrillance. Les pièces normales avancent en diagonale ; si vous pouvez sauter par-dessus une pièce adverse, vous devez le faire.","Tippen Sie auf einen Stein, um ihn auszuwählen und auf die markierten Felder zu ziehen. Normale Steine ziehen diagonal vorwärts; Sie müssen gegnerische Steine schlagen, wenn dies möglich ist.","Toque uma peça para selecionar e mova para os quadrados destacados. Peças normais movem-se na diagonal para frente; é obrigatório capturar peças do oponente sempre que possível.","Tocca un pezzo per selezionarlo e muovilo sulle caselle illuminate. I pezzi normali si muovono solo in diagonale in avanti; se puoi saltare su un pezzo avversario per catturarlo, sei obbligato a farlo."],
+  "1手の中で続けて取れる場合は、連続ジャンプで全部取ります。一番奥の段まで進んだ駒はキング（♛）になり、前後どちらにも動いて取れるようになります（キングになった手番はそこで終わります）。": ["If you can capture multiple pieces in one turn, perform consecutive jumps. Reaching the back row promotes a piece to a King (♛), allowing it to move and capture in any direction (ends the turn).","한 턴에 계속 잡을 수 있다면 연속 점프로 모두 잡으세요. 맨 끝줄에 도달하면 킹(♛)으로 승격되어 앞뒤로 이동 및 포획이 가능합니다(킹이 된 시점에서 턴 종료).","若一回合内可连续吃子，请进行连续跳跃以吃光棋子。到达底线后棋子升级为王（♛），可前后移动并吃子（升王后该回合结束）。","若一回合內可連續吃子，請進行連續跳躍以吃光棋子。到達底線後棋子升級為王（♛），可前後移動並吃子（升王後該回合結束）。","Si puedes capturar varias piezas en un turno, realiza saltos consecutivos. Al llegar a la fila final, la pieza se convierte en Rey (♛) y puede moverse y capturar en cualquier dirección (termina el turno).","Si vous pouvez capturer plusieurs pièces, enchaînez les sauts. Arrivée à la dernière ligne, la pièce devient Roi (♛) et peut bouger/capturer dans toutes les directions (fin du tour).","Wenn Sie mehrere Steine nacheinander schlagen können, führen Sie diese aus. Erreicht ein Stein die letzte Reihe, wird er zum König (♛) und kann in alle Richtungen ziehen und schlagen (der Zug endet dann).","Se puder capturar várias peças em um turno, faça saltos consecutivos. Ao alcançar a última fileira, a peça vira Rei (♛), podendo mover e capturar em qualquer direção (termina o turno).","Se puoi catturare più pezzi in un turno, esegui i salti consecutivi. Raggiungendo l'ultima fila, il pezzo diventa Re (♛) e può muoversi e catturare in ogni direzione (il turno finisce)."],
+  "王手がかかっています。": ["Check!","왕수입니다.","将军！","將軍！","¡Jaque!","Échec !","Schach!","Xeque!","Scacco!"],
+  "チェッカーの盤面": ["Checkers board","체커 판","跳棋棋盘","跳棋棋盤","Tablero de damas","Plateau de dames","Damebrett","Tabuleiro de damas","Scacchiera dama"],
+  "将棋の盤面": ["Shogi board","장기 판","将棋棋盘","將棋棋盤","Tablero de shogi","Plateau de shogi","Shogi-Brett","Tabuleiro de shogi","Scacchiera shogi"],
+  "引き分け： 駒を取らず、キングでない駒も進めない手が両者合わせて40手（80半手）続くと引き分けです。": ["Draw: A draw occurs if 40 consecutive moves (80 half-moves) are made without capturing or moving non-king pieces.","무승부: 40수(80반수) 동안 기물을 잡지 않거나 킹 이외의 기물이 이동하지 않으면 무승부입니다.","平局：连续40手（80半手）没有吃子或移动非国王棋子，即判为平局。","平局：連續40手（80半手）無吃子或移動非國王棋子，即判為平局。","Empate: Se produce un empate si se realizan 40 movimientos consecutivos (80 medios movimientos) sin capturar ni mover piezas que no sean reyes.","Nul : Match nul si 40 coups consécutifs (80 demi-coups) sont joués sans capture ni déplacement de pièces autres que le roi.","Unentschieden: Ein Remis tritt ein, wenn 40 Züge (80 Halbzüge) lang keine Figur geschlagen oder eine Nicht-König-Figur bewegt wird.","Empate: Ocorre um empate se 40 lances consecutivos (80 meios lances) forem feitos sem capturas ou movimentos de peças que não sejam o rei.","Patta: Si ha una patta se vengono effettuati 40 turni consecutivi (80 mezzi turni) senza catturare pezzi o muovere pezzi diversi dal re."],
+  "将棋のルール": ["Shogi Rules","장기 규칙","将棋规则","將棋規則","Reglas del Shogi","Règles du Shogi","Shogi-Regeln","Regras do Shogi","Regole dello Shogi"],
+  "相手の玉将（王将）を詰ませれば勝ちです。指せる手がなくなった側も負けになります（行き詰まりも負けです）。": ["Checkmate the opponent's King to win. You also lose if you have no legal moves remaining (stalemate is a loss).","상대 왕을 체크메이트하면 승리합니다. 둘 수 있는 수가 없어도 패배합니다(스테일메이트도 패배).","将死对方王将即为获胜。无法移动棋子的一方判负（无路可走也算输）。","將死對方王將即為獲勝。無法移動棋子的一方判負（無路可走也算輸）。","Gana quien dé jaque mate al rey rival. También pierde quien se quede sin movimientos legales (el ahogado es derrota).","Échec et mat au roi adverse pour gagner. Vous perdez si vous n'avez plus de coups légaux (pat = défaite).","Setzen Sie den gegnerischen König schachmatt, um zu gewinnen. Wer keine Züge mehr hat, verliert (auch bei einem Patt).","Dê xeque-mate no rei adversário para vencer. Você também perde se não tiver lances legais (afogamento é derrota).","Metti sotto scacco matto il re avversario per vincere. Perde anche chi non ha più mosse legali (lo stallo è una sconfitta)."],
+  "自分の駒をタップして選び、光ったマスへ動かします。取った駒は持ち駒になり、空いているマスに打てます（持ち駒をタップしてからマスをタップ）。": ["Tap a piece to select and move to highlighted squares. Captured pieces are held and can be dropped onto empty squares (tap piece, then tap square).","기물을 탭하여 선택하고 빛나는 칸으로 이동합니다. 잡은 기물은 보유 기물이 되며 빈 칸에 놓을 수 있습니다(기물 탭 후 칸 탭).","点击选中棋子并移动到高亮格。吃掉的棋子变为持有棋，可放置在空格处（先点棋子再点格子）。","點擊選中棋子並移動到高亮格。吃掉的棋子變為持有棋，可放置在空格處（先點棋子再點格子）。","Toca una pieza para seleccionarla y muévela a las casillas iluminadas. Las piezas capturadas se guardan y pueden colocarse en casillas vacías (toca la pieza y luego la casilla).","Appuyez sur une pièce pour la sélectionner et la déplacer vers les cases illuminées. Les pièces capturées sont conservées et peuvent être déposées sur des cases vides (appuyez sur la pièce, puis sur la case).","Tippen Sie auf eine Figur, um sie auszuwählen und auf markierte Felder zu bewegen. Geschlagene Figuren werden gesammelt und können auf leere Felder gesetzt werden (Figur antippen, dann Feld antippen).","Toque uma peça para selecionar e mover para as casas iluminadas. Peças capturadas ficam reservadas e podem ser colocadas em casas vazias (toque na peça, depois na casa).","Tocca un pezzo per selezionarlo e muovilo sulle caselle illuminate. I pezzi catturati vengono conservati e possono essere piazzati su caselle vuote (tocca il pezzo, poi la casella)."],
+  "成り： 敵陣（相手側の3段）に出入りするとき、歩・香・桂・銀・角・飛は成るか成らないか選べます。行き場がなくなる駒（1段目の歩・香、1〜2段目の桂）は必ず成ります。": ["Promotion: When entering/exiting enemy territory (last 3 rows), most pieces can promote. Pieces with no further legal moves must promote.","승격: 적진(상대쪽 3단) 출입 시 특정 기물은 승격 선택이 가능합니다. 더 이상 갈 곳이 없는 기물은 반드시 승격합니다.","升变：进出敌阵（对方侧3段）时，大部分棋子可选择是否升变。无路可走的棋子（1段的步/香，1-2段的桂）必须升变。","升變：進出敵陣（對方側3段）時，大部分棋子可選擇是否升變。無路可走的棋子（1段的步/香，1-2段的桂）必須升變。","Promoción: Al entrar o salir del territorio enemigo (3 últimas filas), se puede elegir promocionar. Las piezas sin movimientos legales deben promocionar.","Promotion : En entrant/sortant de la zone ennemie (3 dernières rangées), on peut choisir de promouvoir certaines pièces. Celles sans issue obligatoire doivent être promues.","Beförderung: Beim Betreten oder Verlassen des gegnerischen Lagers (letzte 3 Reihen) können Figuren befördert werden. Figuren ohne weitere Züge müssen befördert werden.","Promoção: Ao entrar ou sair do território inimigo (3 últimas fileiras), você pode escolher promover. Peças sem lances disponíveis devem ser promovidas.","Promozione: Quando entri o esci dal territorio nemico (3 ultime file), puoi scegliere di promuovere. I pezzi senza mosse legali devono essere promossi."],
+  "打てない場合： 二歩（同じ筋に自分の歩が2枚）、打ち歩詰め（歩を打って詰ませる手）、行き場のないマスへのドロップは禁止です。": ["Illegal Drops: Two Pawns (in same column), drop-mate with a Pawn, and dropping a piece with no moves are prohibited.","놓을 수 없는 경우: 이보(같은 열에 보 2개), 보로 체크메이트, 갈 곳 없는 칸에 놓기는 금지됩니다.","禁止放置：二步（同一列有两枚己方步兵）、打步诘（投下步兵将死）、放置在无路可走的位置均禁止。","禁止放置：二步（同一列有兩枚己方步兵）、打步詰（投下步兵將死）、放置在無路可走的位置均禁止。","Prohibiciones: No se permite colocar dos peones en la misma columna, dar jaque mate dejando caer un peón, ni colocar piezas sin movimientos legales.","Coups illégaux : Deux pions sur la même colonne, échec et mat par lâcher de pion, et poser une pièce sans issue sont interdits.","Verbotene Züge: Zwei Bauern in einer Spalte, Mattsetzen durch Bauerneinwurf und das Platzieren von Figuren ohne legale Züge sind verboten.","Lances proibidos: Dois peões na mesma coluna, dar xeque-mate derrubando um peão, ou colocar peça sem lances legais é proibido.","Mosse vietate: Due pedoni sulla stessa colonna, scacco matto tramite posizionamento di pedone e posizionare pezzi senza mosse legali sono vietati."],
+  "千日手： 同じ局面が4回出たら引き分けです。ただし、片方が王手をかけ続けた場合は、そのかけ続けた側の負けです。": ["Repetition: 4 repetitions of the same board state result in a draw. However, if one player repeatedly checks, that player loses.","천일수: 같은 국면이 4회 반복되면 무승부입니다. 단, 한쪽이 계속 체크를 건 경우 체크를 건 쪽이 패배합니다.","千日手：重复相同局面4次即判平局。但若一方持续将军，则持续将军方判负。","千日手：重複相同局面4次即判平局。但若一方持續將軍，則持續將軍方判負。","Repetición: 4 repeticiones de la misma posición es empate. Sin embargo, si un jugador da jaque continuamente, pierde ese jugador.","Répétition (Sennichite) : 4 répétitions de la même position = nul. Si un joueur met en échec en continu, il perd la partie.","Zugwiederholung: 4-malige Wiederholung derselben Stellung führt zum Remis. Wer jedoch dauerhaft Schach bietet, verliert.","Repetição: 4 repetições da mesma posição resultam em empate. No entanto, se um jogador der xeque continuamente, ele perde.","Ripetizione: 4 ripetizioni della stessa posizione portano alla patta. Tuttavia, se un giocatore dà scacco continuamente, perde."],
+  "持将棋： このゲームの簡易ルールとして、両方の玉が敵陣に入り、両者とも24点以上（大駒＝角・飛とその成駒は5点、それ以外は1点、持ち駒も数えます）を持っていれば引き分けにします。正式な持将棋の宣言手続きとは異なる簡略版です。": ["Jishogi: Simplified draw rule. If both Kings enter enemy territory and both have 24+ points (Major pieces=5, others=1, including held pieces), it's a draw.","지장기: 양측 옥이 적진에 들어가 양쪽 다 24점 이상(대기물 5점, 기타 1점, 보유 기물 포함)이면 무승부 처리하는 간이 규칙입니다.","持将棋：作为本游戏的简化规则，若双方王将均进入敌阵且双方得分均达24分以上（大子=角/飞及其升变体为5分，其余为1分，含持有棋），即判平局。","持將棋：作為本遊戲的簡化規則，若雙方王將均進入敵陣且雙方得分均達24分以上（大子=角/飛及其升變體為5分，其餘為1分，含持有棋），即判平局。","Jishogi: Regla simplificada de empate. Si ambos reyes entran en territorio enemigo y ambos tienen 24+ puntos (piezas mayores=5, resto=1, incluyendo piezas capturadas), es empate.","Jishogi : Règle simplifiée de match nul. Si les deux rois entrent en territoire ennemi et ont 24+ points chacun (pièces majeures=5, autres=1, pièces capturées incluses), c'est nul.","Jishogi: Vereinfachte Remis-Regel. Wenn beide Könige das gegnerische Lager erreichen und beide 24+ Punkte haben (große Figuren=5, andere=1, inklusive geschlagener Figuren), ist es ein Remis.","Jishogi: Regra simplificada de empate. Se ambos os reis entrarem no território inimigo e ambos tiverem 24+ pontos (peças maiores=5, outras=1, incluindo peças reservadas), é empate.","Jishogi: Regola di patta semplificata. Se entrambi i re entrano nel territorio nemico e hanno 24+ punti ciascuno (pezzi maggiori=5, altri=1, inclusi i pezzi catturati), è patta."],
+  "ルールはシングルプレイと同じ正式ルール（取れる駒は必ず取る、連続ジャンプ、キング、詰み＝勝ち）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。": ["Official rules same as single-player (must capture, multi-jump, King, Checkmate=win). Play against AI if no opponent. If disconnected, AI takes over; opponent can rejoin. AI plays after time limit (45s).","싱글 플레이와 동일한 공식 규칙(강제 캡처, 연속 점프, 킹, 체크메이트=승리). 상대가 없어도 AI와 대전 가능. 연결 끊기면 AI가 대행하며 복귀 시 이어하기 가능. 제한 시간(45초) 초과 시 AI가 대신 둡니다.","规则与单人模式相同（强制吃子、连续跳跃、王、将死=胜）。无对手时可与AI对战。中途断线由AI代打，重连后可回到原位。超时（45秒）由AI自动出子。","規則與單人模式相同（強制吃子、連續跳躍、王、將死=勝）。無對手時可與AI對戰。中途斷線由AI代打，重連後可回到原位。超時（45秒）由AI自動出子。","Reglas oficiales iguales al modo individual (captura obligatoria, salto múltiple, rey, jaque mate=gana). Puedes jugar contra la IA si no hay nadie. Si alguien se desconecta, la IA toma el control; puede volver a unirse. La IA juega tras el límite de tiempo (45s).","Règles officielles identiques au mode solo (capture obligatoire, sauts multiples, Roi, échec et mat = victoire). Jouez contre l'IA en l'absence d'adversaire. En cas de déconnexion, l'IA prend le relais ; le joueur peut revenir. L'IA joue si le temps (45s) est écoulé.","Offizielle Regeln wie im Einzelspiel (Pflichtschlag, Sprungfolgen, König, Schachmatt=Sieg). Wenn kein Gegner da ist, spielen Sie gegen die KI. Bei Verbindungsabbruch übernimmt die KI; der Spieler kann zurückkehren. Zeitlimit (45s) überschritten = KI spielt.","Regras oficiais iguais ao single-player (captura obrigatória, salto múltiplo, rei, xeque-mate=vitória). Jogue contra a IA se não houver oponente. Se desconectar, a IA assume; o jogador pode retornar. Se exceder o tempo (45s), a IA joga.","Regole ufficiali come nel single-player (cattura obbligatoria, salti multipli, re, scacco matto=vittoria). Gioca contro la IA se non c'è un avversario. Se disconnesso, la IA prende il comando; il giocatore può rientrare. Allo scadere del tempo (45s), la IA gioca al tuo posto."],
+  "ルールはシングルプレイと同じ正式ルール（持ち駒、二歩・打ち歩詰め禁止、千日手は引き分け、持将棋は簡易ルール）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。": ["Official Shogi rules (held pieces, no double pawn/drop-mate, draw by repetition, simplified Jishogi). AI takes over if disconnected, or play solo against AI. 45s time limit before AI plays.","공식 장기 규칙(보유 기물, 이보/보 체크메이트 금지, 천일수 무승부, 지장기 간이 규칙). 연결 끊기면 AI가 대행, 상대가 없어도 AI와 대전 가능. 제한 시간(45초) 초과 시 AI가 대신 둡니다.","官方将棋规则（持有棋、禁止二步/打步诘、重复局面平局、简化持将棋）。断线由AI代打，无对手时可与AI对战。超时（45秒）由AI自动出子。","官方將棋規則（持有棋、禁止二步/打步詰、重複局面平局、簡化持將棋）。斷線由AI代打，無對手時可與AI對戰。超時（45秒）由AI自動出子。","Reglas oficiales de Shogi (piezas en mano, sin doble peón/mate por gota, repetición=empate, Jishogi simplificado). La IA toma el control si hay desconexión o juega contra la IA. Límite (45s) antes de que la IA juegue.","Règles officielles du Shogi (pièces en main, pas de double pion/mat par lâcher, répétition=nul, Jishogi simplifié). L'IA prend le relais en cas de déconnexion ou jouez contre elle. L'IA joue après 45s.","Offizielle Shogi-Regeln (gehaltene Figuren, kein doppelter Bauer/Matt durch Einwurf, Remis bei Wiederholung, vereinfachtes Jishogi). KI übernimmt bei Verbindungsabbruch oder spielen gegen KI. 45s Zeitlimit, bevor die KI spielt.","Regras oficiais de Shogi (peças em mãos, sem peão duplo/xeque-mate por gota, repetição=empate, Jishogi simplificado). A IA assume se houver desconexão ou jogue contra a IA. Limite de 45s antes da IA jogar.","Regole ufficiali dello Shogi (pezzi in mano, no doppio pedone/matto per posizionamento, ripetizione=patta, Jishogi semplificato). La IA prende il comando se disconnesso o gioca contro la IA. Limite di 45s prima che la IA giochi."],
+  "友達同士だけのコード対戦で遊ぶチェッカーです。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。": ["Checkers for friends via private room codes. Host creates a room and shares a 6-character code; guest joins with it. No public matchmaking.","친구와 함께하는 코드 매칭 체커입니다. 호스트가 방을 만들고 6자리 코드를 공유하면 게스트가 입장합니다. 불특정 다수와의 매칭은 없습니다.","好友专享的房间号对战棋类游戏。房主创建房间并分享6位代码，客人凭代码加入。无随机匹配。","好友專享的房間號對戰棋類遊戲。房主創建房間並分享6位代碼，客人憑代碼加入。無隨機匹配。","Damas para amigos mediante códigos privados. El anfitrión crea una sala y comparte un código de 6 caracteres; el invitado se une con él. No hay emparejamiento público.","Dames entre amis via des codes de salle privés. L'hôte crée une salle et partage un code à 6 caractères, l'invité le saisit pour rejoindre. Pas de matchmaking public.","Dame für Freunde über private Raum-Codes. Gastgeber erstellt einen Raum und teilt einen 6-stelligen Code, der Gast tritt damit bei. Kein öffentliches Matchmaking.","Checkers entre amigos via códigos de sala privados. O anfitrião cria uma sala e compartilha um código de 6 caracteres; o convidado entra com ele. Sem matchmaking público.","Dama tra amici tramite codici stanza privati. L'host crea una stanza e condivide un codice di 6 caratteri; l'ospite entra con quello. Nessun matchmaking pubblico."],
+  "友達同士だけのコード対戦で遊ぶ将棋です。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。": ["Shogi for friends via private room codes. Host creates a room and shares a 6-character code; guest joins with it. No public matchmaking.","친구와 함께하는 코드 매칭 장기입니다. 호스트가 방을 만들고 6자리 코드를 공유하면 게스트가 입장합니다. 불특정 다수와의 매칭은 없습니다.","好友专享的房间号对战将棋。房主创建房间并分享6位代码，客人凭代码加入。无随机匹配。","好友專享的房間號對戰將棋。房主創建房間並分享6位代碼，客人憑代碼加入。無隨機匹配。","Shogi para amigos mediante códigos privados. El anfitrión crea una sala y comparte un código de 6 caracteres; el invitado se une con él. No hay emparejamiento público.","Shogi entre amis via des codes de salle privés. L'hôte crée une salle et partage un code à 6 caractères, l'invité le saisit pour rejoindre. Pas de matchmaking public.","Shogi für Freunde über private Raum-Codes. Gastgeber erstellt einen Raum und teilt einen 6-stelligen Code, der Gast tritt damit bei. Kein öffentliches Matchmaking.","Shogi entre amigos via códigos de sala privados. O anfitrião cria uma sala e compartilha um código de 6 caracteres; o convidado entra com ele. Sem matchmaking público.","Shogi tra amici tramite codici stanza privati. L'host crea una stanza e condivide un codice di 6 caratteri; l'ospite entra con quello. Nessun matchmaking pubblico."],
+  "チェッカー：強制取りと連続ジャンプのエンジン": ["Checkers: Mandatory capture and multi-jump engine","체커: 강제 캡처 및 연속 점프 엔진","跳棋：强制吃子与连续跳跃引擎","跳棋：強制吃子與連續跳躍引擎","Damas: Motor de captura obligatoria y saltos múltiples","Dames : Moteur de capture obligatoire et sauts multiples","Dame: Engine für Pflichtschlag und Sprungfolgen","Checkers: Mecanismo de captura obrigatória e saltos múltiplos","Dama: Motore per cattura obbligatoria e salti multipli"],
+  "チェッカーはアメリカ式（イギリス式）ルールで、取れる駒があるときは必ず取らなければならず、連続ジャンプは1手として全部つなげます。合法手の生成は「取れる手があるか」を先に調べ、ある場合はジャンプの最長連鎖だけを手として返します。途中でキングになった駒はその場で手番が終わる、本式の細部まで寄せました。": ["Checkers follows American (British) rules, where capturing is mandatory when available, and consecutive jumps are performed as a single turn. The legal move generator first checks for captures; if any exist, it returns only the longest possible jump sequences. The game replicates authentic details, such as a piece becoming a King ending the turn immediately.","체커는 미국식(영국식) 규칙을 따르며, 잡을 수 있는 말이 있을 때는 반드시 잡아야 하고, 연속 점프는 1수로 모두 연결합니다. 합법적인 수 생성은 '잡을 수 있는 수'가 있는지 먼저 확인하며, 있을 경우 점프의 최장 연쇄만을 수로 반환합니다. 도중에 킹이 된 말은 그 자리에서 차례가 끝나는 등 본연의 세부 사항까지 재현했습니다.","西洋跳棋采用美式（英式）规则，必须优先吃子，连续跳跃视为一步棋完成。合法走法生成器会先检测是否有可吃的棋子，若有，则只返回最长的连跳路径。我们还原了正式规则的细节，例如棋子升变为王后即刻结束回合。","西洋跳棋採用美式（英式）規則，必須優先吃子，連續跳躍視為一步棋完成。合法走法生成器會先檢測是否有可吃的棋子，若有，則只返回最長的連跳路徑。我們還原了正式規則的細節，例如棋子升變為王后即刻結束回合。","Las damas siguen las reglas americanas (británicas), donde es obligatorio capturar cuando es posible, y los saltos consecutivos se realizan como un solo movimiento. El generador de movimientos legales verifica primero si hay capturas disponibles; si las hay, devuelve solo las secuencias de salto más largas. Se han recreado los detalles auténticos, como que una pieza se convierta en Reina y finalice el turno inmediatamente.","Le jeu de dames suit les règles américaines (britanniques) : la prise est obligatoire lorsqu'elle est possible, et les sauts consécutifs sont effectués en un seul tour. Le générateur de coups légaux vérifie d'abord les prises possibles ; si elles existent, il ne renvoie que les séquences de sauts les plus longues. Nous avons reproduit les détails officiels, comme le fait qu'une pièce devenant Dame termine immédiatement le tour.","Dame folgt den amerikanischen (britischen) Regeln, bei denen das Schlagen obligatorisch ist, wenn es möglich ist, und aufeinanderfolgende Sprünge als ein einzelner Zug ausgeführt werden. Der Generator für legale Züge prüft zuerst, ob Schlagmöglichkeiten bestehen; wenn ja, gibt er nur die längsten Sprungsequenzen zurück. Die authentischen Details wurden genau umgesetzt, etwa dass das Umwandeln in einen König den Zug sofort beendet.","O jogo de damas segue as regras americanas (britânicas), onde a captura é obrigatória quando disponível, e saltos consecutivos são feitos como um único lance. O gerador de jogadas legais verifica primeiro se há capturas; se houver, retorna apenas as sequências de salto mais longas. Reproduzimos os detalhes autênticos, como a peça que se torna Dama encerrando o turno imediatamente.","La dama segue le regole americane (britanniche), dove la presa è obbligatoria se possibile, e i salti consecutivi vengono eseguiti come un'unica mossa. Il generatore di mosse legali controlla prima se ci sono prese disponibili; in tal caso, restituisce solo le sequenze di salto più lunghe. Abbiamo ricreato i dettagli autentici, come il fatto che un pezzo che diventa Dama termina immediatamente il turno."],
+  "AIは3段階です。やさしいは1手先の駒得だけを見る設定で、連続ジャンプの先は読めません。ふつうは4手先、むずかしいは7手先までアルファベータ探索で読み、取る手が残っている局面では読みを自動で延長します（取る・取られるの応酬を途中で打ち切らないため）。むずかしいの1手は実測で約50ミリ秒でした。": ["The AI has 3 difficulty levels. Easy only evaluates a 1-turn material advantage and cannot look ahead through consecutive jumps. Medium looks 4 turns ahead, and Hard looks 7 turns ahead using alpha-beta pruning, automatically extending the search when captures remain (to ensure exchanges are fully resolved). A move on Hard takes approximately 50ms in practice.","AI는 3단계입니다. 쉬움은 1수 앞의 이득만 보는 설정으로, 연속 점프 뒤를 읽지 못합니다. 보통은 4수 앞, 어려움은 7수 앞까지 알파-베타 탐색으로 읽으며, 잡을 수 있는 수가 남은 국면에서는 읽기를 자동으로 연장합니다(잡고 잡히는 공방을 중간에 끊지 않기 위해). 어려움의 1수는 실측으로 약 50밀리초였습니다.","AI分为3个等级。简单难度仅评估一步的子力优势，无法看穿连续跳跃。普通和困难难度分别利用Alpha-Beta剪枝法进行4步和7步的搜索，若棋盘上仍存在可吃棋子，AI会自动延长搜索深度（确保不中途切断吃子与反吃子的过程）。在困难难度下，每步棋实际运算时间约为50毫秒。","AI分為3個等級。簡單難度僅評估一步的子力優勢，無法看穿連續跳躍。普通和困難難度分別利用Alpha-Beta剪枝法進行4步和7步的搜尋，若棋盤上仍存在可吃棋子，AI會自動延長搜尋深度（確保不中途切斷吃子與反吃子的過程）。在困難難度下，每步棋實際運算時間約為50毫秒。","La IA tiene 3 niveles de dificultad. El nivel Fácil solo evalúa la ventaja material a 1 turno y no puede anticipar saltos consecutivos. Normal analiza 4 turnos y Difícil analiza 7 turnos mediante búsqueda alfa-beta, extendiendo automáticamente la lectura cuando quedan capturas disponibles (para no interrumpir los intercambios). Un movimiento en difícil tomó unos 50ms en las pruebas.","L'IA propose 3 niveaux de difficulté. Le niveau Facile n'évalue que l'avantage matériel sur 1 coup et ne peut pas anticiper les sauts consécutifs. Normal analyse 4 coups et Difficile analyse 7 coups via une recherche alpha-bêta, prolongeant automatiquement la recherche si des prises restent disponibles (pour ne pas interrompre les échanges). Un coup en difficulté Difficile prend environ 50ms en pratique.","Die KI hat 3 Stufen. Einfach bewertet nur den Materialvorteil von 1 Zug und kann nicht durch aufeinanderfolgende Sprünge vorausblicken. Mittel berechnet 4 Züge und Schwer berechnet 7 Züge mittels Alpha-Beta-Suche voraus und verlängert die Suche automatisch, wenn noch Schlagmöglichkeiten bestehen (um den Schlagabtausch nicht vorzeitig abzubrechen). Ein Zug auf Schwer dauerte in der Praxis etwa 50ms.","A IA tem 3 níveis. O Fácil avalia apenas a vantagem de material em 1 lance e não consegue ler além de saltos consecutivos. O Normal lê 4 lances e o Difícil 7 lances usando busca alfa-beta, estendendo a leitura automaticamente quando restam capturas (para não interromper as trocas). Um lance no Difícil levou cerca de 50ms na prática.","L'IA ha 3 livelli di difficoltà. Il livello Facile valuta solo il vantaggio materiale di 1 mossa e non può prevedere i salti consecutivi. Normale analizza 4 mosse e Difficile 7 mosse usando la ricerca alfa-beta, estendendo automaticamente la lettura quando rimangono prese disponibili (per non interrompere gli scambi). Una mossa a livello Difficile ha richiesto circa 50ms in pratica."],
+  "勝敗は「全部取る」か「相手を動けなくする（詰み）」で決まり、駒を取らず歩も進めない手が80半手続くと引き分けです。検証では、強制取りの提示と拒否、連続ジャンプ、キング化、詰み勝ち、引き分けカウンタまで16項目の自動テストを全部通しました。": ["Victory is determined by capturing all pieces or immobilizing the opponent (stalemate/checkmate). If 80 half-moves pass without a capture or a piece being moved, it is a draw. During verification, we successfully passed 16 automated tests, covering forced capture prompts, refusal, consecutive jumps, King promotion, winning by immobilization, and the draw counter.","승패는 '전부 잡기' 또는 '상대를 움직이지 못하게 하기(詰み)'로 결정되며, 말을 잡지 않고 보행(졸)도 움직이지 않는 수가 80반 수 계속되면 무승부입니다. 검증에서는 강제 잡기 제시와 거부, 연속 점프, 킹화,詰み 승리, 무승부 카운터까지 16개 항목의 자동 테스트를 모두 통과했습니다.","胜负由“吃光对方”或“让对方无法移动（困毙）”决定。若连续80个半回合没有吃子或移动棋子，则判为平局。在验证阶段，我们通过了涵盖强制吃子提示与拒绝、连续跳跃、升变、困毙胜以及平局计数器等共16项自动化测试。","勝負由「吃光對方」或「讓對方無法移動（困斃）」決定。若連續80個半回合沒有吃子或移動棋子，則判為平局。在驗證階段，我們通過了涵蓋強制吃子提示與拒絕、連續跳躍、升變、困斃勝以及平局計數器等共16項自動化測試。","La victoria se decide al capturar todas las piezas o inmovilizar al oponente (ahogado). Si transcurren 80 semimovimientos sin capturar ni mover una pieza, es empate. En la verificación, pasamos 16 pruebas automatizadas, incluyendo avisos de captura forzada, denegación, saltos consecutivos, promoción a Reina, victoria por inmovilización y el contador de empates.","La victoire est décidée en capturant toutes les pièces ou en immobilisant l'adversaire (pat). Si 80 demi-coups se succèdent sans capture ni mouvement de pièce, c'est un match nul. Lors de la vérification, nous avons passé 16 tests automatisés couvrant les invites de prise forcée, le refus, les sauts consécutifs, la promotion en Dame, la victoire par immobilisation et le compteur de nuls.","Der Sieg wird durch das Schlagen aller Steine oder das Blockieren des Gegners (Patt) entschieden. Wenn 80 Halbzüge lang weder ein Stein geschlagen noch gezogen wird, ist das Spiel unentschieden. Bei der Überprüfung haben wir 16 automatisierte Tests bestanden, darunter erzwungene Schläge, Ablehnung, aufeinanderfolgende Sprünge, Umwandlung in einen König, Sieg durch Blockade und den Unentschieden-Zähler.","A vitória é decidida ao capturar todas as peças ou imobilizar o oponente (pate). Se 80 meio-lances passarem sem capturar ou mover uma peça, é empate. Na verificação, passamos em 16 testes automatizados, incluindo sugestão e recusa de captura forçada, saltos consecutivos, promoção a Dama, vitória por imobilização e o contador de empates.","La vittoria si decide catturando tutti i pezzi o immobilizzando l'avversario (stallo). Se trascorrono 80 semimosse senza catture o movimenti di pezzi, è pareggio. Durante la verifica, abbiamo superato 16 test automatizzati, tra cui suggerimenti e rifiuti di cattura forzata, salti consecutivi, promozione a Dama, vittoria per immobilizzazione e il contatore di pareggi."],
+  "将棋：完全ルールエンジンと読みの速さ": ["Shogi: Complete Rule Engine and Reading Speed","장기: 완전 규칙 엔진 및 수읽기 속도","将棋：完整规则引擎与演算速度","將棋：完整規則引擎與運算速度","Shogi: Motor de reglas completo y velocidad de cálculo","Shogi : Moteur de règles complet et vitesse de lecture","Shogi: Vollständige Regel-Engine und Rechengeschwindigkeit","Shogi: Motor de regras completo e velocidade de leitura","Shogi: Motore di regole completo e velocità di calcolo"],
+  "将棋は持ち駒・成り・千日手・持将棋まで入れた完全ルールです。打てない手を3つとも生成の段階で落とします：二歩（同じ筋の歩を数える）、行き場のないマス（歩・香は1段目、桂は1〜2段目）、打ち歩詰め（歩を打って王手になったときだけ、相手の合法手を全部数えて詰みかどうかを確かめる）。最初の局面の合法手は30手ちょうどで、教科書の数字と一致しました。": ["Shogi features complete rules including captured pieces, promotion, repetition (Sennichite), and drawn games (Jishogi). Illegal moves are filtered out during generation: Nifu (double pawns in the same file), trapped pieces (Pawns/Lances on the 1st rank, Knights on 1st-2nd ranks), and Uchi-fuzume (dropping a Pawn to deliver mate; verified by calculating all opponent legal moves). The starting position has exactly 30 legal moves, matching textbook figures.","장기는 잡은 말, 승격, 천일수, 지장기까지 포함된 완전 규칙을 따릅니다. 둘 수 없는 수는 생성 단계에서 3가지 모두 제외됩니다: 이보(같은 줄에 보병이 있는지 확인), 갈 곳 없는 말(보병/향차는 1단, 계마는 1~2단), 우치후즈메(보병을 놓아 왕을 잡는 경우, 상대의 모든 합법적인 수를 계산해 외통수인지 확인). 시작 시점의 합법적인 수는 정확히 30수이며, 교과서의 수치와 일치합니다.","将棋采用了包含持有棋子、升变、千日手、持将棋在内的完整规则。在生成阶段即剔除三种非法落子：二步（计算同一列是否有步兵）、无法移动的棋子（步兵/香车在第1段，桂马在第1-2段）、打步诘（仅在打入步兵形成王手时，计算对方所有合法着法以确认是否为诘棋）。初始局面的合法着法正好为30步，与教科书数字一致。","將棋採用了包含持有棋子、升變、千日手、持將棋在內的完整規則。在生成階段即剔除三種非法落子：二步（計算同一列是否有步兵）、無法移動的棋子（步兵/香車在第1段，桂馬在第1-2段）、打步詰（僅在打入步兵形成王手時，計算對方所有合法著法以確認是否為詰棋）。初始局面的合法著法正好為30步，與教科書數字一致。","Shogi presenta reglas completas que incluyen piezas capturadas, promoción, repetición y tablas. Los movimientos ilegales se eliminan durante la generación: Nifu (peones dobles en la misma columna), piezas atrapadas (peones/lanzas en la 1ª fila, caballos en la 1ª-2ª fila) y Uchi-fuzume (dar jaque mate soltando un peón; verificado calculando todos los movimientos legales del oponente). La posición inicial tiene exactamente 30 movimientos legales, coincidiendo con las cifras de los libros de texto.","Le Shogi propose des règles complètes incluant les pièces capturées, la promotion, la répétition de coups (Sennichite) et les parties nulles (Jishogi). Les coups illégaux sont filtrés dès la génération : Nifu (doublon de pions sur la même colonne), pièces bloquées (Pions/Lances sur la 1ère rangée, Cavaliers sur les 1ère-2ème rangées) et Uchi-fuzume (échec et mat par pose de pion ; vérifié en calculant tous les coups légaux de l'adversaire). La position initiale compte exactement 30 coups légaux, ce qui concorde avec les chiffres théoriques.","Shogi bietet vollständige Regeln, einschließlich geschlagener Steine, Beförderung, Wiederholung (Sennichite) und Remis (Jishogi). Illegale Züge werden bei der Generierung herausgefiltert: Nifu (doppelte Bauern in derselben Spalte), feststeckende Steine (Bauern/Lanzen in der 1. Reihe, Springer in der 1.-2. Reihe) und Uchi-fuzume (Schachmatt durch Abwerfen eines Bauern; verifiziert durch Berechnung aller legalen Züge des Gegners). Die Ausgangsposition hat genau 30 legale Züge, was den Lehrbuchwerten entspricht.","O Shogi apresenta regras completas, incluindo peças capturadas, promoção, repetição (Sennichite) e empates (Jishogi). Movimentos ilegais são eliminados durante a geração: Nifu (peões duplos na mesma coluna), peças presas (peões/lanças na 1ª fileira, cavalos na 1ª-2ª fileira) e Uchi-fuzume (xeque-mate por soltar um peão; verificado calculando todos os movimentos legais do oponente). A posição inicial tem exatamente 30 movimentos legais, correspondendo aos números dos livros didáticos.","Lo Shogi offre regole complete che includono pezzi catturati, promozione, ripetizione (Sennichite) e patta (Jishogi). Le mosse illegali vengono eliminate durante la generazione: Nifu (pedoni doppi sulla stessa colonna), pezzi bloccati (Pedoni/Lance nella 1ª traversa, Cavalli nella 1ª-2ª traversa) e Uchi-fuzume (scaccomatto lasciando cadere un pedone; verificato calcolando tutte le mosse legali dell'avversario). La posizione iniziale ha esattamente 30 mosse legali, corrispondenti ai dati dei manuali."],
+  "AIは評価関数（駒の価値＋持ち駒の割り増し＋玉の守りの厚さ）にアルファベータ探索を組み合わせ、取る手だけを先に読む静止探索を足しています。読みの深さは、やさしいは1手先の評価だけ、ふつうは2手、むずかしいは3手です。応答が重くならないよう探索ノードに上限（ふつう6万、むずかしい16万）を付け、むずかしいの1手は序盤で約80ミリ秒、中盤で約420ミリ秒でした（実測）。": ["The AI combines an evaluation function (piece value + captured piece bonus + King's defense thickness) with alpha-beta pruning and quiescence search that focuses only on capturing moves. Search depth: Easy evaluates 1 move ahead, Normal 2, Hard 3. To maintain responsiveness, search nodes are capped (60,000 for Normal, 160,000 for Hard). Measured performance for Hard is approx. 80ms for early game and 420ms for mid-game per move.","AI는 평가 함수(기물 가치 + 잡은 말 가산점 + 왕의 수비 두께)에 알파-베타 탐색을 조합하고, 취하는 수만 미리 읽는 정적 탐색을 추가했습니다. 수읽기 깊이는 쉬움은 1수, 보통은 2수, 어려움은 3수입니다. 응답 속도를 유지하기 위해 탐색 노드에 상한(보통 6만, 어려움 16만)을 두었으며, 어려움 난이도에서 1수를 두는 데 소요되는 시간은 초반 약 80ms, 중반 약 420ms였습니다(실측치).","AI将评估函数（棋子价值＋持有棋子加成＋玉将防守厚度）与Alpha-Beta搜索相结合，并加入了仅预读吃子路线的静止搜索。搜索深度方面：简单为1步，普通为2步，困难为3步。为避免响应过慢，设定了搜索节点上限（普通6万，困难16万）。实测在困难模式下，每一步耗时：开局约80毫秒，中局约420毫秒。","AI將評估函數（棋子價值＋持有棋子加成＋玉將防守厚度）與Alpha-Beta搜索相結合，並加入了僅預讀吃子路線的靜止搜索。搜索深度方面：簡單為1步，普通為2步，困難為3步。為避免響應過慢，設定了搜索節點上限（普通6萬，困難16萬）。實測在困難模式下，每一步耗時：開局約80毫秒，中局約420毫秒。","La IA combina una función de evaluación (valor de la pieza + bonificación por piezas capturadas + solidez defensiva del Rey) con búsqueda alfa-beta y una búsqueda de quietud que analiza solo los movimientos de captura. Profundidad de búsqueda: Fácil 1 movimiento, Normal 2, Difícil 3. Para mantener la capacidad de respuesta, los nodos de búsqueda están limitados (60,000 en Normal, 160,000 en Difícil). Rendimiento medido en Difícil: aprox. 80 ms al principio y 420 ms en el medio juego por movimiento.","L'IA combine une fonction d'évaluation (valeur des pièces + bonus pour les pièces capturées + solidité de la défense du Roi) avec une recherche alpha-bêta et une recherche de repos (quiescence search) focalisée sur les captures. Profondeur de lecture : Facile 1 coup, Normal 2 coups, Difficile 3 coups. Pour maintenir la réactivité, le nombre de nœuds est limité (60 000 en Normal, 160 000 en Difficile). Performances mesurées en Difficile : environ 80 ms en début de partie et 420 ms en milieu de partie par coup.","Die KI kombiniert eine Bewertungsfunktion (Steinwert + Bonus für geschlagene Steine + Verteidigungsstärke des Königs) mit Alpha-Beta-Suche und einer Stillstandssuche, die nur Schlagzüge vorausberechnet. Suchtiefe: Leicht 1 Zug, Normal 2, Schwer 3. Um die Reaktionszeit zu wahren, sind die Suchknoten begrenzt (60.000 für Normal, 160.000 für Schwer). Gemessene Leistung für Schwer: ca. 80 ms im frühen Spiel und 420 ms im mittleren Spiel pro Zug.","A IA combina uma função de avaliação (valor da peça + bônus de peças capturadas + espessura da defesa do Rei) com busca alfa-beta e uma busca de quietude que foca apenas em movimentos de captura. Profundidade de busca: Fácil avalia 1 movimento, Normal 2, Difícil 3. Para manter a resposta, os nós de busca são limitados (60.000 para Normal, 160.000 para Difícil). Desempenho medido para Difícil: aprox. 80ms no início do jogo e 420ms no meio do jogo por movimento.","L'IA combina una funzione di valutazione (valore del pezzo + bonus per i pezzi catturati + solidità della difesa del Re) con la ricerca alpha-beta e una ricerca di quiescenza che considera solo le mosse di cattura. Profondità di calcolo: Facile 1 mossa, Normale 2, Difficile 3. Per mantenere la reattività, i nodi di ricerca sono limitati (60.000 in Normale, 160.000 in Difficile). Prestazioni misurate in Difficile: circa 80 ms a inizio partita e 420 ms in fase centrale per mossa."],
+  "千日手は同じ局面の4回目で判定し、王手をかけ続けた側が負けになります。持将棋は簡易ルール（両方の玉が敵陣に入り、両者24点以上で引き分け）として、ルール画面にも簡略版であることを明記しました。AI対ランダムの対局が合法手だけで最後まで進むことも自動テストで確認しています（全16項目）。": ["A sennichite (repetition) is declared on the 4th occurrence of the same position, and the player who continuously checked will lose. Jishogi (impasse) is implemented with simplified rules (both kings in the enemy camp and both players with 24 or more points results in a draw), and this is noted on the rules screen. Automated testing has confirmed that AI vs. Random games can proceed to the end using only legal moves (16 test cases total).","千日手（同局面の反復）は4回目で判定され、連続して王手をかけた側が負けとなります。持将棋は簡易ルール（両玉が敵陣入り、両者24点以上で引き分け）を採用し、ルール画面にもその旨を明記しました。AI対ランダムの対局が合法手のみで終局まで進行することも自動テストで確認済みです（全16項目）。","千日手（同局面的重复）在第4次出现时判定，持续将军的一方判负。持将棋采用简易规则（双方玉将进入敌阵且双方均达24分以上即为平局），并已在规则画面中说明。通过自动测试，已确认AI对阵随机的对局仅使用合法步数即可进行至终局（共16项）。","千日手（同局面的重複）在第4次出現時判定，持續將軍的一方判負。持將棋採用簡易規則（雙方玉將進入敵陣且雙方均達24分以上即為和局），並已在規則畫面中說明。透過自動測試，已確認AI對陣隨機的對局僅使用合法步數即可進行至終局（共16項）。","El sennichite (repetición de jugadas) se declara en la cuarta repetición de la misma posición, y el jugador que haya dado jaque continuamente pierde. El jishogi (empate por posición) se implementa con reglas simplificadas (ambos reyes en territorio enemigo y ambos jugadores con 24 puntos o más resulta en empate), lo cual se especifica en la pantalla de reglas. Se ha confirmado mediante pruebas automáticas que las partidas de IA contra aleatorio proceden hasta el final usando solo movimientos legales (16 casos en total).","Le sennichite (répétition de coups) est déclaré à la 4ème répétition de la même position, et le joueur qui a continuellement mis en échec perd. Le jishogi (impasse) est implémenté avec des règles simplifiées (les deux rois dans le camp adverse et au moins 24 points chacun résulte en un match nul), ce qui est précisé sur l'écran des règles. Des tests automatisés ont confirmé que les parties IA contre aléatoire se déroulent jusqu'à la fin en n'utilisant que des coups légaux (16 tests au total).","Sennichite (Zugwiederholung) wird beim vierten Auftreten der gleichen Stellung festgestellt, wobei der Spieler, der den Schach geboten hat, verliert. Jishogi (Pattsituation) wird mit vereinfachten Regeln implementiert (beide Könige im gegnerischen Lager und beide Spieler mit 24 oder mehr Punkten ergibt ein Unentschieden), was auch auf dem Regelbildschirm vermerkt ist. Automatisierte Tests haben bestätigt, dass Spiele KI gegen Zufall nur mit legalen Zügen bis zum Ende durchgeführt werden können (insgesamt 16 Testfälle).","O sennichite (repetição de posições) é declarado na 4ª ocorrência da mesma posição, e o jogador que deu cheque continuamente perde. O jishogi (impasse) é implementado com regras simplificadas (ambos os reis no campo inimigo e ambos os jogadores com 24 pontos ou mais resulta em empate), e isso está anotado na tela de regras. Testes automatizados confirmaram que partidas de IA contra aleatório podem prosseguir até o final usando apenas movimentos legais (16 testes no total).","Il sennichite (ripetizione della posizione) viene dichiarato alla quarta ripetizione della stessa posizione e il giocatore che ha continuato a dare scacco perde. Lo jishogi (stallo) è implementato con regole semplificate (entrambi i re nel campo avversario e almeno 24 punti a testa portano al pareggio), come indicato nella schermata delle regole. Dei test automatici hanno confermato che le partite IA contro casuale procedono fino alla fine usando solo mosse legali (16 test in totale)."],
+  "ルール： 先手はあなたです。勝利 30 コイン／引き分け 10 コイン（難易度で倍率が付きます）。教育モードを使った対局はコインが増えも減りもしません。": ["Rules: You go first. Win: 30 coins / Draw: 10 coins (multipliers apply based on difficulty). Matches played in tutorial mode do not earn or lose coins.","규칙: 선공입니다. 승리 30코인/무승부 10코인(난이도에 따라 배율이 적용됩니다). 튜토리얼 모드에서 진행한 대국은 코인이 증감하지 않습니다.","规则：由你先行。获胜得 30 枚硬币 / 平局得 10 枚硬币（根据难度会有倍率加成）。使用教学模式进行的对局不会增加或减少硬币。","規則：由你先行。獲勝得 30 枚硬幣 / 平局得 10 枚硬幣（根據難度會有倍率加成）。使用教學模式進行的對局不會增加或減少硬幣。","Reglas: Empiezas tú. Victoria: 30 monedas / Empate: 10 monedas (se aplican multiplicadores según la dificultad). Las partidas jugadas en modo tutorial no aumentan ni disminuyen tus monedas.","Règles : Vous commencez. Victoire : 30 pièces / Nul : 10 pièces (des multiplicateurs s'appliquent selon la difficulté). Les parties jouées en mode tutoriel ne font ni gagner ni perdre de pièces.","Regeln: Sie beginnen. Sieg: 30 Münzen / Unentschieden: 10 Münzen (Multiplikatoren basieren auf dem Schwierigkeitsgrad). Im Tutorial-Modus gewonnene oder verlorene Partien haben keinen Einfluss auf Ihren Münzbestand.","Regras: Você começa. Vitória: 30 moedas / Empate: 10 moedas (aplicam-se multiplicadores com base na dificuldade). Partidas jogadas no modo tutorial não aumentam nem diminuem suas moedas.","Regole: Inizi tu. Vittoria: 30 monete / Pareggio: 10 monete (si applicano moltiplicatori in base alla difficoltà). Le partite giocate in modalità tutorial non fanno guadagnare né perdere monete."]
+  });
+  var VS_JUDGE = {
+    "あなたが大きく有利": ["You have a major advantage","大きく有利です","你占据巨大优势","你佔據巨大優勢","Tienes una gran ventaja","Vous avez un avantage majeur","Du bist deutlich im Vorteil","Você tem uma grande vantagem","Sei in netto vantaggio"],
+    "あなたがやや有利": ["You have a slight advantage","やや有利です","你稍占优势","你稍佔優勢","Tienes una ligera ventaja","Vous avez un léger avantage","Du bist leicht im Vorteil","Você tem uma pequena vantagem","Sei in leggero vantaggio"],
+    "CPUが大きく有利": ["CPU has a major advantage","CPU가 크게 유리","CPU占大优势","CPU佔大優勢","Gran ventaja para la CPU","Gros avantage pour le CPU","Großer Vorteil für die CPU","Grande vantagem para a CPU","Grande vantaggio per la CPU"],
+    "CPUがやや有利": ["CPU has a slight advantage","CPU가 약간 유리","CPU占小优势","CPU佔小優勢","Ligera ventaja para la CPU","Léger avantage pour le CPU","Leichter Vorteil für die CPU","Ligeira vantagem para a CPU","Leggero vantaggio per la CPU"],
+    "互角": ["Even","대등","均势","均勢","Igualado","Égalité","Ausgeglichen","Equilibrado","Alla pari"]
+  };
+  var VS_PC = {
+    en: { "歩": "Pawn", "香": "Lance", "桂": "Knight", "銀": "Silver", "金": "Gold", "角": "Bishop", "飛": "Rook", "玉": "King", "王": "King", "と": "promoted pawn", "成香": "promoted lance", "成桂": "promoted knight", "成銀": "promoted silver", "馬": "horse", "竜": "dragon" },
+    ko: { "歩": "보병", "香": "향차", "桂": "계마", "銀": "은장", "金": "금장", "角": "각행", "飛": "비차", "玉": "옥장", "王": "왕장", "と": "토", "成香": "성향", "成桂": "성계", "成銀": "성은", "馬": "마", "竜": "용" },
+    zh: { "歩": "步兵", "香": "香车", "桂": "桂马", "銀": "银将", "金": "金将", "角": "角行", "飛": "飞车", "玉": "玉将", "王": "王将", "と": "と", "成香": "成香", "成桂": "成桂", "成銀": "成银", "馬": "龙马", "竜": "龙王" },
+    zht: { "歩": "步兵", "香": "香車", "桂": "桂馬", "銀": "銀將", "金": "金將", "角": "角行", "飛": "飛車", "玉": "玉將", "王": "王將", "と": "と", "成香": "成香", "成桂": "成桂", "成銀": "成銀", "馬": "龍馬", "竜": "龍王" },
+    es: { "歩": "Peón", "香": "Lanza", "桂": "Caballo", "銀": "Plata", "金": "Oro", "角": "Obispo", "飛": "Torre", "玉": "Rey", "王": "Rey", "と": "peón promovido", "成香": "lanza promovida", "成桂": "caballo promovido", "成銀": "plata promovida", "馬": "caballo dragón", "竜": "rey dragón" },
+    fr: { "歩": "Pion", "香": "Lance", "桂": "Cavalier", "銀": "Argent", "金": "Or", "角": "Fou", "飛": "Tour", "玉": "Roi", "王": "Roi", "と": "pion promu", "成香": "lance promue", "成桂": "cavalier promu", "成銀": "argent promu", "馬": "cheval-dragon", "竜": "roi-dragon" },
+    de: { "歩": "Bauer", "香": "Lanze", "桂": "Springer", "銀": "Silber", "金": "Gold", "角": "Läufer", "飛": "Turm", "玉": "König", "王": "König", "と": "beförderter Bauer", "成香": "beförderte Lanze", "成桂": "beförderter Springer", "成銀": "befördertes Silber", "馬": "Drachenpferd", "竜": "Drachenkönig" },
+    pt: { "歩": "Peão", "香": "Lança", "桂": "Cavalo", "銀": "Prata", "金": "Ouro", "角": "Bispo", "飛": "Torre", "玉": "Rei", "王": "Rei", "と": "peão promovido", "成香": "lança promovida", "成桂": "cavalo promovido", "成銀": "prata promovida", "馬": "cavalo-dragão", "竜": "rei-dragão" },
+    it: { "歩": "Pedone", "香": "Lancia", "桂": "Cavallo", "銀": "Argento", "金": "Oro", "角": "Alfiere", "飛": "Torre", "玉": "Re", "王": "Re", "と": "pedone promosso", "成香": "lancia promossa", "成桂": "cavallo promosso", "成銀": "argento promosso", "馬": "cavallo drago", "竜": "re drago" }
+  };
+  function vsCoord(s) {
+    var m = /^(\d+)行(\d+)列$/.exec(s); if (!m) return s;
+    var f = { en: "row " + m[1] + ", column " + m[2], ko: m[1] + "행 " + m[2] + "열", zh: "第" + m[1] + "行第" + m[2] + "列", zht: "第" + m[1] + "行第" + m[2] + "列", es: "fila " + m[1] + ", columna " + m[2], fr: "rangée " + m[1] + ", colonne " + m[2], de: "Reihe " + m[1] + ", Spalte " + m[2], pt: "linha " + m[1] + ", coluna " + m[2], it: "riga " + m[1] + ", colonna " + m[2] }[cur];
+    return f || s;
+  }
+  function vsJudge(s) { var e = VS_JUDGE[s]; return e ? e[idx()] : s; }
+  function vsRest(rest, head) {
+    /* rest = optional fixed head sentence (already a D key) + an
+       intent sentence handled by D / patterns. */
+    var out2 = "";
+    if (head && rest.indexOf(head) === 0) { var t = trString(head); out2 += (t == null ? head : t) + " "; rest = rest.slice(head.length); }
+    if (rest) { var t2 = trString(rest); out2 += (t2 == null ? rest : t2); }
+    return out2;
+  }
+  function vsShoMove(s) {
+    var m = /^(\d)([一二三四五六七八九])(歩|香|桂|銀|金|角|飛|玉|王|と|成香|成桂|成銀|馬|竜)(成|打ち)?$/.exec(s);
+    if (!m) return s;
+    var rank = "一二三四五六七八九".indexOf(m[2]) + 1;
+    var pc = (VS_PC[cur] || {})[m[3]] || m[3];
+    var sq = m[1] + "-" + rank;
+    if (m[4] === "打ち") {
+      var fd = { en: "drop " + pc + " on " + sq, ko: pc + " " + sq + "에 두기", zh: "打入" + pc + "于" + sq, zht: "打入" + pc + "於" + sq, es: "colocar " + pc + " en " + sq, fr: "parachuter " + pc + " en " + sq, de: pc + " auf " + sq + " einsetzen", pt: "colocar " + pc + " em " + sq, it: "paracadutare " + pc + " su " + sq }[cur];
+      return fd || s;
+    }
+    var fm = { en: pc + " to " + sq, ko: pc + " " + sq, zh: pc + "到" + sq, zht: pc + "到" + sq, es: pc + " a " + sq, fr: pc + " en " + sq, de: pc + " nach " + sq, pt: pc + " para " + sq, it: pc + " su " + sq }[cur];
+    if (m[4] === "成") fm += { en: ", promoting", ko: " (승격)", zh: "（升变）", zht: "（升變）", es: ", promocionando", fr: ", avec promotion", de: ", mit Beförderung", pt: ", promovendo", it: ", con promozione" }[cur] || "";
+    return fm || s;
+  }
+  PATTERNS.push(
+    { re: /^(\d+)行(\d+)列$/, fn: function (m) { return vsCoord(m[1] + "行" + m[2] + "列"); } },
+    { re: /^(\d)筋(\d)段目$/, fn: function (m) { var f = { en: "file " + m[1] + ", rank " + m[2], ko: m[1] + "열 " + m[2] + "단", zh: m[1] + "筋" + m[2] + "段", zht: m[1] + "筋" + m[2] + "段", es: "columna " + m[1] + ", fila " + m[2], fr: "colonne " + m[1] + ", rangée " + m[2], de: "Linie " + m[1] + ", Reihe " + m[2], pt: "coluna " + m[1] + ", linha " + m[2], it: "colonna " + m[1] + ", riga " + m[2] }[cur]; return f || (m[1] + "筋" + m[2] + "段目"); } },
+    { re: /^あなた（黒） (\d+) 枚 ／ CPU（白） (\d+) 枚$/, t: ["You (Black) {1} pieces / CPU (White) {2} pieces", "당신(흑) {1}개 / CPU(백) {2}개", "你（黑）{1} 枚／CPU（白）{2} 枚", "你（黑）{1} 枚／CPU（白）{2} 枚", "Tú (negras) {1} piezas / CPU (blancas) {2} piezas", "Vous (noirs) {1} pièces / CPU (blancs) {2} pièces", "Du (Schwarz) {1} Steine / CPU (Weiß) {2} Steine", "Você (pretas) {1} peças / CPU (brancas) {2} peças", "Tu (neri) {1} pezzi / CPU (bianchi) {2} pezzi"] },
+    { re: /^あなた（(黒|白)） (\d+) 枚 ／ 相手 (\d+) 枚$/, fn: function (m) { var bw = { en: { "黒": "Black", "白": "White" }, ko: { "黒": "흑", "白": "백" }, zh: { "黒": "黑", "白": "白" }, zht: { "黒": "黑", "白": "白" }, es: { "黒": "negras", "白": "blancas" }, fr: { "黒": "noirs", "白": "blancs" }, de: { "黒": "Schwarz", "白": "Weiß" }, pt: { "黒": "pretas", "白": "brancas" }, it: { "黒": "neri", "白": "bianchi" } }; var nm = (bw[cur] || {})[m[1]] || m[1]; var f = { en: "You (" + nm + ") {n} pieces / Opponent {o} pieces", ko: "당신(" + nm + ") {n}개 / 상대 {o}개", zh: "你（" + nm + "）{n} 枚／对手 {o} 枚", zht: "你（" + nm + "）{n} 枚／對手 {o} 枚", es: "Tú (" + nm + ") {n} piezas / Rival {o} piezas", fr: "Vous (" + nm + ") {n} pièces / Adversaire {o} pièces", de: "Du (" + nm + ") {n} Steine / Gegner {o} Steine", pt: "Você (" + nm + ") {n} peças / Oponente {o} peças", it: "Tu (" + nm + ") {n} pezzi / Avversario {o} pezzi" }[cur]; return (f || "").replace("{n}", m[2]).replace("{o}", m[3]); } },
+    { re: /^教育モード： おすすめは (\d+行\d+列) → (\d+行\d+列)(（連続ジャンプ）)?。形勢は「(.+?)」。(.*)$/, fn: function (m) {
+        var chain = m[3] ? ({ en: " (a capture chain)", ko: " (연속 점프)", zh: "（连续跳吃）", zht: "（連續跳吃）", es: " (cadena de capturas)", fr: " (chaîne de prises)", de: " (Sprungserie)", pt: " (cadeia de capturas)", it: " (catena di prese)" }[cur] || "") : "";
+        var rest = vsRest(m[5], "取れる駒があるので、必ず取らなければなりません。");
+        var f = { en: "Education mode: the recommended move is {a} → {b}{c}. The position is 「{j}」. {r}", ko: "교육 모드: 추천 수는 {a} → {b}{c}. 형세는 「{j}」. {r}", zh: "教育模式：推荐着法是 {a} → {b}{c}。局势为「{j}」。{r}", zht: "教育模式：推薦著法是 {a} → {b}{c}。局勢為「{j}」。{r}", es: "Modo educativo: la jugada recomendada es {a} → {b}{c}. La posición es «{j}». {r}", fr: "Mode éducation : le coup recommandé est {a} → {b}{c}. La position est « {j} ». {r}", de: "Lernmodus: Empfohlen wird {a} → {b}{c}. Die Stellung ist „{j}“. {r}", pt: "Modo educativo: a jogada recomendada é {a} → {b}{c}. A posição é «{j}». {r}", it: "Modalità educativa: la mossa consigliata è {a} → {b}{c}. La posizione è «{j}». {r}" }[cur];
+        return (f || "").replace("{a}", vsCoord(m[1])).replace("{b}", vsCoord(m[2])).replace("{c}", chain).replace("{j}", vsJudge(m[4])).replace("{r}", rest);
+      } },
+    { re: /^相手の狙い： CPUは次に (\d+行\d+列) のあなたの駒を取る構えです。$/, fn: function (m) { var f = { en: "The CPU's aim: it is poised to capture your piece on {c} next.", ko: "상대의 노림수: CPU는 다음에 {c}의 당신 기물을 잡을 태세입니다.", zh: "对手的意图：CPU 准备下一步吃掉你在{c}的棋子。", zht: "對手的意圖：CPU 準備下一步吃掉你在{c}的棋子。", es: "El plan de la CPU: está lista para capturar tu pieza en {c} en la siguiente jugada.", fr: "Le plan de la CPU : elle s'apprête à prendre ta pièce en {c} au prochain coup.", de: "Der Plan der CPU: Sie will als Nächstes deinen Stein auf {c} schlagen.", pt: "O plano da CPU: ela está pronta para capturar sua peça em {c} na próxima jogada.", it: "Il piano della CPU: è pronta a catturare il tuo pezzo in {c} alla prossima mossa." }[cur]; return (f || "").replace("{c}", vsCoord(m[1])); } },
+    { re: /^教育モード： おすすめは (.+?)。形勢は「(.+?)」。(.*)$/, fn: function (m) {
+        var rest = vsRest(m[3], "王手がかかっています。");
+        var f = { en: "Education mode: the recommended move is {a}. The position is 「{j}」. {r}", ko: "교육 모드: 추천 수는 {a}. 형세는 「{j}」. {r}", zh: "教育模式：推荐着法是 {a}。局势为「{j}」。{r}", zht: "教育模式：推薦著法是 {a}。局勢為「{j}」。{r}", es: "Modo educativo: la jugada recomendada es {a}. La posición es «{j}». {r}", fr: "Mode éducation : le coup recommandé est {a}. La position est « {j} ». {r}", de: "Lernmodus: Empfohlen wird {a}. Die Stellung ist „{j}“. {r}", pt: "Modo educativo: a jogada recomendada é {a}. A posição é «{j}». {r}", it: "Modalità educativa: la mossa consigliata è {a}. La posizione è «{j}». {r}" }[cur];
+        return (f || "").replace("{a}", vsShoMove(m[1])).replace("{j}", vsJudge(m[2])).replace("{r}", rest);
+      } },
+    { re: /^相手の狙い： CPUは次にあなたの (.+?) を取る構えです。$/, fn: function (m) { var pc = (VS_PC[cur] || {})[m[1]] || m[1]; var f = { en: "The CPU's aim: it is poised to capture your {p} next.", ko: "상대의 노림수: CPU는 다음에 당신의 {p}을(를) 잡을 태세입니다.", zh: "对手的意图：CPU 准备下一步吃掉你的{p}。", zht: "對手的意圖：CPU 準備下一步吃掉你的{p}。", es: "El plan de la CPU: está lista para capturar tu {p} en la siguiente jugada.", fr: "Le plan de la CPU : elle s'apprête à prendre ton {p} au prochain coup.", de: "Der Plan der CPU: Sie will als Nächstes deinen {p} schlagen.", pt: "O plano da CPU: ela está pronta para capturar seu {p} na próxima jogada.", it: "Il piano della CPU: è pronta a catturare il tuo {p} alla prossima mossa." }[cur]; return (f || "").replace("{p}", pc); } }
+  );
   var JP_RE = /[぀-ヿ一-鿿]/;
   var origText = new WeakMap();
   var origAttr = new WeakMap();
@@ -53546,6 +53832,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       cubefallView: ["キューブフォールのルール", "落ちてくるキューブを並べて消し、できるだけ長く生き残ります。", "矢印キー／スワイプで移動と回転、落下ボタンで一気に落とします。", "ラインを消すほどスコアが伸びます。", "スコアに応じてコインが入ります（上限あり）。"],
       billiardsView: ["ビリヤードのルール", "8ボールです。自分のグループ（1〜7番か9〜15番）を全部入れてから、8番をコールしたポケットに入れれば勝ちです。", "ドラッグで狙って、離してショットします。引く量で強さが変わります。", "ファウル： スクラッチ／先に合法でない球に当てる／当たった後にどの球もクッションに届かない（ノーレール）。教育モード（エイムガイド）では予測線とショットの判定が出ます。", "勝利 30 コイン（難易度で変動）。教育モードを使ったマッチはコインが増えも減りもしません。"],
       gomokuView: ["五目ならべのルール", "15×15の盤に自分の石を5つ並べれば勝ちです。6つ以上の長連も勝ちで、禁手はありません。", "マスをタップ（クリック）して石を置きます。置く前にゴースト石で位置を確認できます。", "四（あと1つで5つ）と、両側が開いた三（活三）を意識すると強くなります。教育モードでは作り方と止め手を表示します。", "勝利 30 コイン／引き分け 10 コイン（難易度倍率あり）。教育モードを使った対局はコインが増えも減りもしません。"],
+      checkersView: ["チェッカーのルール", "相手の駒をすべて取るか、相手が1つも動けなくすれば勝ちです（アメリカ式／イギリス式ルール）。", "自分の駒をタップして選び、光ったマスへ進みます。ふつうの駒は斜め前にだけ進めますが、相手の駒を飛び越えて取れるマスがあるときは、必ず取らなければなりません。", "1手の中で続けて取れる場合は、連続ジャンプで全部取ります。一番奥の段まで進んだ駒はキング（♛）になり、前後どちらにも動いて取れるようになります（キングになった手番はそこで終わります）。", "引き分け： 駒を取らず、キングでない駒も進めない手が両者合わせて40手（80半手）続くと引き分けです。", "勝利 30 コイン／引き分け 10 コイン（難易度倍率あり）。教育モードを使った対局はコインが増えも減りもしません。"],
+      shogiView: ["将棋のルール", "相手の玉将（王将）を詰ませれば勝ちです。指せる手がなくなった側も負けになります（行き詰まりも負けです）。", "自分の駒をタップして選び、光ったマスへ動かします。取った駒は持ち駒になり、空いているマスに打てます（持ち駒をタップしてからマスをタップ）。", "成り： 敵陣（相手側の3段）に出入りするとき、歩・香・桂・銀・角・飛は成るか成らないか選べます。行き場がなくなる駒（1段目の歩・香、1〜2段目の桂）は必ず成ります。", "打てない場合： 二歩（同じ筋に自分の歩が2枚）、打ち歩詰め（歩を打って詰ませる手）、行き場のないマスへのドロップは禁止です。", "千日手： 同じ局面が4回出たら引き分けです。ただし、片方が王手をかけ続けた場合は、そのかけ続けた側の負けです。", "持将棋： このゲームの簡易ルールとして、両方の玉が敵陣に入り、両者とも24点以上（大駒＝角・飛とその成駒は5点、それ以外は1点、持ち駒も数えます）を持っていれば引き分けにします。正式な持将棋の宣言手続きとは異なる簡略版です。", "勝利 30 コイン／引き分け 10 コイン（難易度倍率あり）。教育モードを使った対局はコインが増えも減りもしません。"],
       fishingView: ["釣り図鑑のルール", "湖・川・海で全36種を釣って図鑑を完成させます。", "ボタンを押し続けてパワーをため、離してキャスト。ウキへの小さなつつきはフェイントで、本アタリでウキが沈んで「！」が出たら、周りのリングが消える前にタップして合わせます。ファイト中は長押しで巻き、テンションが赤いゾーンに入ったら少しゆるめて逃がすのがコツです。魚が走る予兆が出たら特にゆるめどき。赤いゾーンに居続けると糸が切れ、巻かないでいると距離が戻って逃げられます。", "基礎確率： コモン55%／レア28%／エピック12%／レジェンド5%。スキルが確率に効くのはキャストの質だけで、最大でレジェンド+2・エピック+2（パーフェクト時、コモンから差し引き）、良好でエピック+1。合わせの質は確率ではなく、ファイト開始時の距離と魚の疲労に効きます。難易度で合わせの猶予（やさしい1300ms／ふつう1000ms／むずかしい750ms）と魚の強さ・テンションの上がり方・ダッシュの頻度が変わります。", "コインはレア度で 2／5／10／20 コイン、初めての種類は +5 コイン。1釣行（3キャスト）の合計が最大30 コイン入ります。"],
       snakeView: ["スネークのルール", "エサを食べてヘビを伸ばし、壁と自分の体に当たらないようにします。", "矢印キー／スワイプで方向を変えます。", "エサ1つでスコア +10。難易度で速度が変わります。", "スコア10点ごとに 1 コイン（最大30 コイン、難易度倍率あり）。"],
       breakoutView: ["ブロック崩しのルール", "パドルでボールを跳ね返し、全部のブロックを壊します。", "マウス／指でパドルを左右に動かします。スティッキーで付いたボールはタップで発射します。", "アイテムはブロックから18%で落下： パドル拡大（12秒）／マルチボール（+2球）／貫通ボール（8秒）／スティッキー／レーザー（10秒）／シールド（床で1回だけ救済）／スローボール（8秒）／ライフ+1／爆弾ボール（次の命中で周囲も爆破）。貫通中はスティッキー無効、拡大とレーザーは共存できます。レベル2から硬いブロック（2発）、レベル3から爆発ブロックが出ます。", "スコア10点ごとに 1 コイン（最大30 コイン、難易度倍率あり）。"],
@@ -53571,6 +53859,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       holdemMpView: ["プライベート卓のルール", "友達同士だけのコード卓で遊ぶノーリミット・ホールデムです。ホストが卓を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（ブラインド 5／10、ミニマムレイズ、サイドポット、チョップ）。空席はAIが埋め、途中で切れた人の席はAIが代行します。ホストが卓を持ち、手札は本人の端末にだけ届きます。", "ポイントは実際に対戦者間で移動します。各人が自分の残高からバイインし、退室時（またはホストが卓を閉じたとき）に自分の端末で精算します。勝者の利益は累計にも入り、敗者の累計は減りません。AI席のチップはシステム裏付けで、精算には対人間分と対AI分を分けて表示します。", "教育モードはマルチプレイでは使えません。フリーベットでも遊べます（その場合コインは動きません）。"],
       reversiMpView: ["プライベート対戦のルール", "友達同士だけのコード対戦で遊ぶリバーシです。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（挟んで裏返す、打てないときはパス、両者打てなければ終了）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。", "2人とも人間で賭け金を設定した場合だけ、ポイントが移動します。お互いに同じ額を出し、勝者は両方の合計を受け取り（勝ち分は累計にも入ります）、引き分けとホスト都合の中止は返金です。負けても累計は減りません。教育モードはマルチプレイでは使えません。"],
       connect4MpView: ["プライベート対戦のルール", "友達同士だけのコード対戦で遊ぶ四目並べです。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（列を選んで落とし、縦・横・斜めのどれか4つを先にそろえた方が勝ち）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。", "2人とも人間で賭け金を設定した場合だけ、ポイントが移動します。お互いに同じ額を出し、勝者は両方の合計を受け取り（勝ち分は累計にも入ります）、引き分けとホスト都合の中止は返金です。負けても累計は減りません。教育モードはマルチプレイでは使えません。"],
+      checkersMpView: ["プライベート対戦のルール", "友達同士だけのコード対戦で遊ぶチェッカーです。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（取れる駒は必ず取る、連続ジャンプ、キング、詰み＝勝ち）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。", "2人とも人間で賭け金を設定した場合だけ、ポイントが移動します。お互いに同じ額を出し、勝者は両方の合計を受け取り（勝ち分は累計にも入ります）、引き分けとホスト都合の中止は返金です。負けても累計は減りません。教育モードはマルチプレイでは使えません。"],
+      shogiMpView: ["プライベート対戦のルール", "友達同士だけのコード対戦で遊ぶ将棋です。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（持ち駒、二歩・打ち歩詰め禁止、千日手は引き分け、持将棋は簡易ルール）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに打ちます。", "2人とも人間で賭け金を設定した場合だけ、ポイントが移動します。お互いに同じ額を出し、勝者は両方の合計を受け取り（勝ち分は累計にも入ります）、引き分けとホスト都合の中止は返金です。負けても累計は減りません。教育モードはマルチプレイでは使えません。"],
       chessMpView: ["プライベート対戦のルール", "友達同士だけのコード対戦で遊ぶチェスです。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。不特定多数とのマッチングはありません。", "ルールはシングルプレイと同じ正式ルール（キャスリング、アンパッサン、プロモーション、チェックメイトとステイルメイト、三度同一局面と50手ルールは自動で引き分け、駒不足も引き分け）。相手が来なくてもAIとの対戦として始められます。途中で相手が切れたらAIが代行し、戻ってくれば同じ席に復帰できます。制限時間（45秒）を過ぎるとAIが代わりに指します。", "2人とも人間で賭け金を設定した場合だけ、ポイントが移動します。お互いに同じ額を出し、勝者は両方の合計を受け取り（勝ち分は累計にも入ります）、引き分けとホスト都合の中止は返金です。負けても累計は減りません。教育モードはマルチプレイでは使えません。"],
       mahjongMpView: ["プライベート対局のルール", "友達同士だけのコード対局で遊ぶ4人リーチ麻雀です。ホストが部屋を作って6文字のコードを渡し、ゲストはそのコードで入ります。空き席はAIが埋めます。不特定多数とのマッチングはありません。", "東風戦か半荘戦をホストが選びます。25,000点持ち、リーチ・一発・裏ドラ・赤5あり、喰いタンありの一般的なルールです。ダブルロン以上の同時和了はなく、上家に近い1人だけが和了ります（頭跳ね）。嶺上開花・槍槓・海底・河底あり。流局はテンパイ料の受け渡しがあり、親のテンパイか和了で連荘します。誰かがマイナス点になったら終了します（飛び）。", "ベットモードでは対局の最終結果でコインを精算します。精算は30,000点返しで、（点数−30,000）÷1000（四捨五入）＋ウマ（+20/+10/−10/−20）＋オカ（1位に+20）です。役満などの大きな和了には祝儀が別行で付きます（和了者が他の3人から5ずつ）。負け分は自分の残高までしか払わず、累計は減りません。練習モードではコインは動きません。教育モードはマルチプレイにはありません。"],
       crapsView: ["クラップスのルール", "2つのサイコロの出目に賭ける、カジノでいちばん賑やかなダイスゲームです。シューターがサイコロを振り、パスラインベットの勝敗が軸になります。", "チップを選んで置きたい場所をタップして賭け、振るボタンでサイコロを振ります。置いたチップは置いた瞬間に残高から引かれ、外すときはタップで1枚ずつ戻せます（確定したベットは戻せません）。コインを使わないフリーベットでも遊べます。", "パスライン： カムアウトロールで7か11が出れば勝ち、2・3・12は負け、それ以外は「ポイント」になり、その数字が7より先に出れば勝ちです（還元率98.59%）。オッズベットはポイント確定後に本ベットの最大3-4-5倍まで、配当は真の確率どおり（還元率100%）。プレイスベットは6・8が7:6、5・9が7:5、4・10が9:5。フィールドは2が2:1、12が3:1、その他は1:1。ファイアベットはポイントを何種類立てられるかへのベットで、4種類24:1、5種類249:1、6種類999:1です。", "当たれば配当が入り、利益分だけ累計にも入ります。固定のクリア報酬はありません。"],
@@ -54175,10 +54465,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       p.earn = function (id, opts) {
         var r = origEarn.apply(this, arguments);
         try {
-          var map = { chessWin: "chess", reversiWin: "reversi", connect4Win: "connect4", gomokuWin: "gomoku", billiardsWin: "billiards" };
+          var map = { chessWin: "chess", reversiWin: "reversi", connect4Win: "connect4", gomokuWin: "gomoku", billiardsWin: "billiards", checkersWin: "checkers", shogiWin: "shogi" };
           if (map[id]) onWinEvent(map[id]);
           var run = EXP.league.run;
-          if (run && run.awaiting && (id === "chessDraw" || id === "gomokuDraw")) { run.pendingDraw = true; saveExp(); }
+          if (run && run.awaiting && (id === "chessDraw" || id === "gomokuDraw" || id === "checkersDraw" || id === "shogiDraw")) { run.pendingDraw = true; saveExp(); }
         } catch (e) {}
         return r;
       };
@@ -54624,7 +54914,9 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     { key: "reversi", ja: "リバーシ", earnWin: "reversiWin" },
     { key: "connect4", ja: "四目ならべ", earnWin: "connect4Win" },
     { key: "gomoku", ja: "五目ならべ", earnWin: "gomokuWin" },
-    { key: "billiards", ja: "ビリヤード", earnWin: "billiardsWin" }
+    { key: "billiards", ja: "ビリヤード", earnWin: "billiardsWin" },
+    { key: "checkers", ja: "チェッカー", earnWin: "checkersWin" },
+    { key: "shogi", ja: "将棋", earnWin: "shogiWin" }
   ];
   function leagueGameName(g) { return lang() === "ja" ? g.ja : g.key; }
   function stageDiff(stage) { return stage <= 1 ? "easy" : stage === 2 ? "normal" : "hard"; }
@@ -54723,13 +55015,13 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       db.click(); /* the versus app's own handler: newGame() — a fresh match at this strength */
       return true;
     }
-    if (game === "reversi" || game === "connect4" || game === "gomoku") {
+    if (game === "reversi" || game === "connect4" || game === "gomoku" || game === "checkers" || game === "shogi") {
       var view = document.getElementById(game + "View");
       if (!view) return false;
       var btn = view.querySelector('.diff-btn[data-diff="' + diff + '"]');
       if (!btn) return false;
       btn.click();
-      var reset = document.getElementById(game === "reversi" ? "revReset" : game === "connect4" ? "c4Reset" : "gomReset");
+      var reset = document.getElementById(game === "reversi" ? "revReset" : game === "connect4" ? "c4Reset" : game === "gomoku" ? "gomReset" : game === "checkers" ? "chkReset" : "shgReset");
       if (reset) reset.click(); /* reset(false): fresh board, the match is live */
       return true;
     }
@@ -73512,6 +73804,1401 @@ window.__BN_VIEW__ = {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", injectEntries);
   else injectEntries();
 })();
+
+  /* ===== Versus expansion: CHECKERS (2026-11-17) =====
+     American/English draughts as a full versus title, built on the
+     Gomoku/Reversi template: 3-tier difficulty with the shared
+     multiplier, the chess three-piece education HUD (best move /
+     judgement / opponent intent) with the point-neutral latch,
+     run-save persistence, win-streak league hooks (earn ids), and a
+     private code-room MP mount on the Phase-8 VersusRoom framework.
+     Engine is pure logic (unit-tested in node); moves are index-path
+     strings ("40-26-12") so the MP host legality indexOf works. */
+  (function () {
+    "use strict";
+    function tone(f, d, type, v, delay) {
+      try {
+        var mv = 1; try { mv = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
+        if (mv <= 0) return;
+        var AC = window.__arcadeAC || (window.__arcadeAC = new (window.AudioContext || window.webkitAudioContext)());
+        if (AC.state === "suspended") AC.resume();
+        var t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain();
+        o.type = type || "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime((v || 0.05) * mv, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + 0.05);
+      } catch (e) {}
+    }
+    function celebrate() { try { if (window.celebrateBurst) window.celebrateBurst(); } catch (e) {} }
+  /* ================= CHECKERS ENGINE (pure logic, no DOM) =================
+     American / English draughts on 8x8. Board: Array(64), idx = row*8+col,
+     playable squares have (row+col) odd. Pieces: 0 empty, 1 black man,
+     2 black king, 3 white man, 4 white king. Seat 0 = black (bottom rows,
+     moves toward row 0); seat 1 = white (top rows, toward row 7).
+     Moves are index-path strings: "40-33" (step) or "40-26-12" (jump chain).
+     Rules: forced captures; a jump chain must be completed in one turn;
+     a man crowned during a jump stops there (turn ends); win by taking
+     all enemy pieces or blocking every enemy move; draw after 40 full
+     moves (80 half-moves) with no capture and no man move. */
+  var CHK = (function () {
+    "use strict";
+    function sideOf(v) { return v === 1 || v === 2 ? 0 : v === 3 || v === 4 ? 1 : -1; }
+    function isKing(v) { return v === 2 || v === 4; }
+    function newState() {
+      var b = [], i, r, c;
+      for (i = 0; i < 64; i++) b.push(0);
+      for (r = 0; r < 3; r++) for (c = 0; c < 8; c++) if ((r + c) % 2 === 1) b[r * 8 + c] = 3;
+      for (r = 5; r < 8; r++) for (c = 0; c < 8; c++) if ((r + c) % 2 === 1) b[r * 8 + c] = 1;
+      return { b: b, turn: 0, over: false, winner: null, quiet: 0, last: -1, path: null, moves: 0 };
+    }
+    function dirsFor(v) {
+      if (isKing(v)) return [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+      return sideOf(v) === 0 ? [[-1, -1], [-1, 1]] : [[1, -1], [1, 1]];
+    }
+    /* All capture chains starting with the piece at idx on board b.
+       Returns an array of paths (arrays of indices, starting at idx).
+       A chain is maximal: it ends only where no further jump exists,
+       or where a man is crowned (crowning ends the turn). */
+    function chainsFrom(b, idx) {
+      var v = b[idx]; if (!v) return [];
+      var side = sideOf(v), dirs = dirsFor(v), out = [];
+      var r = Math.floor(idx / 8), c = idx % 8;
+      for (var d = 0; d < dirs.length; d++) {
+        var dr = dirs[d][0], dc = dirs[d][1];
+        var mr = r + dr, mc = c + dc, lr = r + 2 * dr, lc = c + 2 * dc;
+        if (lr < 0 || lr > 7 || lc < 0 || lc > 7) continue;
+        var mid = mr * 8 + mc, land = lr * 8 + lc;
+        if (!b[mid] || sideOf(b[mid]) === side || b[land]) continue;
+        var nb = b.slice();
+        nb[idx] = 0; nb[mid] = 0; nb[land] = v;
+        var crowned = !isKing(v) && ((side === 0 && lr === 0) || (side === 1 && lr === 7));
+        if (crowned) { out.push([idx, land]); continue; }
+        var sub = chainsFrom(nb, land);
+        if (!sub.length) out.push([idx, land]);
+        else for (var s = 0; s < sub.length; s++) out.push([idx].concat(sub[s]));
+      }
+      return out;
+    }
+    function genMoves(b, side) {
+      var caps = [], steps = [], i, v;
+      for (i = 0; i < 64; i++) {
+        v = b[i]; if (!v || sideOf(v) !== side) continue;
+        var ch = chainsFrom(b, i);
+        for (var k = 0; k < ch.length; k++) caps.push(ch[k].join("-"));
+      }
+      if (caps.length) return caps; /* forced capture */
+      for (i = 0; i < 64; i++) {
+        v = b[i]; if (!v || sideOf(v) !== side) continue;
+        var r = Math.floor(i / 8), c = i % 8, dirs = dirsFor(v);
+        for (var d = 0; d < dirs.length; d++) {
+          var nr = r + dirs[d][0], nc = c + dirs[d][1];
+          if (nr < 0 || nr > 7 || nc < 0 || nc > 7) continue;
+          if (!b[nr * 8 + nc]) steps.push(i + "-" + (nr * 8 + nc));
+        }
+      }
+      return steps;
+    }
+    function applyPath(b, pathStr) {
+      var path = pathStr.split("-").map(Number);
+      var v = b[path[0]], captured = false;
+      b[path[0]] = 0;
+      for (var i = 1; i < path.length; i++) {
+        var from = path[i - 1], to = path[i];
+        if (Math.abs(to - from) > 9) { /* a jump: clear the midpoint */
+          b[(from + to) / 2] = 0; captured = true;
+        }
+      }
+      var end = path[path.length - 1], side = sideOf(v);
+      if (!isKing(v) && ((side === 0 && end < 8) || (side === 1 && end >= 56))) v += 1; /* crown */
+      b[end] = v;
+      return { captured: captured, end: end };
+    }
+    function countSide(b, side) { var n = 0; for (var i = 0; i < 64; i++) if (b[i] && sideOf(b[i]) === side) n++; return n; }
+    /* Positional table for men (from black's perspective; mirrored for white). */
+    var PST = [
+      0, 14, 0, 14, 0, 14, 0, 14,
+      10, 0, 9, 0, 9, 0, 9, 0,
+      0, 8, 0, 8, 0, 8, 0, 7,
+      6, 0, 7, 0, 7, 0, 6, 0,
+      0, 5, 0, 6, 0, 6, 0, 5,
+      4, 0, 5, 0, 5, 0, 4, 0,
+      0, 4, 0, 4, 0, 4, 0, 4,
+      6, 0, 3, 0, 3, 0, 3, 0
+    ];
+    function evaluate(b, side) {
+      var s = 0, i, v;
+      for (i = 0; i < 64; i++) {
+        v = b[i]; if (!v) continue;
+        var mine = sideOf(v) === side;
+        var val = isKing(v) ? 290 : 100;
+        if (!isKing(v)) val += sideOf(v) === 0 ? PST[i] : PST[63 - i];
+        /* kings like the centre */
+        if (isKing(v)) { var r = Math.floor(i / 8), c = i % 8; if (r >= 2 && r <= 5 && c >= 2 && c <= 5) val += 8; }
+        s += mine ? val : -val;
+      }
+      s += (genMoves(b, side).length - genMoves(b, side === 0 ? 1 : 0).length) * 2;
+      return s;
+    }
+    function search(b, side, depth, alpha, beta, ply) {
+      var moves = genMoves(b, side);
+      if (!moves.length) return -100000 + ply; /* blocked / captured out: loss */
+      if (depth <= 0) {
+        /* capture extension: while a capture is on the table the
+           position is not quiet — keep reading the chain (cap +6). */
+        var isCap = moves[0].split("-").some(function (x, i, a) { return i > 0 && Math.abs(+x - +a[i - 1]) > 9; });
+        if (!isCap || ply > 14) return evaluate(b, side);
+        depth = 1;
+      }
+      var best = -Infinity;
+      /* captures first (they are the only moves when present); order
+         longer chains first — they take more material. */
+      moves.sort(function (a, z) { return z.length - a.length; });
+      for (var i = 0; i < moves.length; i++) {
+        var nb = b.slice(); applyPath(nb, moves[i]);
+        var v = -search(nb, side === 0 ? 1 : 0, depth - 1, -beta, -alpha, ply + 1);
+        if (v > best) best = v;
+        if (v > alpha) alpha = v;
+        if (alpha >= beta) break;
+      }
+      return best;
+    }
+    function bestMove(b, side, depth) {
+      var moves = genMoves(b, side);
+      if (!moves.length) return null;
+      var best = moves[0], bestV = -Infinity, alpha = -Infinity;
+      moves.sort(function (a, z) { return z.length - a.length; });
+      for (var i = 0; i < moves.length; i++) {
+        var nb = b.slice(); applyPath(nb, moves[i]);
+        var v = -search(nb, side === 0 ? 1 : 0, depth - 1, -Infinity, -alpha, 1);
+        if (v > bestV) { bestV = v; best = moves[i]; }
+        if (v > alpha) alpha = v;
+      }
+      return { move: best, value: bestV };
+    }
+    function aiMove(st, seat, diff) {
+      var side = seat;
+      var moves = genMoves(st.b, side);
+      if (!moves.length) return null;
+      if (moves.length === 1) return moves[0];
+      if (diff === "easy") {
+        /* Constraint-weakened (game-AI library): greedy 1-ply material
+           with real blunders — it takes captures but cannot see chains
+           or traps, and one time in four it plays a merely-legal move. */
+        if (Math.random() < 0.25) return moves[Math.floor(Math.random() * moves.length)];
+        var bb = st.b.slice(), bv = -Infinity, bm = moves[0];
+        for (var i = 0; i < moves.length; i++) {
+          var nb = st.b.slice(); applyPath(nb, moves[i]);
+          var v = evaluate(nb, side) + Math.random() * 18;
+          if (v > bv) { bv = v; bm = moves[i]; }
+        }
+        return bm;
+      }
+      var depth = diff === "hard" ? 7 : 4;
+      return bestMove(st.b, side, depth).move;
+    }
+    /* ---- VersusRoom engine interface ---- */
+    var engine = {
+      key: "checkers",
+      newGame: function () { return newState(); },
+      legal: function (st, seat) { return (!st.over && st.turn === seat) ? genMoves(st.b, seat) : []; },
+      apply: function (st, seat, mv) {
+        if (st.over || st.turn !== seat) return false;
+        if (genMoves(st.b, seat).indexOf(mv) < 0) return false;
+        var wasMan = st.b[+mv.split("-")[0]] === 1 || st.b[+mv.split("-")[0]] === 3;
+        var res = applyPath(st.b, mv);
+        st.path = mv; st.last = res.end; st.moves++;
+        st.quiet = (res.captured || wasMan) ? 0 : st.quiet + 1;
+        var opp = seat === 0 ? 1 : 0;
+        if (!countSide(st.b, opp) || !genMoves(st.b, opp).length) { st.over = true; st.winner = seat; }
+        else if (st.quiet >= 80) { st.over = true; st.winner = -1; }
+        else st.turn = opp;
+        return true;
+      },
+      aiMove: function (st, seat) { return aiMove(st, seat, "normal"); },
+      snapshot: function (st) {
+        return { b: st.b.slice(), turn: st.turn, over: st.over, winner: st.winner, last: st.last, path: st.path, moves: st.moves, quiet: st.quiet };
+      }
+    };
+    return {
+      newState: newState, genMoves: genMoves, applyPath: applyPath, chainsFrom: chainsFrom,
+      evaluate: evaluate, bestMove: bestMove, aiMove: aiMove, countSide: countSide,
+      sideOf: sideOf, isKing: isKing, engine: engine
+    };
+  })();
+
+    /* ================= CHECKERS (SP) ================= */
+    (function () {
+      var view = document.getElementById("checkersView");
+      if (!view) return;
+      var boardEl = document.getElementById("chkBoard");
+      var statusEl = document.getElementById("chkStatus");
+      var overlay = document.getElementById("chkOverlay"), ovBtn = document.getElementById("chkOvBtn"), ovTitle = document.getElementById("chkOvTitle"), ovText = document.getElementById("chkOvText");
+      var capEl = document.getElementById("chkCapLine");
+      var st = CHK.newState();
+      var uiState = "idle"; /* idle | player | cpu | over */
+      var sel = -1, partial = [];
+      var chkDiff = "normal";
+      function chkApplyDiff(d) { chkDiff = d; }
+      if (window.__mountDiffBar) window.__mountDiffBar(document.getElementById("chkDiffSlot"), "arcade-checkers-diff-v1", chkApplyDiff);
+      var EDU_KEY = "arcade-checkers-edu-v1", RUN_KEY = "arcade-checkers-run-v1";
+      var chkEdu = false, chkAssist = false;
+      try { chkEdu = window.localStorage.getItem(EDU_KEY) === "1"; } catch (e) {}
+      var eduBtn = document.getElementById("chkEduToggle"), eduPanel = document.getElementById("chkEduPanel"), assistEl = document.getElementById("chkAssistUsed");
+      function saveRun() {
+        try {
+          if (uiState !== "player" && uiState !== "cpu") { localStorage.removeItem(RUN_KEY); return; }
+          localStorage.setItem(RUN_KEY, JSON.stringify({ b: st.b, turn: st.turn, quiet: st.quiet, moves: st.moves, last: st.last, assist: chkAssist }));
+        } catch (e) {}
+      }
+      function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) {} }
+      function cellName(i) { return (Math.floor(i / 8) + 1) + "行" + (i % 8 + 1) + "列"; }
+      function legalNow() { return uiState === "player" ? CHK.genMoves(st.b, 0) : []; }
+      function dispBoard() {
+        if (!partial.length) return st.b;
+        var b = st.b.slice();
+        CHK.applyPath(b, partial.join("-"));
+        return b;
+      }
+      function nextSquares() {
+        /* legal continuation squares from the current partial path */
+        var out = {}, pre = partial.join("-");
+        legalNow().forEach(function (m) {
+          var parts = m.split("-").map(Number);
+          if (partial.length && m.indexOf(pre + "-") !== 0) return;
+          if (!partial.length) return;
+          out[parts[partial.length]] = true;
+        });
+        return out;
+      }
+      function firstSquares(from) {
+        var out = {};
+        legalNow().forEach(function (m) { var p = m.split("-").map(Number); if (p[0] === from) out[p[1]] = true; });
+        return out;
+      }
+      var cellEls = [];
+      function build() {
+        boardEl.innerHTML = ""; cellEls = [];
+        for (var i = 0; i < 64; i++) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chk-cell " + (((Math.floor(i / 8) + i) % 2 === 1) ? "dark" : "light");
+          btn.setAttribute("aria-label", cellName(i));
+          (function (b2, idx) {
+            var lastPointer = 0;
+            b2.addEventListener("pointerdown", function () { lastPointer = Date.now(); onCell(idx); });
+            b2.addEventListener("click", function () { if (Date.now() - lastPointer < 700) return; onCell(idx); });
+          })(btn, i);
+          boardEl.appendChild(btn); cellEls.push(btn);
+        }
+      }
+      var eduBestFrom = -1;
+      function paint() {
+        var b = dispBoard(), dests = partial.length ? nextSquares() : (sel >= 0 ? firstSquares(sel) : {});
+        var movable = {};
+        if (!partial.length && uiState === "player") legalNow().forEach(function (m) { movable[+m.split("-")[0]] = true; });
+        for (var i = 0; i < 64; i++) {
+          var el = cellEls[i], v = b[i], pc = el.firstChild;
+          if (!v) { if (pc) el.removeChild(pc); }
+          else {
+            var cls = "chk-piece " + (v <= 2 ? "blk" : "wht") + (CHK.isKing(v) ? " king" : "");
+            if (!pc) { pc = document.createElement("span"); el.appendChild(pc); }
+            if (pc.className !== cls) pc.className = cls;
+            pc.innerHTML = CHK.isKing(v) ? '<span class="chk-crown" aria-hidden="true">♛</span>' : "";
+          }
+          el.classList.toggle("last", i === st.last && !partial.length);
+          el.classList.toggle("sel", partial.length ? i === partial[partial.length - 1] : i === sel);
+          el.classList.toggle("dest", !!dests[i]);
+          el.classList.toggle("movable", !!movable[i]);
+          el.classList.toggle("edu-best", chkEdu && i === eduBestFrom && uiState === "player");
+        }
+        var nb = CHK.countSide(st.b, 0), nw = CHK.countSide(st.b, 1);
+        if (capEl) capEl.textContent = "あなた（黒） " + nb + " 枚 ／ CPU（白） " + nw + " 枚";
+        updateEdu();
+      }
+      /* ---------- education HUD: best move / judgement / opponent intent ---------- */
+      function refreshEdu() {
+        if (eduBtn) {
+          eduBtn.textContent = chkEdu ? "教育モード ON" : "教育モード OFF";
+          eduBtn.setAttribute("aria-pressed", chkEdu ? "true" : "false");
+          eduBtn.classList.toggle("on", chkEdu);
+        }
+        if (eduPanel) eduPanel.hidden = !chkEdu;
+        if (assistEl) assistEl.hidden = !(chkAssist && uiState !== "over" && uiState !== "idle");
+        if (chkEdu && uiState !== "idle" && uiState !== "over" && !chkAssist) { chkAssist = true; if (assistEl) assistEl.hidden = false; saveRun(); }
+        updateEdu();
+      }
+      function judgeText(ev) {
+        return ev > 260 ? "あなたが大きく有利" : ev > 90 ? "あなたがやや有利" : ev < -260 ? "CPUが大きく有利" : ev < -90 ? "CPUがやや有利" : "互角";
+      }
+      var eduCache = { key: "", from: -1, text: "" };
+      function updateEdu() {
+        eduBestFrom = -1;
+        if (!chkEdu || !eduPanel) { return; }
+        if (uiState !== "player") { eduPanel.textContent = "教育モード： あなたの番になると、おすすめ手・形勢の評価・相手の狙いを表示します。"; return; }
+        var moves = legalNow();
+        if (!moves.length) { eduPanel.textContent = "教育モード： 動かせる駒がありません。"; return; }
+        var cacheKey = st.b.join(",") + "|" + chkDiff;
+        if (eduCache.key === cacheKey) { eduBestFrom = eduCache.from; eduPanel.textContent = eduCache.text; paintEduOnly(); return; }
+        var forced = moves[0].split("-").some(function (x, i2, a) { return i2 > 0 && Math.abs(+x - +a[i2 - 1]) > 9; });
+        var best = CHK.bestMove(st.b, 0, chkDiff === "easy" ? 4 : 5);
+        if (!best) return;
+        var bp = best.move.split("-").map(Number);
+        eduBestFrom = bp[0];
+        var ev = CHK.evaluate(st.b, 0);
+        var nb = st.b.slice(); CHK.applyPath(nb, best.move);
+        var reply = CHK.bestMove(nb, 1, 3);
+        var intent;
+        if (reply && reply.move.split("-").some(function (x, i2, a) { return i2 > 0 && Math.abs(+x - +a[i2 - 1]) > 9; })) {
+          var rp = reply.move.split("-").map(Number);
+          var victim = (rp[0] + rp[1]) / 2;
+          intent = "相手の狙い： CPUは次に " + cellName(victim) + " のあなたの駒を取る構えです。";
+        } else if (reply) {
+          intent = "相手の狙い： CPUは駒を前へ進めて陣形を整える構えです。";
+        } else intent = "相手の狙い： CPUに有効な手がほとんどありません。";
+        eduPanel.textContent = "教育モード： おすすめは " + cellName(bp[0]) + " → " + cellName(bp[bp.length - 1]) + (bp.length > 2 ? "（連続ジャンプ）" : "") + "。形勢は「" + judgeText(ev) + "」。" + (forced ? "取れる駒があるので、必ず取らなければなりません。" : "") + intent;
+        eduCache = { key: cacheKey, from: bp[0], text: eduPanel.textContent };
+        paintEduOnly();
+      }
+      function paintEduOnly() {
+        for (var i = 0; i < 64; i++) cellEls[i].classList.toggle("edu-best", chkEdu && i === eduBestFrom && uiState === "player");
+      }
+      if (eduBtn) eduBtn.addEventListener("click", function () {
+        chkEdu = !chkEdu;
+        try { window.localStorage.setItem(EDU_KEY, chkEdu ? "1" : "0"); } catch (e) {}
+        tone(620, 0.06, "triangle", 0.04);
+        refreshEdu(); paint();
+      });
+      /* ---------- game flow ---------- */
+      function commitMove(mv) {
+        var before = st.b.slice();
+        if (!CHK.engine.apply(st, 0, mv)) return;
+        sel = -1; partial = [];
+        tone(196, 0.08, "sine", 0.06); tone(520, 0.05, "triangle", 0.04, 0.02);
+        flashCaptures(before, st.b);
+        if (st.over) { paint(); endGame(); return; }
+        uiState = "cpu";
+        statusEl.textContent = "CPUが考え中…";
+        paint(); saveRun();
+        setTimeout(cpuMove, 460);
+      }
+      function flashCaptures(before, after) {
+        for (var i = 0; i < 64; i++) {
+          if (before[i] && !after[i] && i !== st.last) {
+            var el = cellEls[i];
+            el.classList.remove("cap-flash"); void el.offsetWidth; el.classList.add("cap-flash");
+          }
+        }
+      }
+      function cpuMove() {
+        if (uiState !== "cpu") return;
+        var before = st.b.slice();
+        var mv = CHK.aiMove(st, 1, chkDiff);
+        if (!mv) { endGame(); return; }
+        CHK.engine.apply(st, 1, mv);
+        tone(160, 0.08, "sine", 0.05); tone(440, 0.05, "triangle", 0.035, 0.02);
+        flashCaptures(before, st.b);
+        if (st.over) { paint(); endGame(); return; }
+        uiState = "player";
+        statusEl.textContent = "あなた（黒）の番です";
+        paint(); saveRun();
+      }
+      function onCell(idx) {
+        if (uiState !== "player") return;
+        var moves = legalNow();
+        if (partial.length) {
+          var cand = partial.concat([idx]).join("-");
+          var exact = moves.indexOf(cand) >= 0;
+          var isPrefix = moves.some(function (m) { return m.indexOf(cand + "-") === 0; });
+          if (exact) { commitMove(cand); return; }
+          if (isPrefix) { partial.push(idx); tone(700, 0.04, "triangle", 0.03); paint(); return; }
+          boardEl.classList.remove("shake"); void boardEl.offsetWidth; boardEl.classList.add("shake");
+          return;
+        }
+        var v = st.b[idx];
+        if (v && CHK.sideOf(v) === 0 && moves.some(function (m) { return +m.split("-")[0] === idx; })) {
+          sel = idx; partial = [idx]; tone(760, 0.04, "triangle", 0.03); paint(); return;
+        }
+        sel = -1; partial = []; paint();
+      }
+      function endGame() {
+        uiState = "over";
+        clearRun();
+        if (st.winner === 0) {
+          tone(784, 0.12, "triangle", 0.05); tone(1046, 0.18, "triangle", 0.05, 0.1); celebrate();
+          if (window.ARCADE_points && !chkAssist) window.ARCADE_points.earn("checkersWin", { diff: chkDiff });
+          if (window.__huntEvent) window.__huntEvent("sixerWin");
+          ovTitle.textContent = "あなたの勝ち！";
+          ovText.textContent = "相手の駒をすべて取るか、動けなくしました。お見事です。";
+          statusEl.textContent = "勝負あり：あなたの勝ち！";
+        } else if (st.winner === 1) {
+          tone(320, 0.25, "sawtooth", 0.04);
+          ovTitle.textContent = "CPUの勝ち…";
+          ovText.textContent = "駒をすべて取られるか、動けなくなりました。取れる駒は必ず取るのが鉄則です。";
+          statusEl.textContent = "勝負あり：CPUの勝ち";
+        } else {
+          tone(523, 0.12, "triangle", 0.05); tone(523, 0.14, "triangle", 0.05, 0.14);
+          ovTitle.textContent = "引き分け";
+          ovText.textContent = "40手ルール（取らず・進めずが続いた）で引き分けです。";
+          statusEl.textContent = "勝負あり：引き分け";
+          if (window.ARCADE_points && !chkAssist) window.ARCADE_points.earn("checkersDraw", { diff: chkDiff });
+        }
+        ovBtn.textContent = "もう一度";
+        overlay.classList.remove("off");
+        refreshEdu();
+      }
+      function reset(showStart) {
+        st = CHK.newState();
+        sel = -1; partial = [];
+        chkAssist = false; if (assistEl) assistEl.hidden = true;
+        uiState = showStart ? "idle" : "player";
+        statusEl.textContent = "あなた（黒）の番です";
+        paint();
+        if (showStart) { ovTitle.textContent = "チェッカー"; ovText.textContent = "相手の駒をすべて取るか、動けなくすれば勝ちです。取れる駒があるときは必ず取らなければならず、連続で取れるときは1手で続けて取ります。"; ovBtn.textContent = "スタート"; overlay.classList.remove("off"); }
+        else overlay.classList.add("off");
+        refreshEdu();
+      }
+      var ovTapAt = 0;
+      function ovAction() {
+        if (uiState === "over") { reset(false); return; }
+        if (uiState === "idle") { uiState = "player"; overlay.classList.add("off"); tone(620, 0.06, "triangle", 0.04); paint(); return; }
+        overlay.classList.add("off"); tone(620, 0.06, "triangle", 0.04); /* resume from a restored run */
+        if (uiState === "cpu") setTimeout(cpuMove, 350); /* restored with the CPU to move */
+      }
+      ovBtn.addEventListener("pointerdown", function () { ovTapAt = Date.now(); ovAction(); });
+      ovBtn.addEventListener("click", function () { if (Date.now() - ovTapAt < 700) return; ovAction(); });
+      document.getElementById("chkReset").addEventListener("click", function () { reset(false); });
+      build();
+      var boot = null;
+      try { boot = JSON.parse(localStorage.getItem(RUN_KEY) || "null"); } catch (e) {}
+      reset(true);
+      if (boot && boot.b && boot.b.length === 64) {
+        st.b = boot.b.slice(); st.turn = boot.turn === 1 ? 1 : 0; st.quiet = boot.quiet | 0; st.moves = boot.moves | 0; st.last = typeof boot.last === "number" ? boot.last : -1;
+        chkAssist = !!boot.assist;
+        uiState = st.turn === 1 ? "cpu" : "player";
+        paint();
+        overlay.classList.remove("off");
+        ovTitle.textContent = "一時停止中";
+        ovText.textContent = "前回の対局のつづきです。再開ボタンで続けます。";
+        ovBtn.textContent = "再開する";
+        refreshEdu();
+      }
+      window.__checkers = {
+        enter: function () {},
+        debug: function () { return { state: uiState, moves: st.moves, assist: chkAssist, edu: chkEdu, diff: chkDiff, turn: st.turn, over: st.over, winner: st.winner, b: st.b.slice() }; }
+      };
+    })();
+
+    /* ================= CHECKERS (private-room MP) ================= */
+    (function () {
+      if (!window.ARCADE_mpVs || !document.getElementById("checkersMpRoot")) return;
+      var interaction = { sel: -1, partial: [], snapMoves: -1 };
+      function renderChkMp(container, snap, mySeat, onMove) {
+        if (interaction.snapMoves !== snap.moves) { interaction.sel = -1; interaction.partial = []; interaction.snapMoves = snap.moves; }
+        var b = snap.b;
+        if (interaction.partial.length) { b = snap.b.slice(); CHK.applyPath(b, interaction.partial.join("-")); }
+        var myTurn = onMove && snap.turn === mySeat && !snap.over;
+        var moves = myTurn ? CHK.genMoves(snap.b, mySeat) : [];
+        var dests = {};
+        if (interaction.partial.length) {
+          var pre = interaction.partial.join("-");
+          moves.forEach(function (m) { if (m.indexOf(pre + "-") === 0) dests[+m.split("-")[interaction.partial.length]] = true; });
+        } else if (interaction.sel >= 0) {
+          moves.forEach(function (m) { var p = m.split("-").map(Number); if (p[0] === interaction.sel) dests[p[1]] = true; });
+        }
+        var html = '<div class="bmp-chk-board">';
+        for (var d = 0; d < 64; d++) {
+          var i = mySeat === 0 ? d : 63 - d;
+          var v = b[i], r = Math.floor(i / 8), c = i % 8;
+          html += '<button type="button" class="chk-cell ' + (((r + c) % 2 === 1) ? "dark" : "light") + (i === snap.last && !interaction.partial.length ? " last" : "") + (interaction.partial.length && i === interaction.partial[interaction.partial.length - 1] ? " sel" : (!interaction.partial.length && i === interaction.sel ? " sel" : "")) + (dests[i] ? " dest" : "") + '" data-i="' + i + '"' + (myTurn ? "" : " disabled") + ">" +
+            (v ? '<span class="chk-piece ' + (v <= 2 ? "blk" : "wht") + (CHK.isKing(v) ? " king" : "") + '">' + (CHK.isKing(v) ? '<span class="chk-crown" aria-hidden="true">♛</span>' : "") + "</span>" : "") + "</button>";
+        }
+        html += "</div>";
+        html += '<div class="bmp-score">' + (mySeat === 0 ? "あなた（黒）" : "あなた（白）") + " " + CHK.countSide(snap.b, mySeat) + " 枚 ／ 相手 " + CHK.countSide(snap.b, mySeat === 0 ? 1 : 0) + " 枚</div>";
+        container.innerHTML = html;
+        if (myTurn) Array.prototype.forEach.call(container.querySelectorAll(".chk-cell"), function (cell) {
+          cell.addEventListener("click", function () {
+            var idx = +cell.getAttribute("data-i");
+            if (interaction.partial.length) {
+              var cand = interaction.partial.concat([idx]).join("-");
+              if (moves.indexOf(cand) >= 0) { interaction.partial = []; interaction.sel = -1; onMove(cand); return; }
+              if (moves.some(function (m) { return m.indexOf(cand + "-") === 0; })) { interaction.partial.push(idx); renderChkMp(container, snap, mySeat, onMove); }
+              return;
+            }
+            var v2 = snap.b[idx];
+            if (v2 && CHK.sideOf(v2) === mySeat && moves.some(function (m) { return +m.split("-")[0] === idx; })) {
+              interaction.sel = idx; interaction.partial = [idx]; renderChkMp(container, snap, mySeat, onMove); return;
+            }
+            interaction.sel = -1; interaction.partial = []; renderChkMp(container, snap, mySeat, onMove);
+          });
+        });
+      }
+      var room = new window.ARCADE_mpVs.VersusRoom({
+        game: "checkers", root: document.getElementById("checkersMpRoot"),
+        engine: CHK.engine, wagerOptions: [0, 10, 30, 50], renderBoard: renderChkMp
+      });
+      window.__checkersMp = { ready: function () { return !!room; }, room: function () { return room; } };
+      if (window.__boardMpEngines) { window.__boardMpEngines.checkers = CHK.engine; window.__boardMpEngines.checkersFull = CHK; }
+      var sp = document.getElementById("checkersView");
+      if (sp) {
+        var bar = sp.querySelector(".gamebar");
+        if (bar && !bar.querySelector("[data-mp-entry='checkersMpView']")) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mp-entry-btn"; b.setAttribute("data-mp-entry", "checkersMpView");
+          b.textContent = "👥 プライベート対戦";
+          b.addEventListener("click", function () { if (typeof window.__openArcadeView === "function") window.__openArcadeView("checkersmp"); });
+          bar.appendChild(b);
+        }
+      }
+    })();
+
+    /* ================= CHECKERS styles ================= */
+    (function () {
+      if (document.getElementById("chkStyles")) return;
+      var s = document.createElement("style");
+      s.id = "chkStyles";
+      s.textContent =
+        "#checkersView{--acc:#a06a3f;--acc-d:#7c4f2a}" +
+        ".chk-wrap{position:relative;width:100%;max-width:640px;margin:0 auto}" +
+        ".chk-board,.bmp-chk-board{display:grid;grid-template-columns:repeat(8,1fr);gap:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35)}" +
+        ".bmp-chk-board{max-width:440px}" +
+        ".chk-cell{aspect-ratio:1;border:0;padding:0;position:relative;cursor:pointer;font-size:clamp(10px,4.2vw,24px);-webkit-tap-highlight-color:transparent}" +
+        ".chk-cell.light{background:#ecd2a0}.chk-cell.dark{background:#9e6a41}" +
+        ".chk-cell:disabled{cursor:default}" +
+        ".chk-cell.last{box-shadow:inset 0 0 0 3px rgba(255,211,77,.95)}" +
+        ".chk-cell.sel{box-shadow:inset 0 0 0 3px #38bdf8,inset 0 0 18px rgba(56,189,248,.55)}" +
+        ".chk-cell.dest::after{content:'';position:absolute;inset:34%;border-radius:50%;background:rgba(20,90,40,.45);box-shadow:0 0 0 2px rgba(255,255,255,.35);pointer-events:none}" +
+        ".chk-cell.movable .chk-piece{box-shadow:0 0 0 2px rgba(56,189,248,.0),0 2px 4px rgba(0,0,0,.4);animation:chkPulse 1.6s ease-in-out infinite}" +
+        ".chk-cell.edu-best{box-shadow:inset 0 0 0 3px #f59e0b,inset 0 0 16px rgba(245,158,11,.5)}" +
+        ".chk-cell.cap-flash{animation:chkFlash .5s ease-out}" +
+        ".chk-piece{display:flex;align-items:center;justify-content:center;width:78%;height:78%;margin:11% auto;border-radius:50%;animation:chkPop .18s ease-out}" +
+        ".chk-piece.blk{background:radial-gradient(circle at 35% 30%,#5c5c68,#17171c 72%);box-shadow:inset 0 -3px 6px rgba(0,0,0,.65),inset 0 2px 3px rgba(255,255,255,.28),0 2px 4px rgba(0,0,0,.45)}" +
+        ".chk-piece.wht{background:radial-gradient(circle at 35% 30%,#ffffff,#cfc8b4 76%);box-shadow:inset 0 -3px 6px rgba(120,105,70,.45),inset 0 2px 3px rgba(255,255,255,.9),0 2px 4px rgba(0,0,0,.35)}" +
+        ".chk-piece .chk-crown{color:#f5c542;text-shadow:0 1px 2px rgba(0,0,0,.6);font-size:.95em;line-height:1}" +
+        ".chk-piece.wht .chk-crown{color:#b8860b}" +
+        "@keyframes chkPop{from{transform:scale(.55);opacity:.3}to{transform:scale(1);opacity:1}}" +
+        "@keyframes chkPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}" +
+        "@keyframes chkFlash{0%{background:#e0483e}100%{}}" +
+        ".chk-board.shake{animation:chkShake .3s ease-in-out}" +
+        "@keyframes chkShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}" +
+        "@media (prefers-reduced-motion: reduce){.chk-piece,.chk-cell.cap-flash,.chk-board.shake,.chk-cell.movable .chk-piece{animation:none}}";
+      document.head.appendChild(s);
+    })();
+  })();
+</script>
+<script>
+  /* ===== Versus expansion: SHOGI (2026-11-17) =====
+     Full-rules shogi as the flagship versus title, on the same
+     Gomoku/Reversi template as checkers: 3-tier difficulty with the
+     shared multiplier, the chess three-piece education HUD with the
+     point-neutral latch, run-save persistence, league hooks, and a
+     private code-room MP mount on the Phase-8 VersusRoom framework
+     (the engine rides it unmodified — moves are strings, so the host
+     legality indexOf works for board moves and drops alike).
+     Engine: complete move generation with nifu / dead-square /
+     uchi-fu-zume prohibitions, forced vs optional promotion, mate
+     and stalemate as losses, sennichite (perpetual check loses) and
+     jishogi by the simplified impasse rule stated in the rules text.
+     AI: negamax alpha-beta, capture quiescence, node caps
+     (60k normal / 160k hard) keep a move under ~0.5s mid-game. */
+  (function () {
+    "use strict";
+    function tone(f, d, type, v, delay) {
+      try {
+        var mv = 1; try { mv = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
+        if (mv <= 0) return;
+        var AC = window.__arcadeAC || (window.__arcadeAC = new (window.AudioContext || window.webkitAudioContext)());
+        if (AC.state === "suspended") AC.resume();
+        var t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain();
+        o.type = type || "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime((v || 0.05) * mv, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + 0.05);
+      } catch (e) {}
+    }
+    function celebrate() { try { if (window.celebrateBurst) window.celebrateBurst(); } catch (e) {} }
+  /* ================= SHOGI ENGINE (pure logic, no DOM) =================
+     Full 9x9 shogi. Board: Array(81), idx = row*9 + col; row 0 = rank 1
+     (gote home, top), row 8 = rank 9 (sente home, bottom); col 0 = file 9
+     (left as sente sees it), col 8 = file 1. Pieces: value = +(type+1)
+     for sente (seat 0), -(type+1) for gote (seat 1). Types:
+     0 FU 1 KY 2 KE 3 GI 4 KI 5 KA 6 HI 7 OU, promoted 8 TO 9 NY 10 NK
+     11 NG 12 UM 13 RY. Moves are strings: board move "from,to,promo"
+     (promo 0/1); drop "D<type>,<to>".
+     Rules implemented: drops with nifu / dead-square / uchi-fu-zume
+     prohibitions; optional vs forced promotion; check, checkmate and
+     stalemate all lose for the side to move; sennichite (4th repetition)
+     = draw, except perpetual check loses; jishogi by the SIMPLIFIED
+     impasse rule (both kings inside the enemy zone and both sides at
+     24+ points — big pieces 5, small pieces 1, hand pieces counted). */
+  var SHO = (function () {
+    "use strict";
+    var FU = 0, KY = 1, KE = 2, GI = 3, KI = 4, KA = 5, HI = 6, OU = 7,
+        TO = 8, NY = 9, NK = 10, NG = 11, UM = 12, RY = 13;
+    var PROMO = {}; PROMO[FU] = TO; PROMO[KY] = NY; PROMO[KE] = NK; PROMO[GI] = NG; PROMO[KA] = UM; PROMO[HI] = RY;
+    var BASE = {}; BASE[TO] = FU; BASE[NY] = KY; BASE[NK] = KE; BASE[NG] = GI; BASE[UM] = KA; BASE[RY] = HI;
+    function baseOf(t) { return BASE[t] !== undefined ? BASE[t] : t; }
+    function sideOf(v) { return v > 0 ? 0 : v < 0 ? 1 : -1; }
+    function typeOf(v) { return Math.abs(v) - 1; }
+    var STEP = {}, SLIDE = {};
+    STEP[FU] = [[-1, 0]];
+    SLIDE[KY] = [[-1, 0]];
+    STEP[KE] = [[-2, -1], [-2, 1]];
+    STEP[GI] = [[-1, -1], [-1, 0], [-1, 1], [1, -1], [1, 1]];
+    var GOLD = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, 0]];
+    STEP[KI] = GOLD; STEP[TO] = GOLD; STEP[NY] = GOLD; STEP[NK] = GOLD; STEP[NG] = GOLD;
+    SLIDE[KA] = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+    STEP[UM] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    SLIDE[HI] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    STEP[RY] = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+    STEP[OU] = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+    function inZone(side, row) { return side === 0 ? row <= 2 : row >= 6; }
+    function deadRows(side, t) { /* rows where the piece could never move again */
+      if (t === FU || t === KY) return side === 0 ? [0] : [8];
+      if (t === KE) return side === 0 ? [0, 1] : [7, 8];
+      return [];
+    }
+    function newState() {
+      var b = [], i;
+      for (i = 0; i < 81; i++) b.push(0);
+      var back = [KY, KE, GI, KI, OU, KI, GI, KE, KY];
+      for (i = 0; i < 9; i++) { b[i] = -(back[i] + 1); b[72 + i] = back[i] + 1; }
+      b[9 + 1] = -(KA + 1); b[9 + 7] = -(HI + 1);       /* gote: KA file8, HI file2 */
+      b[63 + 7] = KA + 1; b[63 + 1] = HI + 1;           /* sente: KA file2, HI file8 */
+      for (i = 0; i < 9; i++) { b[18 + i] = -(FU + 1); b[54 + i] = FU + 1; }
+      var st = { b: b, hands: [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]], turn: 0,
+                 over: false, winner: null, moves: 0, last: null, rep: {}, histKeys: [], histCheck: [] };
+      st.rep[posKey(st)] = 1; st.histKeys.push(posKey(st));
+      return st;
+    }
+    function posKey(st) {
+      var k = st.b.join(",") + "|" + st.hands[0].join(",") + "|" + st.hands[1].join(",") + "|" + st.turn;
+      return k;
+    }
+    function kingSq(b, side) { var t = (OU + 1) * (side === 0 ? 1 : -1); for (var i = 0; i < 81; i++) if (b[i] === t) return i; return -1; }
+    function isAttacked(b, sq, bySide) {
+      var tr = Math.floor(sq / 9), tc = sq % 9;
+      for (var i = 0; i < 81; i++) {
+        var v = b[i]; if (!v || sideOf(v) !== bySide) continue;
+        var t = typeOf(v), r = Math.floor(i / 9), c = i % 9, flip = bySide === 0 ? 1 : -1;
+        var steps = STEP[t] || [], slides = SLIDE[t] || [], d, nr, nc;
+        for (d = 0; d < steps.length; d++) {
+          nr = r + steps[d][0] * flip; nc = c + steps[d][1];
+          if (nr === tr && nc === tc) return true;
+        }
+        for (d = 0; d < slides.length; d++) {
+          nr = r; nc = c;
+          for (var s = 0; s < 8; s++) {
+            nr += slides[d][0] * flip; nc += slides[d][1];
+            if (nr < 0 || nr > 8 || nc < 0 || nc > 8) break;
+            if (nr === tr && nc === tc) return true;
+            if (b[nr * 9 + nc]) break;
+          }
+        }
+      }
+      return false;
+    }
+    function inCheck(b, side) { var k = kingSq(b, side); return k >= 0 && isAttacked(b, k, side === 0 ? 1 : 0); }
+    function cloneLight(st) { return { b: st.b.slice(), hands: [st.hands[0].slice(), st.hands[1].slice()], turn: st.turn }; }
+    function applyToLight(st, mv) {
+      /* mutate a light state {b, hands, turn}; no end-of-game logic */
+      if (mv.charAt(0) === "D") {
+        var parts = mv.slice(1).split(","), t = +parts[0], to = +parts[1];
+        st.b[to] = (t + 1) * (st.turn === 0 ? 1 : -1);
+        st.hands[st.turn][t]--;
+      } else {
+        var p = mv.split(","), from = +p[0], to2 = +p[1], promo = p[2] === "1";
+        var v = st.b[from], cap = st.b[to2];
+        if (cap) st.hands[st.turn][baseOf(typeOf(cap))]++;
+        st.b[from] = 0;
+        var t2 = typeOf(v);
+        if (promo) t2 = PROMO[t2];
+        st.b[to2] = (t2 + 1) * (st.turn === 0 ? 1 : -1);
+      }
+      st.turn = st.turn === 0 ? 1 : 0;
+    }
+    /* Pseudo-legal moves for `side` (whose turn it must be on st),
+       NOT yet filtered for own-king safety. ufDepth guards the
+       uchi-fu-zume recursion: opponent replies are generated at
+       depth 1 without their own uchi-fu tests. */
+    function genPseudo(st, side, ufDepth) {
+      var b = st.b, out = [], flip = side === 0 ? 1 : -1;
+      for (var i = 0; i < 81; i++) {
+        var v = b[i]; if (!v || sideOf(v) !== side) continue;
+        var t = typeOf(v), r = Math.floor(i / 9), c = i % 9;
+        var steps = STEP[t] || [], slides = SLIDE[t] || [], d, nr, nc, j;
+        function pushMove(to) {
+          var canPromo = PROMO[t] !== undefined && (inZone(side, r) || inZone(side, Math.floor(to / 9)));
+          if (!canPromo) { out.push(i + "," + to + ",0"); return; }
+          var forced = deadRows(side, t).indexOf(Math.floor(to / 9)) >= 0;
+          if (forced) out.push(i + "," + to + ",1");
+          else { out.push(i + "," + to + ",0"); out.push(i + "," + to + ",1"); }
+        }
+        for (d = 0; d < steps.length; d++) {
+          nr = r + steps[d][0] * flip; nc = c + steps[d][1];
+          if (nr < 0 || nr > 8 || nc < 0 || nc > 8) continue;
+          var tv = b[nr * 9 + nc];
+          if (tv && sideOf(tv) === side) continue;
+          pushMove(nr * 9 + nc);
+        }
+        for (d = 0; d < slides.length; d++) {
+          nr = r; nc = c;
+          for (j = 0; j < 8; j++) {
+            nr += slides[d][0] * flip; nc += slides[d][1];
+            if (nr < 0 || nr > 8 || nc < 0 || nc > 8) break;
+            var tv2 = b[nr * 9 + nc];
+            if (tv2 && sideOf(tv2) === side) break;
+            pushMove(nr * 9 + nc);
+            if (tv2) break;
+          }
+        }
+      }
+      /* drops */
+      var hand = st.hands[side];
+      for (var ht = 0; ht < 7; ht++) {
+        if (!hand[ht]) continue;
+        for (var sq = 0; sq < 81; sq++) {
+          if (b[sq]) continue;
+          var row = Math.floor(sq / 9), col = sq % 9;
+          if (deadRows(side, ht).indexOf(row) >= 0) continue;
+          if (ht === FU) {
+            var nifu = false;
+            for (var rr = 0; rr < 9; rr++) { var pv = b[rr * 9 + col]; if (pv && sideOf(pv) === side && typeOf(pv) === FU) { nifu = true; break; } }
+            if (nifu) continue;
+          }
+          var dmv = "D" + ht + "," + sq;
+          if (ht === FU && ufDepth === 0) {
+            /* uchi-fu-zume: a pawn drop that delivers immediate
+               checkmate is prohibited. A drop can only give check
+               through the dropped pawn itself. */
+            var trial = cloneLight(st); trial.turn = side; applyToLight(trial, dmv);
+            if (inCheck(trial.b, side === 0 ? 1 : 0)) {
+              var replies = genLegal(trial, side === 0 ? 1 : 0, 1);
+              if (!replies.length) continue; /* mate by pawn drop: illegal */
+            }
+          }
+          out.push(dmv);
+        }
+      }
+      return out;
+    }
+    function genLegal(st, side, ufDepth) {
+      var pseudo = genPseudo(st, side, ufDepth || 0), out = [];
+      for (var i = 0; i < pseudo.length; i++) {
+        var trial = cloneLight(st); trial.turn = side;
+        applyToLight(trial, pseudo[i]);
+        if (!inCheck(trial.b, side)) out.push(pseudo[i]);
+      }
+      return out;
+    }
+    function pointsOf(st, side) {
+      var s = 0, i, v, t;
+      for (i = 0; i < 81; i++) { v = st.b[i]; if (!v || sideOf(v) !== side) continue; t = typeOf(v); if (t === OU) continue; s += (t === KA || t === HI || t === UM || t === RY) ? 5 : 1; }
+      for (i = 0; i < 7; i++) s += st.hands[side][i] * ((i === KA || i === HI) ? 5 : 1);
+      return s;
+    }
+    var engine = {
+      key: "shogi",
+      newGame: function () { return newState(); },
+      legal: function (st, seat) { return (!st.over && st.turn === seat) ? genLegal(st, seat, 0) : []; },
+      apply: function (st, seat, mv) {
+        if (st.over || st.turn !== seat) return false;
+        if (genLegal(st, seat, 0).indexOf(mv) < 0) return false;
+        var gaveCheck = false;
+        applyToLight(st, mv); /* flips st.turn */
+        st.moves++;
+        st.last = mv;
+        gaveCheck = inCheck(st.b, st.turn);
+        var key = posKey(st);
+        st.rep[key] = (st.rep[key] || 0) + 1;
+        st.histKeys.push(key); st.histCheck.push(gaveCheck);
+        var opp = st.turn;
+        if (!genLegal(st, opp, 0).length) { st.over = true; st.winner = seat; return true; }
+        if (st.rep[key] >= 4) {
+          /* sennichite: perpetual check loses, otherwise draw */
+          var idxs = [], ii;
+          for (ii = 0; ii < st.histKeys.length; ii++) if (st.histKeys[ii] === key) idxs.push(ii);
+          var from = idxs[0], to = idxs[idxs.length - 1], loser = -1;
+          for (var s2 = 0; s2 < 2; s2++) {
+            var allCheck = true, any = false;
+            for (ii = from; ii < to; ii++) {
+              var mover = ii % 2 === 0 ? 0 : 1; /* histKeys[0] is the initial position, sente to move */
+              if (mover === s2) { any = true; if (!st.histCheck[ii]) allCheck = false; }
+            }
+            if (any && allCheck) loser = s2;
+          }
+          st.over = true;
+          st.winner = loser >= 0 ? (loser === 0 ? 1 : 0) : -1;
+          return true;
+        }
+        /* jishogi (simplified impasse): both kings inside the enemy
+           zone and both sides holding 24+ points = draw */
+        var ks0 = kingSq(st.b, 0), ks1 = kingSq(st.b, 1);
+        if (ks0 >= 0 && ks1 >= 0 && Math.floor(ks0 / 9) <= 2 && Math.floor(ks1 / 9) >= 6) {
+          if (pointsOf(st, 0) >= 24 && pointsOf(st, 1) >= 24) { st.over = true; st.winner = -1; return true; }
+        }
+        return true;
+      },
+      aiMove: function (st, seat) { return aiMove(st, seat, "normal"); },
+      snapshot: function (st) {
+        return { b: st.b.slice(), hands: [st.hands[0].slice(), st.hands[1].slice()], turn: st.turn, over: st.over, winner: st.winner, last: st.last, moves: st.moves };
+      }
+    };
+    /* ---------- evaluation + search ---------- */
+    var VAL = [10, 30, 32, 50, 55, 90, 110, 0, 55, 55, 55, 55, 135, 155];
+    function evaluate(st, side) {
+      var b = st.b, s = 0, i, v, t;
+      for (i = 0; i < 81; i++) {
+        v = b[i]; if (!v) continue; t = typeOf(v);
+        var val = VAL[t];
+        if (t === FU) val += sideOf(v) === 0 ? (8 - Math.floor(i / 9)) : Math.floor(i / 9);
+        s += sideOf(v) === side ? val : -val;
+      }
+      for (i = 0; i < 7; i++) {
+        s += st.hands[side][i] * VAL[i] * 1.12;
+        s -= st.hands[side === 0 ? 1 : 0][i] * VAL[i] * 1.12;
+      }
+      /* king safety: friendly defenders on adjacent squares */
+      for (var sd = 0; sd < 2; sd++) {
+        var k = kingSq(b, sd); if (k < 0) continue;
+        var kr = Math.floor(k / 9), kc = k % 9, def = 0;
+        for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+          var nr = kr + dr, nc = kc + dc;
+          if (nr < 0 || nr > 8 || nc < 0 || nc > 8 || (dr === 0 && dc === 0)) continue;
+          var av = b[nr * 9 + nc];
+          if (av && sideOf(av) === sd && (typeOf(av) === KI || typeOf(av) === GI || typeOf(av) === NG)) def++;
+        }
+        s += (sd === side ? 1 : -1) * def * 7;
+      }
+      return s;
+    }
+    var nodes = 0, nodeCap = 100000;
+    function orderScore(st, mv) {
+      if (mv.charAt(0) === "D") return 1;
+      var p = mv.split(","), cap = st.b[+p[1]];
+      var sc = 0;
+      if (cap) sc += 100 + VAL[typeOf(cap)] * 2;
+      if (p[2] === "1") sc += 40;
+      return sc;
+    }
+    function qsearch(st, side, alpha, beta, ply) {
+      nodes++;
+      var stand = evaluate(st, side);
+      if (stand >= beta) return beta;
+      if (stand > alpha) alpha = stand;
+      if (ply > 4 || nodes > nodeCap) return alpha;
+      var moves = genLegal(st, side, 1), caps = [];
+      for (var i = 0; i < moves.length; i++) if (moves[i].charAt(0) !== "D" && st.b[+moves[i].split(",")[1]]) caps.push(moves[i]);
+      caps.sort(function (a, z) { return orderScore(st, z) - orderScore(st, a); });
+      for (i = 0; i < caps.length; i++) {
+        var nx = cloneLight(st); nx.turn = side; applyToLight(nx, caps[i]);
+        if (!genLegal(nx, side === 0 ? 1 : 0, 1).length) return 90000 - ply; /* mate or stalemate: the side to move loses */
+        var v = -qsearch(nx, side === 0 ? 1 : 0, -beta, -alpha, ply + 1);
+        if (v >= beta) return beta;
+        if (v > alpha) alpha = v;
+      }
+      return alpha;
+    }
+    function search(st, side, depth, alpha, beta, ply) {
+      nodes++;
+      var moves = genLegal(st, side, 1);
+      if (!moves.length) return -90000 + ply; /* mate or stalemate: the side to move loses */
+      if (depth <= 0) return qsearch(st, side, alpha, beta, ply);
+      if (nodes > nodeCap) return evaluate(st, side);
+      moves.sort(function (a, z) { return orderScore(st, z) - orderScore(st, a); });
+      var best = -Infinity;
+      for (var i = 0; i < moves.length; i++) {
+        var nx = cloneLight(st); nx.turn = side; applyToLight(nx, moves[i]);
+        var v = -search(nx, side === 0 ? 1 : 0, depth - 1, -beta, -alpha, ply + 1);
+        if (v > best) best = v;
+        if (v > alpha) alpha = v;
+        if (alpha >= beta) break;
+      }
+      return best;
+    }
+    function bestMove(st, side, depth) {
+      var moves = genLegal(st, side, 0);
+      if (!moves.length) return null;
+      nodes = 0;
+      moves.sort(function (a, z) { return orderScore(st, z) - orderScore(st, a); });
+      var best = moves[0], bestV = -Infinity, alpha = -Infinity;
+      for (var i = 0; i < moves.length; i++) {
+        var nx = cloneLight(st); nx.turn = side; applyToLight(nx, moves[i]);
+        var v = -search(nx, side === 0 ? 1 : 0, depth - 1, -Infinity, -alpha, 1);
+        if (v > bestV) { bestV = v; best = moves[i]; }
+        if (v > alpha) alpha = v;
+      }
+      return { move: best, value: bestV, nodes: nodes };
+    }
+    function aiMove(st, seat, diff) {
+      var moves = genLegal(st, seat, 0);
+      if (!moves.length) return null;
+      if (moves.length === 1) return moves[0];
+      if (diff === "easy") {
+        /* Constraint-weakened: 1-ply material greed with real blunders. */
+        if (Math.random() < 0.3) return moves[Math.floor(Math.random() * moves.length)];
+        var bm = moves[0], bv = -Infinity;
+        for (var i = 0; i < moves.length; i++) {
+          var nx = cloneLight(st); nx.turn = seat; applyToLight(nx, moves[i]);
+          var v = evaluate(nx, seat) + Math.random() * 12;
+          if (v > bv) { bv = v; bm = moves[i]; }
+        }
+        return bm;
+      }
+      var depth = diff === "hard" ? 3 : 2;
+      nodeCap = diff === "hard" ? 160000 : 60000;
+      return bestMove(st, seat, depth).move;
+    }
+    return {
+      newState: newState, genLegal: genLegal, genPseudo: genPseudo, applyToLight: applyToLight,
+      cloneLight: cloneLight, inCheck: inCheck, isAttacked: isAttacked, evaluate: evaluate,
+      bestMove: bestMove, aiMove: aiMove, pointsOf: pointsOf, posKey: posKey,
+      baseOf: baseOf, typeOf: typeOf, sideOf: sideOf, kingSq: kingSq, engine: engine,
+      T: { FU: FU, KY: KY, KE: KE, GI: GI, KI: KI, KA: KA, HI: HI, OU: OU, TO: TO, NY: NY, NK: NK, NG: NG, UM: UM, RY: RY }
+    };
+  })();
+
+    /* ================= SHOGI (SP) ================= */
+    (function () {
+      var view = document.getElementById("shogiView");
+      if (!view) return;
+      var boardEl = document.getElementById("shgBoard");
+      var statusEl = document.getElementById("shgStatus");
+      var overlay = document.getElementById("shgOverlay"), ovBtn = document.getElementById("shgOvBtn"), ovTitle = document.getElementById("shgOvTitle"), ovText = document.getElementById("shgOvText");
+      var handMineEl = document.getElementById("shgHandMine"), handOppEl = document.getElementById("shgHandOpp");
+      var promoBar = document.getElementById("shgPromoBar");
+      var st = SHO.newState();
+      var uiState = "idle"; /* idle | player | cpu | over */
+      var selFrom = -1, selDrop = -1, pendingPromo = null;
+      var shoDiff = "normal";
+      function shoApplyDiff(d) { shoDiff = d; }
+      if (window.__mountDiffBar) window.__mountDiffBar(document.getElementById("shgDiffSlot"), "arcade-shogi-diff-v1", shoApplyDiff);
+      var EDU_KEY = "arcade-shogi-edu-v1", RUN_KEY = "arcade-shogi-run-v1";
+      var shoEdu = false, shoAssist = false;
+      try { shoEdu = window.localStorage.getItem(EDU_KEY) === "1"; } catch (e) {}
+      var eduBtn = document.getElementById("shgEduToggle"), eduPanel = document.getElementById("shgEduPanel"), assistEl = document.getElementById("shgAssistUsed");
+      var FACE = ["歩兵", "香車", "桂馬", "銀将", "金将", "角行", "飛車", "王将", "と", "成香", "成桂", "成銀", "竜馬", "竜王"];
+      var SHORT = ["歩", "香", "桂", "銀", "金", "角", "飛", "玉", "と", "成香", "成桂", "成銀", "馬", "竜"];
+      var RANK_K = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
+      function sqName(i) { return (9 - (i % 9)) + RANK_K[Math.floor(i / 9)]; }
+      function moveName(mv) {
+        if (mv.charAt(0) === "D") { var p = mv.slice(1).split(","); return sqName(+p[1]) + SHORT[+p[0]] + "打ち"; }
+        var q = mv.split(",");
+        return sqName(+q[1]) + SHORT[SHO.typeOf(st.b[+q[0]])] + (q[2] === "1" ? "成" : "");
+      }
+      function saveRun() {
+        try {
+          if (uiState !== "player" && uiState !== "cpu") { localStorage.removeItem(RUN_KEY); return; }
+          localStorage.setItem(RUN_KEY, JSON.stringify({ b: st.b, hands: st.hands, turn: st.turn, moves: st.moves, last: st.last, rep: st.rep, histKeys: st.histKeys.slice(-400), histCheck: st.histCheck.slice(-400), assist: shoAssist }));
+        } catch (e) {}
+      }
+      function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) {} }
+      var legalCache = { key: "", moves: [] };
+      function legalNow() {
+        if (uiState !== "player") return [];
+        var key = SHO.posKey(st);
+        if (legalCache.key !== key) legalCache = { key: key, moves: SHO.genLegal(st, 0, 0) };
+        return legalCache.moves;
+      }
+      function destsFor() {
+        var out = {};
+        legalNow().forEach(function (m) {
+          if (selDrop >= 0) { if (m === "D" + selDrop + "," + (+m.split(",")[1]) && m.charAt(0) === "D" && +m.slice(1).split(",")[0] === selDrop) out[+m.split(",")[1]] = true; }
+          else if (selFrom >= 0 && m.charAt(0) !== "D" && +m.split(",")[0] === selFrom) out[+m.split(",")[1]] = true;
+        });
+        return out;
+      }
+      var cellEls = [];
+      function faceHTML(v) {
+        var t = SHO.typeOf(v);
+        var face = t === SHO.T.OU && SHO.sideOf(v) === 1 ? "玉将" : FACE[t];
+        var promo = t >= 8;
+        if (face.length === 1) return '<span class="shg-face one' + (promo ? " pr" : "") + '" data-i18n-skip>' + face + "</span>";
+        return '<span class="shg-face two' + (promo ? " pr" : "") + '" data-i18n-skip><span>' + face.charAt(0) + "</span><span>" + face.charAt(1) + "</span></span>";
+      }
+      function build() {
+        boardEl.innerHTML = ""; cellEls = [];
+        for (var i = 0; i < 81; i++) {
+          var btn = document.createElement("button");
+          btn.type = "button"; btn.className = "shg-cell";
+          btn.setAttribute("aria-label", (9 - (i % 9)) + "筋" + (Math.floor(i / 9) + 1) + "段目");
+          (function (b2, idx) {
+            var lastPointer = 0;
+            b2.addEventListener("pointerdown", function () { lastPointer = Date.now(); onCell(idx); });
+            b2.addEventListener("click", function () { if (Date.now() - lastPointer < 700) return; onCell(idx); });
+          })(btn, i);
+          boardEl.appendChild(btn); cellEls.push(btn);
+        }
+      }
+      var eduBestKey = "";
+      function paint() {
+        var dests = destsFor(), lastTo = -1, lastFrom = -1;
+        if (st.last) {
+          if (st.last.charAt(0) === "D") lastTo = +st.last.split(",")[1];
+          else { var lp = st.last.split(","); lastFrom = +lp[0]; lastTo = +lp[1]; }
+        }
+        for (var i = 0; i < 81; i++) {
+          var el = cellEls[i], v = st.b[i], pc = el.firstChild;
+          var sig = v ? (v + "|" + SHO.typeOf(v)) : "";
+          if (!v) { if (pc) el.removeChild(pc); el.removeAttribute("data-sig"); }
+          else {
+            if (!pc || el.getAttribute("data-sig") !== sig) {
+              el.innerHTML = '<span class="shg-piece ' + (SHO.sideOf(v) === 0 ? "sen" : "go") + '">' + faceHTML(v) + "</span>";
+              el.setAttribute("data-sig", sig);
+            }
+          }
+          el.classList.toggle("last", i === lastTo);
+          el.classList.toggle("from", i === lastFrom);
+          el.classList.toggle("sel", i === selFrom);
+          el.classList.toggle("dest", !!dests[i]);
+          el.classList.toggle("edu-best", shoEdu && eduBestKey === SHO.posKey(st) && uiState === "player" && eduBestSq === i);
+        }
+        paintHands();
+        updateEdu();
+      }
+      function handHTML(el, side, interactive) {
+        var hand = st.hands[side], html = "";
+        for (var t = 0; t < 7; t++) {
+          if (!hand[t]) continue;
+          if (interactive) html += '<button type="button" class="shg-hand-btn' + (selDrop === t ? " on" : "") + '" data-drop="' + t + '" data-i18n-skip>' + SHORT[t] + (hand[t] > 1 ? " ×" + hand[t] : "") + "</button>";
+          else html += '<span class="shg-hand-chip" data-i18n-skip>' + SHORT[t] + (hand[t] > 1 ? " ×" + hand[t] : "") + "</span>";
+        }
+        el.innerHTML = html || '<span class="shg-hand-none">持ち駒なし</span>';
+        if (interactive) Array.prototype.forEach.call(el.querySelectorAll("[data-drop]"), function (b2) {
+          b2.addEventListener("click", function () {
+            if (uiState !== "player") return;
+            var t2 = +b2.getAttribute("data-drop");
+            selDrop = selDrop === t2 ? -1 : t2; selFrom = -1; pendingPromo = null; paintPromo(); paint();
+          });
+        });
+      }
+      function paintHands() {
+        handHTML(handOppEl, 1, false);
+        handHTML(handMineEl, 0, true);
+      }
+      function paintPromo() {
+        if (!pendingPromo) { promoBar.hidden = true; promoBar.innerHTML = ""; return; }
+        promoBar.hidden = false;
+        promoBar.innerHTML = '<span class="shg-promo-q">成りますか？</span><button type="button" class="w1-hbtn shg-promo-yes">成る</button><button type="button" class="w1-hbtn shg-promo-no">成らない</button>';
+        promoBar.querySelector(".shg-promo-yes").addEventListener("click", function () { var pp = pendingPromo; pendingPromo = null; paintPromo(); commitMove(pp.from + "," + pp.to + ",1"); });
+        promoBar.querySelector(".shg-promo-no").addEventListener("click", function () { var pp = pendingPromo; pendingPromo = null; paintPromo(); commitMove(pp.from + "," + pp.to + ",0"); });
+      }
+      /* ---------- education HUD ---------- */
+      function refreshEdu() {
+        if (eduBtn) {
+          eduBtn.textContent = shoEdu ? "教育モード ON" : "教育モード OFF";
+          eduBtn.setAttribute("aria-pressed", shoEdu ? "true" : "false");
+          eduBtn.classList.toggle("on", shoEdu);
+        }
+        if (eduPanel) eduPanel.hidden = !shoEdu;
+        if (assistEl) assistEl.hidden = !(shoAssist && uiState !== "over" && uiState !== "idle");
+        if (shoEdu && uiState !== "idle" && uiState !== "over" && !shoAssist) { shoAssist = true; if (assistEl) assistEl.hidden = false; saveRun(); }
+        updateEdu();
+      }
+      var eduBestSq = -1, eduCache = { key: "", text: "" };
+      function judgeText(ev) {
+        return ev > 320 ? "あなたが大きく有利" : ev > 120 ? "あなたがやや有利" : ev < -320 ? "CPUが大きく有利" : ev < -120 ? "CPUがやや有利" : "互角";
+      }
+      function updateEdu() {
+        if (!shoEdu || !eduPanel) { eduBestSq = -1; return; }
+        if (uiState !== "player") { eduPanel.textContent = "教育モード： あなたの番になると、おすすめ手・形勢の評価・相手の狙いを表示します。"; eduBestSq = -1; return; }
+        var key = SHO.posKey(st);
+        if (eduCache.key === key) { eduPanel.textContent = eduCache.text; return; }
+        var best = SHO.bestMove(st, 0, 2);
+        if (!best) { eduPanel.textContent = "教育モード： 指せる手がありません。"; return; }
+        var name = moveName(best.move);
+        eduBestSq = best.move.charAt(0) === "D" ? +best.move.split(",")[1] : +best.move.split(",")[1];
+        eduBestKey = key;
+        var ev = SHO.evaluate(st, 0);
+        var nx = SHO.cloneLight(st); nx.turn = 0; SHO.applyToLight(nx, best.move);
+        var reply = SHO.bestMove(nx, 1, 2);
+        var intent;
+        if (!reply) intent = "相手の狙い： CPUに指せる手がありません。";
+        else {
+          var rp = reply.move;
+          var givesCheck = false, capVal = 0;
+          var t2 = SHO.cloneLight(nx); t2.turn = 1; SHO.applyToLight(t2, rp);
+          givesCheck = SHO.inCheck(t2.b, 0);
+          if (rp.charAt(0) !== "D") { var cv = nx.b[+rp.split(",")[1]]; if (cv) capVal = SHO.typeOf(cv); }
+          if (givesCheck) intent = "相手の狙い： CPUは次に王手をかける構えです。";
+          else if (capVal >= SHO.T.GI) intent = "相手の狙い： CPUは次にあなたの " + SHORT[capVal] + " を取る構えです。";
+          else intent = "相手の狙い： CPUは陣形を整えながら攻め駒を前進させる構えです。";
+        }
+        var checkNote = SHO.inCheck(st.b, 0) ? "王手がかかっています。" : "";
+        eduPanel.textContent = "教育モード： おすすめは " + name + "。形勢は「" + judgeText(ev) + "」。" + checkNote + intent;
+        eduCache = { key: key, text: eduPanel.textContent };
+        paintEduOnly();
+      }
+      function paintEduOnly() {
+        for (var i = 0; i < 81; i++) cellEls[i].classList.toggle("edu-best", shoEdu && uiState === "player" && eduBestSq === i);
+      }
+      if (eduBtn) eduBtn.addEventListener("click", function () {
+        shoEdu = !shoEdu;
+        try { window.localStorage.setItem(EDU_KEY, shoEdu ? "1" : "0"); } catch (e) {}
+        tone(620, 0.06, "triangle", 0.04);
+        refreshEdu(); paint();
+      });
+      /* ---------- game flow ---------- */
+      function commitMove(mv) {
+        if (!SHO.engine.apply(st, 0, mv)) return;
+        selFrom = -1; selDrop = -1; pendingPromo = null; paintPromo();
+        tone(150, 0.07, "sine", 0.07); tone(880, 0.04, "triangle", 0.03, 0.01); /* 駒を打つ音 */
+        legalCache = { key: "", moves: [] }; eduCache = { key: "", text: "" };
+        if (st.over) { paint(); endGame(); return; }
+        uiState = "cpu";
+        statusEl.textContent = "CPUが考え中…";
+        paint(); saveRun();
+        setTimeout(cpuMove, 480);
+      }
+      function cpuMove() {
+        if (uiState !== "cpu") return;
+        var mv = SHO.aiMove(st, 1, shoDiff);
+        if (!mv) { endGame(); return; }
+        SHO.engine.apply(st, 1, mv);
+        tone(130, 0.07, "sine", 0.06); tone(760, 0.04, "triangle", 0.025, 0.01);
+        legalCache = { key: "", moves: [] }; eduCache = { key: "", text: "" };
+        if (st.over) { paint(); endGame(); return; }
+        uiState = "player";
+        statusEl.textContent = SHO.inCheck(st.b, 0) ? "王手！ あなた（先手）の番です" : "あなた（先手）の番です";
+        paint(); saveRun();
+      }
+      function onCell(idx) {
+        if (uiState !== "player" || pendingPromo) return;
+        var moves = legalNow();
+        if (selDrop >= 0) {
+          var dm = "D" + selDrop + "," + idx;
+          if (moves.indexOf(dm) >= 0) { commitMove(dm); return; }
+        }
+        if (selFrom >= 0) {
+          var variants = moves.filter(function (m) { return m.charAt(0) !== "D" && +m.split(",")[0] === selFrom && +m.split(",")[1] === idx; });
+          if (variants.length === 2) { pendingPromo = { from: selFrom, to: idx }; paintPromo(); tone(700, 0.04, "triangle", 0.03); return; }
+          if (variants.length === 1) { commitMove(variants[0]); return; }
+        }
+        var v = st.b[idx];
+        if (v && SHO.sideOf(v) === 0 && moves.some(function (m) { return m.charAt(0) !== "D" && +m.split(",")[0] === idx; })) {
+          selFrom = idx; selDrop = -1; tone(760, 0.04, "triangle", 0.03); paint(); return;
+        }
+        selFrom = -1; selDrop = -1; paint();
+      }
+      function endGame() {
+        uiState = "over";
+        clearRun();
+        if (st.winner === 0) {
+          tone(784, 0.12, "triangle", 0.05); tone(1046, 0.18, "triangle", 0.05, 0.1); celebrate();
+          if (window.ARCADE_points && !shoAssist) window.ARCADE_points.earn("shogiWin", { diff: shoDiff });
+          if (window.__huntEvent) window.__huntEvent("sixerWin");
+          ovTitle.textContent = "あなたの勝ち！";
+          ovText.textContent = "詰ませました（または相手に指せる手がなくなりました）。お見事です。";
+          statusEl.textContent = "勝負あり：あなたの勝ち！";
+        } else if (st.winner === 1) {
+          tone(320, 0.25, "sawtooth", 0.04);
+          ovTitle.textContent = "CPUの勝ち…";
+          ovText.textContent = "詰まされました。王様の逃げ道と守りの金銀がポイントです。";
+          statusEl.textContent = "勝負あり：CPUの勝ち";
+        } else {
+          tone(523, 0.12, "triangle", 0.05); tone(523, 0.14, "triangle", 0.05, 0.14);
+          ovTitle.textContent = "引き分け";
+          ovText.textContent = "千日手（同じ局面が4回）または持将棋（簡易ルール）で引き分けです。";
+          statusEl.textContent = "勝負あり：引き分け";
+          if (window.ARCADE_points && !shoAssist) window.ARCADE_points.earn("shogiDraw", { diff: shoDiff });
+        }
+        ovBtn.textContent = "もう一度";
+        overlay.classList.remove("off");
+        refreshEdu();
+      }
+      function reset(showStart) {
+        st = SHO.newState();
+        selFrom = -1; selDrop = -1; pendingPromo = null; paintPromo();
+        legalCache = { key: "", moves: [] }; eduCache = { key: "", text: "" };
+        shoAssist = false; if (assistEl) assistEl.hidden = true;
+        uiState = showStart ? "idle" : "player";
+        statusEl.textContent = "あなた（先手）の番です";
+        paint();
+        if (showStart) { ovTitle.textContent = "将棋"; ovText.textContent = "相手の玉を詰ませれば勝ちです。取った駒は持ち駒として打てます（二歩・打ち歩詰め・行き場のない駒は打てません）。"; ovBtn.textContent = "スタート"; overlay.classList.remove("off"); }
+        else overlay.classList.add("off");
+        refreshEdu();
+      }
+      var ovTapAt = 0;
+      function ovAction() {
+        if (uiState === "over") { reset(false); return; }
+        if (uiState === "idle") { uiState = "player"; overlay.classList.add("off"); tone(620, 0.06, "triangle", 0.04); paint(); return; }
+        overlay.classList.add("off"); tone(620, 0.06, "triangle", 0.04);
+        if (uiState === "cpu") setTimeout(cpuMove, 350);
+      }
+      ovBtn.addEventListener("pointerdown", function () { ovTapAt = Date.now(); ovAction(); });
+      ovBtn.addEventListener("click", function () { if (Date.now() - ovTapAt < 700) return; ovAction(); });
+      document.getElementById("shgReset").addEventListener("click", function () { reset(false); });
+      build();
+      var boot = null;
+      try { boot = JSON.parse(localStorage.getItem(RUN_KEY) || "null"); } catch (e) {}
+      reset(true);
+      if (boot && boot.b && boot.b.length === 81 && boot.hands) {
+        st.b = boot.b.slice(); st.hands = [boot.hands[0].slice(), boot.hands[1].slice()];
+        st.turn = boot.turn === 1 ? 1 : 0; st.moves = boot.moves | 0; st.last = boot.last || null;
+        st.rep = boot.rep || {}; st.histKeys = boot.histKeys || []; st.histCheck = boot.histCheck || [];
+        shoAssist = !!boot.assist;
+        legalCache = { key: "", moves: [] }; eduCache = { key: "", text: "" };
+        uiState = st.turn === 1 ? "cpu" : "player";
+        paint();
+        overlay.classList.remove("off");
+        ovTitle.textContent = "一時停止中";
+        ovText.textContent = "前回の対局のつづきです。再開ボタンで続けます。";
+        ovBtn.textContent = "再開する";
+        refreshEdu();
+      }
+      window.__shogi = {
+        enter: function () {},
+        debug: function () { return { state: uiState, moves: st.moves, assist: shoAssist, edu: shoEdu, diff: shoDiff, turn: st.turn, over: st.over, winner: st.winner, b: st.b.slice(), hands: [st.hands[0].slice(), st.hands[1].slice()] }; }
+      };
+    })();
+
+    /* ================= SHOGI (private-room MP) ================= */
+    (function () {
+      if (!window.ARCADE_mpVs || !document.getElementById("shogiMpRoot")) return;
+      var FACE = ["歩兵", "香車", "桂馬", "銀将", "金将", "角行", "飛車", "王将", "と", "成香", "成桂", "成銀", "竜馬", "竜王"];
+      var SHORT = ["歩", "香", "桂", "銀", "金", "角", "飛", "玉", "と", "成香", "成桂", "成銀", "馬", "竜"];
+      var it = { selFrom: -1, selDrop: -1, promo: null, snapMoves: -1 };
+      function faceHTML(v) {
+        var t = SHO.typeOf(v);
+        var face = t === SHO.T.OU && SHO.sideOf(v) === 1 ? "玉将" : FACE[t];
+        var promo = t >= 8;
+        if (face.length === 1) return '<span class="shg-face one' + (promo ? " pr" : "") + '" data-i18n-skip>' + face + "</span>";
+        return '<span class="shg-face two' + (promo ? " pr" : "") + '" data-i18n-skip><span>' + face.charAt(0) + "</span><span>" + face.charAt(1) + "</span></span>";
+      }
+      function lightOf(snap) { return { b: snap.b, hands: snap.hands, turn: snap.turn }; }
+      function renderShoMp(container, snap, mySeat, onMove) {
+        if (it.snapMoves !== snap.moves) { it.selFrom = -1; it.selDrop = -1; it.promo = null; it.snapMoves = snap.moves; }
+        var myTurn = onMove && snap.turn === mySeat && !snap.over;
+        var moves = myTurn ? SHO.genLegal(lightOf(snap), mySeat, 0) : [];
+        var dests = {};
+        moves.forEach(function (m) {
+          if (it.selDrop >= 0 && m.charAt(0) === "D" && +m.slice(1).split(",")[0] === it.selDrop) dests[+m.split(",")[1]] = true;
+          else if (it.selFrom >= 0 && m.charAt(0) !== "D" && +m.split(",")[0] === it.selFrom) dests[+m.split(",")[1]] = true;
+        });
+        var lastTo = -1;
+        if (snap.last) lastTo = +snap.last.split(",")[1];
+        function handRow(side, interactive) {
+          var hand = snap.hands[side], h = "";
+          for (var t = 0; t < 7; t++) {
+            if (!hand[t]) continue;
+            if (interactive) h += '<button type="button" class="shg-hand-btn' + (it.selDrop === t ? " on" : "") + '" data-mpdrop="' + t + '" data-i18n-skip>' + SHORT[t] + (hand[t] > 1 ? " ×" + hand[t] : "") + "</button>";
+            else h += '<span class="shg-hand-chip" data-i18n-skip>' + SHORT[t] + (hand[t] > 1 ? " ×" + hand[t] : "") + "</span>";
+          }
+          return '<div class="shg-hand">' + (h || '<span class="shg-hand-none">持ち駒なし</span>') + "</div>";
+        }
+        var html = handRow(mySeat === 0 ? 1 : 0, false);
+        html += '<div class="bmp-shg-board">';
+        for (var d = 0; d < 81; d++) {
+          var i = mySeat === 0 ? d : 80 - d;
+          var v = snap.b[i];
+          html += '<button type="button" class="shg-cell' + (i === lastTo ? " last" : "") + (i === it.selFrom ? " sel" : "") + (dests[i] ? " dest" : "") + '" data-i="' + i + '"' + (myTurn ? "" : " disabled") + ">" +
+            (v ? '<span class="shg-piece ' + (SHO.sideOf(v) === mySeat ? "sen" : "go") + '">' + faceHTML(v) + "</span>" : "") + "</button>";
+        }
+        html += "</div>";
+        html += handRow(mySeat, true);
+        if (it.promo) html += '<div class="shg-promo"><span class="shg-promo-q">成りますか？</span><button type="button" class="w1-hbtn" data-promo="1">成る</button><button type="button" class="w1-hbtn" data-promo="0">成らない</button></div>';
+        container.innerHTML = html;
+        if (!myTurn) return;
+        Array.prototype.forEach.call(container.querySelectorAll("[data-mpdrop]"), function (b2) {
+          b2.addEventListener("click", function () {
+            var t = +b2.getAttribute("data-mpdrop");
+            it.selDrop = it.selDrop === t ? -1 : t; it.selFrom = -1; it.promo = null;
+            renderShoMp(container, snap, mySeat, onMove);
+          });
+        });
+        Array.prototype.forEach.call(container.querySelectorAll("[data-promo]"), function (b2) {
+          b2.addEventListener("click", function () {
+            var pp = it.promo; it.promo = null;
+            onMove(pp.from + "," + pp.to + "," + b2.getAttribute("data-promo"));
+          });
+        });
+        Array.prototype.forEach.call(container.querySelectorAll(".shg-cell"), function (cell) {
+          cell.addEventListener("click", function () {
+            var idx = +cell.getAttribute("data-i");
+            if (it.promo) return;
+            if (it.selDrop >= 0) {
+              var dm = "D" + it.selDrop + "," + idx;
+              if (moves.indexOf(dm) >= 0) { it.selDrop = -1; onMove(dm); return; }
+            }
+            if (it.selFrom >= 0) {
+              var variants = moves.filter(function (m) { return m.charAt(0) !== "D" && +m.split(",")[0] === it.selFrom && +m.split(",")[1] === idx; });
+              if (variants.length === 2) { it.promo = { from: it.selFrom, to: idx }; renderShoMp(container, snap, mySeat, onMove); return; }
+              if (variants.length === 1) { it.selFrom = -1; onMove(variants[0]); return; }
+            }
+            var v2 = snap.b[idx];
+            if (v2 && SHO.sideOf(v2) === mySeat && moves.some(function (m) { return m.charAt(0) !== "D" && +m.split(",")[0] === idx; })) {
+              it.selFrom = idx; it.selDrop = -1; renderShoMp(container, snap, mySeat, onMove); return;
+            }
+            it.selFrom = -1; it.selDrop = -1; renderShoMp(container, snap, mySeat, onMove);
+          });
+        });
+      }
+      function shgStatus(snap, mySeat) {
+        if (snap.over) return null;
+        var chk = SHO.inCheck(snap.b, snap.turn);
+        if (snap.turn === mySeat) return chk ? "王手がかかっています。あなたの番です" : null;
+        return chk ? "相手に王手がかかっています" : null;
+      }
+      var room = new window.ARCADE_mpVs.VersusRoom({
+        game: "shogi", root: document.getElementById("shogiMpRoot"),
+        engine: SHO.engine, wagerOptions: [0, 10, 30, 50], renderBoard: renderShoMp, statusText: shgStatus
+      });
+      window.__shogiMp = { ready: function () { return !!room; }, room: function () { return room; } };
+      if (window.__boardMpEngines) { window.__boardMpEngines.shogi = SHO.engine; window.__boardMpEngines.shogiFull = SHO; }
+      var sp = document.getElementById("shogiView");
+      if (sp) {
+        var bar = sp.querySelector(".gamebar");
+        if (bar && !bar.querySelector("[data-mp-entry='shogiMpView']")) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mp-entry-btn"; b.setAttribute("data-mp-entry", "shogiMpView");
+          b.textContent = "👥 プライベート対戦";
+          b.addEventListener("click", function () { if (typeof window.__openArcadeView === "function") window.__openArcadeView("shogimp"); });
+          bar.appendChild(b);
+        }
+      }
+    })();
+
+    /* ================= SHOGI styles ================= */
+    (function () {
+      if (document.getElementById("shgStyles")) return;
+      var s = document.createElement("style");
+      s.id = "shgStyles";
+      s.textContent =
+        "#shogiView{--acc:#b07a2e;--acc-d:#8a5a1a}" +
+        ".shg-wrap{position:relative;width:100%;max-width:720px;margin:0 auto}" +
+        ".shg-board,.bmp-shg-board{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:100%;background:#8a5a2a;padding:6px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.35);box-sizing:border-box}" +
+        ".bmp-shg-board{max-width:460px;margin:0 auto}" +
+        ".shg-cell{aspect-ratio:1/1.06;border:0;padding:0;position:relative;cursor:pointer;background:#eec98a;font-size:clamp(9px,3.8vw,21px);-webkit-tap-highlight-color:transparent}" +
+        ".shg-cell:disabled{cursor:default}" +
+        ".shg-cell.last{box-shadow:inset 0 0 0 3px rgba(214,69,32,.85)}" +
+        ".shg-cell.from{box-shadow:inset 0 0 0 2px rgba(120,72,20,.55)}" +
+        ".shg-cell.sel{box-shadow:inset 0 0 0 3px #38bdf8,inset 0 0 14px rgba(56,189,248,.5)}" +
+        ".shg-cell.dest::after{content:'';position:absolute;inset:36%;border-radius:50%;background:rgba(20,90,40,.4);box-shadow:0 0 0 2px rgba(255,255,255,.3);pointer-events:none;z-index:2}" +
+        ".shg-cell.edu-best{box-shadow:inset 0 0 0 3px #f59e0b,inset 0 0 14px rgba(245,158,11,.5)}" +
+        ".shg-piece{display:flex;align-items:center;justify-content:center;width:90%;height:94%;margin:3% auto;background:linear-gradient(180deg,#f8e7b4,#e9cb8a);clip-path:polygon(50% 0,100% 24%,90% 100%,10% 100%,0 24%);animation:shgPop .18s ease-out;position:relative;z-index:1}" +
+        ".shg-piece.go{transform:rotate(180deg)}" +
+        ".shg-face{font-family:'Hiragino Mincho ProN','Hiragino Mincho Pro','YuMincho','Yu Mincho','Noto Serif JP',serif;font-weight:700;color:#2a1c08;line-height:1.02;text-align:center}" +
+        ".shg-face.one{font-size:1.12em}" +
+        ".shg-face.two{display:flex;flex-direction:column;font-size:.6em;line-height:1.08}" +
+        ".shg-face.pr{color:#c0271d}" +
+        "@keyframes shgPop{from{transform:scale(.6);opacity:.3}to{transform:scale(1);opacity:1}}" +
+        ".shg-piece.go{animation:none}" +
+        ".shg-hand{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:44px;margin:4px 0}" +
+        "#shgHandMine,#shgHandOpp{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:44px}" +
+        ".shg-hand-lab{font-size:12.5px;font-weight:700;opacity:.75;margin-right:2px}" +
+        ".shg-hand-btn{min-height:44px;padding:6px 12px;border-radius:10px;border:1px solid #8a5a2a;background:linear-gradient(180deg,#f8e7b4,#e9cb8a);color:#2a1c08;font-weight:700;font-size:15px;cursor:pointer}" +
+        ".shg-hand-btn.on{outline:3px solid #38bdf8}" +
+        ".shg-hand-chip{padding:6px 10px;border-radius:10px;background:rgba(138,90,42,.18);border:1px solid rgba(138,90,42,.4);font-weight:700;font-size:14px}" +
+        ".shg-hand-none{opacity:.55;font-size:13px}" +
+        ".shg-promo{display:flex;gap:8px;align-items:center;justify-content:center;margin:8px 0;min-height:44px}" +
+        ".shg-promo[hidden]{display:none}" +
+        ".shg-promo-q{font-weight:700}" +
+        ".shg-promo .w1-hbtn{min-height:44px;padding:8px 18px}" +
+        "@media (prefers-reduced-motion: reduce){.shg-piece{animation:none}}";
+      document.head.appendChild(s);
+    })();
+  })();
 </script>
 </body>
 </html>
