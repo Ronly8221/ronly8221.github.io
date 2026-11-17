@@ -2581,7 +2581,8 @@
       @media (min-width: 768px) { .tile-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
       /* Genre groups: the lobby tiles are grouped under seven fixed
          genre headings (board / puzzle / action / gambling /
-         retro / learn, in that order). Each heading wears its own
+         learn / expansion / retro, in that order — retro moved to
+         the very bottom on 2026-11-17). Each heading wears its own
          accent colour; the play-count sort runs inside each group
          only. The gambling group (gold) holds the games played by
          betting your own ARCADE points — a game joins it only once
@@ -6780,11 +6781,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           </div>
 
           <!-- Lobby tiles: one compact tile per game (icon + name +
-               one line), grouped under the six genre headings in
+               one line), grouped under the seven genre headings in
                fixed order (board / puzzle / action / gambling /
-               retro / learn — billiards moved from the old table
-               group into action on 2026-11-14, and the empty table
-               heading was removed); the play-count sort runs
+               learn / expansion / retro — retro moved to the very
+               bottom on 2026-11-17; billiards moved from the old
+               table group into action on 2026-11-14, and the empty
+               table heading was removed); the play-count sort runs
                inside each group.
                The tile's play button overlays the whole tile, so the
                entire surface is the tap target; the open* ids and the
@@ -7090,31 +7092,6 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             </section>
             </div>
           </section>
-          <section class="genre-group" data-genre="retro">
-            <h2 class="genre-head"><span class="genre-name">レトロ・外部</span><span class="genre-count">3</span></h2>
-            <div class="tile-grid" data-genre-grid="retro">
-  <section class="game-tile tile-retro" aria-label="レトロゲーム" style="--i:2">
-              <div class="glyph glyph-retro" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="11" width="34" height="18" rx="9" fill="#e8503a"/><rect x="3" y="11" width="34" height="18" rx="9" fill="none" stroke="#c73e2a" stroke-width="1.4"/><path d="M11.5 15.5v9M7 20h9" stroke="#fff2e9" stroke-width="3" stroke-linecap="round"/><circle cx="29.5" cy="17" r="2.6" fill="#ffd166"/><circle cx="24.8" cy="22.6" r="2.6" fill="#4aa8dd"/><circle cx="17" cy="26.2" r="1.1" fill="#ffd9cf"/><circle cx="21.5" cy="26.2" r="1.1" fill="#ffd9cf"/></svg></div>
-              <h2>レトロゲーム</h2>
-              <p class="sub">ファイルをドラッグ＆ドロップで遊ぶエミュレータ</p>
-              <span class="tile-count" data-count-for="retro" hidden></span>
-              <button type="button" class="play-btn retro" id="openRetroGenre">レトロゲームを開く</button>
-            </section>
-  <section class="game-tile" aria-label="GX.games" style="--i:8">
-              <div class="glyph glyph-gx" aria-hidden="true" data-i18n-skip><span class="gx-t">GX</span></div>
-              <h2>GX.games <span class="ext-mark" aria-hidden="true">↗</span></h2>
-              <p class="sub">ブラウザゲームのプラットフォーム（外部サイト）</p>
-              <a class="play-btn gx" href="https://gx.games" target="_blank" rel="noopener noreferrer" aria-label="GX.gamesを新しいタブで開く">GX.gamesを開く</a>
-            </section>
-  <section class="game-tile" aria-label="Ported2Browser" style="--i:9">
-              <div class="glyph glyph-p2b" aria-hidden="true" data-i18n-skip><span class="p2b-t">P2</span></div>
-              <h2>Ported2Browser <span class="ext-mark" aria-hidden="true">↗</span></h2>
-              <p class="sub">ブラウザ移植ゲームの発掘カタログ（外部サイト）</p>
-              <span class="p2b-badge">外部 ↗</span>
-              <a class="play-btn p2b" href="https://ported2browser.com" target="_blank" rel="noopener noreferrer" aria-label="Ported2Browserを新しいタブで開く">Ported2Browserを開く</a>
-            </section>
-            </div>
-          </section>
           <section class="genre-group" data-genre="learn">
             <h2 class="genre-head"><span class="genre-name">まなぶ</span><span class="genre-count">5</span></h2>
             <div class="tile-grid" data-genre-grid="learn">
@@ -7212,6 +7189,31 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <p class="sub">Spotifyとつながるレコード盤。ゲームのBGMに</p>
               <span class="tile-count" data-count-for="turntable" hidden></span>
               <button type="button" class="play-btn lib" id="openTurntable">ターンテーブルを開く</button>
+            </section>
+            </div>
+          </section>
+          <section class="genre-group" data-genre="retro">
+            <h2 class="genre-head"><span class="genre-name">レトロ・外部</span><span class="genre-count">3</span></h2>
+            <div class="tile-grid" data-genre-grid="retro">
+  <section class="game-tile tile-retro" aria-label="レトロゲーム" style="--i:2">
+              <div class="glyph glyph-retro" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="11" width="34" height="18" rx="9" fill="#e8503a"/><rect x="3" y="11" width="34" height="18" rx="9" fill="none" stroke="#c73e2a" stroke-width="1.4"/><path d="M11.5 15.5v9M7 20h9" stroke="#fff2e9" stroke-width="3" stroke-linecap="round"/><circle cx="29.5" cy="17" r="2.6" fill="#ffd166"/><circle cx="24.8" cy="22.6" r="2.6" fill="#4aa8dd"/><circle cx="17" cy="26.2" r="1.1" fill="#ffd9cf"/><circle cx="21.5" cy="26.2" r="1.1" fill="#ffd9cf"/></svg></div>
+              <h2>レトロゲーム</h2>
+              <p class="sub">ファイルをドラッグ＆ドロップで遊ぶエミュレータ</p>
+              <span class="tile-count" data-count-for="retro" hidden></span>
+              <button type="button" class="play-btn retro" id="openRetroGenre">レトロゲームを開く</button>
+            </section>
+  <section class="game-tile" aria-label="GX.games" style="--i:8">
+              <div class="glyph glyph-gx" aria-hidden="true" data-i18n-skip><span class="gx-t">GX</span></div>
+              <h2>GX.games <span class="ext-mark" aria-hidden="true">↗</span></h2>
+              <p class="sub">ブラウザゲームのプラットフォーム（外部サイト）</p>
+              <a class="play-btn gx" href="https://gx.games" target="_blank" rel="noopener noreferrer" aria-label="GX.gamesを新しいタブで開く">GX.gamesを開く</a>
+            </section>
+  <section class="game-tile" aria-label="Ported2Browser" style="--i:9">
+              <div class="glyph glyph-p2b" aria-hidden="true" data-i18n-skip><span class="p2b-t">P2</span></div>
+              <h2>Ported2Browser <span class="ext-mark" aria-hidden="true">↗</span></h2>
+              <p class="sub">ブラウザ移植ゲームの発掘カタログ（外部サイト）</p>
+              <span class="p2b-badge">外部 ↗</span>
+              <a class="play-btn p2b" href="https://ported2browser.com" target="_blank" rel="noopener noreferrer" aria-label="Ported2Browserを新しいタブで開く">Ported2Browserを開く</a>
             </section>
             </div>
           </section>
@@ -16432,7 +16434,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            (it once rode into the public GitHub copy inside the
            shared base code). The assembled value is unchanged. */
         var DRIVE_API_KEY = (function () {
- var p = [""];
+           var p = [""];
           return p.join("");
         })();
         function dlUrl(id) { return DL_BASE + encodeURIComponent(id) + "?alt=media&key=" + DRIVE_API_KEY; }
@@ -49947,6 +49949,8 @@ PATTERNS.push(
     notesAdd("仕組みと同期", { t: "ランキングと同期を分けた：公開4項目と、コードが鍵の非公開置き場", b: ["ランキングの保存先には、名前や累計ポイントだけでなく、残高・所持品・端末間同期データまで全部入りで置かれていました。しかも認証なしで誰でも読み書きできるルールだったので、他人の記録を読む・書き換える・消す、全員分の引き継ぎコードを一覧で拾う、細工した同期データで他人の端末の保存内容を書き換える——その全部が可能な状態でした。今回、公開してよい4項目（名前・累計ポイント・ランク・更新時刻）だけをランキング側に残し、残りは新しい非公開置き場へ引っ越しました。", "非公開置き場の住所は、引き継ぎコードからSHA-256で導いたハッシュです。コードを知っている本人だけが辿り着けて、置き場全体の一覧読み取りはルールで禁止しました。既存のアカウントは次に同期したときに自動で引っ越す（遅延移行）ので、手続きは要りません。ポイントには最終ルールで「減らない・1回の増加は1,000万まで」の上限も付けました。正規の獲得で最大の単一精算は宝くじで、同じ番号を10枚まで買えて一括精算されるため、1等（50,000倍×10コイン×10枚）で約500万が天井——上限はその約2倍に取り、それを超える正規のジャンプは分割して書き込む方式にしたので、大きな当選でも記録が詰まることはありません。新規コードは8文字以上になり、強いコードの自動生成ボタンも付けました。", "正直に残る部分も書いておきます。既存の短いコードはそのまま使えますが、短いコードは推測されやすいままです。気になる人は管理画面から強いコードへ変更してください（変更すると古いコードは使えなくなります）。また認証を持たない設計上、上限以下のポイント細工や表示名の書き換えまではルールだけでは止められません。守れたのは「丸ごと読み取り・乗っ取り・削除・他人の端末の書き換え」で、ここが今回の主戦場でした。検証は、データベースをローカルに再現してルール3態（現行・移行用・最終形）で叩く専用プローブ45件すべて合格、ルール構造テスト16件合格、既存の回帰スモーク全緑。さらに実装者と別の独立チェッカーに反証レビューをさせ、宝くじの複数枚精算を見落とした上限算定の誤りと、同期データの時刻ピニングの穴を検出して、その場で直しました。"] });
     notesAdd("ゲームごとの制作メモ", { t: "釣り図鑑リビルド：跳ね際のパーフェクトとコンボ", b: ["釣り図鑑のリビルドで足したのは、釣り上げた「後」の一瞬の遊びです。寄せ切ると魚が0.85秒跳ね、その間にタイミングリングが半径118から0へ縮んでいきます。魚の上に描かれた金の目標リング（半径34）と重なる±13の範囲——時間にして約190ミリ秒——でタップできれば「パーフェクトキャッチ」になります。", "判定は最初の1タップだけで決まります。続けて叩いても何も起きないので、連打で拾う道はありません。外しても魚は逃げず、通常の取り込みになるだけです。パーフェクトが続くとコンボになり、×2から獲物カードにバッジが出て、コンボ中は水面に金の粉が漂います。コンボは通常の取り込み・逃走・新しい釣行でリセットされますが、釣行の保存データに任意項目として相乗りさせたので、途中で再読み込みしても切れません（古い保存データはコンボ0として読み込まれます）。", "いちばん大事な設計判断は、パーフェクトもコンボもコインを1枚も増やさないことです。釣果の支払いは従来どおりレア度2/5/10/20と初ゲット5だけで、検証では高レアを3投そろえて50点分の釣行を強制しても、実際に増えたのは1釣行の上限である30ちょうどでした。ルール画面と遊び方にも「演出だけ」と明記してあります。気持ちよさは足す、経済は壊さない——それがこの仕掛けの約束です。", "検証の数字です。専用プローブは17項目すべて合格： 旧形式の図鑑レコード（湖のウグイ、最大27.7cm）が読み込めて、釣行と途中の再読み込みを経てもバイト単位で無傷だったこと。パーフェクトを決めた釣行でも精算が上限30ちょうどに収まること。新しく足した文字列の英日両方向の残留チェック。既存の回帰スモークも全緑で、check-blocksは70ブロック0失敗でした。同じラウンドでは、獲物カードの幅が獲物の名前の短さに引かれて縮み、日本語のポイント表記が単語の途中で折り返してしまう問題（レア度ポイ／ント）も、カード幅の下限と行幅の指定で直しています。リングの判定はフレーム駆動なので、極端に重い端末では窓の体感がわずかに変わりうることだけ、正直に残しておきます。"] });
     notesAdd("ゲームごとの制作メモ", { t: "基盤ファーム：部品を育てる小さな工場", b: ["畑をプリント基板に見立てた新作です。畑の区画は部品のフットプリント（パッド）、植えることは「実装」、育つ3段階は「素のパッド→リードが生える→完成品」。抵抗・コンデンサ・LEDからFPGAチップまで、全18種の電子部品をSVGで1つずつ描き分けました。", "遊びの芯は、釣り図鑑リビルドで作った「完成の瞬間にだけ開く短い窓」です。部品が完成すると金のリングが縮み始め、消える前にタップできればパーフェクト収穫（価値2倍）でコンボが伸び、5コンボごとの節目には+3のボーナスが付きます。ここは元ネタの計画メモが「ボーナス+コンボ」を明記していたので、演出だけだった釣りと違い、スコアに効く設計にしました。完成時にはまれにレア変異が出ます： 金メッキ仕様は確率4%で価値3倍、光る部品だけに起きる虹色仕様は確率1.5%で価値5倍。出た瞬間は「レア変異！」のバナーとファンファーレで祝います。", "注文は部品表（BOM）の形で届きます。温度センサーやモータードライバといったモジュール名義で1〜3品目が指定され、在庫から納品すると部品の価値合計の2倍がスコアに入ります。1日は電源フェーズで流れます： 通電開始→フル稼働→省電力→スタンバイ。夜は基板が暗くなり、完成したLEDやディスプレイが光って見えます。開始前の待機画面ではデモ基板が勝手に実装と収穫を続けるアトラクトモードで、基板をタップするとそのまま1日が始まります。", "1日のスコアはそのままコインに換算され、上限は1日30コイン（難易度の倍率が別途かかります）。難易度は1日の長さ（180秒／150秒／120秒）、パーフェクト期間（2.6秒／2.0秒／1.4秒）、育つ速さが変わります。途中で画面を離れても、部品の育ち具合ごと保存されて続きから再開できます。部品図鑑（全18種・収穫数と変異スタンプ）はデバイスをまたいで引き継がれます。"] });
+    notesAdd("仕組みと同期", { t: "ターンテーブルの音量と、シャッフル／リピート", b: ["ターンテーブルの音量スライダーが効きませんでした。原因は配線先の間違いです。スライダーはSpotify専用の音量を書いていましたが、実際に鳴っている自作BGMのエンジンは「全体設定のマスター音量」しか読んでいません。鳴っていない側のつまみを回していたので、どれだけ動かしても音は変わらなかったのです。直し方は、音量の親玉をマスター音量1つに統一すること。ターンテーブルのスライダーも設定パネルも、同じ値を読み書きするようになりました。ついでに、アプリの中のスライダー全7本を点検して、同じ間違いが他にないことも確かめました（故障はこの1本だけでした）。", "自作BGMに再生モードがつきました。シャッフル（所持レコードからランダムに次を選ぶ。今かかっている曲は選ばない）と、リピートの3段（オフ／全曲／1曲）です。初期値は1曲リピートで、今まで通りデッキのレコードが回り続けます。全曲リピートは棚の最後から最初へ巻き戻り、リピートオフは棚を1周して最後で止まります。シャッフルとリピートオフを組み合わせると、まだかかっていない曲だけを回って、全曲かかったら止まります。モードの設定はこの端末の中だけに保存され、同期にもコインにも関係しません。", "検証の数字です。専用プローブ25項目すべて合格。スライダーを40にするとエンジンの実際の音量ゲインが0.40に、85で0.85、60で0.60になることを実測しました。シャッフルとリピートの動きは、ループの境目を強制的に踏ませて全パターン確かめています。"] });
+    notesAdd("仕組みと同期", { t: "ロビーの並び順と、バグ報告ピルの退役", b: ["ロビーのジャンルセクションの並び順を変えました。「レトロ・外部」が「まなぶ」の上から、全セクションの一番下へ引っ越しです。セクションの順番は、画面の土台になるHTMLの並びそのもので決まっています。プレイヤーが保存する並べ替え（ジャンル内でのタイルの順番）とは別の仕組みなので、端末に保存済みの並べ替えデータがあっても、新しい順序がそのまま効きます。実際に保存データ入りの状態で描画して、一番下に来ていることを確かめました。", "GitHub版のロビーにだけ出ていた、右下の黄色い「バグ報告・リクエスト」ボタン（ピル）を撤去しました。飛び先のGoogleフォーム制度そのものを廃止したためです（バグ報告はチャットで受ける形に一本化しました）。ピルと重ならないように空けていた画面下の余白（84px）も一緒に消しました。ピルと同じ部品に入っていたGitHub版専用の別の仕事——「GitHub版のホストゲーティング」で触れた、レトロのドライブ表示を消す処理と、見えているタイルの件数に表示を直す処理——は、そのまま残してあります。", "検証の数字です。専用確認は6項目すべて合格（アプリ版／GitHub版の両方で、順序・ピル不在・保存データの影響なしを確認）。組み立て後のファイル内では、ピルの痕跡（要素のID・フォームのURL・関連コード）は0件でした。前のラウンドから持ち越していた回帰テスト6本も、今回すべて合格しています（言語ゲート17/17、脳ビュー28/28、セキュリティ45/45、釣り17/17、基盤ファーム29/29、ターンテーブル25/25）。コインの雨の本数を数えるチェックだけは、自然に降ってくるコインと重なるタイミングで数え違いを起こす揺れが残っていますが、今回の変更前のビルドでも同じ揺れが出ることを確認済みで、この引っ越しと撤去とは無関係です。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -51978,71 +51982,13 @@ Object.assign(D, {
           }
         }
 
-        var FORMS = {
-          "ja":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSdaHGqYwUrvEOpAcPrtgjy1BKduyArkQvx4lUI8rDmOi7WUWg/viewform", btn: "🐛 バグ報告・リクエスト" },
-          "en":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSd1pR4qL0bP8rAUY4vfLSphRkd_-T7Ud8b3sbjwnOVE2tfiUA/viewform", btn: "🐛 Bug report & requests" },
-          "ko":      { url: "https://docs.google.com/forms/d/e/1FAIpQLScKJELPivAKZsXqMzt7scbF5Sa-1rHLv7P0znuwMz3Cl3Gk7A/viewform", btn: "🐛 버그 신고・요청" },
-          "zh-Hans": { url: "https://docs.google.com/forms/d/e/1FAIpQLSdG-wv2ojAaihxuOB4D0uJIOXNnJ0RZ5FNGWTF2FWD-jaUUfA/viewform", btn: "🐛 错误报告与请求" },
-          "zh-Hant": { url: "https://docs.google.com/forms/d/e/1FAIpQLSdF5mRWjUye0gEoZzw3f1py_kHvG_OOtFO6E1RCx__C0GLCSg/viewform", btn: "🐛 錯誤回報與請求" },
-          "es":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSc8WjxQXPFRtGZuGByjdBwAOFt6fRQT921KtCf7cwZ08oIDVg/viewform", btn: "🐛 Errores y solicitudes" },
-          "fr":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSdS3lhQySA5VzZxkavPbkC3x9QHd2rtWlND12KZMeK7nIbpHQ/viewform", btn: "🐛 Bug et demandes" },
-          "de":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSdbjubk-mBzrYVfr-1baveE7XF6EbH9tyqHCMBsnbs58raiwg/viewform", btn: "🐛 Fehler & Wünsche" },
-          "pt":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSdGwGG3aN82CVe94hg_UOEkMktc1ugIad0d-Bus4eIf6mW5Gg/viewform", btn: "🐛 Bugs e pedidos" },
-          "it":      { url: "https://docs.google.com/forms/d/e/1FAIpQLSdEULJodAjfOrsCvpSWQ-MlF8bTq1F85s-3iW8hrWobic7asg/viewform", btn: "🐛 Bug e richieste" },
-          "legacy":  { url: "https://docs.google.com/forms/d/e/1FAIpQLScjeBmpIjSmbRgBbaTjOvGeJJA296doZcbhMLIh6JQgfPfqXQ/viewform", btn: "🐛 バグ報告・リクエスト / Bug Report & Requests" }
-        };
-        // The app's own codes for the two Chinese variants differ
-        // from the form table's keys.
-        var LANG_ALIAS = { "zh": "zh-Hans", "zht": "zh-Hant" };
+        // The GitHub-lobby bug-report pill that used to live here was
+        // retired on 2026-11-17 together with the bug-report form
+        // system (reports now come through chat). The only duties
+        // left in this module are the two GitHub-host fixups above:
+        // hiding the retro Drive block and correcting the retro
+        // genre count to the tiles actually visible.
 
-        var pill = document.createElement("a");
-        pill.id = "ghBugPill";
-        pill.target = "_blank";
-        pill.rel = "noopener";
-        pill.style.cssText = "position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9000;display:inline-flex;align-items:center;padding:11px 18px;border-radius:999px;background:#ffd23f;color:#4a3200;font:800 14px/1.2 var(--font-sans, sans-serif);text-decoration:none;box-shadow:0 8px 24px rgba(20,10,40,.35);";
-        document.body.appendChild(pill);
-        // Overlap mitigation (builder #6, 12.11f; probe-verified at
-        // 390x844 + 375x667): on narrow screens the pill shrinks, and
-        // the lobby's last card gets bottom clearance so at full
-        // scroll nothing tappable rests under the pill. Mid-scroll the
-        // pill floats over tile corners like any FAB — it hides
-        // entirely outside the lobby (see syncPillVisibility below).
-        var pillCss = document.createElement("style");
-        pillCss.textContent = "@media (max-width: 480px) { #ghBugPill { padding: 8px 12px !important; font-size: 12.5px !important; right: 10px !important; bottom: calc(12px + env(safe-area-inset-bottom)) !important; } } .hub-home-card { margin-bottom: 84px; }";
-        document.head.appendChild(pillCss);
-
-        function updatePill() {
-          var code = null;
-          try { if (typeof window.arcadeLang === "function") code = window.arcadeLang(); } catch (e) {}
-          if (!code) { try { code = localStorage.getItem("arcade-lang"); } catch (e) {} }
-          var f = FORMS[LANG_ALIAS[code] || code] || FORMS.legacy;
-          pill.href = f.url;
-          if (pill.textContent !== f.btn) pill.textContent = f.btn;
-        }
-        // Lobby-only visibility: the pill belongs to the home screen.
-        // While a game / library / retro view is open it would sit on
-        // top of that view's controls (Blackjack's
-        // action buttons), so it hides then and returns with the
-        // lobby. The shell signals every view switch two ways —
-        // #homeView's inline display and the .open class on the
-        // .gameview / .subview elements — and both are watched below.
-        var homeViewEl = document.getElementById("homeView");
-        function syncPillVisibility() {
-          var lobbyShown = !!homeViewEl && homeViewEl.style.display !== "none" &&
-            !document.querySelector(".gameview.open, .subview.open");
-          pill.style.display = lobbyShown ? "inline-flex" : "none";
-        }
-        updatePill();
-        syncPillVisibility();
-        if (window.MutationObserver) {
-          new MutationObserver(updatePill).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
-          var viewObserver = new MutationObserver(syncPillVisibility);
-          if (homeViewEl) viewObserver.observe(homeViewEl, { attributes: true, attributeFilter: ["style"] });
-          var viewEls = document.querySelectorAll(".gameview, .subview");
-          for (var vi = 0; vi < viewEls.length; vi++) {
-            viewObserver.observe(viewEls[vi], { attributes: true, attributeFilter: ["class"] });
-          }
-        }
       })();
     </script>
 
@@ -72184,7 +72130,10 @@ window.__BN_VIEW__ = {
    retro-fitted below. Per-game 音 ON/OFF toggles are untouched
    and stay subordinate (they gate their own sounds upstream of
    the master gain). The Spotify SDK player is not a page
-   AudioContext; module 65 maps its volume = master × local.
+   AudioContext; module 65 maps its volume = the master, and
+   the turntable's own 音量 slider drives this same master
+   (fixed 2026-11-17 — it previously wrote a Spotify-only
+   local volume that the BGM engine never read).
 
    Public surface (also the probe hooks):
      window.__arcadeMasterVol()      -> effective gain 0..1
@@ -72531,7 +72480,10 @@ window.__BN_VIEW__ = {
    PLAYBACK PATHS:
    (a) Web Playback SDK (Premium): ARCADE registers as a
        Spotify Connect device and the music plays IN ARCADE.
-       SDK volume = master volume (module 64) × local volume.
+       SDK volume = the master volume (module 64). The screen's
+       音量 slider drives that same master (2026-11-17 fix: it
+       previously wrote a Spotify-only local volume that the
+       BGM engine never read, so it felt dead in BGM mode).
    (b) Display-sync: poll the Web API playback state and mirror
        it (artwork label, progress, tonearm); transport controls
        call the Web API.
@@ -72575,6 +72527,10 @@ window.__BN_VIEW__ = {
     noTrack: { ja: "再生中の曲はありません", en: "No song is currently playing", ko: "재생 중인 곡이 없습니다", zh: "当前没有播放的歌曲", zht: "沒有正在播放的歌曲", es: "No hay canciones reproduciéndose", fr: "Aucun morceau en cours de lecture", de: "Keine Musik wird wiedergegeben", pt: "Nenhuma música sendo reproduzida", it: "Nessun brano in riproduzione" },
     chooseTrack: { ja: "下のプレイリストや最近の曲から選んでください。", en: "Please select from the playlists or recent songs below.", ko: "아래의 플레이리스트나 최근 곡에서 선택해 주세요.", zh: "请从下方的播放列表或最近歌曲中选择。", zht: "請從下方的播放清單或最近聽過的歌曲中選擇。", es: "Elige una canción de las listas de reproducción o de las recientes a continuación.", fr: "Veuillez choisir parmi les playlists ci-dessous ou les morceaux récents.", de: "Bitte wählen Sie einen Titel aus den Playlists oder den zuletzt gehörten Titeln unten aus.", pt: "Selecione a partir das playlists ou músicas recentes abaixo.", it: "Scegli tra le playlist o i brani recenti qui sotto." },
     volume: { ja: "音量", en: "Volume", ko: "음량", zh: "音量", zht: "音量", es: "Volumen", fr: "Volume", de: "Lautstärke", pt: "Volume", it: "Volume" },
+    shuffle: { ja: "シャッフル", en: "Shuffle", ko: "셔플", zh: "随机播放", zht: "隨機播放", es: "Aleatorio", fr: "Aléatoire", de: "Zufällig", pt: "Aleatório", it: "Casuale" },
+    repeatOff: { ja: "リピート オフ", en: "Repeat Off", ko: "반복 끄기", zh: "循环关", zht: "循環關", es: "Repetición desactivada", fr: "Répétition désactivée", de: "Wiederholen aus", pt: "Repetição desativada", it: "Ripetizione disattivata" },
+    repeatAll: { ja: "全曲リピート", en: "Repeat All", ko: "전체 반복", zh: "全部循环", zht: "全部循環", es: "Repetir todo", fr: "Tout répéter", de: "Alle wiederholen", pt: "Repetir tudo", it: "Ripeti tutto" },
+    repeatOne: { ja: "1曲リピート", en: "Repeat One", ko: "한 곡 반복", zh: "单曲循环", zht: "單曲循環", es: "Repetir una", fr: "Répéter un titre", de: "Einen wiederholen", pt: "Repetir uma", it: "Ripeti uno" },
     authErrorTitle: { ja: "Spotifyに接続できませんでした", en: "Could not connect to Spotify", ko: "Spotify에 연결할 수 없었습니다", zh: "无法连接到 Spotify", zht: "無法連接至 Spotify", es: "No se pudo conectar a Spotify", fr: "Impossible de se connecter à Spotify", de: "Verbindung zu Spotify konnte nicht hergestellt werden", pt: "Não foi possível conectar ao Spotify", it: "Impossibile connettersi a Spotify" },
     apiError: { ja: "Spotify APIエラー", en: "Spotify API error", ko: "Spotify API 오류", zh: "Spotify API 错误", zht: "Spotify API 錯誤", es: "Error de API de Spotify", fr: "Erreur d'API Spotify", de: "Spotify API-Fehler", pt: "Erro da API do Spotify", it: "Errore API Spotify" },
     connDetails: { ja: "接続の詳細", en: "Connection Details", ko: "연결 세부 정보", zh: "连接详情", zht: "連接詳情", es: "Detalles de la conexión", fr: "Détails de la connexion", de: "Verbindungsdetails", pt: "Detalhes da conexão", it: "Dettagli connessione" },
@@ -72602,7 +72558,8 @@ window.__BN_VIEW__ = {
     playlists: [], recents: [],
     notice: "", error: "",
     vinyl: "vinyl-default", skin: "ttskin-default",
-    bgmAccent: ""
+    bgmAccent: "",
+    modes: { shuffle: false, repeat: "one" }
   };
   try { var lv = parseFloat(localStorage.getItem(VOL_KEY)); if (isFinite(lv)) S.localVol = Math.max(0, Math.min(1, lv)); } catch (e) {}
   try { S.vinyl = window.__ttVinyl || S.vinyl; S.skin = window.__ttSkin || S.skin; } catch (e) {}
@@ -72780,7 +72737,7 @@ window.__BN_VIEW__ = {
   var sdkPlayer = null;
   function effSdkVol() {
     var m = 1; try { m = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
-    return Math.max(0, Math.min(1, m * S.localVol));
+    return Math.max(0, Math.min(1, m));
   }
   function ensureSDK() {
     if (sdkPlayer || S.sdkTried) return;
@@ -72878,16 +72835,48 @@ window.__BN_VIEW__ = {
       renderAll();
     }).catch(function () {});
   }
-  function setLocalVol(v) {
-    S.localVol = Math.max(0, Math.min(1, v));
-    try { localStorage.setItem(VOL_KEY, String(S.localVol)); } catch (e) {}
-    if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol()); } catch (e) {} }
-    else if (S.auth === "in" && S.mode === "sync") {
-      var m = 1; try { m = window.__arcadeMasterVol ? window.__arcadeMasterVol() : 1; } catch (e) {}
-      api("/me/player/volume?volume_percent=" + Math.round(m * S.localVol * 100), { method: "PUT" }).catch(function () {});
+  /* Volume: ONE source of truth — module 64's master. The
+     screen's slider drives the master; every playback path
+     follows it (the BGM engine through its fitted context
+     gain, the SDK player directly, a sync-mode device through
+     the Web API). Before 2026-11-17 the slider wrote a
+     Spotify-only local volume (arcade-spotify-vol) that the
+     BGM engine never read — the reported dead slider. The
+     local key is legacy now and no longer written. */
+  function masterPct() {
+    try { var st = window.__arcadeSettingsState ? window.__arcadeSettingsState() : null; if (st) return st.vol; } catch (e) {}
+    return Math.round(S.localVol * 100);
+  }
+  function setScreenVol(pct) {
+    pct = Math.max(0, Math.min(100, Math.round(pct)));
+    if (window.__arcadeSetMaster) {
+      var muted = false;
+      try { var st = window.__arcadeSettingsState ? window.__arcadeSettingsState() : null; muted = !!(st && st.muted); } catch (e) {}
+      window.__arcadeSetMaster(pct, pct === 0 ? muted : false);
+    } else {
+      /* module 64 missing (defensive): keep the legacy local sink */
+      S.localVol = pct / 100;
+      try { localStorage.setItem(VOL_KEY, String(S.localVol)); } catch (e) {}
+      if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol() * S.localVol); } catch (e) {} }
     }
   }
-  try { if (window.__arcadeOnMasterChange) window.__arcadeOnMasterChange(function () { if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol()); } catch (e) {} } }); } catch (e) {}
+  var syncVolTimer = null;
+  function applyMasterToPlayers() {
+    if (sdkPlayer && S.sdkReady) { try { sdkPlayer.setVolume(effSdkVol()); } catch (e) {} }
+    else if (S.auth === "in" && S.mode === "sync") {
+      /* remote device volume follows the master too, debounced
+         so a settings-panel drag cannot flood the Web API */
+      if (syncVolTimer) clearTimeout(syncVolTimer);
+      syncVolTimer = setTimeout(function () {
+        syncVolTimer = null;
+        if (S.auth === "in" && S.mode === "sync") {
+          api("/me/player/volume?volume_percent=" + Math.round(effSdkVol() * 100), { method: "PUT" }).catch(function () {});
+        }
+      }, 350);
+    }
+    if (els.vol && document.activeElement !== els.vol) els.vol.value = String(masterPct());
+  }
+  try { if (window.__arcadeOnMasterChange) window.__arcadeOnMasterChange(applyMasterToPlayers); } catch (e) {}
 
   /* ---------------- demo mode ---------------- */
   var demoTimer = null;
@@ -72962,14 +72951,22 @@ window.__BN_VIEW__ = {
     ".tt-progress{display:flex;align-items:center;gap:10px}",
     ".tt-progress span{font-size:12px;font-variant-numeric:tabular-nums;color:#aeb6c8;min-width:36px}",
     ".tt-progress span:last-child{text-align:right}",
-    ".tt-seek{flex:1;accent-color:#1db954;height:36px;cursor:pointer}",
+    ".tt-seek{flex:1;accent-color:#1db954;height:44px;cursor:pointer}",
     ".tt-transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap}",
     ".tt-tbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eef1f8;border-radius:50%;width:48px;height:48px;font-size:17px;cursor:pointer;flex:none}",
     ".tt-tbtn.main{width:58px;height:58px;font-size:21px;background:#1db954;color:#06130a;border-color:transparent}",
     ".tt-tbtn:active{transform:scale(.94)}",
     ".tt-vol{display:flex;align-items:center;gap:8px;margin-left:auto}",
     ".tt-vol label{font-size:12px;color:#aeb6c8}",
-    ".tt-vol input{width:110px;accent-color:#e9b93c;height:36px;cursor:pointer}",
+    ".tt-vol input{width:110px;accent-color:#e9b93c;height:44px;cursor:pointer}",
+    ".tt-modes{display:flex;gap:10px;flex-wrap:wrap}",
+    ".tt-modes[hidden]{display:none}",
+    ".tt-modebtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#c6cdd9;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer}",
+    ".tt-modebtn svg{width:17px;height:17px;flex:none}",
+    ".tt-modebtn:active{transform:scale(.96)}",
+    ".tt-modebtn.on{border-color:#e9b93c;color:#ffd166;box-shadow:0 0 0 1px #e9b93c,0 0 14px -4px rgba(233,185,60,.55)}",
+    ".tt-mode-one{background:#e9b93c;color:#171106;font-size:9.5px;font-weight:800;border-radius:999px;min-width:15px;height:15px;line-height:15px;text-align:center;padding:0 3px;margin-left:-4px}",
+    ".tt-mode-one[hidden]{display:none}",
     ".tt-actions{display:flex;gap:10px;flex-wrap:wrap}",
     ".tt-lists{display:grid;grid-template-columns:1fr;gap:14px}",
     "@media (min-width:920px){.tt-lists{grid-template-columns:1fr 1fr}}",
@@ -73023,6 +73020,10 @@ window.__BN_VIEW__ = {
       '<button type="button" class="tt-tbtn" id="ttNext" aria-label="Next">⏭</button>' +
       '<div class="tt-vol"><label id="ttVolLabel"></label><input type="range" id="ttVol" min="0" max="100" step="1"></div>' +
       '</div>' +
+      '<div class="tt-modes" id="ttModes" hidden>' +
+      '<button type="button" class="tt-modebtn" id="ttShuffle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg><span id="ttShuffleLab"></span></button>' +
+      '<button type="button" class="tt-modebtn" id="ttRepeat" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="tt-mode-one" id="ttRepeatOne" hidden>1</span><span id="ttRepeatLab"></span></button>' +
+      '</div>' +
       '<div class="tt-actions"><button type="button" class="tt-btn" id="ttPlayHere"></button>' +
       '<button type="button" class="tt-btn ghost" id="ttDemo"></button></div>' +
       '<div class="tt-lists"><div class="tt-list"><h3 id="ttPlHead"></h3><ul id="ttPlaylists"></ul></div>' +
@@ -73043,6 +73044,9 @@ window.__BN_VIEW__ = {
     els.cur = document.getElementById("ttCur"); els.dur = document.getElementById("ttDur");
     els.seek = document.getElementById("ttSeek"); els.play = document.getElementById("ttPlay");
     els.vol = document.getElementById("ttVol");
+    els.modesRow = document.getElementById("ttModes");
+    els.shuffle = document.getElementById("ttShuffle");
+    els.repeat = document.getElementById("ttRepeat");
     document.getElementById("ttVolLabel").textContent = L("volume");
     els.connect.addEventListener("click", login);
     els.disconnect.addEventListener("click", logout);
@@ -73053,8 +73057,10 @@ window.__BN_VIEW__ = {
     document.getElementById("ttDemo").addEventListener("click", function () { if (S.mode === "demo") stopDemo(); else demo(); });
     document.getElementById("ttRpm33").addEventListener("click", function () { S.rpm = 33; renderAll(); });
     document.getElementById("ttRpm45").addEventListener("click", function () { S.rpm = 45; renderAll(); });
-    els.vol.value = String(Math.round(S.localVol * 100));
-    els.vol.addEventListener("input", function () { setLocalVol((parseInt(els.vol.value, 10) || 0) / 100); });
+    els.vol.value = String(masterPct());
+    els.vol.addEventListener("input", function () { setScreenVol(parseInt(els.vol.value, 10) || 0); });
+    els.shuffle.addEventListener("click", function () { ctl("shuffle"); });
+    els.repeat.addEventListener("click", function () { ctl("repeat"); });
     els.seek.addEventListener("input", function () {
       if (!S.track) return;
       var ms = S.track.durationMs * (parseInt(els.seek.value, 10) || 0) / 1000;
@@ -73157,6 +73163,26 @@ window.__BN_VIEW__ = {
     document.getElementById("ttDemo").textContent = L("demo");
     document.getElementById("ttRpm33").className = S.rpm === 33 ? "on" : "";
     document.getElementById("ttRpm45").className = S.rpm === 45 ? "on" : "";
+    // BGM playback modes (module 67 owns the state; mirrored here)
+    if (els.modesRow) {
+      var bgmOn = S.mode === "bgm";
+      els.modesRow.hidden = !bgmOn;
+      if (bgmOn) {
+        var shOn = !!S.modes.shuffle;
+        els.shuffle.classList.toggle("on", shOn);
+        els.shuffle.setAttribute("aria-pressed", shOn ? "true" : "false");
+        els.shuffle.setAttribute("aria-label", L("shuffle"));
+        document.getElementById("ttShuffleLab").textContent = L("shuffle");
+        var rp = S.modes.repeat || "one";
+        var rpKey = rp === "all" ? "repeatAll" : rp === "one" ? "repeatOne" : "repeatOff";
+        els.repeat.classList.toggle("on", rp !== "off");
+        els.repeat.setAttribute("aria-pressed", rp !== "off" ? "true" : "false");
+        els.repeat.setAttribute("aria-label", L(rpKey));
+        document.getElementById("ttRepeatLab").textContent = L(rpKey);
+        document.getElementById("ttRepeatOne").hidden = rp !== "one";
+      }
+    }
+    if (els.vol && document.activeElement !== els.vol) els.vol.value = String(masterPct());
     // chip
     var showChip = !!S.track && (S.auth === "in" || S.mode === "demo" || S.mode === "bgm") && !(viewEl && viewEl.classList.contains("open"));
     els.chip.hidden = !showChip;
@@ -73382,6 +73408,12 @@ window.__BN_VIEW__ = {
         S.mode = S.auth === "in" ? "sync" : "none";
         S.track = null; S.isPlaying = false; S.bgmAccent = "";
       }
+      renderAll();
+    },
+    /* BGM playback-mode feed (module 67): shuffle + repeat state
+       for the mode row under the transport. */
+    modesSync: function (m) {
+      if (m) S.modes = { shuffle: !!m.shuffle, repeat: m.repeat || "one" };
       renderAll();
     },
     els: function () { return { view: viewEl, canvas: els.canvas, chip: els.chip, root: root }; }
@@ -73804,6 +73836,66 @@ window.__BN_VIEW__ = {
   }
 
   /* ================================================================
+     PLAYBACK MODES (2026-11-17, turntable modes round) — shuffle
+     + repeat for the record-shelf queue (owned tracks in shelf
+     order). Device-local only ("arcade-bgm-modes-v1", never
+     synced, never touches points). Defaults preserve the
+     original behaviour: shuffle off, repeat "one" — the deck
+     record loops forever, exactly as before this round.
+     A "track end" for this engine is a loop boundary: repeat-one
+     lets the loop run, repeat-all advances (wrapping last →
+     first), repeat-off advances through the queue once and
+     stops at the end. With shuffle on, "next" (manual or auto)
+     picks a random owned track, never the current one when more
+     than one is owned; under repeat-off the picks come from the
+     not-yet-played set and playback stops when it runs out.
+     ================================================================ */
+  var MODES_KEY = "arcade-bgm-modes-v1";
+  var modes = { shuffle: false, repeat: "one" };
+  try {
+    var mp = JSON.parse(localStorage.getItem(MODES_KEY) || "null");
+    if (mp) {
+      modes.shuffle = !!mp.shuffle;
+      if (mp.repeat === "off" || mp.repeat === "all" || mp.repeat === "one") modes.repeat = mp.repeat;
+    }
+  } catch (e) {}
+  var rng = Math.random;
+  var cyclePlayed = {};   // ids played in the current repeat-off shuffle cycle
+  function saveModes() { try { localStorage.setItem(MODES_KEY, JSON.stringify(modes)); } catch (e) {} }
+  function modesPush() {
+    if (window.__turntable && window.__turntable.modesSync) {
+      try { window.__turntable.modesSync({ shuffle: modes.shuffle, repeat: modes.repeat }); } catch (e) {}
+    }
+  }
+  function resetCycle() { cyclePlayed = {}; if (deckId) cyclePlayed[deckId] = true; }
+  function setModes(patch) {
+    if (!patch) return;
+    if (typeof patch.shuffle === "boolean") modes.shuffle = patch.shuffle;
+    if (patch.repeat === "off" || patch.repeat === "all" || patch.repeat === "one") modes.repeat = patch.repeat;
+    saveModes(); resetCycle(); modesPush();
+  }
+  function pickShuffle(cands) {
+    if (!cands.length) return null;
+    var i = Math.floor(rng() * cands.length);
+    if (i < 0) i = 0;
+    if (i >= cands.length) i = cands.length - 1;
+    return cands[i];
+  }
+  /* The track "next" would choose from the current deck, per modes. */
+  function queueNext() {
+    var owned = ownedTracks();
+    if (!owned.length) return null;
+    if (modes.shuffle) {
+      var cands = owned.filter(function (t) { return t.id !== deckId; });
+      if (!cands.length) return owned[0];
+      return pickShuffle(cands);
+    }
+    var idx = -1;
+    for (var i = 0; i < owned.length; i++) if (owned[i].id === deckId) idx = i;
+    return owned[(idx + 1) % owned.length];
+  }
+
+  /* ================================================================
      ENGINE — a lookahead step scheduler in absolute ctx time.
      Each generation of playback owns a voice bus; stopping or
      switching fades that bus out and disconnects it, so no
@@ -74058,6 +74150,11 @@ window.__BN_VIEW__ = {
     if (!eng.playing || !AC) return;
     var ahead = AC.currentTime + 0.15, guard = 0;
     while (guard++ < 96 && timeOf(eng.nextStep) < ahead) { scheduleStep(eng.nextStep); eng.nextStep++; }
+    if (eng.track) {
+      var li = Math.floor(absoluteSteps() / totalSteps(eng.track));
+      if (eng.loopIdx === undefined || eng.loopIdx === null) eng.loopIdx = li;
+      else if (li > eng.loopIdx) { eng.loopIdx = li; onLoopBoundary(); }
+    }
   }
   function engPlay(t, fromStep) {
     if (!ensureCtx()) return false;
@@ -74072,6 +74169,7 @@ window.__BN_VIEW__ = {
     eng.stepsScheduled = eng.anchorStep;
     eng.loopsScheduled = Math.floor(eng.anchorStep / totalSteps(t));
     eng.playing = true; eng.pausedPos = 0;
+    eng.loopIdx = Math.floor((fromStep || 0) / totalSteps(t));
     tick();
     eng.timer = setInterval(tick, 42);
     return true;
@@ -74084,6 +74182,15 @@ window.__BN_VIEW__ = {
     var base = Math.floor(eng.anchorStep / T) * T + stepOffset(t, eng.anchorStep % T) / stepDur(t);
     var pos = (base + elapsed / stepDur(t)) % T;
     return pos < 0 ? pos + T : pos;
+  }
+  /* positionSteps without the loop modulo — its quotient is the
+     count of loop boundaries crossed since the anchor. */
+  function absoluteSteps() {
+    var t = eng.track; if (!t || !AC) return 0;
+    var T = totalSteps(t);
+    var elapsed = AC.currentTime - eng.anchorTime;
+    var base = Math.floor(eng.anchorStep / T) * T + stepOffset(t, eng.anchorStep % T) / stepDur(t);
+    return base + elapsed / stepDur(t);
   }
   function engPause() {
     if (!eng.playing) return;
@@ -74154,25 +74261,69 @@ window.__BN_VIEW__ = {
       accent: accentNow()
     });
   }
+  /* Synchronous track start (DATA already loaded). freshCycle =
+     a deliberate user pick: the repeat-off shuffle cycle restarts
+     from this track. Auto-advance passes false and just marks it. */
+  function startTrack(t, freshCycle) {
+    if (!t || !isOwned(t)) return false;
+    deckId = t.id; bgmEngaged = true; applyAccent(t);
+    if (freshCycle) resetCycle(); else cyclePlayed[t.id] = true;
+    if (engPlay(t, 0)) { ttSync(); renderShelf(false); return true; }
+    return false;
+  }
   function playBgm(id) {
-    loadData().then(function () {
-      var t = trackById(id);
-      if (!t || !isOwned(t)) return;
-      deckId = id; bgmEngaged = true; applyAccent(t);
-      if (engPlay(t, 0)) { ttSync(); renderShelf(false); }
-    });
+    loadData().then(function () { startTrack(trackById(id), true); });
   }
   function pauseBgm() { engPause(); ttSync(); renderShelf(false); }
+  function equipTrack(t) {
+    var pts = window.ARCADE_points;
+    if (pts && equippedItemId() !== t.itemId) { try { pts.equip(t.itemId); } catch (e) {} }
+  }
   function stepRecord(dir) {
     var owned = ownedTracks();
     if (!owned.length) return;
+    var next = null;
+    if (dir > 0 && modes.shuffle) next = queueNext();
+    else {
+      var idx = -1;
+      for (var i = 0; i < owned.length; i++) if (owned[i].id === deckId) idx = i;
+      next = owned[(idx + dir + owned.length) % owned.length];
+    }
+    if (!next || next.id === deckId) return;
+    equipTrack(next);
+    playBgm(next.id);
+  }
+  /* Loop-boundary decision for the playback modes (called from
+     tick when the audible position crosses into a new loop, and
+     directly by probes via __bgm.debugBoundary). */
+  function onLoopBoundary() {
+    if (!eng.playing) return;
+    if (modes.repeat === "one") return;
+    var owned = ownedTracks();
+    if (!owned.length) return;
+    if (modes.repeat === "all") {
+      var nx = queueNext();
+      if (nx && nx.id !== deckId) { equipTrack(nx); startTrack(nx, false); }
+      return;
+    }
+    /* repeat off: play the queue through once, then stop */
+    if (modes.shuffle) {
+      var left = owned.filter(function (t) { return !cyclePlayed[t.id]; });
+      if (!left.length) { stopAtQueueEnd(); return; }
+      var pk = pickShuffle(left);
+      if (pk) { equipTrack(pk); startTrack(pk, false); }
+      return;
+    }
     var idx = -1;
     for (var i = 0; i < owned.length; i++) if (owned[i].id === deckId) idx = i;
-    var next = owned[(idx + dir + owned.length) % owned.length];
-    if (!next || next.id === deckId) return;
-    var pts = window.ARCADE_points;
-    if (pts && equippedItemId() !== next.itemId) { try { pts.equip(next.itemId); } catch (e) {} }
-    playBgm(next.id);
+    if (idx < 0 || idx >= owned.length - 1) { stopAtQueueEnd(); return; }
+    equipTrack(owned[idx + 1]);
+    startTrack(owned[idx + 1], false);
+  }
+  function stopAtQueueEnd() {
+    engStop();
+    ttSync();
+    renderShelf(false);
   }
   window.__bgmCtl = function (action, arg) {
     if (action === "toggle") {
@@ -74191,6 +74342,10 @@ window.__BN_VIEW__ = {
       engStop();
       if (window.__turntable && window.__turntable.bgmSync) window.__turntable.bgmSync(null);
       renderShelf(false);
+    } else if (action === "shuffle") {
+      setModes({ shuffle: !modes.shuffle });
+    } else if (action === "repeat") {
+      setModes({ repeat: modes.repeat === "off" ? "all" : modes.repeat === "all" ? "one" : "off" });
     }
   };
   /* Called by module 26's applyCosmetics whenever the equipped
@@ -74323,6 +74478,8 @@ window.__BN_VIEW__ = {
   }
 
   /* ---------------- init ---------------- */
+  resetCycle();
+  modesPush();
   var syncTimer = setInterval(function () {
     if (deckId && DATA) { ttSync(); }
   }, 200);
@@ -74353,11 +74510,17 @@ window.__BN_VIEW__ = {
         masterGain: AC && AC.__arcadeMasterGain ? AC.__arcadeMasterGain.gain.value : null,
         destIsMaster: AC ? AC.destination === AC.__arcadeMasterGain : false,
         timerLive: !!eng.timer,
+        modes: { shuffle: modes.shuffle, repeat: modes.repeat },
         owned: DATA ? DATA.tracks.map(function (x) { return isOwned(x); }) : [],
         equippedItem: equippedItemId()
       };
     },
     play: playBgm, pause: pauseBgm,
+    modes: function () { return { shuffle: modes.shuffle, repeat: modes.repeat }; },
+    setModes: setModes,
+    debugNextId: function () { var n = queueNext(); return n ? n.id : null; },
+    debugBoundary: function () { onLoopBoundary(); },
+    debugSetRng: function (fn) { rng = typeof fn === "function" ? fn : Math.random; },
     stop: function () { window.__bgmCtl("stop"); },
     tracks: function () { return DATA ? DATA.tracks.map(function (t) { return { id: t.id, itemId: t.itemId, unlock: t.unlock, owned: isOwned(t), bpm: t.bpm, bars: t.bars }; }) : []; }
   };
