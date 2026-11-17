@@ -5638,7 +5638,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       .bv-search input::placeholder { color: #7e93b8; }
       .bv-search .bv-hits { font-size: 12.5px; font-weight: 800; color: #a9c2e8; white-space: nowrap; }
       .bv-noresults { padding: 26px 16px; text-align: center; color: #8fa8cc; font-size: 13.5px; font-weight: 700; }
-      .bv-sec-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; background: #070c17; padding: 10px 2px 7px; font-size: 13.5px; font-weight: 900; border-bottom: 1px solid #1b2740; }
+      .bv-sec-head { position: sticky; top: 60px; z-index: 2; display: flex; align-items: center; gap: 8px; background: #070c17; padding: 10px 2px 7px; font-size: 13.5px; font-weight: 900; border-bottom: 1px solid #1b2740; }
       .bv-sec-head .dot { width: 10px; height: 10px; border-radius: 50%; }
       .bv-sec-head .ct { margin-left: auto; color: #7286a8; font-size: 11.5px; font-weight: 800; }
       .bv-sec-head.flash { color: #ffd9ec; }
@@ -5647,6 +5647,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       .bv-row .dg { margin-left: auto; flex: 0 0 auto; color: #7286a8; font-size: 11px; font-weight: 800; white-space: nowrap; }
       .bv-panel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 52%; display: none; background: rgba(8, 12, 24, 0.97); border-top: 1px solid #26355a; z-index: 8; box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.5); }
       .bv-panel.open { display: flex; }
+      /* Reader chrome (Brain round): .bv-pbody wraps helix+article so
+         the panel can stack a header above them on phones; the header
+         itself exists only in the phone reader (≤759px block). */
+      .bv-pbody { display: flex; flex: 1 1 auto; min-width: 0; min-height: 0; }
+      .bv-rhead { display: none; }
       .bv-labels, .bv-glabels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
       .bv-labels .bv-label { pointer-events: auto; }
       .bv-glabel { position: absolute; transform: translate(-50%, -150%); font-size: 10.5px; font-weight: 700; color: #cdd8ee; text-shadow: 0 1px 4px #000, 0 0 2px #000; white-space: nowrap; pointer-events: none; }
@@ -5735,8 +5740,25 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
            internally scrolling; the article's bottom padding lets
            its last line scroll clear of the app shell's floating
            bottom bar. The DNA helix keeps its own 46px gutter. */
-        .bv-panel { max-height: 55%; background: #080c18; }
-        .bv-article { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+        /* Full-screen article reader (Brain round, replaces the 55%
+           sheet): the panel leaves the layout and covers the whole
+           viewport — above the BGM chip (#ttChip, z 6400) but below
+           the points toast (9990). Its header is a flex row above the
+           scroller, so back/close are reachable at every scroll
+           depth; the article is its own momentum scroller claiming
+           vertical pan only. Body copy goes to reading size. */
+        .bv-panel { position: fixed; inset: 0; max-height: none; height: 100vh; height: 100dvh; z-index: 6600; flex-direction: column; background: #080c18; border-top: 0; }
+        .bv-rhead { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px; border-bottom: 1px solid #26355a; background: #080c18; }
+        .bv-rback { min-height: 44px; border: 1px solid #33507a; background: #0d1730; color: #a9c2e8; border-radius: 10px; padding: 8px 13px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+        .bv-rback.off { opacity: 0.35; pointer-events: none; }
+        .bv-rtitle { flex: 1 1 auto; min-width: 0; font-size: 14.5px; font-weight: 900; color: #e8ecf4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bv-rclose { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #26355a; background: #131c30; color: #cdd8ee; font-size: 17px; cursor: pointer; }
+        .bv-panel .bv-close { display: none; }
+        .bv-article { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; padding: 16px 18px calc(40px + env(safe-area-inset-bottom, 0px)) 6px; }
+        .bv-a-body { font-size: 17.5px; line-height: 1.85; }
+        .bv-a-title { font-size: 21px; margin-right: 0; }
+        .bv-conn { min-height: 44px; font-size: 13.5px; }
+        .bv-shellviews { margin-left: 0; }
       }
       @media (min-width: 760px) {
         .bv-panel { left: auto; width: 408px; top: 0; max-height: none; border-top: 0; border-left: 1px solid #26355a; box-shadow: -14px 0 34px rgba(0, 0, 0, 0.5); }
@@ -36059,6 +36081,18 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     { id: "ttskin-studio", cat: "ttskin", name: "スタジオブラック", price: 1500, desc: "真っ黒なスタジオ仕様のデッキ" },
     { id: "ttskin-cream", cat: "ttskin", name: "クリームレトロ", price: 2000, desc: "クリーム色のレトロなデッキ" },
     { id: "ttskin-midnight", cat: "ttskin", name: "ミッドナイトブルー", price: 2000, desc: "深夜の青に沈むデッキ" },
+    /* UI-part skins (2026-11-17, Brain round D): the deck dressed as
+       famous UI parts — names are the verified NameThatUI terms
+       (Bottom sheet / Toast / Segmented Control / Scrim / FAB).
+       Three are shop stock; scrim and FAB are gacha-only, exactly
+       like the other gachaOnly catalogue entries — they exist here
+       so ownership, art and equip resolve, but renderShop skips
+       them and only the module-39 pool can grant them. */
+    { id: "ttskin-ui-sheet", cat: "ttskin", name: "ボトムシート", price: 1500, desc: "下からせり上がる白いシートのデッキ" },
+    { id: "ttskin-ui-toast", cat: "ttskin", name: "トースト", price: 1800, desc: "金の縁の通知カードが浮かぶデッキ" },
+    { id: "ttskin-ui-segment", cat: "ttskin", name: "セグメンテッドコントロール", price: 2000, desc: "3分割の切り替えバーで仕切られたデッキ" },
+    { id: "ttskin-ui-scrim", cat: "ttskin", name: "スクリム", price: 1600, desc: "ガチャ限定。薄いヴェール越しに光るデッキ", gachaOnly: true },
+    { id: "ttskin-ui-fab", cat: "ttskin", name: "FAB", price: 2200, desc: "ガチャ限定。金のフローティングボタンが灯るデッキ", gachaOnly: true },
     { id: "rec-midnight-window", cat: "record", name: "真夜中の窓辺", price: 0, desc: "ターンテーブルで再生できるレコード。ローファイな真夜中のループ" },
     { id: "rec-marine-drive", cat: "record", name: "マリン・ドライブ", price: 0, desc: "ターンテーブルで再生できるレコード。シティポップの海辺ドライブ" },
     { id: "rec-8bit-adventure", cat: "record", name: "8ビット・アドベンチャー", price: 0, desc: "ターンテーブルで再生できるレコード。チップチューンの冒険" },
@@ -36325,7 +36359,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     "ttskin-walnut": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#5d3d24"/><path d="M3 17h42M3 31h42" stroke="#3c2716" stroke-width="1.6" opacity="0.6"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#17171c"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
     "ttskin-studio": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0a0a0c"/><rect x="3" y="9" width="42" height="30" rx="4" fill="none" stroke="#26262c" stroke-width="1.6"/><circle cx="19" cy="24" r="10" fill="#101014"/><circle cx="19" cy="24" r="3" fill="#1c1c20"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
     "ttskin-cream": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#ecdfc6"/><circle cx="19" cy="24" r="10" fill="#17130c"/><circle cx="19" cy="24" r="3" fill="#e9b93c"/><path d="M36 13l4 9" stroke="#4a3a20" stroke-width="2" stroke-linecap="round"/></svg>',
-    "ttskin-midnight": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0e1e3d"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#274a7c"/><circle cx="39" cy="14" r="1.3" fill="#dfe6f2"/><circle cx="33" cy="11" r="0.9" fill="#dfe6f2"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>'
+    "ttskin-midnight": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#0e1e3d"/><circle cx="19" cy="24" r="10" fill="#0b0b0e"/><circle cx="19" cy="24" r="3" fill="#274a7c"/><circle cx="39" cy="14" r="1.3" fill="#dfe6f2"/><circle cx="33" cy="11" r="0.9" fill="#dfe6f2"/><path d="M36 13l4 9" stroke="#d6d9df" stroke-width="2" stroke-linecap="round"/></svg>',
+    "ttskin-ui-sheet": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="33" width="42" height="8" rx="3" fill="#26355c"/><rect x="9" y="9" width="30" height="32" rx="6" fill="#eef1f8"/><rect x="20" y="14" width="8" height="3" rx="1.5" fill="#8494b8"/><circle cx="24" cy="29" r="7" fill="#0d1425"/><circle cx="24" cy="29" r="2.6" fill="#e9b93c"/></svg>',
+    "ttskin-ui-toast": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="34" width="42" height="8" rx="3" fill="#26355c"/><rect x="8" y="9" width="32" height="17" rx="6" fill="#0d1425"/><rect x="8" y="9" width="32" height="17" rx="6" fill="none" stroke="#e9b93c" stroke-width="1.6"/><circle cx="15.5" cy="17.5" r="2.6" fill="#1db954"/><rect x="21" y="14.6" width="13" height="2.6" rx="1.3" fill="#aebadd"/><rect x="21" y="19.2" width="9" height="2.6" rx="1.3" fill="#8494b8"/></svg>',
+    "ttskin-ui-segment": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="32" width="42" height="9" rx="3" fill="#26355c"/><rect x="7" y="11" width="34" height="14" rx="7" fill="#131e38"/><rect x="8.5" y="12.5" width="9.5" height="11" rx="5.5" fill="#2c4a8a"/><rect x="19.25" y="12.5" width="9.5" height="11" rx="5.5" fill="#e9b93c"/><rect x="30" y="12.5" width="9.5" height="11" rx="5.5" fill="#2c4a8a"/></svg>',
+    "ttskin-ui-scrim": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="9" width="42" height="30" rx="4" fill="#131e38"/><circle cx="19" cy="24" r="10" fill="#e9b93c"/><circle cx="19" cy="24" r="3.2" fill="#0d1425"/><rect x="3" y="9" width="42" height="30" rx="4" fill="#070a12" opacity=".48"/><rect x="26" y="9" width="19" height="30" fill="#070a12" opacity=".3"/></svg>',
+    "ttskin-ui-fab": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="35" width="42" height="7" rx="3" fill="#26355c"/><circle cx="24" cy="21" r="12" fill="#e9b93c"/><rect x="22.6" y="14" width="2.8" height="14" rx="1.4" fill="#0d1425"/><rect x="17" y="19.6" width="14" height="2.8" rx="1.4" fill="#0d1425"/></svg>'
   };
   /* BGM record discs (2026-11-16): one disc per record, label in
      the track's accent colour (same accent the deck morphs to). */
@@ -41150,6 +41189,16 @@ PATTERNS.push(
   "クリーム色のレトロなデッキ": ["Cream-colored retro deck.", "크림색 레트로 데크", "奶油色的复古底座", "奶油色的復古唱盤機座", "Plataforma retro de color crema", "Platine rétro couleur crème", "Ein cremefarbenes Retro-Deck.", "Um deck retrô na cor creme", "Base in stile retrò color crema"],
   "ミッドナイトブルー": ["Midnight Blue", "미드나잇 블루", "午夜蓝", "午夜藍", "Azul medianoche", "Bleu minuit", "Mitternachtsblau", "Azul meia-noite", "Blu mezzanotte"],
   "深夜の青に沈むデッキ": ["Deck immersed in midnight blue.", "심야의 푸른색에 잠긴 데크", "沉浸于午夜蓝色的底座", "沉浸於深夜藍色的唱盤機座", "Plataforma sumergida en un azul de medianoche", "Platine aux tons bleu nuit", "Ein Deck, das in das Blau der Nacht getaucht ist.", "Um deck imerso no azul profundo da meia-noite", "Base color blu notte profonda"],
+  "ボトムシート": ["Bottom Sheet", "바텀 시트", "底部抽屉", "底部抽屜", "Panel inferior", "Panneau inférieur", "Bottom Sheet", "Painel inferior", "Pannello inferiore"],
+  "下からせり上がる白いシートのデッキ": ["A deck like a white sheet rising from below.", "아래에서 올라오는 하얀 시트 같은 데크", "如白色抽屉从下方升起的底座", "如白色抽屜自下方升起的唱盤機座", "Una plataforma como una hoja blanca que sube desde abajo", "Une platine comme une feuille blanche qui monte d'en bas", "Ein Deck wie ein weißes Blatt, das von unten aufsteigt.", "Um deck como uma folha branca que sobe de baixo", "Una base come un foglio bianco che sale dal basso"],
+  "トースト": ["Toast", "토스트", "吐司提示", "吐司提示", "Toast", "Toast", "Toast", "Toast", "Toast"],
+  "金の縁の通知カードが浮かぶデッキ": ["A deck with a gold-trimmed toast card floating above.", "금테 알림 카드가 떠 있는 데크", "浮着金边通知卡的底座", "浮著金邊通知卡的唱盤機座", "Una plataforma con una tarjeta toast de borde dorado flotando", "Une platine avec une carte toast à bord doré qui flotte", "Ein Deck, über dem eine Benachrichtigungskarte mit Goldrand schwebt.", "Um deck com um cartão toast de borda dourada flutuando", "Una base con una scheda toast dai bordi dorati che fluttua"],
+  "セグメンテッドコントロール": ["Segmented Control", "세그먼트 컨트롤", "分段控制", "分段控制", "Control segmentado", "Contrôle segmenté", "Segmentsteuerung", "Controle segmentado", "Controllo segmentato"],
+  "3分割の切り替えバーで仕切られたデッキ": ["A deck divided by a three-way segmented bar.", "3분할 전환 바로 나뉜 데크", "被三段切换栏分隔的底座", "被三段切換欄分隔的唱盤機座", "Una plataforma dividida por una barra segmentada de tres partes", "Une platine divisée par une barre segmentée en trois", "Ein Deck, geteilt durch eine dreiteilige Segmentleiste.", "Um deck dividido por uma barra segmentada de três partes", "Una base divisa da una barra segmentata in tre parti"],
+  "スクリム": ["Scrim", "스크림", "遮罩", "遮罩", "Velo", "Voile", "Scrim", "Véu", "Velo"],
+  "ガチャ限定。薄いヴェール越しに光るデッキ": ["Gacha only. A deck glowing through a thin veil.", "가챠 한정. 얇은 베일 너머로 빛나는 데크", "扭蛋限定。隔着薄纱发光的底座", "扭蛋限定。隔著薄紗發光的唱盤機座", "Solo gacha. Una plataforma que brilla tras un velo fino", "Gacha uniquement. Une platine qui brille à travers un voile fin", "Nur Gacha. Ein Deck, das durch einen dünnen Schleier leuchtet.", "Só no gacha. Um deck que brilha através de um véu fino", "Solo gacha. Una base che brilla attraverso un velo sottile"],
+  "FAB": ["FAB", "FAB", "FAB", "FAB", "FAB", "FAB", "FAB", "FAB", "FAB"],
+  "ガチャ限定。金のフローティングボタンが灯るデッキ": ["Gacha only. A deck lit by a gold floating action button.", "가챠 한정. 금색 플로팅 버튼이 켜지는 데크", "扭蛋限定。亮着金色悬浮按钮的底座", "扭蛋限定。亮著金色懸浮按鈕的唱盤機座", "Solo gacha. Una plataforma iluminada por un botón flotante dorado", "Gacha uniquement. Une platine éclairée par un bouton flottant doré", "Nur Gacha. Ein Deck, beleuchtet von einem goldenen Floating Button.", "Só no gacha. Um deck iluminado por um botão flutuante dourado", "Solo gacha. Una base illuminata da un pulsante fluttuante dorato"],
   "ターンテーブルを開く": ["Open Turntable", "턴테이블 열기", "打开转盘", "打開唱盤", "Abrir giradiscos", "Ouvrir la platine", "Plattenspieler öffnen", "Abrir vitrola", "Apri giradischi"],
   "Spotifyとつながるレコード盤。ゲームのBGMに": ["A record that connects to Spotify. For your game BGM.", "Spotify와 연결되는 레코드판. 게임 BGM으로 활용", "与Spotify连接的唱片。用于播放游戏背景音乐", "與Spotify連結的唱片。播放遊戲背景音樂", "Disco que se conecta a Spotify. Para la música de fondo del juego", "Disque connecté à Spotify. Pour la BGM de vos jeux", "Eine mit Spotify verbundene Schallplatte. Für die Hintergrundmusik im Spiel.", "Um disco conectado ao Spotify. Para a trilha sonora do jogo", "Il giradischi si collega a Spotify. Per la colonna sonora del gioco"],
   "ターンテーブルは、あなたのSpotifyで回る": ["The Turntable Spins with Your Spotify", "턴테이블은 당신의 Spotify와 함께 돌아갑니다", "唱机，随着您的Spotify转动", "唱盤會隨著你的 Spotify 轉動", "El tocadiscos gira con tu Spotify", "La platine tourne avec votre Spotify", "Der Plattenspieler dreht sich mit Ihrem Spotify", "O toca-discos gira com o seu Spotify", "Il giradischi gira con il tuo Spotify"],
@@ -49358,6 +49407,13 @@ PATTERNS.push(
     notesAdd("ゲームごとの制作メモ", { t: "将棋：完全ルールエンジンと読みの速さ", b: ["将棋は持ち駒・成り・千日手・持将棋まで入れた完全ルールです。打てない手を3つとも生成の段階で落とします：二歩（同じ筋の歩を数える）、行き場のないマス（歩・香は1段目、桂は1〜2段目）、打ち歩詰め（歩を打って王手になったときだけ、相手の合法手を全部数えて詰みかどうかを確かめる）。最初の局面の合法手は30手ちょうどで、教科書の数字と一致しました。", "AIは評価関数（駒の価値＋持ち駒の割り増し＋玉の守りの厚さ）にアルファベータ探索を組み合わせ、取る手だけを先に読む静止探索を足しています。読みの深さは、やさしいは1手先の評価だけ、ふつうは2手、むずかしいは3手です。応答が重くならないよう探索ノードに上限（ふつう6万、むずかしい16万）を付け、むずかしいの1手は序盤で約80ミリ秒、中盤で約420ミリ秒でした（実測）。", "千日手は同じ局面の4回目で判定し、王手をかけ続けた側が負けになります。持将棋は簡易ルール（両方の玉が敵陣に入り、両者24点以上で引き分け）として、ルール画面にも簡略版であることを明記しました。AI対ランダムの対局が合法手だけで最後まで進むことも自動テストで確認しています（全16項目）。"] });
     notesAdd("仕組みと同期", { t: "リモコンのQR修理：読み取り先は公開版の住所に固定", b: ["スマホのカメラで読むとリモコンになるはずのQRが、表示側の住所そのものを写していました。アプリの中で表示すると、その住所はアプリ内部のもので、スマホからは開けません。つながる仕組み自体は住所に依存しません（表示側とスマホは、4文字のコードで接続サービスに集まります）ので、QRの中身を公開版（GitHub Pages）の住所に固定しました。あわせてQRを118pxから176pxに大きくし、読み取れなかったときのために4文字のコードをQRのブロックの中にも出しました。ハブのカードは明るいクリーム色なのに、QRまわりの文字は暗い画面用の色で読めなかったので、カードの色に合わせました。", "検証の数字です。住所の関数をアプリ外の住所で開いても公開版のURLが返ること、QRの自己検査6件（48文字の新しいURLそのものを含む。版は4）が全部往復一致すること、GitHub版を再現したホストで ?rc= 付きURLを開くとタップ0回でリモコン画面が開き、コードが入り、接続が始まることを確認しました。プローブは13件全部合格です。接続サービス自体には検証環境から届かないので、実機同士の接続だけは公開後の確認になります。"] });
     notesAdd("仕組みと同期", { t: "盤が潰れる問題と、英語にしても日本語が残る問題", b: ["五目並べの盤がスマホで縦に潰れて読めなくなりました。画面は「収まらなければスクロールする」作りですが、盤の枠には縮み止め（flex: 0 0 auto）が付いておらず、ブラウザによっては枠が余りの高さ（約110px）まで縮んでしまいます。兄弟の盤は全部この縮み止めを持っていて、付いていなかったのは五目並べ・チェッカー・将棋の3つだけでしたので、3つとも同じ形に揃えました。検証では9タイトルの盤を短い画面（高さ560）と長い画面（932）で測り、形が変わらないことと縮み止めが効いていることを確認しました（プローブ31件全部合格）。報告のあった状態（日本語・再開した対局・教育モードの表示つき）では、盤は406×406pxで出ます。", "言語の方は「最初に描いたときの言語で凍る」部品が原因でした。ロビーの道具、NOW SHOWING帯、対戦ルームの入口パネル、右上の時計は、言語を切り替えても描き直されませんでした。さらに全体の翻訳係は『元の日本語』を覚えていて、辞書に無い文は日本語に戻してしまうので、部品側が直しても上書きされる文がありました。直し方は2つです。各部品が言語の切り替えを見張って自分の文を描き直すことと、足りなかった20件の文を翻訳係の辞書に（各部品の表と同文で）足すこと。対戦ルームは全対戦タイトル共通なので、直しは全部品に効きます。検証は双方向ゲート（日本語→英語／英語→日本語／最初から英語）で17件全部合格です。"] });
+    /* Brain round (2026-11-17): phone reader, cortex shell, the
+       Flipper pin-count correction, and the NameThatUI skins —
+       verification numbers included, as always. */
+    notesAdd("仕組みと同期", { t: "脳ビューの記事が全画面リーダーになった", b: ["スマホで知識ライブラリの記事を開くと、これまでは画面の下半分ほどのシートに小さな文字で表示され、読むには窮屈でした。今回からスマホ（幅759px以下）では記事が全画面のリーダーになります。本文は17.5px・行間1.85に広がり、記事だけのスクロール領域を持ちます。画面上部のバーには「戻る」と閉じるボタンが常駐し、どれだけ読み進めても必ず届きます。", "記事の末尾の「つながり」から別の記事へ進んでも、移動はリーダーの中で完結し、バーが履歴を持ちます。「戻る」で前の記事に帰り、閉じると棚リストは開く前と寸分違わないスクロール位置に戻ります。検証では390×844の画面で、パネルが画面全体（390×844px）と一致すること、履歴の積み戻し、閉じた後のスクロール位置の完全一致（600px→600px）を確認しました。BGMの再生チップより手前に出るよう、重なり順も調整済みです。iPadとPCの表示は従来のままです。"] });
+    notesAdd("仕組みと同期", { t: "脳に半透明の殻がついた：ゴーストコルテックス", b: ["脳ビューのニューロンの集まりに、手続き生成の「大脳皮質の殻」が被さりました。殻の形は、ニューロンの配置を決めたのと同じ大脳の陰関数（数式の形）から、その場で解いて作ります。だから縦の溝（大脳縦裂）まで含めて、本物の体積にぴたりと沿います。表面の折り目は決定的なノイズで彫られ（開くたびに同じ形）、色は棚の地理そのまま——境界は溝に沿って流れ、溝の底は暗く沈みます。", "脳ビューの右上の切り替えで「半透明／不透明／殻なし」の3段を切り替えます。半透明では光るニューロンが透けて見え、不透明では左上からの光で陰影が付きます。5秒間触らなければ標本のようにゆっくり自転し（0.045rad/s）、掴んだ瞬間に止まります。検証では頂点510・面480の軽量メッシュで、フレーム時間の中央値は3つの状態とも50ms（ヘッドレスの表示間隔）に張り付いて差が出ないことを確認しました。小脳と脳幹には殻を被せていません——あの部分はニューロンの集まりとして読めるのが正しい姿です。"] });
+    notesAdd("仕組みと同期", { t: "Flipper ZeroのGPIOは18ピン：図鑑の数字を揃えた", b: ["知識ライブラリの「Flipper Zeroの中身」で、拡張用GPIOのピン数が13ピンと書かれていました。実機の仕様と、ARCADE内の分解ボード側の記述（18ピン）に合わせ、正しい18ピンに直しました。", "直したのは日本語本文だけではありません。同じ項目の翻訳9言語（英語・韓国語・中国語2種・スペイン語・フランス語・ドイツ語・ポルトガル語・イタリア語）にも13が残っていたので、全10件を一括で揃えました。修正後に「13ピン」の残りが0件であることを機械で確認済みです。数字は一次情報に合わせる——図鑑の信頼性の基本です。"] });
+    notesAdd("拡張と暮らし", { t: "UIの部品名がデッキになる：NameThatUIスキン5種", b: ["ターンテーブルの画面スキンに、UI部品の正式名称を冠した5種が増えました。名前は、UI部品の辞典サイト「NameThatUI」に実際に載っている呼び名だけを使っています。ショップで買えるのは「ボトムシート」（1,500コイン）、「トースト」（1,800）、「セグメンテッドコントロール」（2,000）。「スクリム」（1,600）と「FAB」（2,200）はガチャ限定です。", "ガチャのプールは22種・重み合計161から、24種・172に増えました。表示される確率はプールの重みからその場で計算される仕組みなので、新しい表示はコモン35%・レア42%・スーパーレア23%——表示と実際の抽選は常に一致します。検証では、購入と装備が再読み込み後も残ること、強制抽選でスクリムの帯域を狙って実際に引き当てられることを確認しました。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -54679,7 +54735,15 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
        rates display recomputes from these live weights, so the
        shown odds include the new prizes exactly. */
     { id: "rec-sea-of-stardust", cat: "record", price: 900, rar: 1, w: 6 },
-    { id: "rec-slap-street", cat: "record", price: 1500, rar: 2, w: 5 }
+    { id: "rec-slap-street", cat: "record", price: 1500, rar: 2, w: 5 },
+    /* NameThatUI skins (2026-11-17, Brain round D): two of the UI-part
+       turntable skins join the pool in the standard tier weights —
+       scrim in the rare band (w 6), FAB in the super band (w 5).
+       Bands become 60 / 72 / 40 of 172 total; the rates display
+       recomputes from these live weights, so the shown odds include
+       the new prizes exactly. */
+    { id: "ttskin-ui-scrim", cat: "ttskin", price: 1600, rar: 1, w: 6 },
+    { id: "ttskin-ui-fab", cat: "ttskin", price: 2200, rar: 2, w: 5 }
   ];
   var POOL_NAMES = {
     "av-gacha-dice": "サイコロ帽子", "gom-egg": "目玉焼き石", "av-ot-sushi": "寿司の相棒", "card-onigiri": "おにぎり",
@@ -54687,7 +54751,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     "av-joke-pawnking": "王冠ポーン", "av-gacha-egg": "ゴールデンエッグ", "av-gacha-777": "777の相棒",
     "ptr-wand": "星のステッキ", "ptr-moon": "三日月", "mj-ginga": "銀河", "fx-confetti": "紙吹雪", "pfr-moon": "月のフレーム",
     "ptr-comet": "ほうき星", "ptr-diamond": "ダイヤモンド", "cov-meteor": "流星群", "fx-aurora": "オーロラリング",
-    "rec-sea-of-stardust": "星屑の海", "rec-slap-street": "スラップ・ストリート"
+    "rec-sea-of-stardust": "星屑の海", "rec-slap-street": "スラップ・ストリート",
+    "ttskin-ui-scrim": "スクリム", "ttskin-ui-fab": "FAB"
   };
   function poolItemName(it) { return POOL_NAMES[it.id] || it.id; }
   function itemArt(it) {
@@ -68106,6 +68171,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   "t_hub": {"ja":"接続ハブ","en":"Hub","ko":"연결 허브","zh":"连接中心","zht":"連接中心","es":"Hub de conexión","fr":"Hub de connexion","de":"Verbindungs-Hub","pt":"Hub de conexão","it":"Hub di connessione"},
   "t_reel": {"ja":"リールあり","en":"Has reel","ko":"릴 있음","zh":"含卷轴","zht":"含捲軸","es":"Con carrete","fr":"Avec bobine","de":"Mit Rolle","pt":"Com carretel","it":"Con bobina"},
   "t_hot": {"ja":"よく開かれる","en":"Often opened","ko":"자주 열림","zh":"热门","zht":"熱門","es":"Más abiertos","fr":"Populaire","de":"Häufig geöffnet","pt":"Mais acessados","it":"Popolare"},
+  "shellGhost": {"ja":"半透明","en":"Ghost","ko":"반투명","zh":"半透明","zht":"半透明","es":"Fantasma","fr":"Fantôme","de":"Geist","pt":"Fantasma","it":"Fantasma"},
+  "shellOpaque": {"ja":"不透明","en":"Opaque","ko":"불투명","zh":"不透明","zht":"不透明","es":"Opaco","fr":"Opaque","de":"Deckend","pt":"Opaco","it":"Opaco"},
+  "shellOff": {"ja":"殻なし","en":"Off","ko":"끄기","zh":"关闭","zht":"關閉","es":"Apagado","fr":"Masqué","de":"Aus","pt":"Desligado","it":"Spento"},
+  "readerBack": {"ja":"戻る","en":"Back","ko":"뒤로","zh":"返回","zht":"返回","es":"Atrás","fr":"Retour","de":"Zurück","pt":"Voltar","it":"Indietro"},
 };
   function lang() { try { return window.arcadeLang ? window.arcadeLang() : "ja"; } catch (e) { return "ja"; } }
   function L(key) { var o = STR[key]; if (!o) return key; var l = lang(); return o[l] || o.en || o.ja || key; }
@@ -68180,6 +68249,16 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   var cam = { x: 0, y: 0, zoom: 1 };
   var baseScale = 1, stageW = 0, stageH = 0, dpr = 1, dprRaw = 1, fitCX = 0, fitCY = 0;
   var selected = -1, hover = -1, focusShelf = -1;
+  /* Brain round (2026-11-17): phone reader history + cortex shell +
+     idle-rotate clock. readerHist is the in-reader back stack;
+     savedListScroll is the shelf-list position a fresh reader open
+     came from, restored verbatim on close. shellMode is the
+     3-detent layer switch (ghost ⇄ opaque ⇄ off); shellAlpha lerps
+     toward the ghost target so the shell fades instead of popping. */
+  var readerHist = [], savedListScroll = null;
+  var shellMode = "ghost", shellAlpha = 0, shellMesh = null, shellBtns = {};
+  var elRBack = null, elRTitle = null;
+  var lastGrab = 0, prevFrameNow = 0;
   var dimLevel = 1, focusDim = 1;
   var pulses = [], lastPulse = 0;
   var morph = { active: false, t0: 0, from: null, to: null };
@@ -68209,6 +68288,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     root.innerHTML =
       '<div class="bv-head"><span class="bv-title"></span><span class="bv-counts"></span>' +
       '<span class="bv-views"><button type="button" class="bv-view-btn" data-bv-mode="brain"></button><button type="button" class="bv-view-btn" data-bv-mode="graph"></button><button type="button" class="bv-view-btn" data-bv-mode="list"></button></span>' +
+      '<span class="bv-views bv-shellviews"><button type="button" class="bv-view-btn" data-shell="ghost"></button><button type="button" class="bv-view-btn" data-shell="opaque"></button><button type="button" class="bv-view-btn" data-shell="off"></button></span>' +
       '<button type="button" class="bv-walk-btn" id="bvWalkBtn"></button></div>' +
       '<div class="bv-walkbar" hidden><div class="bv-walk-top"><span class="bv-walk-info"></span><span class="bv-walk-goal"></span></div>' +
       '<div class="bv-walk-map"></div>' +
@@ -68226,7 +68306,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       '<div class="bv-boot" hidden><div class="bv-boot-card"><div class="bv-boot-name">BRAIN VIEW</div><div class="bv-boot-phase"></div><div class="bv-boot-phase bv-boot-counts"></div><div class="bv-boot-phase bv-boot-skip"></div></div></div>' +
       '</div>' +
       '<div class="bv-list" hidden></div>' +
-      '<div class="bv-panel"><button type="button" class="bv-close" aria-label="close">✕</button><div class="bv-helix"><svg width="40" height="300" aria-hidden="true"></svg></div><div class="bv-article"></div></div>' +
+      '<div class="bv-panel"><button type="button" class="bv-close" aria-label="close">✕</button><div class="bv-rhead"><button type="button" class="bv-rback"></button><span class="bv-rtitle"></span><button type="button" class="bv-rclose" aria-label="close">✕</button></div><div class="bv-pbody"><div class="bv-helix"><svg width="40" height="300" aria-hidden="true"></svg></div><div class="bv-article"></div></div></div>' +
       '</div>';
     elCounts = root.querySelector(".bv-counts");
     elNote = root.querySelector(".bv-note");
@@ -68271,6 +68351,15 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     elWalkEnd.addEventListener("click", function () { endWalk(false); });
     elWalkNext.addEventListener("click", function () { walkNext(); });
     elPanel.querySelector(".bv-close").addEventListener("click", clearSelection);
+    elRBack = root.querySelector(".bv-rback");
+    elRTitle = root.querySelector(".bv-rtitle");
+    elRBack.addEventListener("click", readerBack);
+    root.querySelector(".bv-rclose").addEventListener("click", clearSelection);
+    root.querySelectorAll("[data-shell]").forEach(function (b) {
+      shellBtns[b.getAttribute("data-shell")] = b;
+      b.addEventListener("click", function () { setShellMode(b.getAttribute("data-shell")); });
+    });
+    if (shellBtns[shellMode]) shellBtns[shellMode].classList.add("on");
     elBoot.addEventListener("click", finishBoot);
     // region labels (brain mode) + graph node labels (deg>=4 pool)
     GENRE_JA.forEach(function (name, i) {
@@ -68481,6 +68570,180 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       var src = Math.floor(rnd() * N);
       pushDust(bx[src] + gauss() * 26, by[src] + gauss() * 20, bz[src] + gauss() * 24, nodeRgb[src], 0.15, 0.8 + rnd() * 0.6);
     }
+    buildShell();
+  }
+  /* ---------- ghost-cortex shell (Brain round, 2026-11-17) --------
+     A procedurally folded cortex skin over the neuron volume,
+     generated at runtime from the SAME implicit cerebrum function
+     the data generator used to place the nodes (copied verbatim
+     below), so the shell hugs the real volume — longitudinal
+     fissure included. Each vertex ray is solved by bisection on
+     shCerebrumVal, then displaced along the ray by seeded ridged
+     value noise (the folds). Vertex colours come from the nearest
+     shelf centroids, blended toward the second-nearest near borders
+     and darkened in the displacement valleys, so colour boundaries
+     follow the sulci instead of cutting straight. Cerebrum only:
+     the cerebellum and brainstem already read correctly as neurons.
+     Mesh budget: 17×30 = 510 vertices / 480 faces (perf guard). */
+  function shSmooth01(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
+  function shCerebrumVal(x, y, z, smooth) {
+    var ex = (x - 500) / 385, ey = (y - 247) / 198, ez = z / 240;
+    var tap = x < 330 ? 0.80 + 0.20 * shSmooth01((x - 110) / 220) : 1;
+    ey /= tap; ez /= tap;
+    var bump = Math.exp(-Math.pow((ey - 0.42) / 0.34, 2)) * Math.exp(-Math.pow((ex - 0.02) / 0.62, 2));
+    ez /= (1 + 0.15 * bump);
+    var eyF = ey < 0 ? ey : ey / 0.93;
+    var v = Math.pow(Math.abs(ex), 3.6) + Math.pow(Math.abs(eyF), 3.6) + Math.pow(Math.abs(ez), 3.6);
+    if (!smooth && ey < 0.10) {
+      var w = 0.11 * Math.pow(shSmooth01((0.10 - ey) / 0.55), 0.7);
+      if (Math.abs(ez) < w) return Infinity;
+    }
+    return Math.pow(v, 1 / 3.6);
+  }
+  function shHash(ix, iy, iz) {
+    var s = Math.sin(ix * 127.1 + iy * 311.7 + iz * 74.7) * 43758.5453;
+    return s - Math.floor(s);
+  }
+  function shNoise(x, y, z) {
+    var ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+    var fx = x - ix, fy = y - iy, fz = z - iz;
+    var ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy), uz = fz * fz * (3 - 2 * fz);
+    function L3(a, b, t) { return a + (b - a) * t; }
+    return L3(
+      L3(L3(shHash(ix, iy, iz), shHash(ix + 1, iy, iz), ux), L3(shHash(ix, iy + 1, iz), shHash(ix + 1, iy + 1, iz), ux), uy),
+      L3(L3(shHash(ix, iy, iz + 1), shHash(ix + 1, iy, iz + 1), ux), L3(shHash(ix, iy + 1, iz + 1), shHash(ix + 1, iy + 1, iz + 1), ux), uy), uz);
+  }
+  function shFold(u) {
+    var n1 = shNoise(u[0] * 2.6 + 11, u[1] * 2.6 + 5, u[2] * 2.6 + 7);
+    var n2 = shNoise(u[0] * 5.3 + 3, u[1] * 5.3 + 13, u[2] * 5.3 + 1);
+    var r1 = 1 - Math.abs(2 * n1 - 1), r2 = 1 - Math.abs(2 * n2 - 1);
+    return Math.max(0, Math.min(1, 0.68 * r1 + 0.32 * r2));
+  }
+  var SH_LAT = 17, SH_LON = 30;
+  function buildShell() {
+    shellMesh = null;
+    if (!centroids) return;
+    var nv = SH_LAT * SH_LON;
+    var pos = new Float32Array(nv * 3), nrm = new Float32Array(nv * 3), col = new Float32Array(nv * 3);
+    var C = [500, 247, 0], vi = 0, j, k, g, ch;
+    for (j = 0; j < SH_LAT; j++) {
+      var phi = -Math.PI / 2 + Math.PI * j / (SH_LAT - 1);
+      for (k = 0; k < SH_LON; k++, vi++) {
+        var th = Math.PI * 2 * k / SH_LON;
+        var u = [Math.cos(phi) * Math.cos(th), Math.sin(phi), Math.cos(phi) * Math.sin(th)];
+        var D = [u[0] * 385, u[1] * 198, u[2] * 240];
+        /* Surface solve in two steps. (1) The fissure-free function
+           is star-convex, so its first inside→outside crossing is
+           the smooth closed surface for every direction. (2) The
+           full function (fissure void included) is then marched
+           inward from that surface: a vertex landing in the groove
+           void walks down the ray to the first solid point — the
+           groove floor/wall — carving the longitudinal fissure into
+           the mesh. (Rays along the exact midline start inside the
+           void, so a naive first-crossing search on the full
+           function never fires for them and the vertex escapes to
+           the scan limit — the two-step solve is the fix.) */
+        var sPrev = 0.05, vPrev = shCerebrumVal(C[0] + D[0] * sPrev, C[1] + D[1] * sPrev, C[2] + D[2] * sPrev, true), sHit = 2.2;
+        for (var s = 0.10; s <= 2.2001; s += 0.05) {
+          var vv = shCerebrumVal(C[0] + D[0] * s, C[1] + D[1] * s, C[2] + D[2] * s, true);
+          if (vPrev <= 1 && vv > 1) {
+            var lo = sPrev, hi = s;
+            for (var it = 0; it < 22; it++) { var mid = (lo + hi) / 2; if (shCerebrumVal(C[0] + D[0] * mid, C[1] + D[1] * mid, C[2] + D[2] * mid, true) <= 1) lo = mid; else hi = mid; }
+            sHit = (lo + hi) / 2; break;
+          }
+          sPrev = s; vPrev = vv;
+        }
+        if (shCerebrumVal(C[0] + D[0] * sHit, C[1] + D[1] * sHit, C[2] + D[2] * sHit, false) > 1) {
+          var sIn = sHit;
+          while (sIn > 0.05 && shCerebrumVal(C[0] + D[0] * sIn, C[1] + D[1] * sIn, C[2] + D[2] * sIn, false) > 1) sIn -= 0.008;
+          sHit = sIn;
+        }
+        var px = C[0] + D[0] * sHit, py = C[1] + D[1] * sHit, pz = C[2] + D[2] * sHit;
+        var dl = Math.sqrt(D[0] * D[0] + D[1] * D[1] + D[2] * D[2]) || 1;
+        var f = shFold(u);
+        var off = 8 + (f - 0.38) * 34;
+        pos[vi * 3] = C[0] + (px - C[0]) * 1.05 + D[0] / dl * off;
+        pos[vi * 3 + 1] = C[1] + (py - C[1]) * 1.05 + D[1] / dl * off;
+        pos[vi * 3 + 2] = C[2] + (pz - C[2]) * 1.05 + D[2] / dl * off;
+        var b1 = 1e18, b2 = 1e18, g1 = 0, g2 = 0;
+        for (g = 0; g < NS; g++) {
+          var dx = pos[vi * 3] - centroids[g][0], dy = pos[vi * 3 + 1] - centroids[g][1], dz = pos[vi * 3 + 2] - centroids[g][2];
+          var dd = dx * dx + dy * dy + dz * dz;
+          if (dd < b1) { b2 = b1; g2 = g1; b1 = dd; g1 = g; } else if (dd < b2) { b2 = dd; g2 = g; }
+        }
+        var tB = Math.max(0, Math.min(1, (Math.sqrt(b2) - Math.sqrt(b1)) / (0.35 * Math.sqrt(b1) + 1e-6)));
+        var mixB = (1 - tB) * 0.5;
+        var shade = 0.60 + 0.40 * shSmooth01((f - 0.18) / 0.55);
+        for (ch = 0; ch < 3; ch++) {
+          var cc = shelfRgb[g1][ch] * (1 - mixB) + shelfRgb[g2][ch] * mixB;
+          cc = cc + (235 - cc) * 0.30;
+          col[vi * 3 + ch] = cc * shade;
+        }
+      }
+    }
+    function vAt(jj, kk) { jj = Math.max(0, Math.min(SH_LAT - 1, jj)); kk = ((kk % SH_LON) + SH_LON) % SH_LON; return jj * SH_LON + kk; }
+    for (var j2 = 0; j2 < SH_LAT; j2++) for (var k2 = 0; k2 < SH_LON; k2++) {
+      var i0 = j2 * SH_LON + k2;
+      var iR = vAt(j2, k2 + 1), iL = vAt(j2, k2 - 1), iD = vAt(j2 + 1, k2), iU = vAt(j2 - 1, k2);
+      var ax = pos[iR * 3] - pos[iL * 3], ay = pos[iR * 3 + 1] - pos[iL * 3 + 1], az = pos[iR * 3 + 2] - pos[iL * 3 + 2];
+      var bx2 = pos[iD * 3] - pos[iU * 3], by2 = pos[iD * 3 + 1] - pos[iU * 3 + 1], bz2 = pos[iD * 3 + 2] - pos[iU * 3 + 2];
+      var nx = ay * bz2 - az * by2, ny = az * bx2 - ax * bz2, nz = ax * by2 - ay * bx2;
+      var ox = pos[i0 * 3] - 500, oy = pos[i0 * 3 + 1] - 247, oz = pos[i0 * 3 + 2];
+      if (nx * ox + ny * oy + nz * oz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      var nl = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      nrm[i0 * 3] = nx / nl; nrm[i0 * 3 + 1] = ny / nl; nrm[i0 * 3 + 2] = nz / nl;
+    }
+    var nf = (SH_LAT - 1) * SH_LON;
+    var faces = new Int32Array(nf * 4), fcol = new Float32Array(nf * 3);
+    var fi2 = 0;
+    for (var j3 = 0; j3 < SH_LAT - 1; j3++) for (var k3 = 0; k3 < SH_LON; k3++, fi2++) {
+      var a = j3 * SH_LON + k3, b = j3 * SH_LON + (k3 + 1) % SH_LON, c = (j3 + 1) * SH_LON + (k3 + 1) % SH_LON, d = (j3 + 1) * SH_LON + k3;
+      faces[fi2 * 4] = a; faces[fi2 * 4 + 1] = b; faces[fi2 * 4 + 2] = c; faces[fi2 * 4 + 3] = d;
+      for (var ch2 = 0; ch2 < 3; ch2++) fcol[fi2 * 3 + ch2] = (col[a * 3 + ch2] + col[b * 3 + ch2] + col[c * 3 + ch2] + col[d * 3 + ch2]) / 4;
+    }
+    shellMesh = { nv: nv, nf: nf, pos: pos, nrm: nrm, faces: faces, fcol: fcol, sx: new Float32Array(nv), sy: new Float32Array(nv), sd: new Float32Array(nv), snz: new Float32Array(nv), ssh: new Float32Array(nv), order: [] };
+  }
+  function setShellMode(m) {
+    if (m !== "ghost" && m !== "opaque" && m !== "off") return;
+    shellMode = m;
+    Object.keys(shellBtns).forEach(function (k) { shellBtns[k].classList.toggle("on", k === m); });
+  }
+  var SH_P = { x: 0, y: 0, s: 1, depth: 0 };
+  function drawShellFaces(now, which) {
+    var m = shellMesh; if (!m) return;
+    var ang = (reduced ? 0 : Math.sin(now / 24000 * Math.PI * 2) * 0.30) + manualAng;
+    var ca = Math.cos(ang), sa = Math.sin(ang), cp = Math.cos(manualPitch), sp = Math.sin(manualPitch), cr = Math.cos(manualRoll), sr = Math.sin(manualRoll);
+    var i, v;
+    for (v = 0; v < m.nv; v++) {
+      project(m.pos[v * 3], m.pos[v * 3 + 1], m.pos[v * 3 + 2], now, SH_P);
+      m.sx[v] = SH_P.x; m.sy[v] = SH_P.y; m.sd[v] = SH_P.depth;
+      var nx = m.nrm[v * 3], ny = m.nrm[v * 3 + 1], nz = m.nrm[v * 3 + 2];
+      var x1 = nx * ca - nz * sa, z1 = nx * sa + nz * ca;
+      var y2 = ny * cp - z1 * sp, z2 = ny * sp + z1 * cp;
+      var xr = x1 * cr - y2 * sr, yr = x1 * sr + y2 * cr;
+      m.snz[v] = z2;
+      m.ssh[v] = 0.38 + 0.62 * Math.max(0, Math.min(1, xr * -0.45 + yr * -0.55 + z2 * 0.70));
+    }
+    var list = m.order; list.length = 0;
+    for (i = 0; i < m.nf; i++) {
+      var a = m.faces[i * 4], b = m.faces[i * 4 + 1], c = m.faces[i * 4 + 2], d = m.faces[i * 4 + 3];
+      var fz = (m.snz[a] + m.snz[b] + m.snz[c] + m.snz[d]) / 4;
+      if (which === "back" && fz > 0) continue;
+      if (which === "front" && fz <= 0) continue;
+      list.push([(m.sd[a] + m.sd[b] + m.sd[c] + m.sd[d]) / 4, i]);
+    }
+    list.sort(function (p, q) { return p[0] - q[0]; });
+    ctx.globalAlpha = which === "ghost" ? shellAlpha : 1;
+    for (i = 0; i < list.length; i++) {
+      var fi3 = list[i][1];
+      var a2 = m.faces[fi3 * 4], b2 = m.faces[fi3 * 4 + 1], c2 = m.faces[fi3 * 4 + 2], d2 = m.faces[fi3 * 4 + 3];
+      var sh = which === "ghost" ? 0.92 : (m.ssh[a2] + m.ssh[b2] + m.ssh[c2] + m.ssh[d2]) / 4;
+      ctx.fillStyle = "rgb(" + Math.round(m.fcol[fi3 * 3] * sh) + "," + Math.round(m.fcol[fi3 * 3 + 1] * sh) + "," + Math.round(m.fcol[fi3 * 3 + 2] * sh) + ")";
+      ctx.beginPath();
+      ctx.moveTo(m.sx[a2], m.sy[a2]); ctx.lineTo(m.sx[b2], m.sy[b2]); ctx.lineTo(m.sx[c2], m.sy[c2]); ctx.lineTo(m.sx[d2], m.sy[d2]);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   }
   function layoutGraphInit() {
     gx = new Float32Array(N); gy = new Float32Array(N); gvx = new Float32Array(N); gvy = new Float32Array(N);
@@ -68686,6 +68949,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     viewBtns.brain.textContent = L("viewBrain");
     viewBtns.graph.textContent = L("viewGraph");
     viewBtns.list.textContent = L("viewList");
+    if (shellBtns.ghost) { shellBtns.ghost.textContent = L("shellGhost"); shellBtns.opaque.textContent = L("shellOpaque"); shellBtns.off.textContent = L("shellOff"); }
+    if (elRBack) elRBack.textContent = "‹ " + L("readerBack");
     if (elWalkBtn) elWalkBtn.textContent = L("w_start");
     if (walk) renderWalkBar();
     root.querySelector(".bv-rail h5").textContent = L("legend");
@@ -68870,8 +69135,18 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     }
     if (last < text.length) p.appendChild(document.createTextNode(text.slice(last)));
   }
-  function selectNode(i) {
+  function selectNode(i, nav) {
     if (!dataReady || i < 0 || i >= N) return;
+    /* Reader history (Brain round): a connection-button hop inside
+       the open reader pushes the current article; any other call
+       while the panel is closed is a fresh open — the back stack
+       resets and, in list mode, the list's scroll position is saved
+       so close can restore it exactly. Calls while the panel is
+       already open from other routes (walk steps, language-change
+       re-select) leave the stack untouched. */
+    var wasOpen = elPanel && elPanel.classList.contains("open");
+    if (nav === "conn" && wasOpen && selected >= 0 && selected !== i) readerHist.push(selected);
+    else if (!wasOpen) { readerHist = []; if (mode === "list" && elList) savedListScroll = elList.scrollTop; }
     selected = i;
     countOpen(i);
     if (walk) walkStep(i);
@@ -68916,8 +69191,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       try { var fg = window.__libDiagram(t.fig); if (fg) bodyEl.appendChild(fg); } catch (e) {}
     }
     elArticle.scrollTop = 0;
+    if (elRTitle) elRTitle.textContent = topicTitle(i);
+    if (elRBack) elRBack.classList.toggle("off", !readerHist.length);
     elArticle.querySelectorAll(".bv-conn").forEach(function (btn) {
-      btn.addEventListener("click", function () { selectNode(parseInt(btn.getAttribute("data-to"), 10)); });
+      btn.addEventListener("click", function () { selectNode(parseInt(btn.getAttribute("data-to"), 10), "conn"); });
     });
     markSuggested();
     elPanel.classList.add("open");
@@ -68938,9 +69215,15 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       pulses.push({ a: i, b: nb.to, t0: now + 60 + k * 45, life: 650, col: nodeRgb[i] });
     });
   }
+  function readerBack() {
+    if (!readerHist.length) return;
+    selectNode(readerHist.pop(), "back");
+  }
   function clearSelection() {
     selected = -1;
+    readerHist = [];
     if (elPanel) elPanel.classList.remove("open");
+    if (savedListScroll !== null && elList) { elList.scrollTop = savedListScroll; savedListScroll = null; }
     if (helixTimer) { cancelAnimationFrame(helixTimer); helixTimer = 0; }
   }
   function drawHelix(t) {
@@ -69437,6 +69720,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
          own click handlers own these targets. */
       if (elArrange && elArrange.contains(ev.target)) return;
       if (ev.target.closest && ev.target.closest(".bv-label")) return;
+      lastGrab = performance.now();
       try { elStage.setPointerCapture(ev.pointerId); } catch (err) {}
       stopGlide();
       pointers[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
@@ -69556,6 +69840,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     elCanvas.addEventListener("wheel", function (ev) {
       ev.preventDefault();
       stopGlide();
+      lastGrab = performance.now();
       var rect = elCanvas.getBoundingClientRect();
       zoomAt(ev.clientX - rect.left, ev.clientY - rect.top, ev.deltaY > 0 ? 1 / 1.09 : 1 / 0.92);
     }, { passive: false });
@@ -69573,6 +69858,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     if (!view.classList.contains("open")) { rafId = 0; return; }
     rafId = requestAnimationFrame(frame);
     if (!dataReady || document.hidden) return;
+    var dtF = prevFrameNow ? Math.min(50, now - prevFrameNow) : 16;
+    prevFrameNow = now;
     if (elStage.clientWidth !== stageW || elStage.clientHeight !== stageH || (window.devicePixelRatio || 1) !== dprRaw) resize();
     if (mode === "list") return;
     frameCount++;
@@ -69607,6 +69894,14 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     dimLevel += (targetDim - dimLevel) * 0.08;
     var targetFD = focusShelf >= 0 ? 0.30 : 1;
     focusDim += (targetFD - focusDim) * 0.06;
+    /* Cortex shell: alpha eases toward the ghost target so the layer
+       fades instead of popping; idle auto-rotate turns the specimen
+       slowly after 5 s with no grab, glide, camera flight or open
+       article — any pointer grab resets the clock (bindPointer). */
+    var shTarget = shellMode === "ghost" ? 0.35 : 0;
+    shellAlpha += (shTarget - shellAlpha) * 0.12;
+    if (Math.abs(shTarget - shellAlpha) < 0.005) shellAlpha = shTarget;
+    if (mode === "brain" && !reduced && !gesture && !glide.active && !camAnim && selected < 0 && now - lastGrab > 5000) manualAng += dtF * 0.000045;
     if (glide.active && !gesture && mode === "brain") {
       var dtG = glide.last ? Math.min(50, Math.max(1, now - glide.last)) : 16;
       glide.last = now;
@@ -69751,6 +70046,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         ctx.fillRect(P.x, P.y, Math.max(1, dd.r * P.s), Math.max(1, dd.r * P.s));
       }
     }
+    if (mode === "brain" && shellMesh) {
+      if (shellMode === "opaque") drawShellFaces(now, "back");
+      else if (shellAlpha > 0.01) drawShellFaces(now, "ghost");
+    }
     for (var i = 0; i < N; i++) {
       var px = projCache[i * 2], py = projCache[i * 2 + 1];
       if (px < -16 || px > stageW + 16 || py < -16 || py > stageH + 16) continue;
@@ -69809,6 +70108,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         ctx.beginPath(); ctx.arc(px, py, pr + 3.5, 0, 6.2832); ctx.stroke();
       }
     }
+    if (mode === "brain" && shellMesh && shellMode === "opaque") drawShellFaces(now, "front");
     if (mode === "brain") {
       for (var li2 = 0; li2 < NS; li2++) {
         var el = labelEls[li2];
@@ -69947,6 +70247,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   }
   function enter() {
     if (!built) { buildSkeleton(); viewBtns.brain.classList.add("on"); }
+    lastGrab = performance.now();
     if (!dataReady && !loadFailed) startLoad();
     if (dataReady && lang() !== builtLang) onLangChanged();
     resize();
@@ -69960,6 +70261,9 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     },
     resetView: resetView, clearSelection: clearSelection, selectNode: selectNode, setMode: setMode, toggleFocus: toggleFocus, setArrange: setArrange,
     setAngles: function (yaw, pitch, roll) { manualAng = yaw; manualPitch = pitch; manualRoll = roll || 0; camAnim = null; stopGlide(); },
+    getShell: function () { var mx = 0; if (shellMesh) { for (var v = 0; v < shellMesh.nv; v++) { var dx = shellMesh.pos[v * 3] - 500, dy = shellMesh.pos[v * 3 + 1] - 247, dz = shellMesh.pos[v * 3 + 2]; var dd = Math.sqrt(dx * dx + dy * dy + dz * dz); if (dd > mx) mx = dd; } } return { mode: shellMode, alpha: +shellAlpha.toFixed(3), verts: shellMesh ? shellMesh.nv : 0, faces: shellMesh ? shellMesh.nf : 0, maxR: Math.round(mx) }; },
+    setShell: function (m) { setShellMode(m); },
+    getReader: function () { return { hist: readerHist.length, savedScroll: savedListScroll }; },
     getFraming: function () {
       if (!dataReady) return null;
       var minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9, out = 0, outSil = 0;
@@ -71872,6 +72176,11 @@ window.__BN_VIEW__ = {
     "#turntableView[data-ttskin='ttskin-studio'] .tt-stage{background:linear-gradient(180deg,#0a0a0c,#121216);border-color:#26262c}",
     "#turntableView[data-ttskin='ttskin-cream'] .tt-stage{background:linear-gradient(150deg,#f2e7d3,#e4d3b3 60%,#d9c69e);border-color:#b39b6d}",
     "#turntableView[data-ttskin='ttskin-midnight'] .tt-stage{background:radial-gradient(120% 120% at 70% 10%,#16294d,#0a1428 70%);border-color:#274a7c}",
+    "#turntableView[data-ttskin='ttskin-ui-sheet'] .tt-stage{background:linear-gradient(180deg,#dfe5f2,#aebadd 55%,#8494b8);border-color:#eef1f8}",
+    "#turntableView[data-ttskin='ttskin-ui-toast'] .tt-stage{background:linear-gradient(180deg,#131e38 0%,#0d1425 62%,#241a05 135%);border-color:#e9b93c}",
+    "#turntableView[data-ttskin='ttskin-ui-segment'] .tt-stage{background:linear-gradient(90deg,#0d1425 0 33%,#16233f 33% 66%,#0d1425 66% 100%);border-color:#4a74c9}",
+    "#turntableView[data-ttskin='ttskin-ui-scrim'] .tt-stage{background:radial-gradient(90% 70% at 50% 42%,#1a2745,#070a12 78%);border-color:#26355c}",
+    "#turntableView[data-ttskin='ttskin-ui-fab'] .tt-stage{background:radial-gradient(60% 45% at 78% 82%,rgba(233,185,60,.5),rgba(233,185,60,0) 70%),linear-gradient(180deg,#131e38,#0d1425);border-color:#e9b93c}",
     "#ttCanvas{display:block;width:100%;aspect-ratio:1/1;touch-action:pan-y}",
     ".tt-rpm{position:absolute;right:14px;bottom:12px;display:flex;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);border-radius:999px;overflow:hidden}",
     ".tt-rpm button{background:transparent;border:none;color:#c8cfdd;font-size:12px;font-weight:800;padding:8px 13px;cursor:pointer;min-height:36px}",
