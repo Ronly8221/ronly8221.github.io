@@ -5308,7 +5308,7 @@
 .lib-fig-lab { font-size: 12px; font-weight: 800; fill: #3d5a80; text-anchor: middle; }
 @media (prefers-reduced-motion: reduce) { .lib-fig-arm { animation: none; stroke-dashoffset: 0; opacity: 1; } }
 /* ===== Gomoku （五目ならべ) ===== */
-.gom-wrap { position: relative; }
+.gom-wrap { position: relative; flex: 0 0 auto; }
 #gomokuView { --acc: #b07a2e; --acc-d: #8a5a1a; }
 #fishingView { --acc: #1f7a8c; --acc-d: #14586a; }
 .gom-board { display: grid; grid-template-columns: repeat(15, 1fr); gap: 0; background: linear-gradient(160deg, #ecc97f, #dfb45f); border-radius: 12px; padding: 8px; box-shadow: inset 0 2px 8px rgba(120, 76, 4, 0.35), 0 10px 22px rgba(90, 60, 10, 0.25); }
@@ -32512,6 +32512,17 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     }
     tickSky();
     setInterval(tickSky, 20000);
+    /* Language switches must re-format the clock NOW, not at the
+       next 20 s tick — after a switch the date kept the previous
+       locale's format (user report 2026-11-16: 「11/16(月)」 under
+       English). Same 1 s lang-watch pattern as module 68. */
+    var skyLangSeen = null;
+    try { skyLangSeen = localStorage.getItem("arcade-lang"); } catch (e) {}
+    setInterval(function () {
+      var l = null;
+      try { l = localStorage.getItem("arcade-lang"); } catch (e) {}
+      if (l !== skyLangSeen) { skyLangSeen = l; tickSky(); }
+    }, 1000);
 
     /* ---------- Tiles: daily pick, collection, resume ---------- */
     var tiles = Array.prototype.slice.call(document.querySelectorAll(".game-tile"));
@@ -49345,6 +49356,8 @@ PATTERNS.push(
   notesAdd("仕組みと同期", { t: "分解ボードの極端プリセット：定格・最大・限界", b: ["分解ボード（3枚）に「極端プリセット」が付きました。各ボードに3つの状態（定格／最大・全開／限界寄りの状態）があり、押すと分解の開き具合がその状態の値へ跳び、関係する部品が光って、他の部品は薄くなります。あわせて、その状態の事実が読み物カードに出ます。仕組みが「秒で読める」ようにするための見せ方です。", "中身は全部、ボードに既にある部品解説からの事実だけです。たとえばESP32-S3基板の「電圧低下」は、レギュレータの解説にある「高すぎると壊れ、低すぎると動きません」が元。Flipper Zeroの「無線全開」は、Sub-GHz（315/433/868/915MHz）、NFC（13.56MHz）、RFID（125kHz）、赤外線LED3つの解説から。Raspberry Pi Picoの「電池駆動」は、上げることも下げることもできるRT6150の解説から作りました。解説に無い状態（短絡など）は作っていません。", "検証の数字です。プリセットは3ボード×3状態＝9つ。関係部品として指定したIDは、3ボードの全32部品（11＋12＋9）の中に実在すること、読み物カードの数値が部品解説の原文と一致することを、1つずつ照合しました。プリセットは表示だけの仕掛けで、クイズやコインには触りません。"] });
     notesAdd("ゲームごとの制作メモ", { t: "チェッカー：強制取りと連続ジャンプのエンジン", b: ["チェッカーはアメリカ式（イギリス式）ルールで、取れる駒があるときは必ず取らなければならず、連続ジャンプは1手として全部つなげます。合法手の生成は「取れる手があるか」を先に調べ、ある場合はジャンプの最長連鎖だけを手として返します。途中でキングになった駒はその場で手番が終わる、本式の細部まで寄せました。", "AIは3段階です。やさしいは1手先の駒得だけを見る設定で、連続ジャンプの先は読めません。ふつうは4手先、むずかしいは7手先までアルファベータ探索で読み、取る手が残っている局面では読みを自動で延長します（取る・取られるの応酬を途中で打ち切らないため）。むずかしいの1手は実測で約50ミリ秒でした。", "勝敗は「全部取る」か「相手を動けなくする（詰み）」で決まり、駒を取らず歩も進めない手が80半手続くと引き分けです。検証では、強制取りの提示と拒否、連続ジャンプ、キング化、詰み勝ち、引き分けカウンタまで16項目の自動テストを全部通しました。"] });
     notesAdd("ゲームごとの制作メモ", { t: "将棋：完全ルールエンジンと読みの速さ", b: ["将棋は持ち駒・成り・千日手・持将棋まで入れた完全ルールです。打てない手を3つとも生成の段階で落とします：二歩（同じ筋の歩を数える）、行き場のないマス（歩・香は1段目、桂は1〜2段目）、打ち歩詰め（歩を打って王手になったときだけ、相手の合法手を全部数えて詰みかどうかを確かめる）。最初の局面の合法手は30手ちょうどで、教科書の数字と一致しました。", "AIは評価関数（駒の価値＋持ち駒の割り増し＋玉の守りの厚さ）にアルファベータ探索を組み合わせ、取る手だけを先に読む静止探索を足しています。読みの深さは、やさしいは1手先の評価だけ、ふつうは2手、むずかしいは3手です。応答が重くならないよう探索ノードに上限（ふつう6万、むずかしい16万）を付け、むずかしいの1手は序盤で約80ミリ秒、中盤で約420ミリ秒でした（実測）。", "千日手は同じ局面の4回目で判定し、王手をかけ続けた側が負けになります。持将棋は簡易ルール（両方の玉が敵陣に入り、両者24点以上で引き分け）として、ルール画面にも簡略版であることを明記しました。AI対ランダムの対局が合法手だけで最後まで進むことも自動テストで確認しています（全16項目）。"] });
+    notesAdd("仕組みと同期", { t: "リモコンのQR修理：読み取り先は公開版の住所に固定", b: ["スマホのカメラで読むとリモコンになるはずのQRが、表示側の住所そのものを写していました。アプリの中で表示すると、その住所はアプリ内部のもので、スマホからは開けません。つながる仕組み自体は住所に依存しません（表示側とスマホは、4文字のコードで接続サービスに集まります）ので、QRの中身を公開版（GitHub Pages）の住所に固定しました。あわせてQRを118pxから176pxに大きくし、読み取れなかったときのために4文字のコードをQRのブロックの中にも出しました。ハブのカードは明るいクリーム色なのに、QRまわりの文字は暗い画面用の色で読めなかったので、カードの色に合わせました。", "検証の数字です。住所の関数をアプリ外の住所で開いても公開版のURLが返ること、QRの自己検査6件（48文字の新しいURLそのものを含む。版は4）が全部往復一致すること、GitHub版を再現したホストで ?rc= 付きURLを開くとタップ0回でリモコン画面が開き、コードが入り、接続が始まることを確認しました。プローブは13件全部合格です。接続サービス自体には検証環境から届かないので、実機同士の接続だけは公開後の確認になります。"] });
+    notesAdd("仕組みと同期", { t: "盤が潰れる問題と、英語にしても日本語が残る問題", b: ["五目並べの盤がスマホで縦に潰れて読めなくなりました。画面は「収まらなければスクロールする」作りですが、盤の枠には縮み止め（flex: 0 0 auto）が付いておらず、ブラウザによっては枠が余りの高さ（約110px）まで縮んでしまいます。兄弟の盤は全部この縮み止めを持っていて、付いていなかったのは五目並べ・チェッカー・将棋の3つだけでしたので、3つとも同じ形に揃えました。検証では9タイトルの盤を短い画面（高さ560）と長い画面（932）で測り、形が変わらないことと縮み止めが効いていることを確認しました（プローブ31件全部合格）。報告のあった状態（日本語・再開した対局・教育モードの表示つき）では、盤は406×406pxで出ます。", "言語の方は「最初に描いたときの言語で凍る」部品が原因でした。ロビーの道具、NOW SHOWING帯、対戦ルームの入口パネル、右上の時計は、言語を切り替えても描き直されませんでした。さらに全体の翻訳係は『元の日本語』を覚えていて、辞書に無い文は日本語に戻してしまうので、部品側が直しても上書きされる文がありました。直し方は2つです。各部品が言語の切り替えを見張って自分の文を描き直すことと、足りなかった20件の文を翻訳係の辞書に（各部品の表と同文で）足すこと。対戦ルームは全対戦タイトル共通なので、直しは全部品に効きます。検証は双方向ゲート（日本語→英語／英語→日本語／最初から英語）で17件全部合格です。"] });
     function showShelves() {
       var box = nEl("notesShelves"); if (!box) return;
       nEl("notesList").hidden = true;
@@ -50847,6 +50860,38 @@ Object.assign(D, {
     });
     mo.observe(document.body, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ATTRS });
   }
+
+/* ---------- supplement (2026-11-16, QR-fix round): lobby tools,
+   NOW SHOWING band and VersusRoom home-panel strings ----------
+   These strings are rendered by modules 60 / 66 / 44 from their
+   own tables, but this walker's stored-original restore re-asserts
+   the Japanese original whenever a translation is missing here —
+   it undid the modules' own language-switch repaints (search
+   placeholder, today's-pick card head, wager label, room code
+   placeholder). Entries below copy the owning modules' tables
+   verbatim so both systems always agree. */
+Object.assign(D, {
+  "🔍 タイトル検索": ["🔍 Search titles", "🔍 타이틀 검색", "🔍 搜索标题", "🔍 搜尋標題", "🔍 Buscar títulos", "🔍 Rechercher des titres", "🔍 Titel suchen", "🔍 Buscar títulos", "🔍 Cerca titoli"],
+  "⭐ 今日のおすすめ": ["⭐ Today's pick", "⭐ 오늘의 추천", "⭐ 今日精选", "⭐ 今日精選", "⭐ La selección de hoy", "⭐ Sélection du jour", "⭐ Tagesempfehlung", "⭐ Escolha do dia", "⭐ La scelta del giorno"],
+  "今日のおすすめ・まだ遊んでいないタイトル": ["Recommended: Unplayed Titles", "오늘의 추천: 아직 플레이하지 않은 게임", "今日推荐：未体验的游戏", "今日推薦：尚未遊玩的遊戲", "Sugerencias: Títulos nuevos", "Recommandé : nouveaux titres", "Empfohlen für heute: Noch nicht gespielt", "Recomendação do dia: títulos novos", "Consigliati di oggi: titoli nuovi"],
+  "今日のおすすめ・最近ごぶさたのタイトル": ["Recommended: One You Haven't Played in a While", "오늘의 추천: 오랜만에 플레이하는 게임", "今日推荐：久未游玩的游戏", "今日推薦：許久未玩的遊戲", "Sugerencias: Hace mucho que no juegas", "Recommandé : titres oubliés", "Empfohlen für heute: Lange nicht gespielt", "Recomendação do dia: jogue novamente", "Consigliati di oggi: titoli meno recenti"],
+  "賭け金": ["Wager", "내기 금액", "赌注", "賭注", "Apuesta", "Mise", "Einsatz", "Aposta", "Posta"],
+  "6文字のコード": ["6-letter code", "6자 코드", "6 位代码", "6 位代碼", "Código de 6 letras", "Code à 6 lettres", "6-stelliger Code", "Código de 6 letras", "Codice di 6 lettere"],
+  "部屋を作る": ["Create a room", "방 만들기", "创建房间", "建立房間", "Crear una sala", "Créer une salle", "Raum erstellen", "Criar uma sala", "Crea una stanza"],
+  "コードで参加": ["Join with a code", "코드로 참가", "用代码加入", "用代碼加入", "Unirse con un código", "Rejoindre avec un code", "Mit Code beitreten", "Entrar com um código", "Entra con un codice"],
+  "なし（親善）": ["None (friendly)", "없음(친선)", "无（友谊赛）", "無（友誼賽）", "Ninguna (amistoso)", "Aucune (amical)", "Keiner (freundlich)", "Nenhuma (amistoso)", "Nessuna (amichevole)"],
+  "部屋を閉じる": ["Close the room", "방 닫기", "关闭房间", "關閉房間", "Cerrar la sala", "Fermer la salle", "Raum schließen", "Fechar a sala", "Chiudi la stanza"],
+  "退室する": ["Leave", "나가기", "离开", "離開", "Salir", "Quitter", "Verlassen", "Sair", "Esci"],
+  "言語設定": ["Language settings", "언어 설정", "语言设置", "語言設定", "Ajustes de idioma", "Réglage de la langue", "Spracheinstellung", "Definições de idioma", "Impostazioni lingua"],
+  "設定を開く": ["Open Settings", "설정 열기", "打开设置", "開啟設定", "Abrir ajustes", "Ouvrir les paramètres", "Einstellungen öffnen", "Abrir configurações", "Apri impostazioni"],
+  "お気に入りに追加": ["Add to favourites", "즐겨찾기에 추가", "添加到收藏", "加入我的最愛", "Añadir a favoritos", "Ajouter aux favoris", "Zu Favoriten hinzufügen", "Adicionar aos favoritos", "Aggiungi ai preferiti"],
+  "お気に入りから外す": ["Remove from favourites", "즐겨찾기에서 제거", "从收藏中移除", "從我的最愛移除", "Eliminar de favoritos", "Supprimer des favoris", "Aus Favoriten entfernen", "Remover dos favoritos", "Rimuovi dai preferiti"],
+  "おかえり！": ["Welcome back!", "어서 와!", "欢迎回来！", "歡迎回來！", "¡Bienvenido!", "Bon retour !", "Willkommen zurück!", "Bem-vindo de volta!", "Bentornato!"],
+  "並べ替え中：タイルをドラッグで移動": ["Reordering: drag tiles to move them", "재정렬 중: 타일을 드래그하여 이동", "排序中：拖拽瓷砖移动", "排序中：拖曳磚塊移動", "Reordenando: arrastra las fichas", "Réorganisation : glisser les tuiles", "Neu anordnen: Kacheln ziehen", "Reordenando: arraste as peças", "Riordino: trascina le tessere"],
+  "実績とトロフィー棚": ["Achievements & Trophy Shelf", "업적 및 트로피 선반", "成就与奖杯陈列柜", "成就與獎盃陳列架", "Logros y estante de trofeos", "Succès et étagère à trophées", "Erfolge und Trophäenregal", "Conquistas e estante de troféus", "Obiettivi e bacheca trofei"],
+  "実績とトロフィー棚画面": ["Achievements & Trophy Shelf Screen", "업적 및 트로피 선반 화면", "成就与奖杯陈列页面", "成就與獎盃陳列畫面", "Pantalla de logros y trofeos", "Écran des succès et trophées", "Erfolge- und Trophäenbildschirm", "Tela de conquistas e troféus", "Schermata obiettivi e trofei"],
+  "あと1つベンチ": ["One-Part-Away Bench", "남은 부품 1개 벤치", "还差一个的台座", "還差一個的台座", "Banco a una pieza", "Banc à une pièce", "Werkbank: Ein Teil fehlt", "Bancada com uma peça restante", "Banco a un pezzo"]
+});
 
 Object.assign(D, {
   "分解ボード": ["Meet the Board", "분해 보드", "分解板", "分解板", "Placa al descubierto", "La carte à nu", "Das Board von innen", "Placa por dentro", "Scheda a nudo"],
@@ -54279,7 +54324,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     var dock = document.getElementById("mascotDock");
     if (!dock || mascEl) return;
     var st = ptsState();
-    dock.innerHTML = '<span class="masc-bubble" aria-hidden="true"></span><div class="masc-inner">' + raccoonSVG(rankIdx(st.lifetime)) + '</div><div class="masc-bench" id="mascBench" role="button" aria-label="workbench">' + benchSVG() + "</div>";
+    dock.innerHTML = '<span class="masc-bubble" aria-hidden="true"></span><div class="masc-inner">' + raccoonSVG(rankIdx(st.lifetime)) + '</div><div class="masc-bench" id="mascBench" role="button" aria-label="あと1つベンチ">' + benchSVG() + "</div>";
     mascEl = dock; mascBubble = dock.querySelector(".masc-bubble");
     var benchEl = dock.querySelector(".masc-bench");
     if (benchEl) benchEl.addEventListener("click", function (e) { e.stopPropagation(); benchTap(); });
@@ -58225,6 +58270,25 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       return s;
     }
 
+    /* Live VersusRoom instances register a repaint callback here.
+       A room's home panel is rendered once at construction, so
+       without this its strings stayed in the construction-time
+       language after a language switch (user report 2026-11-16:
+       the whole private-match panel in Japanese under English,
+       while dynamic room states were fine — paint() re-derives
+       them). One module-level 1 s lang watcher (the house pattern
+       from module 68) repaints every live room; detached roots
+       are pruned. */
+    var vrRepainters = [];
+    var vrLangSeen = lang();
+    setInterval(function () {
+      var l = lang();
+      if (l === vrLangSeen) return;
+      vrLangSeen = l;
+      vrRepainters = vrRepainters.filter(function (r) { return document.contains(r.root); });
+      vrRepainters.forEach(function (r) { try { r.fn(); } catch (e) {} });
+    }, 1000);
+
     /* ---------- identity & points primitives ---------- */
     function publicName() {
       try {
@@ -58821,6 +58885,21 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         paint();
         paintActions();
       });
+      /* Repaint the static home panel from the string table —
+         the dynamic room view already re-derives via paint(). */
+      function repaintHome() {
+        var label = homeEl.querySelector("label");
+        if (label && label.firstChild) label.firstChild.textContent = t("wager") + " ";
+        var sel = homeEl.querySelector(".bmp-wager");
+        if (sel) Array.prototype.forEach.call(sel.options, function (o) { if (o.value === "0") o.textContent = t("friendly"); });
+        var cBtn = homeEl.querySelector(".bmp-create");
+        if (cBtn) cBtn.textContent = t("create");
+        var cIn = homeEl.querySelector(".bmp-code");
+        if (cIn) cIn.setAttribute("placeholder", t("codePh"));
+        var jBtn = homeEl.querySelector(".bmp-join");
+        if (jBtn) jBtn.textContent = t("join");
+      }
+      vrRepainters.push({ root: root, fn: function () { repaintHome(); paint(); } });
       return {
         debug: function () {
           return { mode: mode, mySeat: mySeat, gameNo: gameNo, wager: wager, wagerLive: wagerLive, over: over, snap: snap, guestPresent: guestPresent, aiSeat: aiSeat, cover: coverSeat1 };
@@ -66655,6 +66734,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       favAdd: { ja: "お気に入りに追加", en: "Add to favourites", ko: "즐겨찾기에 추가", zh: "添加到收藏", zht: "加入我的最愛", es: "Añadir a favoritos", fr: "Ajouter aux favoris", de: "Zu Favoriten hinzufügen", pt: "Adicionar aos favoritos", it: "Aggiungi ai preferiti" },
       favRemove: { ja: "お気に入りから外す", en: "Remove from favourites", ko: "즐겨찾기에서 제거", zh: "从收藏中移除", zht: "從我的最愛移除", es: "Eliminar de favoritos", fr: "Supprimer des favoris", de: "Aus Favoriten entfernen", pt: "Remover dos favoritos", it: "Rimuovi dai preferiti" },
       noMatch: { ja: "見つかりませんでした", en: "No titles match", ko: "일치하는 타이틀이 없습니다", zh: "没有匹配的游戏", zht: "沒有符合的標題", es: "No hay coincidencias", fr: "Aucun titre ne correspond", de: "Keine Titel gefunden", pt: "Nenhum título corresponde", it: "Nessun titolo corrispondente" },
+      ltClose: { ja: "閉じる", en: "Close", ko: "닫기", zh: "关闭", zht: "關閉", es: "Cerrar", fr: "Fermer", de: "Schließen", pt: "Fechar", it: "Chiudi" },
       metaBlurb: { ja: "クエスト・スタンプ・まとめ・パスポート・履歴・ゴースト・リプレイ・あと1つ帳・サウンド", en: "Quests, stamps, wrapped, passport, history, ghost, replay, one-away, sound", ko: "퀘스트, 스탬프, 랩업, 패스포트, 기록, 고스트, 리플레이, 원어웨이, 사운드", zh: "任务、印章、年度回顾、护照、历史记录、幽灵、回放、一步之遥、音效", zht: "任務、印章、年度回顧、護照、歷史紀錄、鬼魂、重播、一步之遙、音效", es: "Misiones, sellos, resumen, pasaporte, historial, fantasma, repetición, pendientes, sonido", fr: "Quêtes, tampons, résumé, passeport, historique, fantôme, relecture, à portée, son", de: "Quests, Stempel, Zusammenfassungen, Pass, Historie, Geist, Wiederholung, Fast-geschafft, Sound", pt: "Missões, selos, retrospectiva, passaporte, histórico, fantasma, replay, quase lá, som", it: "Missioni, timbri, riepilogo, passaporto, cronologia, fantasma, replay, quasi completati, audio" }
     };
     function T(k, vars) {
@@ -67690,6 +67770,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       genres.forEach(function (gname) {
         var b = document.createElement("button");
         b.type = "button"; b.className = "lt-chip" + (gname === "all" ? " on" : "");
+        if (gname === "all" || gname === "fav") b.setAttribute("data-lt-chip", gname);
         b.textContent = gname === "all" ? T("lobbyAll") : (gname === "fav" ? T("lobbyFavs") : gname);
         b.addEventListener("click", function () {
           lobbyState.genre = gname;
@@ -67707,6 +67788,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       if (lastKey) {
         var cb = document.createElement("button");
         cb.type = "button"; cb.className = "lt-chip";
+        cb.setAttribute("data-lt-btn", "continue"); cb.setAttribute("data-lt-key", lastKey);
         var tEl = grid.querySelector('[data-count-for="' + lastKey + '"]');
         var tName = tEl ? tileTitle(tEl.closest(".game-tile")) : lastKey;
         cb.textContent = "▶ " + T("lobbyContinue") + ": " + tName;
@@ -67714,7 +67796,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         row.appendChild(cb);
       }
       var rb = document.createElement("button");
-      rb.type = "button"; rb.className = "lt-chip"; rb.textContent = "🎲 " + T("lobbyRandom");
+      rb.type = "button"; rb.className = "lt-chip"; rb.setAttribute("data-lt-btn", "random"); rb.textContent = "🎲 " + T("lobbyRandom");
       rb.addEventListener("click", function () {
         var vis = Array.prototype.slice.call(grid.querySelectorAll(".game-tile")).filter(function (t) { return t.style.display !== "none" && tileKey(t); });
         if (!vis.length) return;
@@ -67743,7 +67825,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
           metaSfx("tap");
         });
         row.appendChild(pill);
-        tt.innerHTML = '<div class="meta-dim">⭐ ' + esc(T("lobbyToday")) + '<button type="button" class="meta-btn lt-today-x" id="ltTodayX" aria-label="close">×</button></div><div class="meta-row" style="margin-top:5px"><div class="meta-grow"><b>' + esc(tileTitle(pick.tile)) + '</b><div class="meta-dim">' + esc(pick.reason) + '</div></div><button type="button" class="meta-btn" id="ltTodayGo">▶</button></div>';
+        tt.innerHTML = '<div class="meta-dim">⭐ ' + esc(T("lobbyToday")) + '<button type="button" class="meta-btn lt-today-x" id="ltTodayX" aria-label="' + esc(T("ltClose")) + '">×</button></div><div class="meta-row" style="margin-top:5px"><div class="meta-grow"><b>' + esc(tileTitle(pick.tile)) + '</b><div class="meta-dim">' + esc(pick.reason) + '</div></div><button type="button" class="meta-btn" id="ltTodayGo">▶</button></div>';
         tt.querySelector("#ltTodayGo").addEventListener("click", function () { openTileKey(tileKey(pick.tile)); });
         tt.querySelector("#ltTodayX").addEventListener("click", function () { tt.style.display = "none"; pill.setAttribute("aria-expanded", "false"); });
       }
@@ -67778,6 +67860,98 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       });
       popEl.textContent = "🔥 " + pop.label + ": " + names.join(" · ");
       decorateTiles();
+    }
+    /* The lobby tools are built once, so without a repaint their
+       strings stayed in the build-time language after a language
+       switch (user report 2026-11-16: search placeholder,
+       favourites chip, continue / random / today's-pick / display
+       / reorder pills and the popular line all stayed Japanese
+       under English, while the genre chips — repainted by module
+       31's own pass — switched). This repaint re-derives every
+       string from the same STR table plus fresh tile titles; the
+       watcher is the 1 s lang-watch pattern from module 68. */
+    function repaintLobbyTools() {
+      var tools = document.getElementById("lobbyTools");
+      if (!tools) return;
+      var grid = document.getElementById("tileGrid");
+      var search = tools.querySelector("#ltSearch");
+      if (search) search.setAttribute("placeholder", "🔍 " + T("lobbySearch"));
+      var noMatch = tools.querySelector("#ltNoMatch");
+      if (noMatch) noMatch.textContent = T("noMatch");
+      var allChip = tools.querySelector('[data-lt-chip="all"]');
+      if (allChip) allChip.textContent = T("lobbyAll");
+      var favChip = tools.querySelector('[data-lt-chip="fav"]');
+      if (favChip) favChip.textContent = T("lobbyFavs");
+      var cont = tools.querySelector('[data-lt-btn="continue"]');
+      if (cont && grid) {
+        var key = cont.getAttribute("data-lt-key");
+        var cEl = key ? grid.querySelector('[data-count-for="' + key + '"]') : null;
+        var cName = cEl ? tileTitle(cEl.closest(".game-tile")) : key;
+        cont.textContent = "▶ " + T("lobbyContinue") + ": " + cName;
+      }
+      var rnd = tools.querySelector('[data-lt-btn="random"]');
+      if (rnd) rnd.textContent = "🎲 " + T("lobbyRandom");
+      var pick = null;
+      try { pick = pickTodayTile(); } catch (e) {}
+      var pill = tools.querySelector("#ltTodayPill");
+      if (pill && pick) pill.textContent = "⭐ " + T("lobbyToday") + ": " + tileTitle(pick.tile);
+      var tt = tools.querySelector("#ltToday");
+      if (tt && pick) {
+        var head = tt.querySelector(".meta-dim");
+        if (head && head.firstChild) head.firstChild.textContent = "⭐ " + T("lobbyToday");
+        var bEl = tt.querySelector(".meta-row b");
+        if (bEl) bEl.textContent = tileTitle(pick.tile);
+        var rEl = tt.querySelector(".meta-row .meta-dim");
+        if (rEl) rEl.textContent = pick.reason;
+      }
+      var disp = tools.querySelector("#ltDisplayPill");
+      if (disp) disp.textContent = "⚙ " + T("lobbyDisplay");
+      var reo = tools.querySelector("#ltReorderPill");
+      if (reo) reo.textContent = "↕ " + T("lobbyReorder");
+      var popEl2 = tools.querySelector("#ltPopular");
+      if (popEl2 && grid) {
+        var pop2 = popularSet();
+        var names2 = pop2.keys.map(function (k) {
+          var tEl3 = grid.querySelector('[data-count-for="' + k + '"]');
+          return tEl3 ? tileTitle(tEl3.closest(".game-tile")) : k;
+        });
+        popEl2.textContent = "🔥 " + pop2.label + ": " + names2.join(" · ");
+      }
+      var xBtn = tools.querySelector("#ltTodayX");
+      if (xBtn) xBtn.setAttribute("aria-label", T("ltClose"));
+      if (grid) {
+        /* Genre chips carry the genre NAME as their identity — it
+           was read from the (translated) genre heads at build time,
+           so the chips kept the build language in BOTH switch
+           directions. Re-derive from the heads' current text in
+           DOM order and move the stored filter state along. */
+        var chipEls = tools.querySelectorAll("#ltChips .lt-chip");
+        var sections = grid.querySelectorAll(".genre-group");
+        var nameMap = {};
+        sections.forEach(function (sec, i) {
+          var chip = chipEls[i + 2];
+          var h = sec.querySelector(".genre-head");
+          var nm = "";
+          if (h) { var cl = h.cloneNode(true); cl.querySelectorAll("span").forEach(function (sp) { if (/^\d+$/.test(sp.textContent.trim())) sp.remove(); }); nm = cl.textContent.trim(); }
+          var old = sec.getAttribute("data-genre-name");
+          if (nm && old && old !== nm) { nameMap[old] = nm; sec.setAttribute("data-genre-name", nm); }
+          if (chip && nm) chip.textContent = nm;
+        });
+        if (lobbyState.genre && nameMap[lobbyState.genre]) lobbyState.genre = nameMap[lobbyState.genre];
+        /* Tile decorations from decorateTiles carry strings too:
+           the fav stars' aria-labels and the best-score badges. */
+        grid.querySelectorAll(".tile-fav").forEach(function (star) {
+          star.setAttribute("aria-label", T(star.classList.contains("on") ? "favRemove" : "favAdd"));
+        });
+        grid.querySelectorAll(".game-tile").forEach(function (tile) {
+          var rec = tile.querySelector(".lt-rec");
+          if (rec && rec.textContent) {
+            var bk = tileKey(tile);
+            var best = bk ? bestForTile(bk) : null;
+            if (best != null) rec.textContent = "🏅 " + T("recBest") + " " + fmtN(best);
+          }
+        });
+      }
     }
     function huntPips() {
       var hv = document.getElementById("huntView"); if (!hv) return;
@@ -67823,6 +67997,11 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       injectProfile();
       injectPoints();
       huntPips();
+      var lobbyLangSeen = lang();
+      setInterval(function () {
+        var l = lang();
+        if (l !== lobbyLangSeen) { lobbyLangSeen = l; repaintLobbyTools(); }
+      }, 1000);
       setInterval(viewWatch, 700);
       setInterval(function () { if (!hooksDone) installHooks(); lifetimePoll(); }, 6000);
       setInterval(replayPoll, 2500);
@@ -72387,6 +72566,8 @@ window.__BN_VIEW__ = {
       '<button type="button" class="sb-go"></button>';
     band.querySelector(".sb-title").textContent = titleEl.textContent;
     band.querySelector(".sb-reason").textContent = L(unplayed.length ? "bandReasonNew" : "bandReasonLeast");
+    band._sbTile = tile;
+    band._sbReasonKey = unplayed.length ? "bandReasonNew" : "bandReasonLeast";
     var go = band.querySelector(".sb-go");
     go.textContent = L("bandPlay");
     go.addEventListener("click", function () { playBtn.click(); });
@@ -72394,6 +72575,27 @@ window.__BN_VIEW__ = {
     if (tools && tools.parentElement === grid.parentElement) tools.insertAdjacentElement("afterend", band);
     else grid.parentElement.insertBefore(band, grid);
   }
+  /* The band is built once, so without this its reason / play
+     strings stayed in the build-time language after a switch
+     (user report 2026-11-16). Repaint on language change — the
+     1 s lang-watch pattern from module 68; the pick tile's title
+     is re-read fresh (module 31 has already re-translated it). */
+  function repaintBand() {
+    var band = document.getElementById("streetBand");
+    if (!band || !band._sbTile) return;
+    var src = band._sbTile.querySelector("h2");
+    var tEl = band.querySelector(".sb-title");
+    if (src && tEl && tEl.textContent !== src.textContent) tEl.textContent = src.textContent;
+    var rEl = band.querySelector(".sb-reason");
+    if (rEl) rEl.textContent = L(band._sbReasonKey || "bandReasonNew");
+    var go = band.querySelector(".sb-go");
+    if (go) go.textContent = L("bandPlay");
+  }
+  var bandLangSeen = lang();
+  setInterval(function () {
+    var l = lang();
+    if (l !== bandLangSeen) { bandLangSeen = l; repaintBand(); }
+  }, 1000);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", buildBand);
   else buildBand();
   setTimeout(buildBand, 1200);
@@ -73129,6 +73331,7 @@ window.__BN_VIEW__ = {
   var STR = {
     qr_title: { ja: "QRでつなぐ", en: "Pair with QR", ko: "QR로 연결", zh: "扫码连接", zht: "透過QR連線", es: "Conectar con QR", fr: "Connexion via QR", de: "Mit QR verbinden", pt: "Conectar via QR", it: "Connetti tramite QR" },
     qr_note: { ja: "スマホのカメラで読み取ると、コードを打たずにリモコンがつながります", en: "Scan with your phone's camera to pair the remote without typing the code", ko: "스마트폰 카메라로 읽으면 코드를 입력하지 않아도 리모컨이 연결됩니다", zh: "使用手机摄像头扫描，无需输入代码即可连接遥控器", zht: "使用手機相機讀取，無需輸入代碼即可連線至遙控器", es: "Escanea con la cámara del teléfono para conectar el control remoto sin escribir códigos", fr: "Scannez avec l'appareil photo de votre smartphone pour connecter la télécommande sans saisir de code", de: "Mit der Smartphone-Kamera scannen, um die Fernbedienung ohne Code-Eingabe zu verbinden", pt: "Digitalize com a câmera do smartphone para conectar o controle remoto sem precisar digitar o código", it: "Scansiona con la fotocamera dello smartphone per collegare il telecomando senza digitare il codice" },
+    qr_code: { ja: "コード: {0}", en: "Code: {0}", ko: "코드: {0}", zh: "代码: {0}", zht: "代碼: {0}", es: "Código: {0}", fr: "Code : {0}", de: "Code: {0}", pt: "Código: {0}", it: "Codice: {0}" },
     su_title: { ja: "セットアップ共有", en: "Setup sharing", ko: "설정 공유", zh: "配置分享", zht: "設定分享", es: "Compartir configuración", fr: "Partage de configuration", de: "Setup teilen", pt: "Compartilhamento de configuração", it: "Condivisione configurazione" },
     su_desc: { ja: "いまの設定と装備中のコスメを、コピーできるテキストにします。別の端末で読み込むと、同じ見た目を再現できます（コイン残高は含まれません）。", en: "Turn your current settings and equipped cosmetics into copyable text. Import it on another device to recreate the same look (coin balances are never included).", ko: "현재 설정과 장착 중인 코스메틱을 복사 가능한 텍스트로 만듭니다. 다른 기기에서 불러오면 같은 모습을 재현할 수 있습니다(코인 잔액은 포함되지 않습니다).", zh: "将当前的设置和已装备的配件转换为可复制的文本。在其他设备上读取该文本，即可重现相同的外观（不包含硬币余额）。", zht: "將目前的設定與已裝備的化妝品轉為可複製的文字。在另一台裝置讀取即可重現相同外觀（不包含硬幣餘額）。", es: "Convierte los ajustes actuales y accesorios equipados en texto copiable. Al leerlo en otro dispositivo, puedes replicar la misma apariencia (no incluye el saldo de monedas).", fr: "Transformez vos paramètres actuels et vos accessoires équipés en un texte copiable. En important ce texte sur un autre appareil, vous pouvez reproduire la même configuration (le solde de pièces n'est pas inclus).", de: "Erstellt einen kopierbaren Text mit deinen aktuellen Einstellungen und ausgerüsteten Kosmetika. Auf einem anderen Gerät geladen, wird das Aussehen reproduziert (Münzstand nicht inbegriffen).", pt: "Transforma suas configurações atuais e cosméticos equipados em um texto copiável. Você pode reproduzir a mesma aparência em outro dispositivo (o saldo de moedas não é incluído).", it: "Trasforma le tue impostazioni attuali e l'equipaggiamento in un testo copiabile. Caricalo su un altro dispositivo per riprodurre lo stesso aspetto (il saldo monete non è incluso)." },
     su_exportBtn: { ja: "テキストをコピー", en: "Copy setup text", ko: "텍스트 복사", zh: "复制文本", zht: "複製文字", es: "Copiar texto", fr: "Copier le texte", de: "Text kopieren", pt: "Copiar texto", it: "Copia testo" },
@@ -73164,10 +73367,19 @@ window.__BN_VIEW__ = {
     "html[data-season=\"winter\"] .street-band{border-color:rgba(168,200,232,.55);box-shadow:0 6px 14px rgba(2,6,18,.35),0 0 20px rgba(168,200,232,.28)}",
     ".season-chip{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#eef1f8;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px;min-height:28px}",
     ".hub-qr{display:flex;gap:12px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.16)}",
-    ".hub-qr .hq-img{flex:none;width:118px;height:118px;border-radius:10px;overflow:hidden;background:#fff;line-height:0}",
+    ".hub-qr .hq-img{flex:none;width:176px;height:176px;border-radius:10px;overflow:hidden;background:#fff;line-height:0}",
     ".hub-qr .hq-img svg{width:100%;height:100%;display:block}",
     ".hub-qr .hq-t{font-weight:800;font-size:13.5px;color:#eef1f8}",
     ".hub-qr .hq-n{font-size:12px;color:#aeb9d4;margin-top:3px;line-height:1.5}",
+    ".hub-qr .hq-code{font-size:17px;font-weight:900;letter-spacing:.18em;margin-top:6px;color:#eef1f8}",
+    /* The QR block lives inside the hub home card, which is a LIGHT
+       cream card (#fffaf0): the dark-theme text colours above wash
+       out on it, so inside the card the block takes the card's own
+       palette (slate text, grey note, the big code's purple). */
+    "#hubHomeCard .hub-qr{border-top-color:rgba(31,41,55,.25)}",
+    "#hubHomeCard .hq-t{color:#374151}",
+    "#hubHomeCard .hq-n{color:#6b7280}",
+    "#hubHomeCard .hq-code{color:#7c3aed}",
     "#setupOverlay{position:fixed;inset:0;z-index:8700;background:rgba(4,6,12,.6);display:flex;justify-content:center;align-items:flex-start;padding:64px 14px 14px}",
     "#setupOverlay[hidden]{display:none}",
     "#setupPanel{background:#12172a;border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.55);width:min(430px,calc(100vw - 28px));max-height:calc(100vh - 92px);overflow-y:auto;padding:16px 18px 14px;color:#eef1f8}",
@@ -73549,7 +73761,7 @@ window.__BN_VIEW__ = {
   window.__qrEncode = qrEncode;
   window.__qrSVG = qrSVG;
   window.__qrSelfTest = function () {
-    var cases = ["A", "HELLO WORLD", "https://ronly8221.github.io/?rc=AB12", "x".repeat(80), "y".repeat(150), "z".repeat(213)];
+    var cases = ["A", "HELLO WORLD", "https://ronly8221.github.io/space-6.html?rc=AB12", "x".repeat(80), "y".repeat(150), "z".repeat(213)];
     var res = [];
     for (var i = 0; i < cases.length; i++) {
       try {
@@ -73565,9 +73777,17 @@ window.__BN_VIEW__ = {
 
   /* ---------------- remote QR pairing + ?rc= deep link ---------------- */
   var CODE_RE = /^[A-HJ-KM-NP-Z2-9]{4}$/;
-  function pairingURL(code) { return location.origin + location.pathname + "?rc=" + code; }
+  /* The QR must point at the PUBLIC build no matter where the
+     display side runs: in the Muse app the display's own address
+     is an app-internal URL a phone camera cannot open (user report
+     2026-11-16 「QRコード使えない」). Pairing itself is
+     origin-independent — display and phone meet at the PeerJS
+     broker under the code — and the GitHub build's remote view is
+     not host-gated, so the public address always lands the phone
+     in a working remote. */
+  function pairingURL(code) { return "https://ronly8221.github.io/space-6.html?rc=" + code; }
   window.__pairingURL = pairingURL;
-  var qrBlock = null, qrImgEl = null, qrTitleEl = null, qrNoteEl = null, qrShownCode = "", qrShownLang = "";
+  var qrBlock = null, qrImgEl = null, qrTitleEl = null, qrNoteEl = null, qrCodeEl = null, qrShownCode = "", qrShownLang = "";
   function currentDisplayCode() {
     try {
       var d = window.RetroRemoteDebug && window.RetroRemoteDebug.display;
@@ -73586,17 +73806,24 @@ window.__BN_VIEW__ = {
       qrBlock = document.createElement("div");
       qrBlock.className = "hub-qr";
       qrBlock.id = "hubQr";
-      qrBlock.innerHTML = '<div class="hq-img" id="hubQrImg"></div><div><div class="hq-t" id="hubQrTitle"></div><div class="hq-n" id="hubQrNote"></div></div>';
+      qrBlock.innerHTML = '<div class="hq-img" id="hubQrImg"></div><div><div class="hq-t" id="hubQrTitle"></div><div class="hq-n" id="hubQrNote"></div><div class="hq-code" id="hubQrCode"></div></div>';
       main.insertAdjacentElement("afterend", qrBlock);
       qrImgEl = qrBlock.querySelector("#hubQrImg");
       qrTitleEl = qrBlock.querySelector("#hubQrTitle");
       qrNoteEl = qrBlock.querySelector("#hubQrNote");
+      qrCodeEl = qrBlock.querySelector("#hubQrCode");
     }
     if (qrTitleEl && qrTitleEl.textContent !== L("qr_title")) qrTitleEl.textContent = L("qr_title");
     if (qrNoteEl && qrNoteEl.textContent !== L("qr_note")) qrNoteEl.textContent = L("qr_note");
     var code = currentDisplayCode();
     if (code && (code !== qrShownCode || lang() !== qrShownLang)) {
-      try { qrImgEl.innerHTML = qrSVG(pairingURL(code), 118); qrShownCode = code; qrShownLang = lang(); } catch (e) {}
+      try {
+        qrImgEl.innerHTML = qrSVG(pairingURL(code), 176);
+        /* Manual fallback sits WITH the QR block: if the scan
+           fails, the same 4-char code can be typed on the phone. */
+        if (qrCodeEl) qrCodeEl.textContent = Lf("qr_code", code);
+        qrShownCode = code; qrShownLang = lang();
+      } catch (e) {}
     }
   }
   setInterval(syncQr, 1000);
@@ -74359,7 +74586,7 @@ window.__BN_VIEW__ = {
       s.id = "chkStyles";
       s.textContent =
         "#checkersView{--acc:#a06a3f;--acc-d:#7c4f2a}" +
-        ".chk-wrap{position:relative;width:100%;max-width:640px;margin:0 auto}" +
+        ".chk-wrap{position:relative;flex:0 0 auto;width:100%;max-width:640px;margin:0 auto}" +
         ".chk-board,.bmp-chk-board{display:grid;grid-template-columns:repeat(8,1fr);gap:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35)}" +
         ".bmp-chk-board{max-width:440px}" +
         ".chk-cell{aspect-ratio:1;border:0;padding:0;position:relative;cursor:pointer;font-size:clamp(10px,4.2vw,24px);-webkit-tap-highlight-color:transparent}" +
@@ -75166,7 +75393,7 @@ window.__BN_VIEW__ = {
       s.id = "shgStyles";
       s.textContent =
         "#shogiView{--acc:#b07a2e;--acc-d:#8a5a1a}" +
-        ".shg-wrap{position:relative;width:100%;max-width:720px;margin:0 auto}" +
+        ".shg-wrap{position:relative;flex:0 0 auto;width:100%;max-width:720px;margin:0 auto}" +
         ".shg-board,.bmp-shg-board{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:100%;background:#8a5a2a;padding:6px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.35);box-sizing:border-box}" +
         ".bmp-shg-board{max-width:460px;margin:0 auto}" +
         ".shg-cell{aspect-ratio:1/1.06;border:0;padding:0;position:relative;cursor:pointer;background:#eec98a;font-size:clamp(9px,3.8vw,21px);-webkit-tap-highlight-color:transparent}" +
