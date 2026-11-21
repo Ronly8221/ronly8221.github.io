@@ -198,6 +198,9 @@
         flex: 0 0 auto; width: 64px; height: 64px; border-radius: 14px;
         display: flex; align-items: center; justify-content: center;
       }
+      /* BN-252 (owner, 2026-11-21): rebuilt lobby icons — the motif art
+         now fills the whole glyph frame; clip to the frame radius. */
+      .glyph-chk,.glyph-chaos,.glyph-ttt,.glyph-mns,.glyph-hk,.glyph-ap,.glyph-pcb,.glyph-kart,.glyph-stocks,.glyph-smd,.glyph-tnr,.glyph-rsh,.glyph-hol,.glyph-pat,.glyph-fish { overflow: hidden; }
       .glyph-chess { background: var(--chess-deep); border: 1px solid #24466b; color: #e8ecf3; font-size: 40px; line-height: 1; }
       .glyph-mj {
         background: #f5efe0; color: #b91c1c; font-size: 34px; font-weight: 900;
@@ -7122,7 +7125,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn gom" id="openGomoku">五目ならべで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="チェッカー" style="--i:16">
-              <div class="glyph glyph-chk" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#9e6a41"/><path d="M11 3h8v8h-8zM27 3h8v8h-8zM19 11h8v8h-8zM3 11h8v8H3zM11 19h8v8h-8zM27 19h8v8h-8zM19 27h8v8h-8zM3 27h8v8H3z" fill="#ecd2a0"/><circle cx="15" cy="23" r="3.4" fill="#26262e"/><circle cx="23" cy="15" r="3.4" fill="#f7f6f0" stroke="#c9c2ae"/></svg></div>
+              <div class="glyph glyph-chk" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#9e6a41"/><path d="M11 3h8v8h-8zM27 3h8v8h-8zM19 11h8v8h-8zM3 11h8v8H3zM11 19h8v8h-8zM27 19h8v8h-8zM19 27h8v8h-8zM3 27h8v8H3z" fill="#ecd2a0"/><circle cx="15" cy="23" r="3.4" fill="#26262e"/><circle cx="23" cy="15" r="3.4" fill="#f7f6f0" stroke="#c9c2ae"/></svg></div>
               <h2>チェッカー</h2>
               <p class="sub">取れる駒は必ず取れ、連鎖ジャンプ！</p>
               <span class="tile-count" data-count-for="checkers" hidden></span>
@@ -7136,14 +7139,14 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn sho" id="openShogi">将棋で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="合体カオスボード" style="--i:24">
-              <div class="glyph glyph-chaos" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#ecd9b0"/><path d="M11 3h8v8h-8zM27 3h8v8h-8zM19 11h8v8h-8zM3 11h8v8H3zM11 19h8v8h-8zM27 19h8v8h-8zM19 27h8v8h-8zM3 27h8v8H3z" fill="#a97a4f"/><text x="10" y="16" text-anchor="middle" font-size="11" fill="#26262e">♞</text><circle cx="27" cy="23" r="4.4" fill="#26262e"/><path d="M24.6 20.6l1.6 1.6M30.9 20.6l-1.6 1.6M27 19.4v2.2M27 24.4v2.2M23.4 23h2.2M28.4 23h2.2M24.6 25.4l1.6-1.6M30.9 25.4l-1.6-1.6" stroke="#e8e4da" stroke-width="1.1"/><path d="M6 31 q4-4 8 0 t8 0 t8 0" stroke="#65a30d" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></div>
+              <div class="glyph glyph-chaos" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#ecd9b0"/><path d="M11 3h8v8h-8zM27 3h8v8h-8zM19 11h8v8h-8zM3 11h8v8H3zM11 19h8v8h-8zM27 19h8v8h-8zM19 27h8v8h-8zM3 27h8v8H3z" fill="#a97a4f"/><text x="10" y="16" text-anchor="middle" font-size="11" fill="#26262e">♞</text><circle cx="27" cy="23" r="4.4" fill="#26262e"/><path d="M24.6 20.6l1.6 1.6M30.9 20.6l-1.6 1.6M27 19.4v2.2M27 24.4v2.2M23.4 23h2.2M28.4 23h2.2M24.6 25.4l1.6-1.6M30.9 25.4l-1.6-1.6" stroke="#e8e4da" stroke-width="1.1"/><path d="M6 31 q4-4 8 0 t8 0 t8 0" stroke="#65a30d" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></div>
               <h2>合体カオスボード</h2>
               <p class="sub">チェスの盤に地雷と蛇が侵入！</p>
               <span class="tile-count" data-count-for="chaosboard" hidden></span>
               <button type="button" class="play-btn chaos" id="openChaosboard">合体カオスボードで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="○×" style="--i:27">
-              <div class="glyph glyph-ttt" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#232c3a"/><path d="M13.7 5v28M24.3 5v28M5 13.7h28M5 24.3h28" stroke="rgba(245,239,224,.65)" stroke-width="1.3"/><circle cx="8.9" cy="8.9" r="3.1" fill="none" stroke="#f5efe0" stroke-width="1.7"/><path d="M16.4 16.4l5.2 5.2M21.6 16.4l-5.2 5.2" stroke="#eec25e" stroke-width="1.8" stroke-linecap="round"/><circle cx="29.1" cy="29.1" r="3.1" fill="none" stroke="#f5efe0" stroke-width="1.7"/></svg></div>
+              <div class="glyph glyph-ttt" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#232c3a"/><path d="M13.7 5v28M24.3 5v28M5 13.7h28M5 24.3h28" stroke="rgba(245,239,224,.65)" stroke-width="1.3"/><circle cx="8.9" cy="8.9" r="3.1" fill="none" stroke="#f5efe0" stroke-width="1.7"/><path d="M16.4 16.4l5.2 5.2M21.6 16.4l-5.2 5.2" stroke="#eec25e" stroke-width="1.8" stroke-linecap="round"/><circle cx="29.1" cy="29.1" r="3.1" fill="none" stroke="#f5efe0" stroke-width="1.7"/></svg></div>
               <h2>○×</h2>
               <p class="sub">3つ並べれば勝ち！永遠の○×</p>
               <span class="tile-count" data-count-for="tictactoe" hidden></span>
@@ -7162,7 +7165,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn rb" id="openRubik">ルービックキューブで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="マインスイーパー" style="--i:11">
-              <div class="glyph glyph-mns" aria-hidden="true" data-i18n-skip><svg class="gi" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5v30M5 20h30M9.4 9.4l21.2 21.2M30.6 9.4L9.4 30.6" stroke="#33304a" stroke-width="3.4" stroke-linecap="round"/><circle cx="20" cy="20" r="8.6" fill="#33304a"/><circle cx="16.8" cy="16.6" r="2.5" fill="#ffffff" opacity="0.92"/></svg></div>
+              <div class="glyph glyph-mns" aria-hidden="true" data-i18n-skip><svg class="gi" width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5v30M5 20h30M9.4 9.4l21.2 21.2M30.6 9.4L9.4 30.6" stroke="#33304a" stroke-width="3.4" stroke-linecap="round"/><circle cx="20" cy="20" r="8.6" fill="#33304a"/><circle cx="16.8" cy="16.6" r="2.5" fill="#ffffff" opacity="0.92"/></svg></div>
               <h2>マインスイーパー</h2>
               <p class="sub">地雷を避けてマスを開け！</p>
               <span class="tile-count" data-count-for="mines" hidden></span>
@@ -7190,14 +7193,14 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn sdk" id="openSudoku">数独で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="ひとカキ" style="--i:25">
-              <div class="glyph glyph-hk" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#1b2432"/><path d="M10 10 H28 V19 H10 V28 H28" stroke="#e9c46a" stroke-width="2.2" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="10" cy="10" r="3" fill="none" stroke="#e9c46a" stroke-width="1.8"/><circle cx="10" cy="10" r="1.2" fill="#e9c46a"/><circle cx="28" cy="28" r="1.6" fill="#e9c46a"/></svg></div>
+              <div class="glyph glyph-hk" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#1b2432"/><path d="M10 10 H28 V19 H10 V28 H28" stroke="#e9c46a" stroke-width="2.2" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="10" cy="10" r="3" fill="none" stroke="#e9c46a" stroke-width="1.8"/><circle cx="10" cy="10" r="1.2" fill="#e9c46a"/><circle cx="28" cy="28" r="1.6" fill="#e9c46a"/></svg></div>
               <h2>ひとカキ</h2>
               <p class="sub">一筆書きで全マスを埋める！</p>
               <span class="tile-count" data-count-for="hitokaki" hidden></span>
               <button type="button" class="play-btn hk" id="openHitokaki">ひとカキで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="アローパズル" style="--i:26">
-              <div class="glyph glyph-ap" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#1b2432"/><rect x="8" y="8" width="10" height="10" fill="#2c3852"/><rect x="8" y="20" width="10" height="10" fill="#2c3852"/><rect x="20" y="20" width="10" height="10" fill="#2c3852"/><path d="M23 13 h6 M26 8 l5 5 -5 5" stroke="#e9c46a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="glyph glyph-ap" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#1b2432"/><rect x="8" y="8" width="10" height="10" fill="#2c3852"/><rect x="8" y="20" width="10" height="10" fill="#2c3852"/><rect x="20" y="20" width="10" height="10" fill="#2c3852"/><path d="M23 13 h6 M26 8 l5 5 -5 5" stroke="#e9c46a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <h2>アローパズル</h2>
               <p class="sub">矢印を順番に解放する脳トレ！</p>
               <span class="tile-count" data-count-for="arrowpuzzle" hidden></span>
@@ -7265,63 +7268,63 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <button type="button" class="play-btn pool" id="openBilliards">ビリヤードで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="釣り図鑑" style="--i:21">
-              <div class="glyph glyph-fish" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><path d="M4 10 Q13 5 19 10 T34 10" stroke="#57a8d8" stroke-width="2" fill="none"/><g class="fish-swim"><path d="M8 24c3.5-4 9-4 12.5 0-3.5 4-9 4-12.5 0Z" fill="#f59e0b"/><path d="M20 24l5-3.4v6.8Z" fill="#e07f13"/><circle cx="12" cy="23" r="1.1" fill="#26262e"/></g><path d="M30 10v6" stroke="#8a84a0" stroke-width="1.4"/><circle cx="30" cy="18" r="1.8" fill="#e0483e"/></svg></div>
+              <div class="glyph glyph-fish" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><path d="M4 10 Q13 5 19 10 T34 10" stroke="#57a8d8" stroke-width="2" fill="none"/><g class="fish-swim" transform="translate(-4.9,-13.8) scale(1.45)"><path d="M8 24c3.5-4 9-4 12.5 0-3.5 4-9 4-12.5 0Z" fill="#f59e0b"/><path d="M20 24l5-3.4v6.8Z" fill="#e07f13"/><circle cx="12" cy="23" r="1.1" fill="#26262e"/></g><path d="M30 10v6" stroke="#8a84a0" stroke-width="1.4"/><circle cx="30" cy="18" r="1.8" fill="#e0483e"/></svg></div>
               <h2>釣り図鑑</h2>
               <p class="sub">湖・川・海で全72種を集めろ！</p>
               <span class="tile-count" data-count-for="fishing" hidden></span>
               <button type="button" class="play-btn fish" id="openFishing">釣り図鑑で遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="基盤ファーム" style="--i:22">
-              <div class="glyph glyph-pcb" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#0e5c3a"/><path d="M3 12h9M3 26h7M35 20h-8M26 35v-7M12 3v6" stroke="#c8b06a" stroke-width="1.6"/><circle cx="8" cy="20" r="1.7" fill="#c8b06a"/><circle cx="30" cy="29" r="1.7" fill="#c8b06a"/><rect x="13" y="13" width="12" height="12" rx="1.5" fill="#123528" stroke="#c8b06a" stroke-width="1.2"/><path d="M16 13v-4M22 13V9M16 29v-4M22 29v-4M13 16H9M13 22H9M29 16h-4M29 22h-4" stroke="#c8b06a" stroke-width="1.6"/><circle class="bd-led" cx="29" cy="9" r="2.6" fill="#ff4040"/></svg></div>
+              <div class="glyph glyph-pcb" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#0e5c3a"/><path d="M3 12h9M3 26h7M35 20h-8M26 35v-7M12 3v6" stroke="#c8b06a" stroke-width="1.6"/><circle cx="8" cy="20" r="1.7" fill="#c8b06a"/><circle cx="30" cy="29" r="1.7" fill="#c8b06a"/><rect x="13" y="13" width="12" height="12" rx="1.5" fill="#123528" stroke="#c8b06a" stroke-width="1.2"/><path d="M16 13v-4M22 13V9M16 29v-4M22 29v-4M13 16H9M13 22H9M29 16h-4M29 22h-4" stroke="#c8b06a" stroke-width="1.6"/><circle class="bd-led" cx="29" cy="9" r="2.6" fill="#ff4040"/></svg></div>
               <h2>基盤ファーム</h2>
               <p class="sub">部品を実装して育てる1日スコアアタック！</p>
               <span class="tile-count" data-count-for="pcbfarm" hidden></span>
               <button type="button" class="play-btn pcb" id="openPcbfarm">基盤ファームで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="カートGP" style="--i:23">
-              <div class="glyph glyph-kart" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="26" width="32" height="4" rx="2" fill="#3a3f4c"/><rect x="7" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><rect x="15" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><rect x="23" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><circle cx="11" cy="24" r="4.4" fill="#26262e"/><circle cx="28" cy="24" r="4.4" fill="#26262e"/><path d="M8 22 L13 12 H25 L30 22 Z" fill="#e0483e"/><circle cx="19" cy="10" r="4.6" fill="#ffd166"/><rect x="6" y="4" width="3" height="10" fill="#8a8f9c"/><path d="M9 4 h7 v3 h-7 z M9 7 h7 v3 h-7 z" fill="#f2f2f2"/><path d="M9 4 h3.5 v3 H9 z M12.5 7 h3.5 v3 h-3.5 z" fill="#14141a"/></svg></div>
+              <div class="glyph glyph-kart" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#a8c8e0"/><rect x="0" y="30" width="38" height="8" fill="#69a35c"/><rect x="0" y="26" width="38" height="5" rx="2" fill="#3a3f4c"/><rect x="7" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><rect x="15" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><rect x="23" y="27.2" width="4" height="1.6" fill="#f2f2f2"/><circle cx="11" cy="24" r="4.4" fill="#26262e"/><circle cx="28" cy="24" r="4.4" fill="#26262e"/><path d="M8 22 L13 12 H25 L30 22 Z" fill="#e0483e"/><circle cx="19" cy="10" r="4.6" fill="#ffd166"/><rect x="6" y="4" width="3" height="10" fill="#8a8f9c"/><path d="M9 4 h7 v3 h-7 z M9 7 h7 v3 h-7 z" fill="#f2f2f2"/><path d="M9 4 h3.5 v3 H9 z M12.5 7 h3.5 v3 h-3.5 z" fill="#14141a"/></svg></div>
               <h2>カートGP</h2>
               <p class="sub">疑似3Dで駆ける8台のグランプリ！</p>
               <span class="tile-count" data-count-for="kartgp" hidden></span>
               <button type="button" class="play-btn kart" id="openKartgp">カートGPで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="マーケット" style="--i:24">
-              <div class="glyph glyph-stocks" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#0d2b1d"/><rect x="7.5" y="23" width="5" height="8" rx="1" fill="#2ca44c"/><rect x="14.5" y="19" width="5" height="12" rx="1" fill="#e5484d"/><rect x="21.5" y="14" width="5" height="17" rx="1" fill="#2ca44c"/><path d="M6.5 26.5 L22.5 10.5 L18.8 9.8 L29.5 6.5 L30.2 17.2 L26.8 13.5 L11 29.5 Z" fill="#3ddc84"/></svg></div>
+              <div class="glyph glyph-stocks" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#0d2b1d"/><rect x="7.5" y="23" width="5" height="8" rx="1" fill="#2ca44c"/><rect x="14.5" y="19" width="5" height="12" rx="1" fill="#e5484d"/><rect x="21.5" y="14" width="5" height="17" rx="1" fill="#2ca44c"/><path d="M6.5 26.5 L22.5 10.5 L18.8 9.8 L29.5 6.5 L30.2 17.2 L26.8 13.5 L11 29.5 Z" fill="#3ddc84"/></svg></div>
               <h2>マーケット</h2>
               <p class="sub">株・FX・暗号資産まで売買できる総合ターミナル！</p>
               <span class="tile-count" data-count-for="stocks" hidden></span>
               <button type="button" class="play-btn stk" id="openStocks">マーケットで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="スマッシュダウン" style="--i:28">
-              <div class="glyph glyph-smd" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#141a2c"/><ellipse cx="19" cy="24" rx="13" ry="4.6" fill="none" stroke="#5a6a88" stroke-width="3.4"/><path d="M6.5 22.6 L13 24.4 L10.8 27.4" fill="none" stroke="#c8b06a" stroke-width="1.3"/><path d="M25 20.2 l2.4 3.4 M29.5 21.5 l-1.8 3" stroke="#e05252" stroke-width="2.6"/><circle cx="19" cy="12.5" r="5.4" fill="#f2c53d"/><circle cx="17.2" cy="10.6" r="1.9" fill="#fff3c4"/><path d="M15 30.5 l2.2 2.6 M24 30.8 l-1.4 2.8" stroke="#5a6a88" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <div class="glyph glyph-smd" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#141a2c"/><ellipse cx="19" cy="24" rx="13" ry="4.6" fill="none" stroke="#5a6a88" stroke-width="3.4"/><path d="M6.5 22.6 L13 24.4 L10.8 27.4" fill="none" stroke="#c8b06a" stroke-width="1.3"/><path d="M25 20.2 l2.4 3.4 M29.5 21.5 l-1.8 3" stroke="#e05252" stroke-width="2.6"/><circle cx="19" cy="12.5" r="5.4" fill="#f2c53d"/><circle cx="17.2" cy="10.6" r="1.9" fill="#fff3c4"/><path d="M15 30.5 l2.2 2.6 M24 30.8 l-1.4 2.8" stroke="#5a6a88" stroke-width="1.6" stroke-linecap="round"/></svg></div>
               <h2>スマッシュダウン</h2>
               <p class="sub">タップで砕け！落下タワーを駆け下りろ！</p>
               <span class="tile-count" data-count-for="smashdown" hidden></span>
               <button type="button" class="play-btn smd" id="openSmashdown">スマッシュダウンで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="トンネルラッシュ" style="--i:29">
-              <div class="glyph glyph-tnr" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#0a1020"/><polygon points="19,7 29,12.5 29,25.5 19,31 9,25.5 9,12.5" fill="none" stroke="#c8b06a" stroke-width="1.6"/><polygon points="19,12 25,15.5 25,22.5 19,26 13,22.5 13,15.5" fill="none" stroke="#8a744a" stroke-width="1.3"/><circle cx="19" cy="19" r="2.6" fill="#ffe89a"/><rect x="24.5" y="9" width="6" height="6" fill="#232c44" stroke="#e05252" stroke-width="1.4"/></svg></div>
+              <div class="glyph glyph-tnr" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#0a1020"/><polygon points="19,7 29,12.5 29,25.5 19,31 9,25.5 9,12.5" fill="none" stroke="#c8b06a" stroke-width="1.6"/><polygon points="19,12 25,15.5 25,22.5 19,26 13,22.5 13,15.5" fill="none" stroke="#8a744a" stroke-width="1.3"/><circle cx="19" cy="19" r="2.6" fill="#ffe89a"/><rect x="24.5" y="9" width="6" height="6" fill="#232c44" stroke="#e05252" stroke-width="1.4"/></svg></div>
               <h2>トンネルラッシュ</h2>
               <p class="sub">トンネルを駆け抜けろ！ブロックをすり抜けろ！</p>
               <span class="tile-count" data-count-for="tunnelrush" hidden></span>
               <button type="button" class="play-btn tnr" id="openTunnelrush">トンネルラッシュで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="ラッシュアーミー" style="--i:30">
-              <div class="glyph glyph-rsh" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#101736"/><path d="M7 12 h24 M19 12 v6" stroke="#c8b06a" stroke-width="2"/><rect x="7" y="6.5" width="10" height="11" fill="rgba(242,234,216,.14)" stroke="#c8b06a" stroke-width="1.2"/><rect x="21" y="6.5" width="10" height="11" fill="rgba(242,234,216,.14)" stroke="#c8b06a" stroke-width="1.2"/><text x="12" y="15" font-size="7.5" fill="#f2ead8" text-anchor="middle" font-weight="800">+9</text><text x="26" y="15" font-size="7.5" fill="#ffd97a" text-anchor="middle" font-weight="800">×2</text><circle cx="13" cy="25" r="3" fill="#f2ead8"/><circle cx="19" cy="27.5" r="3" fill="#f2ead8"/><circle cx="25" cy="25" r="3" fill="#f2ead8"/><circle cx="16" cy="31.5" r="2.6" fill="#e8dfc8"/><circle cx="22" cy="31.5" r="2.6" fill="#e8dfc8"/></svg></div>
+              <div class="glyph glyph-rsh" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#101736"/><path d="M7 12 h24 M19 12 v6" stroke="#c8b06a" stroke-width="2"/><rect x="7" y="6.5" width="10" height="11" fill="rgba(242,234,216,.14)" stroke="#c8b06a" stroke-width="1.2"/><rect x="21" y="6.5" width="10" height="11" fill="rgba(242,234,216,.14)" stroke="#c8b06a" stroke-width="1.2"/><text x="12" y="15" font-size="7.5" fill="#f2ead8" text-anchor="middle" font-weight="800">+9</text><text x="26" y="15" font-size="7.5" fill="#ffd97a" text-anchor="middle" font-weight="800">×2</text><circle cx="13" cy="25" r="3" fill="#f2ead8"/><circle cx="19" cy="27.5" r="3" fill="#f2ead8"/><circle cx="25" cy="25" r="3" fill="#f2ead8"/><circle cx="16" cy="31.5" r="2.6" fill="#e8dfc8"/><circle cx="22" cy="31.5" r="2.6" fill="#e8dfc8"/></svg></div>
               <h2>ラッシュアーミー</h2>
               <p class="sub">ゲートを選んで軍団を増やせ！</p>
               <span class="tile-count" data-count-for="rusharmy" hidden></span>
               <button type="button" class="play-btn rsh" id="openRushArmy">ラッシュアーミーで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="ホールズ" style="--i:31">
-              <div class="glyph glyph-hol" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#171512"/><path d="M6 27 h26 M6 12 h26" stroke="rgba(200,176,106,.35)" stroke-width="1.2"/><g class="hol-bldg"><rect x="24" y="8" width="7" height="10" fill="#2c3247" stroke="rgba(200,176,106,.5)" stroke-width="0.8"/><rect x="26" y="10.5" width="1.8" height="1.8" fill="#ffd97a"/><rect x="28.6" y="13.5" width="1.8" height="1.8" fill="#ffd97a"/></g><circle cx="15" cy="22" r="8" fill="#000" stroke="rgba(230,238,255,.8)" stroke-width="1.4"/><path d="M9.5 18.5 A6.4 6.4 0 0 1 15 15.8" fill="none" stroke="rgba(120,130,160,.6)" stroke-width="1.3"/></svg></div>
+              <div class="glyph glyph-hol" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#171512"/><path d="M6 27 h26 M6 12 h26" stroke="rgba(200,176,106,.35)" stroke-width="1.2"/><g class="hol-bldg"><rect x="24" y="8" width="7" height="10" fill="#2c3247" stroke="rgba(200,176,106,.5)" stroke-width="0.8"/><rect x="26" y="10.5" width="1.8" height="1.8" fill="#ffd97a"/><rect x="28.6" y="13.5" width="1.8" height="1.8" fill="#ffd97a"/></g><circle cx="15" cy="22" r="8" fill="#000" stroke="rgba(230,238,255,.8)" stroke-width="1.4"/><path d="M9.5 18.5 A6.4 6.4 0 0 1 15 15.8" fill="none" stroke="rgba(120,130,160,.6)" stroke-width="1.3"/></svg></div>
               <h2>ホールズ</h2>
               <p class="sub">街を飲み込んで大きく育て！</p>
               <span class="tile-count" data-count-for="holes" hidden></span>
               <button type="button" class="play-btn hol" id="openHoles">ホールズで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="パタピン" style="--i:32">
-              <div class="glyph glyph-pat" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="3" y="3" width="32" height="32" rx="4" fill="#10131c"/><path d="M7 6 v24 M31 6 v24" stroke="rgba(200,176,106,.5)" stroke-width="1.4"/><circle cx="19" cy="13" r="4.6" fill="#f7f2df"/><path d="M15.8 10.6 A3.4 3.4 0 0 1 21 9.8" fill="none" stroke="#c8a24a" stroke-width="1.3"/><rect x="9" y="27" width="20" height="3.6" rx="1.8" fill="#c8a24a"/><rect x="15.5" y="27" width="7" height="3.6" fill="#f2ead8"/><path d="M6 33.4 h26" stroke="#2e6e4a" stroke-width="1.8"/></svg></div>
+              <div class="glyph glyph-pat" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#10131c"/><path d="M7 6 v24 M31 6 v24" stroke="rgba(200,176,106,.5)" stroke-width="1.4"/><circle cx="19" cy="13" r="4.6" fill="#f7f2df"/><path d="M15.8 10.6 A3.4 3.4 0 0 1 21 9.8" fill="none" stroke="#c8a24a" stroke-width="1.3"/><rect x="9" y="27" width="20" height="3.6" rx="1.8" fill="#c8a24a"/><rect x="15.5" y="27" width="7" height="3.6" fill="#f2ead8"/><path d="M6 33.4 h26" stroke="#2e6e4a" stroke-width="1.8"/></svg></div>
               <h2>パタピン</h2>
               <p class="sub">バーを動かしてボールを上へ！</p>
               <span class="tile-count" data-count-for="patapin" hidden></span>
@@ -11995,6 +11998,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             </section>
             <div id="pfRoot"></div>
             <div id="pfExpRoot"></div>
+            <!-- BN-253 (owner, 2026-11-21): the motivation cards
+                 (daily / one-away / growth / collection / competition)
+                 live in the profile now — the lobby is tiles only. -->
+            <div id="profileMotSlot"></div>
             <!-- BN-201: chess growth dashboard mount (module 92
                  renders the logger + drill cards in here). -->
             <div id="pfChessRoot"></div>
@@ -61228,6 +61235,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
 .bench-row .bench-tag.done{background:#c9f2d8;color:#14532d}
 .bench-row .bench-tag.one{background:#ffe98a;color:#7a5c14}
 #mascotDock .masc-bench{position:absolute;left:-46px;bottom:0;width:52px;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* BN-253 (owner, 2026-11-21): the lobby mascot is a planet-lobby
+   entrance now — pointer cursor + a small press squash as the cue. */
+#mascotDock .masc-inner{cursor:pointer;transition:transform .12s ease}
+#mascotDock .masc-inner:active{transform:scale(.93)}
 #mascotDock .masc-bench svg{width:52px;height:44px;display:block;filter:drop-shadow(0 3px 4px rgba(61,44,90,.3))}
 #mascotDock .masc-bench .mb-led{transition:fill .2s}
 #mascotDock.soldering .masc-bench .mb-led{animation:mbBlink .5s steps(2) infinite}
@@ -62235,12 +62246,18 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
        plus a short chirp on his own pluck voice. */
     var innerTap = dock.querySelector(".masc-inner");
     if (innerTap) innerTap.addEventListener("click", function () {
-      var acts = ["wave", "jump", "dance", "thumbsup", "coins"];
-      mascPlay(acts[Math.floor(Math.random() * acts.length)]);
-      pluckVoice(740 + Math.random() * 220, 0, 0.22); pluckVoice(1180, 0.09, 0.18);
-      /* BN-196: the equipped character sometimes introduces
-         itself with its own personality line. */
-      if (Math.random() < 0.35) { var ln = castLine(equippedMascotId()); if (ln && equippedMascotId() !== "masc-raccoon") mascotSayText(ln, 1900); else mascotSay("hello", 1300); }
+      /* BN-253 (owner, 2026-11-21): tapping the lobby mascot flies
+         to the planet lobby, through the exact same path as the
+         display-mode panel's planet option (its button click, so
+         persistence in arcade-lobby-layout-v1 is identical). The
+         wave + chirp stay as the press feedback; the old random
+         one-shot / speech on tap is retired so the tap has exactly
+         one meaning. The bench keeps its own tap (stopPropagation
+         above), and idle greetings are untouched. */
+      mascPlay("wave");
+      pluckVoice(740, 0, 0.22); pluckVoice(1180, 0.09, 0.18);
+      var pb = document.querySelector('[data-lobby-opt="planet"]');
+      if (pb) pb.click();
     });
     mascTimer = setInterval(function () {
       if (!mascEl) return;
@@ -75737,7 +75754,6 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       ".mgc-state.ahead{color:#6fe3a1;font-weight:700}.mgc-state.behind{color:#f08a8a}.mgc-state.tied{color:#ffd97a}",
       "#metaProfileRoot .meta-card{margin-top:10px}",
       ".lobby-tools{margin:0 0 10px;background:rgba(9,13,26,.62);border:1px solid #2c3d68;border-radius:13px;padding:8px 10px;color:#e8ecf6;min-width:0}",
-      ".lobby-tools .lt-search{width:100%;box-sizing:border-box;background:#0d1425;color:#e8ecf6;border:1px solid #2c3d68;border-radius:10px;padding:8px 12px;font-size:14px}",
       ".lt-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}",
       /* BN-197 compaction: the painted pill is 32px tall (inset ::before)
          while the button box keeps a 40px tap floor — visual and tap
@@ -76192,7 +76208,6 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       var grid = document.getElementById("tileGrid");
       if (!grid || document.getElementById("lobbyTools")) return;
       var tools = el('<div class="lobby-tools" id="lobbyTools">' +
-        '<input type="search" class="lt-search" id="ltSearch" placeholder="' + esc(T("lobbySearch")) + '" autocomplete="off">' +
         '<div class="lt-chips" id="ltChips"></div>' +
         '<div class="lt-row" id="ltRow"></div>' +
         '<div class="lt-today" id="ltToday" style="display:none"></div>' +
@@ -76231,19 +76246,12 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
         });
         chips.appendChild(b);
       });
-      var search = tools.querySelector("#ltSearch");
-      search.addEventListener("input", function () { lobbyState.q = search.value.trim().toLowerCase(); applyLobbyFilter(); });
-      /* Planet Lobby P2 (DESIGN §3.4): in planet mode, Enter on the
-         header search raises a beacon to the first matching title
-         instead of only filtering the hidden grid. */
-      search.addEventListener("keydown", function (ev) {
-        if (ev.key !== "Enter") return;
-        try {
-          if (window.__planet && window.__planet.mode === "planet" && window.__planet.searchBeacon) {
-            if (window.__planet.searchBeacon(search.value)) { ev.preventDefault(); search.blur(); }
-          }
-        } catch (e) {}
-      });
+      /* BN-251 (owner, 2026-11-21): the title search moved out of
+         the lobby tools into the Settings panel (module 64). The
+         planet lobby keeps its own in-planet search input
+         (#planetSearchInput, module 91) — untouched. lobbyState.q
+         stays in the filter state but nothing sets it now, so the
+         lobby filter is genre/favourites only. */
       var row = tools.querySelector("#ltRow");
       var lastKey = null;
       try { lastKey = localStorage.getItem("arcade-last-played"); } catch (e) {}
@@ -76336,8 +76344,6 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       var tools = document.getElementById("lobbyTools");
       if (!tools) return;
       var grid = document.getElementById("tileGrid");
-      var search = tools.querySelector("#ltSearch");
-      if (search) search.setAttribute("placeholder", T("lobbySearch"));
       var noMatch = tools.querySelector("#ltNoMatch");
       if (noMatch) noMatch.textContent = T("noMatch");
       var allChip = tools.querySelector('[data-lt-chip="all"]');
@@ -80050,6 +80056,10 @@ window.__BN_VIEW__ = {
     /* Planet Lobby P2: settings parity for the lobby display mode
        (DESIGN §1) — the same five modes as the lobby panel. */
     lobbyDisplay: { ja: "ロビーの表示", en: "Lobby Display", ko: "로비 표시", zh: "大厅显示", zht: "大廳顯示", es: "Vista del lobby", fr: "Affichage du hall", de: "Lobby-Anzeige", pt: "Exibição do lobby", it: "Vista della lobby" },
+    /* BN-251 (owner, 2026-11-21): the title search moved from the
+       lobby tools into this panel — same strings as the lobby's. */
+    titleSearch: { ja: "タイトル検索", en: "Search titles", ko: "타이틀 검색", zh: "搜索标题", zht: "搜尋標題", es: "Buscar títulos", fr: "Rechercher des titres", de: "Titel suchen", pt: "Buscar títulos", it: "Cerca titoli" },
+    searchNoMatch: { ja: "見つかりませんでした", en: "No titles match", ko: "일치하는 타이틀이 없습니다", zh: "没有匹配的游戏", zht: "沒有符合的標題", es: "No hay coincidencias", fr: "Aucun titre ne correspond", de: "Keine Titel gefunden", pt: "Nenhum título corresponde", it: "Nessun titolo corrispondente" },
     dispGrid: { ja: "グリッド", en: "Grid", ko: "그리드", zh: "网格", zht: "網格", es: "Cuadrícula", fr: "Grille", de: "Raster", pt: "Grade", it: "Griglia" },
     dispStandard: { ja: "標準", en: "Standard", ko: "표준", zh: "标准", zht: "標準", es: "Estándar", fr: "Standard", de: "Standard", pt: "Padrão", it: "Standard" },
     dispCompact: { ja: "コンパクト", en: "Compact", ko: "컴팩트", zh: "紧凑", zht: "緊湊", es: "Compacto", fr: "Compact", de: "Kompakt", pt: "Compacto", it: "Compatto" },
@@ -80128,6 +80138,13 @@ window.__BN_VIEW__ = {
     ".set-mute{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#e8ecf4;border-radius:10px;min-width:44px;height:44px;font-size:17px;cursor:pointer;flex:none}",
     ".set-vol{flex:1;accent-color:#e9b93c;height:44px;cursor:pointer}",
     ".set-val{font-variant-numeric:tabular-nums;font-size:14px;min-width:44px;text-align:right}",
+    ".set-search{width:100%;box-sizing:border-box;background:#0d1425;color:#e8ecf6;border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:9px 12px;font-size:14px;min-height:44px}",
+    ".set-search-results{display:flex;flex-direction:column;gap:2px;margin-top:8px}",
+    ".set-search-hit{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:0;border-radius:10px;padding:8px 10px;cursor:pointer;min-height:48px;color:#eef1f8;text-align:left}",
+    ".set-search-hit:active{background:rgba(255,255,255,.13)}",
+    ".set-search-hit .hit-t{font-size:14.5px;font-weight:600;display:block}",
+    ".set-search-hit .hit-s{font-size:12px;color:#9aa3b8;display:block}",
+    ".set-search-none{font-size:12.5px;color:#aeb6c8;margin:8px 0 0}",
     ".set-note{font-size:12px;line-height:1.55;color:#aeb6c8;margin:10px 0 2px}",
     ".set-bus-note{font-size:12px;line-height:1.55;color:#aeb6c8;margin:10px 0 2px}",
     "@media (max-width:560px){#settingsOverlay{padding:56px 10px 10px;justify-content:center}}"
@@ -80139,6 +80156,7 @@ window.__BN_VIEW__ = {
 
   /* ---------------- panel ---------------- */
   var overlay = null, slider = null, valEl = null, muteBtn = null, titleEl = null, labelEl = null, noteEl = null, closeBtn = null;
+  var renderSearchResultsFn = null;
   var swatches = null, textSegBtns = null, vibSegBtns = null, flashBtn = null, colorBtn = null, mascotBtn = null;
   function buildPanel() {
     if (overlay) return;
@@ -80151,6 +80169,10 @@ window.__BN_VIEW__ = {
       '<div id="settingsPanel">' +
       '<h2><span aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="7" cy="17" r="2" fill="currentColor" stroke="none"/></svg></span><span class="set-title"></span>' +
       '<button type="button" class="set-close" aria-label="Close">✕</button></h2>' +
+      '<div class="set-sec" style="margin-top:14px"><div class="set-sec-t" id="setSearchT"></div>' +
+      '<input type="search" class="set-search" id="setSearch" autocomplete="off">' +
+      '<div class="set-search-results" id="setSearchResults"></div>' +
+      '<p class="set-search-none" id="setSearchNone" style="display:none"></p></div>' +
       '<div class="set-row"><label class="set-label" for="setVolRange"></label>' +
       '<button type="button" class="set-mute" id="setMuteBtn" aria-label="Mute"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z"/><path d="M15.5 9.8a3.6 3.6 0 0 1 0 4.4"/><path d="M18 7.2a7.4 7.4 0 0 1 0 9.6"/></svg></button>' +
       '<input type="range" class="set-vol" id="setVolRange" min="0" max="100" step="1" value="0">' +
@@ -80231,6 +80253,61 @@ window.__BN_VIEW__ = {
     overlay.querySelectorAll("input[data-bus]").forEach(function (inp) {
       inp.addEventListener("input", function () { setBus(inp.getAttribute("data-bus"), parseInt(inp.value, 10) || 0); });
     });
+    /* BN-251: title search (moved from the lobby tools). Matching
+       is the lobby filter's own haystack — tile title + key + sub,
+       case-insensitive substring — over the same tile grid; a tap
+       on a result closes the panel and launches the title through
+       the shell's view opener (the growth dashboard's launch path),
+       falling back to the tile's own play button. */
+    var searchInp = overlay.querySelector("#setSearch");
+    var searchRes = overlay.querySelector("#setSearchResults");
+    var searchNone = overlay.querySelector("#setSearchNone");
+    function searchTileKey(tile) {
+      var c = tile.querySelector("[data-count-for]");
+      if (c) return c.getAttribute("data-count-for");
+      var b = tile.querySelector(".play-btn");
+      return b ? b.id.replace(/^open/, "").toLowerCase() : "";
+    }
+    function launchFromSearch(key) {
+      closePanel();
+      try { if (typeof window.__openArcadeView === "function") { window.__openArcadeView(key); return; } } catch (e) {}
+      var grid = document.getElementById("tileGrid"); if (!grid) return;
+      var tiles = grid.querySelectorAll(".game-tile");
+      for (var i = 0; i < tiles.length; i++) {
+        if (searchTileKey(tiles[i]) === key) { var b = tiles[i].querySelector(".play-btn"); if (b) b.click(); return; }
+      }
+    }
+    renderSearchResultsFn = function () {
+      if (!searchRes || !searchInp) return;
+      var q = (searchInp.value || "").trim().toLowerCase();
+      searchRes.innerHTML = "";
+      if (!q) { searchNone.style.display = "none"; return; }
+      var grid = document.getElementById("tileGrid");
+      var hits = 0;
+      if (grid) {
+        grid.querySelectorAll(".game-tile").forEach(function (tile) {
+          var key = searchTileKey(tile); if (!key) return;
+          var h = tile.querySelector("h2"); var title = h ? h.textContent.trim() : "";
+          var sub = ((tile.querySelector(".sub") || {}).textContent || "").trim();
+          var hay = (title + " " + key + " " + sub).toLowerCase();
+          if (hay.indexOf(q) < 0) return;
+          hits++;
+          var btn = document.createElement("button");
+          btn.type = "button"; btn.className = "set-search-hit";
+          btn.setAttribute("data-search-key", key);
+          var wrap = document.createElement("span");
+          var tB = document.createElement("span"); tB.className = "hit-t"; tB.textContent = title;
+          wrap.appendChild(tB);
+          if (sub) { var sS = document.createElement("span"); sS.className = "hit-s"; sS.textContent = sub; wrap.appendChild(sS); }
+          btn.appendChild(wrap);
+          btn.addEventListener("click", function () { launchFromSearch(key); });
+          searchRes.appendChild(btn);
+        });
+      }
+      searchNone.textContent = L("searchNoMatch");
+      searchNone.style.display = hits ? "none" : "";
+    };
+    searchInp.addEventListener("input", renderSearchResultsFn);
     closeBtn.addEventListener("click", closePanel);
     overlay.addEventListener("click", function (ev) { if (ev.target === overlay) closePanel(); });
     document.addEventListener("keydown", function (ev) {
@@ -80247,6 +80324,9 @@ window.__BN_VIEW__ = {
     muteBtn.setAttribute("aria-label", state.muted ? L("unmute") : L("mute"));
     if (document.activeElement !== slider) slider.value = String(state.vol);
     valEl.textContent = (state.muted ? "0" : state.vol) + "%";
+    var sT = overlay.querySelector("#setSearchT"); if (sT) sT.textContent = L("titleSearch");
+    var sI = overlay.querySelector("#setSearch"); if (sI) sI.setAttribute("placeholder", L("titleSearch"));
+    if (renderSearchResultsFn && sI && (sI.value || "").trim()) renderSearchResultsFn();
     var bT = overlay.querySelector("#setBusT"); if (bT) bT.textContent = L("busSection");
     var bN = overlay.querySelector("#setBusNote"); if (bN) bN.textContent = L("busNote");
     var busLab = { setBusBgm: "busBgm", setBusSfx: "busSfx", setBusVoice: "busVoice", setBusAmbient: "busAmbient" };
@@ -106565,6 +106645,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   }
   function renderCard() {
     if (!card) return;
+    renderStrip();
     settleStreak();
     var sig = cardSignature();
     if (sig === cardSig) return;
@@ -106619,18 +106700,61 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var tc = document.getElementById("w4TrioCard");
     if (slot && tc && tc.parentElement !== slot) slot.appendChild(tc);
   }
+  /* BN-253 (owner, 2026-11-21): the daily card lives in the
+     profile (profileMotSlot); the lobby keeps only a one-line
+     daily strip that taps through to it. Content, numbers and
+     the notify path (global toasts) are unchanged. */
+  var strip = null, stripSig = "";
+  function mountStrip() {
+    if (strip) return;
+    var tools = document.getElementById("lobbyTools");
+    if (!tools || !tools.parentElement) return;
+    if (!document.getElementById("motStripStyle")) {
+      var st = document.createElement("style");
+      st.id = "motStripStyle";
+      st.textContent = "#motDailyStrip{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;margin:0 0 10px;padding:9px 14px;border-radius:12px;border:1px solid rgba(61,44,90,.18);background:rgba(255,255,255,.65);color:#3d2c5a;font:600 13px/1.3 inherit;cursor:pointer;text-align:left}" +
+        "#motDailyStrip:active{transform:scale(.99)}#motDailyStrip .ms-title{font-weight:800}" +
+        "#motDailyStrip .ms-count{margin-left:auto;font-weight:800;color:#b45309}#motDailyStrip .ms-streak{color:#655091;font-weight:600}";
+      document.head.appendChild(st);
+    }
+    strip = document.createElement("button");
+    strip.type = "button";
+    strip.id = "motDailyStrip";
+    strip.addEventListener("click", function () {
+      if (typeof window.__openArcadeView === "function") window.__openArcadeView("profile");
+      setTimeout(function () { var c = document.getElementById("motDailyCard"); if (c) c.scrollIntoView({ block: "start" }); }, 380);
+    });
+    tools.parentElement.insertBefore(strip, tools);
+    renderStrip();
+  }
+  function renderStrip() {
+    if (!strip) return;
+    settleStreak();
+    var m = genMissions();
+    var doneM = m.picked.filter(function (k) { return m.done[k]; }).length;
+    var total = doneM + trioClearedCount();
+    var sig = todayStr() + "|" + total + "|" + streakState.current + "|" + lang();
+    if (sig === stripSig) return;
+    stripSig = sig;
+    strip.innerHTML = '<span class="ms-title">' + esc(T("cardTitle")) + '</span>' +
+      '<span class="ms-streak">' + esc(T("streakDays", { n: streakState.current })) + '</span>' +
+      '<span class="ms-count">' + total + " / 6</span>";
+  }
   function mountCard() {
     if (card) return true;
+    var slot = document.getElementById("profileMotSlot");
     var tools = document.getElementById("lobbyTools");
     var grid = document.getElementById("tileGrid");
-    if (!tools && !grid) return false;
+    if (!slot && !tools && !grid) return false;
     ensureStyles();
     card = document.createElement("div");
     card.className = "mot-card";
     card.id = "motDailyCard";
     card.innerHTML = '<div id="motBody"></div><div id="motTrioSlot"></div>';
-    if (tools && tools.parentElement) tools.parentElement.insertBefore(card, tools);
+    if (slot) slot.appendChild(card);
+    else if (tools && tools.parentElement) tools.parentElement.insertBefore(card, tools);
     else if (grid && grid.parentElement) grid.parentElement.insertBefore(card, grid);
+    mountStrip();
     cardSig = "";
     renderCard();
     return true;
@@ -107193,7 +107317,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   function mountCard() {
     if (card) return true;
     var daily = document.getElementById("motDailyCard");
-    var tools = document.getElementById("lobbyTools");
+    var tools = document.getElementById("profileMotSlot");
     var anchor = daily || tools;
     if (!anchor || !anchor.parentElement) return false;
     ensureStyles();
@@ -107202,7 +107326,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     card.id = "motNearCard";
     card.innerHTML = '<div id="oaBody"></div><div id="oaGoalSlot"></div>';
     if (daily) anchor.parentElement.insertBefore(card, daily.nextSibling);
-    else anchor.parentElement.insertBefore(card, anchor);
+    else anchor.appendChild(card);
     cardSig = ""; goalSlotSig = "";
     renderCard();
     return true;
@@ -108014,7 +108138,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     if (card) return true;
     var near = document.getElementById("motNearCard");
     var daily = document.getElementById("motDailyCard");
-    var tools = document.getElementById("lobbyTools");
+    var tools = document.getElementById("profileMotSlot");
     var anchor = near || daily || tools;
     if (!anchor || !anchor.parentElement) return false;
     ensureStyles();
@@ -108022,7 +108146,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     card.className = "gr-card";
     card.id = "motGrowthCard";
     if (near || daily) anchor.parentElement.insertBefore(card, anchor.nextSibling);
-    else anchor.parentElement.insertBefore(card, anchor);
+    else anchor.appendChild(card);
     cardSig = "";
     renderCard();
     return true;
@@ -108782,7 +108906,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var growth = document.getElementById("motGrowthCard");
     var near = document.getElementById("motNearCard");
     var daily = document.getElementById("motDailyCard");
-    var tools = document.getElementById("lobbyTools");
+    var tools = document.getElementById("profileMotSlot");
     var anchor = growth || near || daily || tools;
     if (!anchor || !anchor.parentElement) return false;
     ensureStyles();
@@ -108790,7 +108914,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     card.className = "co-card";
     card.id = "motCollCard";
     if (growth || near || daily) anchor.parentElement.insertBefore(card, anchor.nextSibling);
-    else anchor.parentElement.insertBefore(card, anchor);
+    else anchor.appendChild(card);
     cardSig = "";
     renderCard();
     return true;
@@ -109447,7 +109571,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var growth = document.getElementById("motGrowthCard");
     var near = document.getElementById("motNearCard");
     var daily = document.getElementById("motDailyCard");
-    var tools = document.getElementById("lobbyTools");
+    var tools = document.getElementById("profileMotSlot");
     var anchor = coll || growth || near || daily || tools;
     if (!anchor || !anchor.parentElement) return false;
     ensureStyles();
@@ -109455,7 +109579,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     card.className = "cp-card";
     card.id = "motCompCard";
     if (coll || growth || near || daily) anchor.parentElement.insertBefore(card, anchor.nextSibling);
-    else anchor.parentElement.insertBefore(card, anchor);
+    else anchor.appendChild(card);
     cardSig = "";
     renderCard();
     return true;
@@ -109914,7 +110038,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
 
   /* ================= THREE scene ================= */
   var renderer = null, scene = null, camera = null, player = null, inp = null;
-  var playerSprite = null, blobShadow = null, beaconMesh = null, beaconTarget = null;
+  var playerSprite = null, playerRig = null, blobShadow = null, beaconMesh = null, beaconTarget = null;
   var coinMesh = null, coinSpin = null, coinDir = null, coinH = 0, coinActive = false;
   var camPos = null, camTargetV = null, sunLight = null, hemi = null;
   var yawTarget = 0, yawOffset = 0;
@@ -109930,6 +110054,87 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   var talkOpen = false, talkResident = null, talkReco = null, talkZoom = 0;
   var squashT = 0, groundMat = null, iconTexture = null, seasonNow = "";
   var gamblingWinMats = [];
+  /* ================= BN-255: living world =================
+     A planet-local day/night cycle (seeded from the app's
+     data-sky phase at build, then advancing on its own clock),
+     weather and sky dressing, terrain grain and hills, paths
+     from the plaza to every district, plaza furniture, and a
+     smoking spot the residents actually use. */
+  var cycleT = null, CYCLE_LEN = 360, cycleDark = 0;
+  var PHASE_DARK = { dawn: 0.45, day: 0, dusk: 0.55, night: 1 };
+  var PHASE_KEYS = ["dawn", "day", "dusk", "night"];
+  var starPoints = null, auroraMats = [], LAMP_MATS = [], SMOKERS = [], CLOUD_SHADOWS = [];
+  var SMOKING = null, PATH_COUNT = 0, FOUNTAIN_WATER = null, shootStar = null;
+  var bgCol = null, sunColTmp = null;
+  function cycleBlend() {
+    var T = PL_T(); if (!T) return null;
+    if (!bgCol) { bgCol = new T.Color(); sunColTmp = new T.Color(); }
+    var i = Math.floor(cycleT) % 4, f = cycleT - Math.floor(cycleT);
+    var A = SKY_PRESETS[PHASE_KEYS[i]], B = SKY_PRESETS[PHASE_KEYS[(i + 1) % 4]];
+    bgCol.setHex(A.bg).lerp(new T.Color(B.bg), f);
+    sunColTmp.setHex(A.sunCol).lerp(new T.Color(B.sunCol), f);
+    return { bg: bgCol, sunCol: sunColTmp, hemi: A.hemi + (B.hemi - A.hemi) * f, sun: A.sun + (B.sun - A.sun) * f, dark: PHASE_DARK[PHASE_KEYS[i]] + (PHASE_DARK[PHASE_KEYS[(i + 1) % 4]] - PHASE_DARK[PHASE_KEYS[i]]) * f };
+  }
+  function applyCycle() {
+    if (!scene || cycleT == null) return;
+    var b = cycleBlend(); if (!b) return;
+    cycleDark = b.dark;
+    scene.background = b.bg;
+    if (scene.fog) scene.fog.color.copy(b.bg);
+    if (hemi) hemi.intensity = b.hemi;
+    if (sunLight) { sunLight.intensity = b.sun; sunLight.color.copy(b.sunCol); }
+    var winI = 0.25 + b.dark * 1.45;
+    WIN_MATS.forEach(function (mm) { mm.emissiveIntensity = winI; });
+    gamblingWinMats.forEach(function (mm) { mm.emissiveIntensity = 0.5 + b.dark * 1.2; });
+    LAMP_MATS.forEach(function (mm) { mm.emissiveIntensity = 0.15 + b.dark * 2.4; });
+    if (starPoints) starPoints.material.opacity = Math.pow(b.dark, 1.4) * 0.95;
+    auroraMats.forEach(function (mm, ix) { mm.opacity = Math.max(0, b.dark - 0.72) * 1.9 * (0.65 + 0.35 * Math.sin(elapsed * 0.21 + ix * 2.1)); });
+  }
+  var puffTex = null;
+  function makePuffTexture(T) {
+    if (puffTex) return puffTex;
+    var cv = document.createElement("canvas"); cv.width = cv.height = 64;
+    var cx = cv.getContext("2d");
+    var gr = cx.createRadialGradient(32, 32, 4, 32, 32, 30);
+    gr.addColorStop(0, "rgba(235,235,240,0.85)"); gr.addColorStop(1, "rgba(235,235,240,0)");
+    cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64);
+    puffTex = new T.CanvasTexture(cv);
+    return puffTex;
+  }
+  function makeSmoke(T, parent, x, y, z, count, mul) {
+    var sprites = [];
+    for (var i = 0; i < count; i++) {
+      var sp = new T.Sprite(new T.SpriteMaterial({ map: makePuffTexture(T), transparent: true, depthWrite: false, opacity: 0 }));
+      sp.userData.ph = i / count;
+      parent.add(sp); sprites.push(sp);
+    }
+    var sm = { update: function (t) {
+      sprites.forEach(function (sp) {
+        var lt = (t * 0.13 * mul + sp.userData.ph) % 1;
+        sp.position.set(x + Math.sin(lt * 5 + sp.userData.ph * 9) * 0.22, y + lt * 1.7 * mul, z + lt * 0.3);
+        var sc = (0.35 + lt * 1.1) * mul; sp.scale.set(sc, sc, 1);
+        sp.material.opacity = 0.32 * Math.sin(lt * Math.PI);
+      });
+    } };
+    SMOKERS.push(sm);
+    return sm;
+  }
+  function smokingSignTexture(T) {
+    var cv = document.createElement("canvas"); cv.width = 128; cv.height = 160;
+    var cx = cv.getContext("2d");
+    cx.fillStyle = "#173f35"; cx.fillRect(0, 0, 128, 160);
+    cx.strokeStyle = "#f3ead8"; cx.lineWidth = 5; cx.strokeRect(7, 7, 114, 146);
+    /* cigarette pictogram: white body, amber tip, curling smoke */
+    cx.fillStyle = "#f7f6f0"; cx.fillRect(24, 62, 62, 13);
+    cx.fillStyle = "#e07f13"; cx.fillRect(86, 62, 18, 13);
+    cx.strokeStyle = "#cfd8dc"; cx.lineWidth = 4; cx.beginPath();
+    cx.moveTo(95, 56); cx.bezierCurveTo(84, 44, 104, 38, 94, 24); cx.stroke();
+    cx.fillStyle = "#f3ead8"; cx.font = "bold 17px sans-serif"; cx.textAlign = "center";
+    cx.fillText("SMOKING", 64, 112); cx.fillText("AREA", 64, 134);
+    var tx = new T.CanvasTexture(cv);
+    if (T.SRGBColorSpace) tx.colorSpace = T.SRGBColorSpace;
+    return tx;
+  }
   var castTexCache = {};
   var remoteVec = { x: 0, y: 0 }, remoteVecAt = 0;
 
@@ -109971,7 +110176,492 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     if (T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
     return tex;
   }
-  function makeBuilding(T, genre, colorHex, hash) {
+  /* ================= BN-254: individual buildings =================
+     Every title gets its own building, designed from its own motif
+     (the authentic-design rule, same as the lobby icons), set
+     inside its district's themed world. Buildings are DATA — a
+     palette plus a list of part tuples — built through shared
+     geometry / material caches so 62 unique designs stay cheap.
+     Part tuples: ["box", w,h,d, x,y,z, col] · ["cyl", rt,rb,h,
+     x,y,z, col, seg] · ["cone", r,h, x,y,z, col, seg] ·
+     ["sph", r, x,y,z, col, dome] · ["tor", R,t, x,y,z, col, flat]
+     · ["sph", r, x,y,z, col, dome] · ["disc", r, x,y,z, col] · ["win", x,y,z] (emissive window,
+     registered for the night glow) · ["door"] (the standard
+     front door; every design gets one unless it sets noDoor).
+     col is a palette key (a main, b sub, c accent, w wall, d dark)
+     or a literal 0x hex. Local space: ground y=0, front +z, the
+     whole design stays inside |x|<=1.3, height <= 3.3 so the
+     name plate (y=3.4) and the 1.15 collision radius still fit. */
+  var GEO_CACHE = {}, MAT_CACHE = {}, WIN_MATS = [];
+  /* One shared window material per class (not one per window):
+     ~120 unique materials would thrash the renderer for nothing. */
+  var WIN_MAT_SHARED = null, WIN_MAT_GAMBLE = null;
+  function winMatFor(T, genre) {
+    if (genre === "gambling") { if (!WIN_MAT_GAMBLE) { WIN_MAT_GAMBLE = new T.MeshStandardMaterial({ color: 0xbfd9e8, roughness: 0.3, metalness: 0.2, emissive: 0xffca7a, emissiveIntensity: 0.3 }); gamblingWinMats.push(WIN_MAT_GAMBLE); WIN_MATS.push(WIN_MAT_GAMBLE); } return WIN_MAT_GAMBLE; }
+    if (!WIN_MAT_SHARED) { WIN_MAT_SHARED = new T.MeshStandardMaterial({ color: 0xbfd9e8, roughness: 0.3, metalness: 0.2, emissive: 0xffca7a, emissiveIntensity: 0.3 }); WIN_MATS.push(WIN_MAT_SHARED); }
+    return WIN_MAT_SHARED;
+  }
+  function bGeo(T, key, make) { if (!GEO_CACHE[key]) GEO_CACHE[key] = make(); return GEO_CACHE[key]; }
+  function bMat(T, hex, rough, emis, ei) {
+    var k = hex + "|" + rough + "|" + (emis || 0) + "|" + (ei || 0);
+    if (!MAT_CACHE[k]) MAT_CACHE[k] = new T.MeshStandardMaterial({ color: hex, roughness: rough == null ? 0.85 : rough, metalness: 0.05, emissive: emis || 0x000000, emissiveIntensity: ei || 0 });
+    return MAT_CACHE[k];
+  }
+  function buildFromDesign(T, D, genre) {
+    var grp = new T.Group(), P = D.pal || {};
+    function col(c) { if (typeof c === "number") return c; return P[c] != null ? P[c] : 0xcccccc; }
+    function mesh(geo, mat, x, y, z) { var m = new T.Mesh(geo, mat); m.position.set(x, y, z); grp.add(m); return m; }
+    (D.parts || []).forEach(function (pt) {
+      var k = pt[0];
+      if (k === "box") mesh(bGeo(T, "b" + pt[1] + "," + pt[2] + "," + pt[3], function () { return new T.BoxGeometry(pt[1], pt[2], pt[3]); }), bMat(T, col(pt[7]), 0.85), pt[4], pt[5], pt[6]);
+      else if (k === "cyl") { var sg = pt[8] || 14; mesh(bGeo(T, "c" + pt[1] + "," + pt[2] + "," + pt[3] + "," + sg, function () { return new T.CylinderGeometry(pt[1], pt[2], pt[3], sg); }), bMat(T, col(pt[7]), 0.8), pt[4], pt[5], pt[6]); }
+      else if (k === "cone") { var sg2 = pt[7] || 14; mesh(bGeo(T, "k" + pt[1] + "," + pt[2] + "," + sg2, function () { return new T.ConeGeometry(pt[1], pt[2], sg2); }), bMat(T, col(pt[6]), 0.85), pt[3], pt[4], pt[5]); }
+      else if (k === "sph") { var dm = pt[6] ? Math.PI / 2 : Math.PI; mesh(bGeo(T, "s" + pt[1] + "," + dm, function () { return new T.SphereGeometry(pt[1], 14, 10, 0, Math.PI * 2, 0, dm); }), bMat(T, col(pt[5]), 0.7), pt[2], pt[3], pt[4]); }
+      else if (k === "tor") { var tm = mesh(bGeo(T, "t" + pt[1] + "," + pt[2], function () { return new T.TorusGeometry(pt[1], pt[2], 8, 20); }), bMat(T, col(pt[6]), 0.6), pt[3], pt[4], pt[5]); if (pt[7]) tm.rotation.x = Math.PI / 2; }
+      else if (k === "coin") { var cm = mesh(bGeo(T, "cn" + pt[1], function () { return new T.CylinderGeometry(pt[1], pt[1], 0.07, 18); }), bMat(T, col(pt[5]), 0.55), pt[2], pt[3], pt[4]); cm.rotation.x = Math.PI / 2; }
+      else if (k === "disc") mesh(bGeo(T, "d" + pt[1], function () { return new T.CylinderGeometry(pt[1], pt[1], 0.09, 18); }), bMat(T, col(pt[5]), 0.7), pt[2], pt[3], pt[4]);
+      else if (k === "win") { mesh(bGeo(T, "win", function () { return new T.BoxGeometry(0.3, 0.38, 0.06); }), winMatFor(T, genre), pt[1], pt[2], pt[3]); }
+    });
+    if (!D.noDoor) mesh(bGeo(T, "door", function () { return new T.BoxGeometry(0.52, 0.95, 0.1); }), bMat(T, 0x2b2b33, 0.7), 0, 0.48, (D.doorZ != null ? D.doorZ : 1.06));
+    return grp;
+  }
+  var BUILDING_DESIGNS = {
+        chess: { pal: { a: 0x5b3a8e, b: 0x3c2560, c: 0xe9c46a, w: 0xefe8f8, d: 0x26262e }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.5, 0.18, 2.2, 0, 1.6, 0, "c"],
+      ["cyl", 0.42, 0.46, 1.5, -0.68, 2.3, 0, "b"], ["cyl", 0.52, 0.52, 0.3, -0.68, 3.15, 0, "c"],
+      ["box", 0.16, 0.22, 0.16, -0.88, 3.4, 0, "c"], ["box", 0.16, 0.22, 0.16, -0.48, 3.4, 0, "c"],
+      ["box", 0.7, 0.9, 0.08, 0.55, 1.0, 0.92, "w"], ["win", 0.55, 1.05, 0.99], ["win", -0.15, 0.6, 0.99]] },
+    mahjong: { pal: { a: 0xf3ead8, b: 0xb91c1c, c: 0x2e7d32, d: 0x26262e }, parts: [
+      ["box", 2.3, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.55, 0.42, 2.15, 0, 1.62, 0, "c"], ["box", 2.55, 0.1, 2.15, 0, 1.88, 0, "a"],
+      ["box", 0.3, 0.42, 0.07, -0.62, 1.02, 0.97, "a"], ["box", 0.3, 0.42, 0.07, 0, 1.02, 0.97, "a"], ["box", 0.3, 0.42, 0.07, 0.62, 1.02, 0.97, "a"],
+      ["coin", 0.09, -0.62, 1.02, 1.02, "b"], ["coin", 0.09, 0.62, 1.02, 1.02, "c"], ["win", 0, 0.55, 0.99]] },
+    reversi: { pal: { a: 0x26262e, b: 0xf7f6f0, c: 0x565064 }, parts: [
+      ["cyl", 0.98, 1.02, 1.5, 0, 0.75, 0, "a", 20], ["cyl", 1.06, 1.06, 0.24, 0, 1.62, 0, "b", 20], ["cyl", 0.6, 0.6, 0.2, 0, 1.84, 0, "a", 18],
+      ["box", 0.34, 0.34, 0.06, -0.45, 1.0, 0.95, "b"], ["box", 0.34, 0.34, 0.06, 0.45, 0.55, 0.95, "b"]], doorZ: 1.0 },
+    connect4: { pal: { a: 0x2563eb, b: 0x1d49b8, c: 0xffd166, d: 0xe0483e }, parts: [
+      ["box", 0.3, 1.9, 0.3, -0.85, 0.95, 0, "b"], ["box", 0.3, 1.9, 0.3, 0.85, 0.95, 0, "b"],
+      ["box", 2.0, 1.5, 0.35, 0, 1.55, 0, "a"],
+      ["coin", 0.21, -0.55, 1.85, 0.2, "d"], ["coin", 0.21, 0, 1.85, 0.2, "c"], ["coin", 0.21, 0.55, 1.85, 0.2, "d"],
+      ["coin", 0.21, -0.55, 1.3, 0.2, "c"], ["coin", 0.21, 0, 1.3, 0.2, "d"], ["coin", 0.21, 0.55, 1.3, 0.2, "c"]], noDoor: 1 },
+    gomoku: { pal: { a: 0xc8a165, b: 0x8a5a2b, c: 0x26262e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.2, 1.3, 1.9, 0, 0.65, 0, "a"], ["box", 2.4, 0.15, 2.1, 0, 1.38, 0, "b"], ["box", 1.6, 0.1, 1.6, 0, 1.52, 0, "a"],
+      ["sph", 0.15, -0.4, 1.6, -0.3, "c", 0], ["sph", 0.15, 0.1, 1.6, 0.2, "w", 0], ["sph", 0.15, 0.5, 1.6, -0.45, "c", 0], ["sph", 0.15, -0.05, 1.6, -0.6, "c", 0],
+      ["sph", 0.17, -0.8, 0.17, 0.95, "c", 0], ["sph", 0.17, 0.85, 0.17, 0.95, "w", 0], ["win", 0, 0.7, 0.99]] },
+    checkers: { pal: { a: 0x9e6a41, b: 0xecd2a0, c: 0x26262e }, parts: [
+      ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"],
+      ["box", 0.55, 0.12, 0.55, -0.55, 1.47, -0.3, "b"], ["box", 0.55, 0.12, 0.55, 0.02, 1.47, -0.3, "c"], ["box", 0.55, 0.12, 0.55, -0.55, 1.47, 0.28, "c"], ["box", 0.55, 0.12, 0.55, 0.02, 1.47, 0.28, "b"],
+      ["cyl", 0.42, 0.42, 0.3, 0.72, 1.55, 0.45, "c", 16], ["cyl", 0.42, 0.42, 0.16, 0.72, 1.78, 0.45, "b", 16], ["win", -0.5, 0.75, 0.99], ["win", 0.35, 0.75, 0.99]] },
+    shogi: { pal: { a: 0xe8c98a, b: 0x8a5a2b, c: 0x26262e }, parts: [
+      ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.48, 0, "b"],
+      ["cyl", 0.48, 0.48, 0.95, 0, 2.05, 0, "a", 5], ["box", 0.2, 0.5, 0.2, -0.3, 1.65, 0, "b"], ["box", 0.2, 0.5, 0.2, 0.3, 1.65, 0, "b"],
+      ["win", -0.65, 0.7, 0.99], ["win", 0.65, 0.7, 0.99]] },
+    chaosboard: { pal: { a: 0xecd2a0, b: 0x5b3a8e, c: 0x3fae5a, d: 0x26262e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 0.95, 1.25, 0.95, -0.58, 2.0, -0.25, "b"], ["box", 2.4, 0.14, 2.1, 0, 1.48, 0, "d"],
+      ["tor", 0.34, 0.1, 0.62, 1.95, 0.55, "c", 0], ["box", 0.5, 0.5, 0.5, 0.68, 0.25, 0.72, "w"], ["coin", 0.07, 0.68, 0.32, 0.99, "d"],
+      ["win", -0.1, 0.75, 0.99]] },
+    tictactoe: { pal: { a: 0x232c3a, b: 0x2f3c52, c: 0xeec25e, w: 0xf5efe0 }, parts: [
+      ["box", 2.0, 1.9, 1.9, 0, 0.95, 0, "a"],
+      ["box", 0.08, 1.5, 0.05, -0.26, 1.15, 0.97, "w"], ["box", 0.08, 1.5, 0.05, 0.26, 1.15, 0.97, "w"],
+      ["box", 1.5, 0.08, 0.05, 0, 1.42, 0.97, "w"], ["box", 1.5, 0.08, 0.05, 0, 0.88, 0.97, "w"],
+      ["tor", 0.24, 0.05, -0.52, 1.68, 0.99, "c", 0],
+      ["box", 0.44, 0.1, 0.05, 0.52, 0.6, 0.99, "c"], ["box", 0.1, 0.44, 0.05, 0.52, 0.6, 0.99, "c"]], noDoor: 1 },
+    rubik: { pal: { a: 0x26262e }, parts: [
+      ["box", 1.9, 1.9, 1.9, 0, 0.95, 0, "a"],
+      ["box", 0.52, 0.52, 0.05, -0.58, 1.52, 0.97, 0xe0483e], ["box", 0.52, 0.52, 0.05, 0, 1.52, 0.97, 0xf2f2f2], ["box", 0.52, 0.52, 0.05, 0.58, 1.52, 0.97, 0x2f9e6e],
+      ["box", 0.52, 0.52, 0.05, -0.58, 0.95, 0.97, 0xffd166], ["box", 0.52, 0.52, 0.05, 0, 0.95, 0.97, 0x2563eb], ["box", 0.52, 0.52, 0.05, 0.58, 0.95, 0.97, 0xe07f13],
+      ["box", 0.52, 0.52, 0.05, -0.58, 0.38, 0.97, 0x2f9e6e], ["box", 0.52, 0.52, 0.05, 0, 0.38, 0.97, 0xe0483e], ["box", 0.52, 0.52, 0.05, 0.58, 0.38, 0.97, 0xffd166],
+      ["box", 0.66, 0.66, 0.66, 0.55, 2.25, -0.35, 0xe0483e]], noDoor: 1 },
+    mines: { pal: { a: 0x33304a, b: 0x565064, c: 0xe0483e, d: 0x26262e }, parts: [
+      ["box", 2.2, 1.2, 1.9, 0, 0.6, 0, "a"], ["sph", 0.82, 0, 1.2, -0.15, "b", 1],
+      ["sph", 0.38, 0.82, 0.38, 0.88, "d", 0], ["cone", 0.07, 0.34, 0.82, 0.85, 0.88, "d"], ["cone", 0.07, 0.3, 0.5, 0.62, 0.7, "d"], ["cone", 0.07, 0.3, 1.12, 0.6, 0.72, "d"],
+      ["cyl", 0.03, 0.03, 0.95, -0.82, 1.65, 0.5, "d", 6], ["box", 0.34, 0.22, 0.03, -0.66, 1.95, 0.5, "c"], ["win", -0.3, 0.6, 0.99], ["win", 0.3, 0.6, 0.99]] },
+    g2048: { pal: { a: 0xf2b53d, b: 0xe07f13, c: 0xc85f0a, w: 0xfdf6e3 }, parts: [
+      ["box", 2.2, 0.9, 1.9, 0, 0.45, 0, "a"], ["box", 1.8, 0.9, 1.6, 0, 1.35, 0, "b"], ["box", 1.3, 0.9, 1.2, 0, 2.25, 0, "c"], ["box", 0.8, 0.5, 0.8, 0, 2.95, 0, "w"],
+      ["win", -0.6, 0.45, 0.99], ["win", 0.6, 0.45, 0.99]] },
+    memory: { pal: { a: 0xe85d8a, b: 0xc2436b, c: 0xfdf6e3, d: 0x33304a }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "b"],
+      ["box", 0.56, 0.78, 0.05, -0.48, 1.05, 0.97, "c"], ["box", 0.56, 0.78, 0.05, 0.48, 1.05, 0.97, "d"],
+      ["coin", 0.12, -0.48, 1.05, 1.01, "b"], ["coin", 0.12, 0.48, 1.05, 1.01, "c"], ["win", 0, 0.4, 0.99]] },
+    sudoku: { pal: { a: 0x35b558, b: 0x279a48, c: 0xf7f6f0, d: 0x33304a }, parts: [
+      ["box", 2.1, 1.8, 1.9, 0, 0.9, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.88, 0, "b"],
+      ["box", 0.12, 1.35, 0.05, -0.24, 1.05, 0.97, "c"], ["box", 0.12, 1.35, 0.05, 0.24, 1.05, 0.97, "c"],
+      ["box", 1.35, 0.12, 0.05, 0, 1.28, 0.97, "c"], ["box", 1.35, 0.12, 0.05, 0, 0.82, 0.97, "c"], ["win", -0.68, 0.45, 0.99], ["win", 0.68, 0.45, 0.99]] },
+    hitokaki: { pal: { a: 0x1b2432, b: 0x232f42, c: 0xe9c46a, w: 0xf3ead8 }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.12, 2.2, 0, 1.68, 0, "b"],
+      ["box", 1.8, 0.06, 0.05, 0, 1.25, 0.97, "c"],
+      ["cyl", 0.15, 0.15, 1.3, 0.85, 2.35, 0, "c", 10], ["cone", 0.15, 0.38, 0.85, 3.15, 0, "w"], ["win", -0.55, 0.7, 0.99], ["win", 0.3, 0.7, 0.99]] },
+    arrowpuzzle: { pal: { a: 0x1b2432, b: 0x2c3852, c: 0xe9c46a }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "b"],
+      ["box", 1.5, 0.5, 0.06, 0, 2.0, 0.5, "b"], ["box", 0.85, 0.14, 0.05, -0.15, 2.0, 0.55, "c"], ["coin", 0.16, 0.48, 2.0, 0.55, "c"],
+      ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] },
+    cubefall: { pal: { a: 0x14141a, b: 0x3a3f4c, c: 0xf2c53d }, parts: [
+      ["box", 2.2, 1.1, 1.9, 0, 0.55, 0, "a"], ["box", 2.2, 1.7, 0.3, 0, 1.4, -0.8, "b"],
+      ["box", 0.8, 0.8, 0.8, 0.32, 2.0, 0, "c"], ["box", 0.45, 0.45, 0.45, -0.7, 1.55, 0.25, "b"], ["box", 0.45, 0.45, 0.45, -0.7, 0.23, 0.85, "c"],
+      ["win", 0.55, 0.55, 0.99]] },
+    snake: { pal: { a: 0x3fae5a, b: 0x2c7a3f, c: 0xe0483e }, parts: [
+      ["cyl", 0.88, 0.98, 1.2, 0, 0.6, 0, "a", 16], ["tor", 0.78, 0.17, 0, 1.32, 0, "b", 1], ["tor", 0.58, 0.16, 0, 1.72, 0, "a", 1],
+      ["sph", 0.34, 0.42, 2.02, 0.3, "a", 0], ["sph", 0.2, -0.72, 0.2, 0.95, "c", 0], ["win", -0.4, 0.6, 0.92]] },
+    breakout: { pal: { a: 0x2563eb, b: 0x1d49b8, c: 0x7cc4ff, w: 0xf2f2f2 }, parts: [
+      ["box", 2.3, 1.9, 0.4, 0, 1.15, -0.6, "a"],
+      ["box", 0.6, 0.22, 0.1, -0.68, 1.72, -0.36, "c"], ["box", 0.6, 0.22, 0.1, 0, 1.72, -0.36, "w"], ["box", 0.6, 0.22, 0.1, 0.68, 1.72, -0.36, "c"],
+      ["box", 0.6, 0.22, 0.1, -0.68, 1.42, -0.36, "w"], ["box", 0.6, 0.22, 0.1, 0, 1.42, -0.36, 0xe0483e], ["box", 0.6, 0.22, 0.1, 0.68, 1.42, -0.36, "w"],
+      ["box", 1.0, 0.14, 0.3, 0, 0.32, 0.55, "w"], ["sph", 0.14, 0.3, 0.62, 0.55, "w", 0]], noDoor: 1 },
+    mole: { pal: { a: 0xb07a45, b: 0x8a5a2b, c: 0xe8b06a, d: 0xe85d8a }, parts: [
+      ["sph", 1.08, 0, 0, 0, "a", 1], ["sph", 0.68, 0.72, 0, 0.42, "b", 1],
+      ["sph", 0.3, -0.25, 0.98, 0.25, "c", 0], ["sph", 0.1, -0.25, 0.92, 0.52, "d", 0],
+      ["cyl", 0.05, 0.05, 0.8, 0.85, 0.75, 0.75, "b", 8], ["box", 0.34, 0.22, 0.22, 0.85, 1.2, 0.75, "c"]], noDoor: 1 },
+    simon: { pal: { a: 0x26262e }, parts: [
+      ["cyl", 1.05, 1.12, 0.5, 0, 0.25, 0, "a", 20], ["disc", 1.0, 0, 0.54, 0, "a"],
+      ["box", 0.62, 0.1, 0.62, -0.33, 0.6, -0.33, 0x2f9e6e], ["box", 0.62, 0.1, 0.62, 0.33, 0.6, -0.33, 0xe0483e],
+      ["box", 0.62, 0.1, 0.62, -0.33, 0.6, 0.33, 0xffd166], ["box", 0.62, 0.1, 0.62, 0.33, 0.6, 0.33, 0x2563eb],
+      ["cyl", 0.2, 0.2, 0.14, 0, 0.66, 0, "a", 14]], noDoor: 1 },
+    flappy: { pal: { a: 0x57a8d8, b: 0x3d84b8, c: 0x2e9e4f, d: 0xffd166, e: 0xe07f13 }, parts: [
+      ["box", 1.4, 2.2, 1.4, -0.25, 1.1, 0, "a"], ["box", 1.6, 0.16, 1.6, -0.25, 2.28, 0, "b"],
+      ["cyl", 0.33, 0.33, 1.15, 0.78, 0.58, 0.45, "c", 14], ["cyl", 0.41, 0.41, 0.26, 0.78, 1.25, 0.45, "c", 14],
+      ["sph", 0.27, -0.55, 2.62, 0.35, "d", 0], ["cone", 0.1, 0.24, -0.32, 2.58, 0.42, "e"], ["win", -0.25, 1.2, 0.74]] },
+    shooter: { pal: { a: 0x141a2c, b: 0x232c48, c: 0x7cc4ff, d: 0xe0483e }, parts: [
+      ["box", 2.3, 1.3, 1.9, 0, 0.65, 0, "a"], ["box", 2.5, 0.14, 2.1, 0, 1.38, 0, "b"],
+      ["tor", 0.85, 0.11, 0, 1.35, 0.92, "c", 0],
+      ["cone", 0.3, 0.95, 0, 2.1, 0, "c"], ["box", 0.5, 0.3, 0.08, -0.42, 1.6, 0, "d"], ["box", 0.5, 0.3, 0.08, 0.42, 1.6, 0, "d"],
+      ["win", -0.7, 0.65, 0.99], ["win", 0.7, 0.65, 0.99]] },
+    billiards: { pal: { a: 0x1e7a46, b: 0x14532d, c: 0x26262e, w: 0xf7f6f0, y: 0xc8a165 }, parts: [
+      ["box", 2.3, 1.3, 1.9, 0, 0.65, 0, "a"], ["box", 2.5, 0.14, 2.1, 0, 1.38, 0, "b"],
+      ["sph", 0.42, 0.6, 1.85, 0, "c", 0], ["coin", 0.17, 0.6, 1.9, 0.4, "w"],
+      ["cyl", 0.04, 0.05, 1.8, -0.9, 0.9, 0.9, "y", 8], ["win", -0.35, 0.65, 0.99], ["win", 0.35, 0.65, 0.99]] },
+    fishing: { pal: { a: 0x9e6a41, b: 0x8a5a2b, c: 0x57a8d8, d: 0xf59e0b, r: 0xe0483e, w: 0xf7f6f0 }, parts: [
+      ["box", 1.7, 1.2, 1.5, -0.15, 0.6, -0.15, "a"], ["cone", 1.45, 0.85, -0.15, 1.62, -0.15, "b", 4],
+      ["box", 1.2, 0.1, 0.5, 0, 0.07, 1.12, "b"],
+      ["cyl", 0.03, 0.03, 1.5, 0.45, 0.85, 1.05, "b", 6], ["sph", 0.09, 0.45, 0.35, 1.3, "r", 0],
+      ["sph", 0.2, -0.15, 2.2, 0.3, "d", 0], ["cone", 0.14, 0.3, 0.12, 2.2, 0.3, "d"], ["win", -0.15, 0.65, 0.63]] },
+    pcbfarm: { pal: { a: 0x0e5c3a, b: 0x123528, c: 0xc8b06a, d: 0x1c1c22 }, parts: [
+      ["box", 2.3, 1.0, 1.9, 0, 0.5, 0, "a"],
+      ["box", 0.95, 0.35, 0.95, 0.35, 1.18, 0, "d"], ["box", 0.6, 0.25, 0.6, -0.72, 1.13, -0.3, "b"],
+      ["box", 0.1, 0.06, 0.2, -0.2, 1.05, 0.55, "c"], ["box", 0.1, 0.06, 0.2, 0.9, 1.05, 0.55, "c"], ["box", 0.1, 0.06, 0.2, -0.2, 1.05, -0.55, "c"], ["box", 0.1, 0.06, 0.2, 0.9, 1.05, -0.55, "c"],
+      ["box", 0.85, 0.05, 0.03, -0.5, 0.32, 0.97, "c"], ["box", 0.85, 0.05, 0.03, -0.5, 0.55, 0.97, "c"], ["box", 0.85, 0.05, 0.03, -0.5, 0.78, 0.97, "c"],
+      ["coin", 0.07, 0.92, 0.85, 0.97, 0xff4040], ["win", 0.55, 0.5, 0.99]] },
+    kartgp: { pal: { a: 0x8a8f98, b: 0x565d66, c: 0xe0483e, d: 0x26262e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.3, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.3, 0.35, 0.5, 0, 1.62, 0.7, "b"],
+      ["box", 0.22, 0.14, 0.04, -0.66, 1.62, 0.97, "w"], ["box", 0.22, 0.14, 0.04, -0.22, 1.62, 0.97, "d"], ["box", 0.22, 0.14, 0.04, 0.22, 1.62, 0.97, "w"], ["box", 0.22, 0.14, 0.04, 0.66, 1.62, 0.97, "d"],
+      ["coin", 0.3, -0.78, 0.3, 0.97, "d"], ["coin", 0.3, 0.78, 0.3, 0.97, "d"],
+      ["box", 0.85, 0.3, 0.65, 0, 0.15, 0.95, "c"], ["win", -0.45, 0.95, 0.99], ["win", 0.45, 0.95, 0.99]] },
+    stocks: { pal: { a: 0x0d2b1d, b: 0x123528, c: 0x3ddc84, d: 0x2ca44c }, parts: [
+      ["box", 1.8, 2.4, 1.8, 0, 1.2, 0, "a"], ["box", 2.0, 0.14, 2.0, 0, 2.48, 0, "d"],
+      ["box", 0.42, 0.3, 0.06, -0.52, 1.05, 0.93, "c"], ["box", 0.42, 0.62, 0.06, 0, 1.21, 0.93, "c"], ["box", 0.42, 0.95, 0.06, 0.52, 1.37, 0.93, "c"],
+      ["box", 0.13, 0.75, 0.06, 0.8, 2.0, 0.93, "c"], ["win", -0.55, 0.5, 0.93], ["win", 0.3, 0.5, 0.93]] },
+    smashdown: { pal: { a: 0x141a2c, b: 0x232c48, c: 0xf2c53d, d: 0x5a6a88 }, parts: [
+      ["cyl", 1.1, 1.16, 0.6, 0, 0.3, 0, "b", 20], ["tor", 0.98, 0.09, 0, 0.68, 0, "d", 1],
+      ["sph", 0.42, 0, 1.3, 0, "c", 0],
+      ["cyl", 0.06, 0.06, 0.85, -1.0, 0.43, 0, "d", 8], ["cyl", 0.06, 0.06, 0.85, 1.0, 0.43, 0, "d", 8]], noDoor: 1 },
+    tunnelrush: { pal: { a: 0x0a1020, b: 0x141c30, c: 0xc8b06a, d: 0xe05252 }, parts: [
+      ["box", 0.35, 2.0, 1.2, -0.88, 1.0, 0, "a"], ["box", 0.35, 2.0, 1.2, 0.88, 1.0, 0, "a"], ["box", 2.1, 0.35, 1.2, 0, 2.12, 0, "a"],
+      ["box", 0.08, 1.7, 0.06, -0.68, 0.95, 0.62, "c"], ["box", 0.08, 1.7, 0.06, 0.68, 0.95, 0.62, "c"], ["box", 1.44, 0.08, 0.06, 0, 1.82, 0.62, "c"],
+      ["box", 1.3, 1.6, 0.05, 0, 0.9, -0.55, "b"], ["box", 0.55, 0.55, 0.55, 0.3, 0.28, 0.3, "d"]], noDoor: 1 },
+    rusharmy: { pal: { a: 0x101736, b: 0x1a2450, c: 0xc8b06a, w: 0xf2ead8 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "b"],
+      ["cyl", 0.32, 0.34, 1.0, -0.85, 2.05, 0, "b", 12], ["cyl", 0.32, 0.34, 1.0, 0.85, 2.05, 0, "b", 12],
+      ["cone", 0.4, 0.45, -0.85, 2.75, 0, "c"], ["cone", 0.4, 0.45, 0.85, 2.75, 0, "c"],
+      ["box", 0.5, 0.8, 0.05, 0, 1.05, 0.97, "w"], ["coin", 0.26, 0, 2.0, 0.97, "c"], ["win", -0.68, 0.6, 0.99], ["win", 0.68, 0.6, 0.99]] },
+    holes: { pal: { a: 0x171512, b: 0x211d18, c: 0xffd97a, d: 0x000000 }, parts: [
+      ["box", 1.9, 2.3, 1.9, 0, 1.15, 0, "a"], ["box", 2.05, 0.12, 2.05, 0, 2.36, 0, "b"],
+      ["coin", 0.4, -0.3, 1.55, 0.97, "d"], ["coin", 0.24, 0.52, 0.75, 0.97, "d"],
+      ["win", 0.55, 1.7, 0.99], ["win", -0.6, 0.6, 0.99], ["win", 0.1, 1.05, 0.99]] },
+    patapin: { pal: { a: 0x10131c, b: 0x1a2030, c: 0xc8a24a, w: 0xf7f2df }, parts: [
+      ["box", 2.2, 1.2, 1.9, 0, 0.6, 0, "a"], ["box", 2.2, 1.35, 0.25, 0, 1.85, -0.8, "b"], ["box", 2.4, 0.12, 2.1, 0, 1.26, 0, "c"],
+      ["tor", 0.55, 0.07, 0, 1.95, 0.2, "c", 0], ["sph", 0.2, 0, 1.2, 0.55, "w", 0], ["win", -0.7, 0.6, 0.99], ["win", 0.7, 0.6, 0.99]] },
+    blackjack: { pal: { a: 0x20242e, b: 0x2b303c, c: 0xe9c46a, w: 0xf7f6f0 }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.42, 0.16, 2.12, 0, 1.7, 0, "c"],
+      ["box", 0.5, 0.7, 0.06, -0.32, 1.05, 0.97, "w"], ["box", 0.5, 0.7, 0.06, 0.28, 1.12, 0.97, "w"],
+      ["coin", 0.2, 0.78, 0.5, 0.97, "c"], ["win", -0.72, 0.55, 0.99], ["win", -0.72, 1.25, 0.99]] },
+    roulette: { pal: { a: 0x7a1f24, b: 0x5c161b, c: 0xe9c46a, d: 0x26262e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.0, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.2, 0.14, 2.1, 0, 1.48, 0, "c"],
+      ["cyl", 0.55, 0.62, 1.15, 0, 2.05, 0, "b", 16], ["tor", 0.5, 0.1, 0, 2.72, 0, "c", 1], ["disc", 0.44, 0, 2.7, 0, "d"], ["sph", 0.09, 0.3, 2.78, 0.2, "w", 0],
+      ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] },
+    slots: { pal: { a: 0x5a2d82, b: 0x452266, c: 0xffd166, w: 0xf7f6f0 }, parts: [
+      ["box", 2.1, 1.7, 1.9, 0, 0.85, 0, "a"], ["box", 2.3, 0.15, 2.1, 0, 1.78, 0, "c"],
+      ["box", 0.42, 0.6, 0.06, -0.55, 1.15, 0.97, "w"], ["box", 0.42, 0.6, 0.06, 0, 1.15, 0.97, "w"], ["box", 0.42, 0.6, 0.06, 0.55, 1.15, 0.97, "w"],
+      ["cyl", 0.035, 0.035, 0.7, 1.02, 1.25, 0.6, "c", 8], ["sph", 0.1, 1.02, 1.65, 0.6, 0xe0483e, 0],
+      ["coin", 0.09, -0.55, 1.15, 1.01, "c"], ["coin", 0.09, 0, 1.15, 1.01, 0xe0483e], ["coin", 0.09, 0.55, 1.15, 1.01, "c"], ["win", 0, 0.45, 0.99]] },
+    baccarat: { pal: { a: 0x1e5c3a, b: 0x17452c, c: 0xe9c46a, w: 0xf3ead8 }, parts: [
+      ["box", 2.3, 1.5, 1.9, 0, 0.75, 0, "a"],
+      ["cyl", 0.09, 0.09, 1.5, -0.9, 0.75, 0.92, "w", 10], ["cyl", 0.09, 0.09, 1.5, -0.3, 0.75, 0.92, "w", 10], ["cyl", 0.09, 0.09, 1.5, 0.3, 0.75, 0.92, "w", 10], ["cyl", 0.09, 0.09, 1.5, 0.9, 0.75, 0.92, "w", 10],
+      ["box", 2.4, 0.3, 0.42, 0, 1.68, 0.78, "c"], ["sph", 0.72, 0, 1.6, -0.25, "c", 1], ["win", 0, 0.5, 0.99]] },
+    videopoker: { pal: { a: 0x1d3fae, b: 0x17307e, c: 0x7cc4ff, w: 0xf7f6f0, g: 0xe9c46a }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.68, 0, "g"],
+      ["box", 1.25, 0.8, 0.06, 0, 1.12, 0.97, "c"],
+      ["box", 0.2, 0.3, 0.05, -0.44, 0.5, 0.97, "w"], ["box", 0.2, 0.3, 0.05, -0.22, 0.5, 0.97, "w"], ["box", 0.2, 0.3, 0.05, 0, 0.5, 0.97, "w"], ["box", 0.2, 0.3, 0.05, 0.22, 0.5, 0.97, "w"], ["box", 0.2, 0.3, 0.05, 0.44, 0.5, 0.97, "w"]] },
+    holdem: { pal: { a: 0x20503a, b: 0x17402e, c: 0xe9c46a, d: 0xe0483e, w: 0xf7f6f0 }, parts: [
+      ["cyl", 1.08, 1.14, 1.3, 0, 0.65, 0, "a", 20], ["disc", 1.18, 0, 1.38, 0, "c"],
+      ["disc", 0.4, 0, 1.52, 0, "d"], ["disc", 0.4, 0, 1.66, 0, "w"], ["disc", 0.4, 0, 1.8, 0, "d"],
+      ["win", -0.55, 0.65, 1.06], ["win", 0.55, 0.65, 1.06]], doorZ: 1.12 },
+    craps: { pal: { a: 0x7a1f24, b: 0x5c161b, c: 0xe9c46a, w: 0xf7f6f0, g: 0x1e5c3a }, parts: [
+      ["box", 2.3, 1.3, 1.9, 0, 0.65, 0, "a"], ["box", 2.42, 0.12, 2.02, 0, 1.38, 0, "g"], ["box", 2.42, 0.14, 0.1, 0, 1.3, 0.98, "c"],
+      ["box", 0.3, 0.3, 0.3, -0.5, 1.6, 0.2, "w"], ["box", 0.3, 0.3, 0.3, 0.45, 1.6, -0.25, "w"],
+      ["coin", 0.06, -0.58, 1.68, 0.36, "a"], ["coin", 0.06, 0.37, 1.68, -0.09, "a"], ["win", 0, 0.6, 0.99], ["win", 0.7, 0.6, 0.99]] },
+    casinowar: { pal: { a: 0x3a2d5c, b: 0x2c2145, c: 0xe9c46a, d: 0xe0483e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.68, 0, "c"],
+      ["box", 0.5, 0.7, 0.06, -0.35, 1.0, 0.97, "d"], ["box", 0.5, 0.7, 0.06, 0.32, 1.08, 0.97, "w"],
+      ["coin", 0.34, 0, 2.05, 0.55, "c"], ["win", 0.72, 0.55, 0.99]] },
+    sicbo: { pal: { a: 0x20503a, b: 0x17402e, c: 0xe9c46a, w: 0xbfd9e8, r: 0xe0483e }, parts: [
+      ["box", 2.1, 1.3, 1.9, 0, 0.65, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.38, 0, "c"],
+      ["sph", 0.85, 0, 1.32, 0, "w", 1], ["box", 0.3, 0.3, 0.3, 0, 1.48, 0.3, "r"], ["coin", 0.06, -0.08, 1.56, 0.46, "a"], ["win", -0.7, 0.6, 0.99], ["win", 0.7, 0.6, 0.99]] },
+    bigsix: { pal: { a: 0x8a2d1f, b: 0x6b2115, c: 0xe9c46a, w: 0xf7f6f0 }, parts: [
+      ["box", 2.1, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.58, 0, "c"],
+      ["tor", 0.6, 0.09, 0, 2.2, 0.55, "c", 0], ["coin", 0.14, 0, 2.2, 0.55, "w"],
+      ["box", 0.08, 1.05, 0.05, 0, 2.2, 0.52, "w"], ["box", 1.05, 0.08, 0.05, 0, 2.2, 0.52, "w"], ["win", -0.65, 0.7, 0.99], ["win", 0.65, 0.7, 0.99]] },
+    lottery: { pal: { a: 0xb03a2e, b: 0x8c2b21, c: 0xe9c46a, w: 0xfdf6e3 }, parts: [
+      ["box", 1.8, 1.5, 1.6, 0, 0.75, 0, "a"], ["box", 2.1, 0.1, 1.9, 0, 1.58, 0, "c"], ["box", 1.5, 0.34, 0.06, 0, 1.28, 0.83, "w"],
+      ["box", 1.2, 0.5, 0.06, 0, 0.82, 0.83, "w"],
+      ["sph", 0.11, -0.4, 1.16, 0.86, 0x2563eb, 0], ["sph", 0.11, -0.13, 1.16, 0.86, "c", 0], ["sph", 0.11, 0.14, 1.16, 0.86, 0x2f9e6e, 0], ["sph", 0.11, 0.41, 1.16, 0.86, 0xe85d8a, 0]], doorZ: 0.85 },
+    pachinko: { pal: { a: 0x2d4a8a, b: 0x223a6e, c: 0xffd97a, d: 0xd8dde6 }, parts: [
+      ["box", 2.2, 1.8, 1.9, 0, 0.9, 0, "a"], ["box", 2.35, 0.12, 2.05, 0, 1.86, 0, "c"],
+      ["box", 1.4, 0.5, 0.06, 0, 1.42, 0.97, "d"],
+      ["box", 0.12, 0.12, 0.05, -0.95, 1.5, 0.97, "c"], ["box", 0.12, 0.12, 0.05, -0.95, 1.15, 0.97, "c"], ["box", 0.12, 0.12, 0.05, -0.95, 0.8, 0.97, "c"],
+      ["box", 0.12, 0.12, 0.05, 0.95, 1.5, 0.97, "c"], ["box", 0.12, 0.12, 0.05, 0.95, 1.15, 0.97, "c"], ["box", 0.12, 0.12, 0.05, 0.95, 0.8, 0.97, "c"],
+      ["sph", 0.07, -0.3, 0.35, 0.97, "d", 0], ["sph", 0.07, 0, 0.35, 0.97, "d", 0], ["sph", 0.07, 0.3, 0.35, 0.97, "d", 0], ["win", 0, 0.95, 0.99]] },
+    keiba: { pal: { a: 0x20503a, b: 0x17402e, c: 0xe9c46a, d: 0xe0483e, w: 0xf7f6f0 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "c"],
+      ["tor", 0.38, 0.08, 0, 2.05, 0.55, "d", 0],
+      ["cyl", 0.07, 0.07, 1.6, 0.85, 0.8, 0.9, "w", 10], ["disc", 0.17, 0.85, 1.66, 0.9, "d"], ["win", -0.6, 0.7, 0.99], ["win", 0.35, 0.7, 0.99]] },
+    keirin: { pal: { a: 0x3a3f4c, b: 0x2c3038, c: 0xe9c46a, d: 0xd8dde6 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.35, 0.5, 2.0, 0, 0.25, 0, "b"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "c"],
+      ["tor", 0.42, 0.06, -0.5, 2.05, 0.55, "d", 0], ["tor", 0.42, 0.06, 0.5, 2.05, 0.55, "d", 0],
+      ["box", 0.7, 0.07, 0.05, 0, 2.3, 0.55, "d"], ["win", 0, 0.85, 0.99]] },
+    kyotei: { pal: { a: 0x1d5f8a, b: 0x174a6e, c: 0xe9c46a, w: 0xf7f6f0, r: 0xe0483e }, parts: [
+      ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"],
+      ["box", 2.4, 0.1, 2.1, 0, 1.5, 0, "c"], ["box", 2.4, 0.1, 2.1, 0, 1.68, 0, "b"],
+      ["box", 1.1, 0.25, 0.4, 0, 1.9, 0, "w"], ["cone", 0.2, 0.5, 0, 2.28, 0, "c"],
+      ["sph", 0.14, 0.82, 0.14, 0.95, "r", 0], ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] },
+    autorace: { pal: { a: 0x333a45, b: 0x262b33, c: 0xe07f13, d: 0xe9c46a, s: 0xd8dde6, w: 0xf7f6f0 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "d"],
+      ["tor", 0.55, 0.07, 0, 1.66, 0, "c", 1],
+      ["tor", 0.3, 0.05, 0, 2.15, 0.6, "s", 0],
+      ["box", 0.2, 0.13, 0.04, -0.45, 1.32, 0.97, "w"], ["box", 0.2, 0.13, 0.04, -0.25, 1.32, 0.97, "b"], ["box", 0.2, 0.13, 0.04, -0.05, 1.32, 0.97, "w"], ["box", 0.2, 0.13, 0.04, 0.15, 1.32, 0.97, "b"],
+      ["win", 0.6, 0.7, 0.99]] },
+    sportsbet: { pal: { a: 0x14213d, b: 0x0e1830, c: 0x7cc4ff, d: 0xe9c46a }, parts: [
+      ["box", 2.3, 1.7, 1.9, 0, 0.85, 0, "a"], ["box", 2.5, 0.14, 2.1, 0, 1.78, 0, "d"],
+      ["box", 1.7, 1.0, 0.06, 0, 1.2, 0.97, "c"],
+      ["box", 0.5, 0.35, 0.05, -0.6, 0.42, 0.97, "c"], ["box", 0.5, 0.35, 0.05, 0.6, 0.42, 0.97, "c"], ["win", 0, 0.42, 0.99]] },
+    hairline: { pal: { a: 0xe8e4da, b: 0xd8d2c4, c: 0x2f9e6e, d: 0x33304a }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.68, 0, "b"],
+      ["box", 0.56, 0.76, 0.05, -0.52, 1.05, 0.97, "d"], ["box", 0.4, 0.6, 0.05, -0.52, 1.05, 0.99, "c"],
+      ["box", 0.56, 0.76, 0.05, 0.52, 1.05, 0.97, "d"], ["box", 0.4, 0.6, 0.05, 0.52, 1.05, 0.99, "a"], ["win", 0, 0.42, 0.99]] },
+    langquiz: { pal: { a: 0x2b3a67, b: 0x1f2c4f, c: 0xe9c46a, w: 0xf3ead8 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["cone", 1.7, 0.9, 0, 1.95, 0, "b", 4],
+      ["box", 0.4, 0.7, 0.4, -0.8, 1.85, 0.5, "a"], ["cone", 0.36, 0.4, -0.8, 2.4, 0.5, "b", 4], ["sph", 0.09, -0.8, 2.68, 0.5, "c", 0],
+      ["box", 0.38, 0.52, 0.05, 0.45, 1.0, 0.97, "w"], ["box", 0.38, 0.52, 0.05, 0.85, 1.0, 0.97, "w"], ["win", -0.45, 0.6, 0.99]] },
+    gquiz: { pal: { a: 0xe07f13, b: 0xb85f0a, c: 0xfdf6e3, d: 0x33304a }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.68, 0, "b"],
+      ["tor", 0.32, 0.09, 0, 2.1, 0.6, "c", 0], ["box", 0.15, 0.15, 0.06, 0, 1.62, 0.6, "c"],
+      ["win", -0.65, 0.7, 0.99], ["win", 0.65, 0.7, 0.99]] },
+    board: { pal: { a: 0x14532d, b: 0x0e3a20, c: 0xc8b06a, w: 0xf3ead8, d: 0x1c1c22 }, parts: [
+      ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.2, 0.08, 1.9, 0, 1.72, -0.42, "c"],
+      ["box", 0.8, 0.25, 0.8, 0.3, 1.55, 0.2, "d"],
+      ["box", 0.1, 0.06, 0.2, -0.25, 1.47, 0.65, "c"], ["box", 0.1, 0.06, 0.2, 0.85, 1.47, 0.65, "c"],
+      ["coin", 0.06, -0.85, 1.15, 0.97, "w"], ["coin", 0.06, 0.85, 1.15, 0.97, "w"], ["coin", 0.06, -0.85, 0.35, 0.97, "w"], ["win", 0.4, 0.7, 0.99]] },
+    library: { pal: { a: 0xc86a9e, b: 0xa34e80, c: 0xe9c46a, w: 0xfdf6e3, p: 0xe89cc0 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "b"],
+      ["sph", 0.5, -0.12, 2.05, 0, "p", 0], ["sph", 0.38, 0.38, 1.95, 0.1, "p", 0],
+      ["box", 0.16, 0.55, 0.05, -0.66, 0.42, 0.97, "c"], ["box", 0.16, 0.55, 0.05, -0.46, 0.42, 0.97, "w"], ["box", 0.16, 0.55, 0.05, 0.55, 0.42, 0.97, 0x57a8d8], ["box", 0.16, 0.55, 0.05, 0.75, 0.42, 0.97, 0x3fae5a], ["win", 0, 1.05, 0.99]] },
+    turntable: { pal: { a: 0x26262e, b: 0x1c1c22, c: 0xf2c53d, d: 0x9e6a41, s: 0xd8dde6 }, parts: [
+      ["box", 2.2, 1.1, 1.9, 0, 0.55, 0, "a"],
+      ["disc", 1.0, -0.25, 1.16, 0, "b"], ["disc", 0.4, -0.25, 1.24, 0, "c"],
+      ["cyl", 0.04, 0.04, 0.75, 0.82, 1.45, 0.55, "s", 8], ["box", 0.3, 0.08, 0.12, 0.7, 1.16, 0.75, "s"], ["win", 0.55, 0.55, 0.99]] },
+    notes: { pal: { a: 0xe8e4da, b: 0xd8d2c4, c: 0xf2b53d, d: 0x33304a }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.3, 0.12, 2.1, 0, 1.66, 0, "b"],
+      ["box", 1.4, 0.05, 0.03, -0.15, 1.25, 0.97, "d"], ["box", 1.4, 0.05, 0.03, -0.15, 0.95, 0.97, "d"], ["box", 1.4, 0.05, 0.03, -0.15, 0.65, 0.97, "d"],
+      ["cyl", 0.09, 0.09, 1.5, 0.98, 0.75, 0.6, "c", 10], ["cone", 0.09, 0.3, 0.98, 1.62, 0.6, "a"]], noDoor: 1 },
+    nobel: { pal: { a: 0x8a6d1f, b: 0x6e5518, c: 0xffd166, d: 0x2b3a67, w: 0xf3ead8 }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"],
+      ["cyl", 0.11, 0.11, 1.6, -0.8, 0.8, 0.9, "w", 10], ["cyl", 0.11, 0.11, 1.6, 0.8, 0.8, 0.9, "w", 10],
+      ["coin", 0.44, 0, 2.15, 0.55, "c"], ["box", 0.16, 0.4, 0.05, -0.12, 2.62, 0.55, "d"], ["box", 0.16, 0.4, 0.05, 0.12, 2.62, 0.55, "d"], ["win", 0, 0.55, 0.99]] },
+    hunt: { pal: { a: 0xf2b53d, b: 0xe07f13, c: 0xfdf6e3, d: 0x3fae5a }, parts: [
+      ["disc", 1.02, 0, 0.07, 0, "b"], ["sph", 0.92, 0, 0.98, 0, "a", 0],
+      ["sph", 0.14, -0.5, 1.35, 0.55, "c", 0], ["sph", 0.11, 0.45, 1.55, 0.4, "c", 0], ["sph", 0.12, 0.1, 1.1, 0.8, "c", 0],
+      ["cone", 0.12, 0.4, -0.95, 0.2, 0.7, "d"], ["cone", 0.12, 0.4, 0.95, 0.2, 0.6, "d"]], noDoor: 1 },
+    gacha: { pal: { a: 0xe85d8a, b: 0xc2436b, c: 0xbfe6ff, d: 0xe9c46a }, parts: [
+      ["box", 1.7, 1.1, 1.5, 0, 0.55, 0, "a"], ["box", 1.85, 0.12, 1.65, 0, 1.16, 0, "b"],
+      ["sph", 0.78, 0, 1.18, 0, "c", 1],
+      ["sph", 0.16, -0.3, 1.3, 0.35, "a", 0], ["sph", 0.16, 0.25, 1.38, 0.3, "d", 0], ["sph", 0.16, 0.05, 1.26, -0.25, 0x3fae5a, 0],
+      ["coin", 0.17, 0, 0.62, 0.78, "d"]], doorZ: 0.78 },
+    trophy: { pal: { a: 0x8a6d1f, b: 0x6e5518, c: 0xffd166, w: 0xf3ead8 }, parts: [
+      ["box", 2.1, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 1.1, 0.3, 1.1, 0, 1.55, 0, "b"],
+      ["cyl", 0.16, 0.2, 0.3, 0, 1.85, 0, "c", 12], ["cyl", 0.42, 0.26, 0.62, 0, 2.3, 0, "c", 14],
+      ["tor", 0.17, 0.045, -0.45, 2.35, 0, "c", 0], ["tor", 0.17, 0.045, 0.45, 2.35, 0, "c", 0], ["win", -0.65, 0.7, 0.99], ["win", 0.65, 0.7, 0.99]] },
+    album: { pal: { a: 0x57a8d8, b: 0x3d84b8, c: 0xfdf6e3, d: 0xf59e0b }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.68, 0, "b"],
+      ["box", 0.62, 0.78, 0.05, -0.52, 1.05, 0.97, "c"], ["sph", 0.11, -0.68, 1.28, 1.01, "d", 0], ["box", 0.5, 0.2, 0.05, -0.52, 0.78, 1.01, 0x3fae5a],
+      ["box", 0.62, 0.78, 0.05, 0.52, 1.05, 0.97, "c"], ["win", 0, 0.4, 0.99]] },
+    room: { pal: { a: 0xb08968, b: 0x8a6544, c: 0xb03a2e, w: 0xf3ead8 }, parts: [
+      ["box", 1.9, 1.3, 1.7, 0, 0.65, 0, "a"], ["cone", 1.6, 0.9, 0, 1.75, 0, "c", 4],
+      ["box", 0.3, 0.7, 0.3, 0.55, 1.95, -0.3, "b"], ["win", -0.55, 0.7, 0.88], ["win", 0.55, 0.7, 0.88]], doorZ: 0.88 },
+    league: { pal: { a: 0x3a2d5c, b: 0x2c2145, c: 0xe9c46a, w: 0xf3ead8 }, parts: [
+      ["box", 2.2, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.58, 0, "c"],
+      ["box", 0.5, 0.16, 0.4, -0.6, 0.08, 0.95, "b"], ["box", 0.5, 0.32, 0.4, 0, 0.16, 0.95, "b"], ["box", 0.5, 0.24, 0.4, 0.6, 0.12, 0.95, "b"],
+      ["win", -0.6, 1.05, 0.99], ["win", 0.6, 1.05, 0.99]] },
+    vip: { pal: { a: 0x3a0d2e, b: 0x2a0a20, c: 0xe9c46a, d: 0xffd166 }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.68, 0, "c"],
+      ["box", 0.72, 0.24, 0.3, 0, 2.0, 0.5, "d"], ["cone", 0.09, 0.3, -0.24, 2.26, 0.5, "d"], ["cone", 0.09, 0.34, 0, 2.28, 0.5, "d"], ["cone", 0.09, 0.3, 0.24, 2.26, 0.5, "d"],
+      ["win", -0.65, 0.75, 0.99], ["win", 0.65, 0.75, 0.99]] },
+    gx: { pal: { a: 0xe85d8a, b: 0xc2436b, c: 0x3ddc84, d: 0x26262e }, parts: [
+      ["box", 2.1, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.3, 0.14, 2.1, 0, 1.68, 0, "b"],
+      ["tor", 0.58, 0.08, 0, 1.65, 0.97, "c", 0], ["coin", 0.2, 0, 1.65, 0.99, "d"],
+      ["box", 0.14, 0.9, 0.05, 0, 0.75, 0.97, "c"], ["win", -0.72, 0.75, 0.99], ["win", 0.72, 0.75, 0.99]] },
+    p2b: { pal: { a: 0x7cc4ff, b: 0x4a9ecf, c: 0xfdf6e3, d: 0x33304a }, parts: [
+      ["box", 2.1, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.3, 0.3, 0.5, 0, 1.68, 0.6, "b"],
+      ["tor", 0.27, 0.07, -0.2, 2.05, 0.6, "c", 0], ["tor", 0.27, 0.07, 0.2, 2.05, 0.6, "c", 0],
+      ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] },
+    retro: { pal: { a: 0xe0503c, b: 0xb83a2c, c: 0x9fd8ff, d: 0x26262e, y: 0xffd166, g: 0x3ddc84 }, parts: [
+      ["box", 1.7, 2.1, 1.6, 0, 1.05, 0, "a"],
+      ["box", 1.5, 0.32, 0.06, 0, 1.92, 0.83, "y"], ["box", 1.1, 0.85, 0.06, 0, 1.35, 0.83, "c"],
+      ["box", 1.3, 0.1, 0.5, 0, 0.78, 0.85, "b"], ["coin", 0.07, -0.3, 0.86, 1.05, "y"], ["coin", 0.07, 0.05, 0.86, 1.05, "g"], ["coin", 0.07, 0.4, 0.86, 1.05, 0xe85d8a]], noDoor: 1 }
+  };
+  var LANDMARK_DESIGNS = {
+        board: { pal: { a: 0x5b3a8e, b: 0x3c2560, c: 0xe9c46a, w: 0xf3ead8, d: 0x26262e }, parts: [
+      ["box", 2.6, 0.3, 2.6, 0, 0.15, 0, "w"],
+      ["box", 0.6, 0.06, 0.6, -0.62, 0.33, -0.62, "d"], ["box", 0.6, 0.06, 0.6, 0.62, 0.33, 0.62, "d"], ["box", 0.6, 0.06, 0.6, -0.62, 0.33, 0.62, "a"], ["box", 0.6, 0.06, 0.6, 0.62, 0.33, -0.62, "a"],
+      ["cyl", 0.55, 0.62, 1.7, 0, 1.15, 0, "a", 16], ["cyl", 0.7, 0.7, 0.35, 0, 2.15, 0, "c", 16],
+      ["box", 0.18, 0.3, 0.18, -0.45, 2.45, 0, "c"], ["box", 0.18, 0.3, 0.18, 0, 2.45, 0, "c"], ["box", 0.18, 0.3, 0.18, 0.45, 2.45, 0, "c"]], noDoor: 1 },
+    puzzle: { pal: { a: 0xf2b53d, b: 0x35b558, c: 0x2563eb, d: 0xe85d8a }, parts: [
+      ["box", 0.85, 2.2, 0.85, -0.85, 1.1, 0, "a"], ["box", 0.85, 2.2, 0.85, 0.85, 1.1, 0, "c"],
+      ["box", 2.55, 0.85, 0.85, 0, 2.6, 0, "b"], ["tor", 0.5, 0.12, 0, 1.35, 0.5, "d", 0],
+      ["box", 0.5, 0.5, 0.5, -0.85, 2.45, 0, "d"], ["box", 0.5, 0.5, 0.5, 0.85, 2.45, 0, "a"]], noDoor: 1 },
+    action: { pal: { a: 0x2563eb, b: 0x141a2c, c: 0xf2c53d }, parts: [
+      ["box", 0.5, 2.6, 0.5, -1.0, 1.3, 0, "b"], ["box", 0.5, 2.6, 0.5, 1.0, 1.3, 0, "b"],
+      ["box", 2.5, 0.42, 0.5, 0, 2.75, 0, "a"],
+      ["box", 0.7, 0.22, 0.06, 0, 2.2, 0.28, "c"], ["box", 0.5, 0.18, 0.06, 0, 1.9, 0.28, "c"], ["box", 0.32, 0.15, 0.06, 0, 1.62, 0.28, "c"],
+      ["tor", 0.42, 0.08, -1.0, 3.15, 0, "c", 1], ["tor", 0.42, 0.08, 1.0, 3.15, 0, "c", 1]], noDoor: 1 },
+    gambling: { pal: { a: 0x7a1f24, b: 0x5c161b, c: 0xe9c46a, w: 0xf7f6f0 }, parts: [
+      ["box", 2.4, 1.8, 2.0, 0, 0.9, 0, "a"], ["box", 2.6, 0.18, 2.2, 0, 1.9, 0, "c"],
+      ["cyl", 0.58, 0.66, 1.3, 0, 2.6, 0, "b", 16], ["sph", 0.3, 0, 3.42, 0, "c", 0],
+      ["box", 0.14, 0.14, 0.05, -0.8, 1.9, 1.05, "c"], ["box", 0.14, 0.14, 0.05, -0.4, 1.9, 1.05, "w"], ["box", 0.14, 0.14, 0.05, 0, 1.9, 1.05, "c"], ["box", 0.14, 0.14, 0.05, 0.4, 1.9, 1.05, "w"], ["box", 0.14, 0.14, 0.05, 0.8, 1.9, 1.05, "c"],
+      ["win", -0.7, 0.9, 1.03], ["win", 0.7, 0.9, 1.03], ["win", 0, 1.3, 1.03]], doorZ: 1.03 },
+    learn: { pal: { a: 0x2b3a67, b: 0x1f2c4f, c: 0xe9c46a, w: 0xf3ead8 }, parts: [
+      ["box", 2.6, 1.8, 2.0, 0, 0.9, 0, "a"],
+      ["cyl", 0.11, 0.11, 1.8, -1.05, 0.9, 0.95, "w", 10], ["cyl", 0.11, 0.11, 1.8, -0.35, 0.9, 0.95, "w", 10], ["cyl", 0.11, 0.11, 1.8, 0.35, 0.9, 0.95, "w", 10], ["cyl", 0.11, 0.11, 1.8, 1.05, 0.9, 0.95, "w", 10],
+      ["box", 2.7, 0.32, 0.45, 0, 1.98, 0.85, "c"],
+      ["box", 0.85, 0.09, 0.62, -0.44, 1.9, -0.2, "w"], ["box", 0.85, 0.09, 0.62, 0.44, 1.9, -0.2, "w"], ["win", 0, 0.6, 1.03]], doorZ: 1.03 },
+    expansion: { pal: { a: 0x8a8f98, b: 0x565d66, c: 0xe07f13, d: 0x26262e }, parts: [
+      ["box", 2.6, 1.4, 2.0, 0, 0.7, 0, "a"], ["box", 2.8, 0.14, 2.2, 0, 1.48, 0, "b"],
+      ["cyl", 0.28, 0.32, 1.8, -0.75, 2.35, -0.45, "b", 12], ["cyl", 0.28, 0.32, 1.8, 0.75, 2.35, -0.45, "b", 12],
+      ["tor", 0.55, 0.13, 0, 0.95, 1.06, "c", 0],
+      ["box", 0.16, 1.9, 0.16, 1.15, 2.4, 0.6, "c"], ["box", 1.3, 0.14, 0.14, 0.55, 3.3, 0.6, "c"], ["box", 0.2, 0.35, 0.2, 0.05, 3.05, 0.6, "d"],
+      ["win", -0.7, 0.7, 1.03]], doorZ: 1.03 },
+    retro: { pal: { a: 0xe0503c, b: 0xb83a2c, c: 0x9fd8ff, d: 0x26262e, y: 0xffd166 }, parts: [
+      ["box", 1.9, 2.4, 1.7, 0, 1.2, 0, "a"],
+      ["box", 1.7, 0.36, 0.06, 0, 2.2, 0.88, "y"], ["box", 1.25, 0.95, 0.06, 0, 1.55, 0.88, "c"],
+      ["box", 1.45, 0.1, 0.5, 0, 0.9, 0.9, "b"], ["coin", 0.08, -0.32, 0.98, 1.1, "y"], ["coin", 0.08, 0.06, 0.98, 1.1, 0x3ddc84]], noDoor: 1 }
+  };
+  var DISTRICT_PROPS = {
+        board: [
+      { pal: { w: 0xf7f6f0, d: 0x26262e }, parts: [["box", 0.55, 0.55, 0.55, 0, 0.28, 0, "w"], ["coin", 0.08, 0, 0.36, 0.29, "d"]] },
+      { pal: { a: 0x5b3a8e, c: 0xe9c46a }, parts: [["cyl", 0.16, 0.2, 0.5, 0, 0.25, 0, "a", 10], ["sph", 0.19, 0, 0.62, 0, "c", 0]] },
+      { pal: { a: 0xc8a165, d: 0x26262e }, parts: [["box", 0.7, 0.12, 0.7, 0, 0.06, 0, "a"], ["sph", 0.13, -0.15, 0.2, 0, "d", 0], ["sph", 0.13, 0.16, 0.2, 0.1, "d", 0]] }
+    ],
+    puzzle: [
+      { pal: { a: 0x2563eb }, parts: [["box", 0.6, 0.6, 0.6, 0, 0.3, 0, "a"], ["box", 0.4, 0.4, 0.4, 0.15, 0.8, 0, "a"]] },
+      { pal: { c: 0xc8b06a, d: 0x26262e }, parts: [["cyl", 0.05, 0.05, 0.7, 0, 0.35, 0, "d", 8], ["tor", 0.3, 0.08, 0, 0.85, 0, "c", 0]] },
+      { pal: { a: 0xe85d8a }, parts: [["box", 0.45, 0.65, 0.06, 0, 0.33, 0, "a"], ["box", 0.45, 0.65, 0.06, 0.2, 0.33, -0.15, "a"]] }
+    ],
+    action: [
+      { pal: { c: 0xe07f13, w: 0xf7f6f0 }, parts: [["cone", 0.26, 0.62, 0, 0.36, 0, "c"], ["box", 0.5, 0.08, 0.5, 0, 0.04, 0, "c"], ["box", 0.3, 0.12, 0.03, 0, 0.36, 0.2, "w"]] },
+      { pal: { d: 0x5a6a88, c: 0xf2c53d }, parts: [["cyl", 0.05, 0.05, 0.9, 0, 0.45, 0, "d", 8], ["tor", 0.3, 0.06, 0, 1.05, 0, "c", 0]] },
+      { pal: { d: 0x26262e, c: 0xe0483e }, parts: [["cyl", 0.04, 0.04, 1.1, 0, 0.55, 0, "d", 8], ["box", 0.45, 0.28, 0.03, 0.24, 0.95, 0, "c"]] }
+    ],
+    gambling: [
+      { pal: { d: 0xe0483e, w: 0xf7f6f0, c: 0xe9c46a }, parts: [["disc", 0.34, 0, 0.06, 0, "d"], ["disc", 0.34, 0, 0.18, 0, "w"], ["disc", 0.34, 0, 0.3, 0, "c"]] },
+      { pal: { c: 0xffd97a, d: 0x26262e }, parts: [["cyl", 0.09, 0.11, 0.85, 0, 0.43, 0, "d", 10], ["sph", 0.13, 0, 0.95, 0, "c", 0]] },
+      { pal: { g: 0x2e7d32 }, parts: [["cone", 0.4, 0.8, 0, 0.4, 0, "g"], ["cyl", 0.07, 0.09, 0.3, 0, 0.15, 0, 0x8a5a2b, 8]] }
+    ],
+    learn: [
+      { pal: { a: 0xb03a2e, b: 0x2b3a67, c: 0x35b558 }, parts: [["box", 0.5, 0.09, 0.35, 0, 0.05, 0, "a"], ["box", 0.45, 0.09, 0.32, 0, 0.14, 0, "b"], ["box", 0.4, 0.09, 0.3, 0, 0.23, 0, "c"]] },
+      { pal: { c: 0xf2b53d, w: 0xf3ead8 }, parts: [["cyl", 0.07, 0.07, 0.95, 0, 0.48, 0, "c", 8], ["cone", 0.07, 0.26, 0, 1.08, 0, "w"]] },
+      { pal: { c: 0x57a8d8, d: 0x8a5a2b }, parts: [["cyl", 0.05, 0.05, 0.55, 0, 0.28, 0, "d", 8], ["sph", 0.26, 0, 0.82, 0, "c", 0]] }
+    ],
+    expansion: [
+      { pal: { a: 0x9e6a41, b: 0x8a5a2b }, parts: [["box", 0.62, 0.62, 0.62, 0, 0.31, 0, "a"], ["box", 0.62, 0.08, 0.62, 0, 0.35, 0, "b"]] },
+      { pal: { a: 0x565d66, c: 0xe07f13 }, parts: [["cyl", 0.3, 0.3, 0.7, 0, 0.35, 0, "a", 12], ["tor", 0.3, 0.05, 0, 0.72, 0, "c", 1]] },
+      { pal: { c: 0xc8b06a, d: 0x26262e }, parts: [["box", 0.12, 0.8, 0.12, 0, 0.4, 0, "d"], ["tor", 0.34, 0.09, 0, 0.95, 0, "c", 0]] }
+    ],
+    retro: [
+      { pal: { a: 0x3a3f4c, c: 0x9fd8ff, y: 0xffd166 }, parts: [["box", 0.55, 0.75, 0.5, 0, 0.38, 0, "a"], ["box", 0.4, 0.3, 0.04, 0, 0.52, 0.26, "c"], ["box", 0.45, 0.1, 0.04, 0, 0.82, 0.26, "y"]] },
+      { pal: { d: 0x26262e }, parts: [["cyl", 0.03, 0.03, 1.2, 0, 0.6, 0, "d", 6], ["sph", 0.06, 0, 1.24, 0, 0xe0483e, 0]] }
+    ]
+  };
+  /* BN-254 walker rigs: a flat billboard reads paper-thin in 3D,
+     so every walker (player + residents) is a 3-layer rig —
+     front art, a slightly larger dark silhouette, and a greyed
+     mirrored back — that turns to face its travel direction.
+     The layers give real thickness from the side and a readable
+     back for every cast member and every equipped mascot,
+     because the rig only ever depends on the walker's texture.
+     BN-195's motion values (bob, strafe lean, landing squash)
+     are applied to the rig group unchanged. */
+  var walkerPlaneGeo = null;
+  function makeWalkerRig(T, scale) {
+    var grp = new T.Group();
+    if (!walkerPlaneGeo) walkerPlaneGeo = new T.PlaneGeometry(1, 1);
+    function plane(tint, z, flip, grow) {
+      var m = new T.Mesh(walkerPlaneGeo, new T.MeshBasicMaterial({ map: iconTexture, transparent: true, depthWrite: false, color: tint, side: T.DoubleSide }));
+      m.position.z = z;
+      if (flip) m.rotation.y = Math.PI;
+      if (grow) m.scale.setScalar(grow);
+      grp.add(m);
+      return m;
+    }
+    var back = plane(0x9a97a3, -0.085, true, 1);
+    var mid = plane(0x35313e, -0.045, false, 1.06);
+    var front = plane(0xffffff, 0, false, 1);
+    grp.userData.planes = [front, mid, back];
+    grp.scale.setScalar(scale);
+    return grp;
+  }
+  function rigSetMap(rig, tex) {
+    if (!rig || !tex) return;
+    rig.userData.planes.forEach(function (p) { p.material.map = tex; p.material.needsUpdate = true; });
+  }
+  var _roSide = null, _roTan = null, _roQ = null, _roAxis = null;
+  function rigOrient(T, obj, up, fwd, roll) {
+    if (!_roSide) { _roSide = new T.Vector3(); _roTan = new T.Vector3(); _roQ = new T.Quaternion(); _roAxis = new T.Vector3(0, 0, 1); }
+    _roTan.set(0, 1, 0);
+    if (Math.abs(up.y) > 0.93) _roTan.set(1, 0, 0);
+    _roSide.crossVectors(up, _roTan).normalize();
+    _roTan.crossVectors(_roSide, up).normalize();
+    var ang = Math.atan2(fwd.dot(_roSide), fwd.dot(_roTan));
+    obj.quaternion.copy(basisQuat(T, up, ang));
+    if (roll) { _roQ.setFromAxisAngle(_roAxis, roll); obj.quaternion.multiply(_roQ); }
+  }
+  function makeLandmark(T, genre) {
+    var D = LANDMARK_DESIGNS[genre];
+    if (!D) return null;
+    var g = buildFromDesign(T, D, genre);
+    g.userData.designKey = "lm:" + genre;
+    return g;
+  }
+  function scatterProps(T, d, buildings) {
+    var list = DISTRICT_PROPS[d.genre];
+    if (!list) return;
+    list.forEach(function (D, i) {
+      for (var tries = 0; tries < 16; tries++) {
+        var h1 = hashStr("prop" + d.genre + i + ":" + tries), h2 = hashStr("prop2" + d.genre + i + ":" + tries);
+        var off = new T.Vector3(h1 * 2 - 1, h2 * 2 - 1, (h1 + h2 - 1)).normalize().multiplyScalar((0.35 + 0.55 * h2) * (d.capR || 0.4));
+        var dir = d.center.clone().add(off);
+        if (dir.lengthSq() < 1e-6) continue;
+        dir.normalize();
+        var clash = false;
+        buildings.forEach(function (b) { if (b.dir.angleTo(dir) < 2.9 / R) clash = true; });
+        if (d.center.angleTo(dir) < Math.min(4.6 / R, (d.capR || 0.4) * 0.55)) clash = true;
+        if (clash) continue;
+        var g = buildFromDesign(T, D, d.genre);
+        g.userData.propGenre = d.genre;
+        placeOnSphere(T, g, dir, hashStr("propa" + d.genre + i) * 6.28);
+        scene.add(g);
+        break;
+      }
+    });
+  }
+
+  function makeBuilding(T, genre, colorHex, hash, key) {
+    if (key && BUILDING_DESIGNS[key]) { var bd = buildFromDesign(T, BUILDING_DESIGNS[key], genre); if (bd) { bd.userData.designKey = key; bd.scale.setScalar(0.85 + hash * 0.35); return bd; } }
     var grp = new T.Group();
     var col = new T.Color(colorHex); col.offsetHSL((hash - 0.5) * 0.05, 0, (hash - 0.5) * 0.06);
     var wall = new T.Color(0xf3ead8); wall.offsetHSL(0, 0, (hash - 0.5) * 0.05);
@@ -110040,14 +110730,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   };
   function applySky() {
     if (!scene) return;
+    if (cycleT != null) { applyCycle(); return; }
     var sky = (homeView && homeView.getAttribute("data-sky")) || "day";
     var p = SKY_PRESETS[sky] || SKY_PRESETS.day;
     scene.background = new (PL_T().Color)(p.bg);
     if (hemi) hemi.intensity = p.hemi;
     if (sunLight) { sunLight.intensity = p.sun; sunLight.color.setHex(p.sunCol); }
-    /* P3 polish: the gambling quarter's windows glow after dark —
-       an emissive-intensity swap on the materials makeBuilding
-       already created (free, no new lights). */
     var glow = sky === "night" ? 1.7 : (sky === "dusk" || sky === "dawn") ? 1.15 : 0.5;
     gamblingWinMats.forEach(function (mm) { mm.emissiveIntensity = glow; });
   }
@@ -110090,6 +110778,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       catalog.districts.forEach(function (d) { var dot = v.dot(d.center); if (dot > best) { best = dot; bestD = d; } });
       if (bestD && best > Math.cos(bestD.capR + 0.05)) tmp.lerp(new T.Color(bestD.color), 0.34);
       if (v.dot(pole) > Math.cos(0.30)) tmp.lerp(stone, 0.75);
+      /* BN-255 ground grain: a per-vertex hash speckle plus a
+         checker beat in the gambling quarter (neon-floor feel),
+         kept subtle so the biome colours still lead. */
+      var gh = hashStr("grain" + i) - 0.5;
+      tmp.offsetHSL(0, 0, gh * 0.045);
+      if (bestD && bestD.genre === "gambling" && best > Math.cos(bestD.capR)) { var ck = ((Math.floor(v.x * 42) + Math.floor(v.y * 42) + Math.floor(v.z * 42)) % 2 + 2) % 2; tmp.offsetHSL(0, 0, ck ? 0.018 : -0.018); }
+      if (bestD && bestD.genre === "learn" && best > Math.cos(bestD.capR)) tmp.offsetHSL(0, 0.02, gh * 0.02);
       colors.push(tmp.r, tmp.g, tmp.b);
     }
     geo.setAttribute("color", new T.Float32BufferAttribute(colors, 3));
@@ -110107,13 +110802,99 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var statue = makeCharacter(T, { body: 0xa89a80, dark: 0x8a7c62, belly: 0xcfc2a8 });
     placeOnSphere(T, statue, statueDir, 0.8, 2.4); scene.add(statue);
 
+    /* BN-255 paths: stepping discs along the great circle from
+       the plaza to every district centre. */
+    var pathGeo = new T.CircleGeometry(0.52, 12); pathGeo.rotateX(-Math.PI / 2);
+    var pathMat = new T.MeshStandardMaterial({ color: 0xd8cba6, roughness: 1, transparent: true, opacity: 0.85 });
+    catalog.districts.forEach(function (d) {
+      var arc = Math.acos(Math.max(-1, Math.min(1, pole.dot(d.center))));
+      var steps = Math.max(2, Math.floor(arc * R / 1.45));
+      for (var k = 1; k < steps; k++) {
+        var f = k / steps;
+        var dir = pole.clone().multiplyScalar(Math.sin((1 - f) * arc) / Math.sin(arc)).addScaledVector(d.center, Math.sin(f * arc) / Math.sin(arc)).normalize();
+        var pd = new T.Mesh(pathGeo, pathMat);
+        placeOnSphere(T, pd, dir, 0.035, hashStr("path" + d.genre + k) * 3);
+        scene.add(pd); PATH_COUNT++;
+      }
+    });
+
+    /* BN-255 plaza furniture: fountain, lamps, benches, and a
+       flower ring around the statue. */
+    var woodMat = std(T, 0x8a6544, 0.9), stoneMat2 = std(T, 0x9a917e, 1);
+    var fDir = new T.Vector3(-0.17, 1, -0.11).normalize();
+    var fountain = new T.Group();
+    var fBasin = new T.Mesh(new T.CylinderGeometry(1.05, 1.25, 0.5, 16), stoneMat2); fBasin.position.y = 0.25; fountain.add(fBasin);
+    FOUNTAIN_WATER = new T.MeshStandardMaterial({ color: 0x6fc3e8, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.9 });
+    var fWater = new T.Mesh(new T.CylinderGeometry(0.92, 0.92, 0.08, 16), FOUNTAIN_WATER); fWater.position.y = 0.5; fountain.add(fWater);
+    var fSpout = new T.Mesh(new T.CylinderGeometry(0.09, 0.13, 0.55, 8), stoneMat2); fSpout.position.y = 0.75; fountain.add(fSpout);
+    var fJet = new T.Mesh(new T.ConeGeometry(0.16, 0.6, 8), new T.MeshStandardMaterial({ color: 0xbfe6ff, roughness: 0.2, transparent: true, opacity: 0.65 })); fJet.position.y = 1.25; fJet.name = "fjet"; fountain.add(fJet);
+    fountain.userData.jet = fJet;
+    scene.userData.fountain = fountain;
+    placeOnSphere(T, fountain, fDir, 0.02, 0.8); scene.add(fountain);
+    var lampMat = new T.MeshStandardMaterial({ color: 0xfff2cf, roughness: 0.4, emissive: 0xffca7a, emissiveIntensity: 0.15 });
+    LAMP_MATS.push(lampMat);
+    var lampHeadGeo = new T.SphereGeometry(0.14, 10, 8), lampPoleGeo = new T.CylinderGeometry(0.045, 0.06, 1.7, 8);
+    for (var li = 0; li < 4; li++) {
+      var la = li * Math.PI / 2 + 0.4;
+      var ldir = pole.clone().multiplyScalar(Math.cos(0.185)).addScaledVector(new T.Vector3(Math.cos(la), 0, Math.sin(la)), Math.sin(0.185)).normalize();
+      var lamp = new T.Group();
+      var lp = new T.Mesh(lampPoleGeo, stoneMat2); lp.position.y = 0.85; lamp.add(lp);
+      var lh = new T.Mesh(lampHeadGeo, lampMat); lh.position.y = 1.78; lamp.add(lh);
+      placeOnSphere(T, lamp, ldir, 0.02, la); scene.add(lamp);
+      var bench = new T.Group();
+      var bs = new T.Mesh(new T.BoxGeometry(1.15, 0.09, 0.42), woodMat); bs.position.y = 0.46; bench.add(bs);
+      var bb = new T.Mesh(new T.BoxGeometry(1.15, 0.5, 0.08), woodMat); bb.position.set(0, 0.75, -0.2); bench.add(bb);
+      var bl1 = new T.Mesh(new T.BoxGeometry(0.08, 0.46, 0.36), stoneMat2); bl1.position.set(-0.45, 0.23, 0); bench.add(bl1);
+      var bl2 = bl1.clone(); bl2.position.x = 0.45; bench.add(bl2);
+      var bdir = pole.clone().multiplyScalar(Math.cos(0.24)).addScaledVector(new T.Vector3(Math.cos(la + 0.8), 0, Math.sin(la + 0.8)), Math.sin(0.24)).normalize();
+      placeOnSphere(T, bench, bdir, 0.02, la + 0.8 + Math.PI); scene.add(bench);
+    }
+    var flowerMats = [std(T, 0xe85d8a, 0.8), std(T, 0xffd166, 0.8), std(T, 0xf7f6f0, 0.8)];
+    for (var fi = 0; fi < 10; fi++) {
+      var fa = fi / 10 * Math.PI * 2;
+      var fdir2 = statueDir.clone().multiplyScalar(Math.cos(0.085)).addScaledVector(new T.Vector3(Math.cos(fa), 0, Math.sin(fa)), Math.sin(0.085)).normalize();
+      var fl = new T.Mesh(new T.SphereGeometry(0.09, 8, 6), flowerMats[fi % 3]);
+      placeOnSphere(T, fl, fdir2, 0.1, fa); scene.add(fl);
+    }
+
+    /* BN-255 smoking spot: a small, properly-kept corner on the
+       plaza edge toward the expansion district — stand ashtray,
+       bench, screen fence and a pictogram sign (no brands). */
+    var expD = null;
+    catalog.districts.forEach(function (d) { if (d.genre === "expansion") expD = d; });
+    if (expD) {
+      var spotDir = pole.clone().lerp(expD.center, 0.52).normalize();
+      var spot = new T.Group();
+      var sPlat = new T.Mesh(new T.CylinderGeometry(1.35, 1.45, 0.12, 18), stoneMat2); sPlat.position.y = 0.06; spot.add(sPlat);
+      var sBench = new T.Mesh(new T.BoxGeometry(1.2, 0.09, 0.4), woodMat); sBench.position.set(-0.35, 0.48, -0.55); spot.add(sBench);
+      var sLeg = new T.Mesh(new T.BoxGeometry(1.0, 0.42, 0.3), stoneMat2); sLeg.position.set(-0.35, 0.21, -0.55); spot.add(sLeg);
+      var ash = new T.Group();
+      var aPole = new T.Mesh(new T.CylinderGeometry(0.05, 0.07, 0.78, 8), std(T, 0x565d66, 0.6)); aPole.position.y = 0.39; ash.add(aPole);
+      var aBowl = new T.Mesh(new T.CylinderGeometry(0.19, 0.12, 0.12, 12), std(T, 0x333a45, 0.5)); aBowl.position.y = 0.82; ash.add(aBowl);
+      var aSand = new T.Mesh(new T.CylinderGeometry(0.15, 0.15, 0.03, 12), std(T, 0xd8cba6, 1)); aSand.position.y = 0.89; ash.add(aSand);
+      ash.position.set(0.45, 0.1, 0.25); spot.add(ash);
+      for (var sfi = -1; sfi <= 1; sfi++) {
+        var fence = new T.Mesh(new T.BoxGeometry(1.05, 0.95, 0.05), std(T, 0x6a7a72, 0.9));
+        fence.position.set(sfi * 1.02, 0.55, -1.05);
+        fence.rotation.y = sfi * 0.35;
+        spot.add(fence);
+      }
+      var signPole = new T.Mesh(new T.CylinderGeometry(0.04, 0.05, 1.5, 8), stoneMat2); signPole.position.set(0.95, 0.75, 0.6); spot.add(signPole);
+      var signPlate = new T.Mesh(new T.PlaneGeometry(0.62, 0.78), new T.MeshBasicMaterial({ map: smokingSignTexture(T), transparent: false, side: T.DoubleSide }));
+      signPlate.position.set(0.95, 1.65, 0.6); spot.add(signPlate);
+      placeOnSphere(T, spot, spotDir, 0.03, Math.atan2(spotDir.x, spotDir.z));
+      scene.add(spot);
+      SMOKING = { dir: spotDir, group: spot };
+    }
+
     /* buildings + plates + door pads */
     var padGeo = new T.CircleGeometry(0.85, 20); padGeo.rotateX(-Math.PI / 2);
     catalog.districts.forEach(function (d) {
-      var lm = makeBuilding(T, d.genre, d.color, 0.5); lm.scale.multiplyScalar(1.7);
+      var lm = makeLandmark(T, d.genre) || makeBuilding(T, d.genre, d.color, 0.5); lm.scale.multiplyScalar(1.7);
+      if (d.genre === "expansion" && !reduced) { makeSmoke(T, lm, -0.75, 3.35, -0.45, 3, 0.85); makeSmoke(T, lm, 0.75, 3.35, -0.45, 3, 0.85); }
       placeOnSphere(T, lm, d.center, -0.05, d.center.x * 3.1); scene.add(lm);
       d.buildings.forEach(function (b) {
-        var grp = makeBuilding(T, d.genre, d.color, b.hash);
+        var grp = makeBuilding(T, d.genre, d.color, b.hash, b.id);
         placeOnSphere(T, grp, b.dir, -0.05, b.hash * 6.28);
         scene.add(grp);
         var pad = new T.Mesh(padGeo, new T.MeshBasicMaterial({ color: new T.Color(d.color), transparent: true, opacity: 0.55 }));
@@ -110130,6 +110911,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
         allPlates.push(b); allBuildings.push(b);
       });
     });
+    catalog.districts.forEach(function (d) { scatterProps(T, d, allBuildings); });
 
     /* scatter: trees + rocks, kept clear of buildings and the plaza */
     var occupied = allBuildings.map(function (b) { return b.dir; }).concat([pole]);
@@ -110149,6 +110931,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       var rock = new T.Mesh(new T.DodecahedronGeometry(0.3 + Math.random() * 0.25, 0), rockMat);
       placeOnSphere(T, rock, freeDir(0.9975), 0.08, Math.random() * 3); scene.add(rock);
     }
+    /* BN-255 terrain relief: gentle far-field hills, kept clear
+       of districts and the plaza by freeDir, visual only — the
+       walk math stays on the sphere. */
+    var hillGeo = new T.SphereGeometry(1, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2);
+    var hillMats = [std(T, 0x55904f, 1), std(T, 0x8f9a6a, 1), std(T, 0xa89a72, 1)];
+    for (var hi = 0; hi < 9; hi++) {
+      var hill = new T.Mesh(hillGeo, hillMats[hi % 3]);
+      var hs = 2.4 + hashStr("hill" + hi) * 2.6;
+      hill.scale.set(hs, 0.5 + hashStr("hillh" + hi) * 0.65, hs);
+      placeOnSphere(T, hill, freeDir(0.9987), -0.06, hashStr("hillr" + hi) * 3);
+      scene.add(hill);
+    }
+
     /* clouds + drifting motes (alive; stilled under reduced motion) */
     if (!reduced) {
       var cm = new T.MeshStandardMaterial({ color: 0xffffff, roughness: 1, transparent: true, opacity: 0.9 });
@@ -110158,6 +110953,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
         var pivot = new T.Group(); cg.position.set(0, R + 5.5 + Math.random() * 3, 0); pivot.add(cg);
         pivot.rotation.set(Math.random() * 0.8 - 0.4, Math.random() * 6.28, Math.random() * 0.5 - 0.25);
         scene.add(pivot); clouds.push({ pivot: pivot, speed: 0.008 + Math.random() * 0.01 });
+        /* BN-255: the cloud's drifting shadow on the ground. */
+        var csh = new T.Mesh(new T.CircleGeometry(2.3, 14), new T.MeshBasicMaterial({ color: 0x1c2b1a, transparent: true, opacity: 0.13, depthWrite: false }));
+        csh.geometry.rotateX(-Math.PI / 2);
+        scene.add(csh);
+        CLOUD_SHADOWS.push({ mesh: csh, cg: cg });
       }
       var n = 70, arr = new Float32Array(n * 3), vv = new T.Vector3();
       for (var mi = 0; mi < n; mi++) { vv.set(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(R + 0.5 + Math.random() * 1.6); arr[mi * 3] = vv.x; arr[mi * 3 + 1] = vv.y; arr[mi * 3 + 2] = vv.z; }
@@ -110170,9 +110970,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var tex = new T.TextureLoader().load("assets/icon-512.png");
     iconTexture = tex;
     if (T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
-    playerSprite = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-    playerSprite.scale.set(1.65, 1.65, 1);
-    scene.add(playerSprite);
+    playerRig = makeWalkerRig(T, 1.65);
+    rigSetMap(playerRig, tex);
+    playerSprite = playerRig.userData.planes[0];
+    scene.add(playerRig);
     var blobGeo = new T.CircleGeometry(0.55, 18); blobGeo.rotateX(-Math.PI / 2);
     blobShadow = new T.Mesh(blobGeo, new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }));
     scene.add(blobShadow);
@@ -110203,6 +111004,36 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     sizeRenderer();
     built = true;
     registerCoinHost();
+    /* BN-255 sky: fog, a star shell and an aurora for the night
+       half of the cycle; the cycle seeds from the app's current
+       sky phase so entering the planet feels continuous. */
+    scene.fog = new T.Fog(0x87b5e8, 55, 190);
+    var starGeo = new T.BufferGeometry();
+    var sArr = new Float32Array(380 * 3), sv = new T.Vector3();
+    for (var sti = 0; sti < 380; sti++) { sv.set(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(R + 44 + Math.random() * 12); sArr[sti * 3] = sv.x; sArr[sti * 3 + 1] = sv.y; sArr[sti * 3 + 2] = sv.z; }
+    starGeo.setAttribute("position", new T.BufferAttribute(sArr, 3));
+    starPoints = new T.Points(starGeo, new T.PointsMaterial({ size: 2, sizeAttenuation: false, transparent: true, opacity: 0, color: 0xeaf2ff, depthWrite: false, fog: false }));
+    scene.add(starPoints);
+    var auCv = document.createElement("canvas"); auCv.width = 256; auCv.height = 64;
+    var auCx = auCv.getContext("2d");
+    var auGr = auCx.createLinearGradient(0, 0, 0, 64);
+    auGr.addColorStop(0, "rgba(80,255,170,0)"); auGr.addColorStop(0.45, "rgba(80,255,170,0.55)"); auGr.addColorStop(0.7, "rgba(90,180,255,0.30)"); auGr.addColorStop(1, "rgba(80,255,170,0)");
+    auCx.fillStyle = auGr; auCx.fillRect(0, 0, 256, 64);
+    var auTex = new T.CanvasTexture(auCv);
+    for (var aui = 0; aui < 2; aui++) {
+      var auMat = new T.MeshBasicMaterial({ map: auTex, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false });
+      var au = new T.Mesh(new T.PlaneGeometry(64, 15), auMat);
+      au.position.set(0, R + 33, 0); au.rotation.y = aui * 1.2; au.rotation.z = 0.2 - aui * 0.15;
+      au.lookAt(0, 0, 0);
+      scene.add(au); auroraMats.push(auMat);
+    }
+    shootStar = new T.Mesh(new T.PlaneGeometry(3.2, 0.09), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, fog: false }));
+    shootStar.visible = false; scene.add(shootStar);
+    var skyNow = (homeView && homeView.getAttribute("data-sky")) || "day";
+    cycleT = { dawn: 0.5, day: 1.5, dusk: 2.5, night: 3.5 }[skyNow];
+    if (cycleT == null) cycleT = 1.5;
+    applyCycle();
+
     buildResidents();
     upgradeWalkerTexture();
   }
@@ -110282,9 +111113,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
      billboard for the equipped cast member's own art once it
      loads; the icon stays as the fallback. */
   function upgradeWalkerTexture() {
-    var T = PL_T(); if (!T || !playerSprite) return;
+    var T = PL_T(); if (!T || !playerRig) return;
     loadCastTexture(T, equippedCastId(), function (tex) {
-      if (tex && playerSprite) { playerSprite.material.map = tex; playerSprite.material.needsUpdate = true; }
+      if (tex && playerRig) rigSetMap(playerRig, tex);
     });
   }
   function buildResidents() {
@@ -110312,22 +111143,44 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       var rr = d.capR * 0.78 * Math.sqrt(rng()), th = rng() * Math.PI * 2;
       var dir = d.center.clone().multiplyScalar(Math.cos(rr)).addScaledVector(t1, Math.sin(rr) * Math.cos(th)).addScaledVector(t2, Math.sin(rr) * Math.sin(th)).normalize();
       var walker = { pos: dir.clone().multiplyScalar(R), fwd: t1.clone(), hop: 0, hopV: 0, grounded: true, walkPhase: rng() * 6 };
-      var mat = new T.SpriteMaterial({ map: iconTexture, transparent: true, depthWrite: false });
-      if (pick.tint) mat.color.setHex(pick.tint);
-      var sp = new T.Sprite(mat);
-      sp.scale.set(1.5, 1.5, 1);
+      var sp = makeWalkerRig(T, 1.5);
+      if (pick.tint) sp.userData.planes[0].material.color.setHex(pick.tint);
       scene.add(sp);
       var blob = new T.Mesh(blobGeo, new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.26, depthWrite: false }));
       scene.add(blob);
       var r = { id: pick.id, villager: !!pick.villager, tint: pick.tint || 0, home: d.genre, district: d, key: key, walker: walker, sprite: sp, blob: blob, rng: rng, t1: t1, t2: t2, target: null, pauseT: rng() * 2, waveT: 0, waveCd: 0, phase: rng() * 6.28 };
       residents.push(r);
-      loadCastTexture(T, pick.id, function (tex) { if (tex) { sp.material.map = tex; sp.material.needsUpdate = true; } });
+      loadCastTexture(T, pick.id, function (tex) { if (tex) rigSetMap(sp, tex); });
     });
   }
   function pickResidentTarget(r) {
     var d = r.district; if (!d) return;
     var rr = d.capR * 0.85 * Math.sqrt(r.rng()), th = r.rng() * Math.PI * 2;
     r.target = d.center.clone().multiplyScalar(Math.cos(rr)).addScaledVector(r.t1, Math.sin(rr) * Math.cos(th)).addScaledVector(r.t2, Math.sin(rr) * Math.sin(th)).normalize();
+  }
+  /* BN-255: a tiny shared pool of smoke puffs for residents'
+     smoking breaks at the plaza smoking spot. */
+  var PUFF_POOL = [];
+  function spawnPuff(T, pos, up) {
+    if (!scene) return;
+    var p = null;
+    for (var i = 0; i < PUFF_POOL.length; i++) if (PUFF_POOL[i].life <= 0) { p = PUFF_POOL[i]; break; }
+    if (!p) {
+      if (PUFF_POOL.length >= 6) return;
+      p = { sprite: new T.Sprite(new T.SpriteMaterial({ map: makePuffTexture(T), transparent: true, depthWrite: false, opacity: 0 })), life: 0, up: new T.Vector3(0, 1, 0) };
+      scene.add(p.sprite); PUFF_POOL.push(p);
+    }
+    p.life = 1; p.up.copy(up);
+    p.sprite.position.copy(pos);
+  }
+  function updatePuffs(T, dt) {
+    PUFF_POOL.forEach(function (p) {
+      if (p.life <= 0) { p.sprite.material.opacity = 0; return; }
+      p.life = Math.max(0, p.life - dt * 0.55);
+      p.sprite.position.addScaledVector(p.up, dt * 0.55);
+      var sc = 0.16 + (1 - p.life) * 0.5; p.sprite.scale.set(sc, sc, 1);
+      p.sprite.material.opacity = 0.4 * p.life;
+    });
   }
   function updateResidents(T, dt, t, pUp) {
     residents.forEach(function (r) {
@@ -110338,12 +111191,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       if (r.waveCd > 0) r.waveCd -= dt;
       var moving = false;
       if (!inTalk) {
+        /* BN-255: on a smoking break the resident stands at the
+           spot and puffs occasionally. */
+        if (r.smokeT > 0) {
+          r.smokeT -= dt;
+          r.puffCd = (r.puffCd || 0) - dt;
+          if (r.puffCd <= 0) { r.puffCd = 1.6 + r.rng() * 1.4; spawnPuff(T, r.walker.pos.clone().addScaledVector(up, 1.5), up); }
+        }
         if (r.pauseT > 0) { r.pauseT -= dt; }
         else {
-          if (!r.target) pickResidentTarget(r);
+          if (!r.target) { if (SMOKING && r.rng() < 0.16 && !r.smokeTrip && !(r.smokeT > 0)) { r.target = SMOKING.dir; r.smokeTrip = true; } else pickResidentTarget(r); }
           if (r.target) {
             var toT = r.target.clone().addScaledVector(up, -r.target.dot(up));
-            if (toT.lengthSq() < 0.0004) { r.target = null; r.pauseT = 2 + r.rng() * 3.5; }
+            if (toT.lengthSq() < 0.0004) { r.target = null; r.pauseT = 2 + r.rng() * 3.5; if (r.smokeTrip) { r.smokeTrip = false; r.smokeT = 6 + r.rng() * 6; r.pauseT += r.smokeT; } }
             else {
               toT.normalize();
               plWalkerTurnTo(T, r.walker, toT, dt * 2.4);
@@ -110357,8 +111217,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       }
       var bob = moving ? Math.abs(Math.sin(r.walker.walkPhase)) * 0.07 : Math.sin(t * 1.8 + r.phase) * 0.02;
       r.sprite.position.copy(up).multiplyScalar(R + bob + 0.78);
-      if (r.waveT > 0) { r.waveT -= dt; r.sprite.material.rotation = Math.sin((1.1 - Math.max(0, r.waveT)) * 16) * 0.2; }
-      else if (r.sprite.material.rotation !== 0) r.sprite.material.rotation *= Math.max(0, 1 - dt * 8);
+      if (r.waveT > 0) { r.waveT -= dt; r.roll = Math.sin((1.1 - Math.max(0, r.waveT)) * 16) * 0.2; }
+      else if (r.roll) r.roll *= Math.max(0, 1 - dt * 8);
+      rigOrient(T, r.sprite, up, r.walker.fwd, r.roll || 0);
       r.blob.position.copy(up).multiplyScalar(R + 0.06);
       r.blob.quaternion.copy(basisQuat(T, up, 0));
     });
@@ -110648,19 +111509,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       if (player.hop <= 0) { player.hop = 0; player.hopV = 0; player.grounded = true; squashT = 0.22; }
     }
     var bob = (res.moving && player.grounded) ? Math.abs(Math.sin(player.walkPhase)) * 0.09 : Math.sin(t * 1.8) * 0.02;
-    playerSprite.position.copy(pUp).multiplyScalar(R + player.hop + bob + 0.86);
+    playerRig.position.copy(pUp).multiplyScalar(R + player.hop + bob + 0.86);
     var leanTarget = 0;
     if (res.moving && inp.lastMoveDir) {
       var meshSide = new T.Vector3().crossVectors(pUp, player.fwd).normalize();
       leanTarget = -inp.lastMoveDir.dot(meshSide) * 0.16;
     }
     inp.strafeLean += (leanTarget - inp.strafeLean) * (1 - Math.exp(-dt * 6));
-    playerSprite.material.rotation = inp.strafeLean;
+    rigOrient(T, playerRig, pUp, player.fwd, inp.strafeLean);
     /* P3 walker polish: landing squash — a brief squash-and-settle
        on touchdown (scale only; the walker math is untouched). */
     if (squashT > 0) squashT = Math.max(0, squashT - dt);
     var sq = squashT > 0 ? Math.sin((squashT / 0.22) * Math.PI) : 0;
-    playerSprite.scale.set(1.65 * (1 + 0.13 * sq), 1.65 * (1 - 0.22 * sq), 1);
+    playerRig.scale.set(1.65 * (1 + 0.13 * sq), 1.65 * (1 - 0.22 * sq), 1.65);
     blobShadow.position.copy(pUp).multiplyScalar(R + 0.06);
     blobShadow.quaternion.copy(basisQuat(T, pUp, 0));
 
@@ -110677,6 +111538,43 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     if (!reduced) {
       clouds.forEach(function (c) { c.pivot.rotation.y += c.speed * dt * 10; });
       if (motes) motes.rotation.y += dt * 0.01;
+    }
+    /* BN-255 living world: the cycle advances, the sun orbits,
+       windows and lamps follow the darkness, smoke rises, cloud
+       shadows drift, plates sway, the fountain pulses, and on
+       dark nights a shooting star crosses now and then. */
+    if (cycleT != null) {
+      cycleT = (cycleT + dt * 4 / CYCLE_LEN) % 4;
+      var sunAng = cycleT / 4 * Math.PI * 2;
+      sunDirV.set(Math.sin(sunAng) * 0.85, Math.cos(sunAng) * 0.9, 0.38).normalize();
+      applyCycle();
+    }
+    SMOKERS.forEach(function (sm) { sm.update(t); });
+    updatePuffs(T, dt);
+    CLOUD_SHADOWS.forEach(function (cs) {
+      var wp = new T.Vector3(); cs.cg.getWorldPosition(wp);
+      var wd = wp.normalize();
+      cs.mesh.position.copy(wd).multiplyScalar(R + 0.045);
+      cs.mesh.quaternion.copy(basisQuat(T, wd, 0));
+    });
+    allPlates.forEach(function (b) { if (b.plate && b.plate.visible) b.plate.material.rotation = Math.sin(t * 1.35 + b.hash * 9) * 0.045; });
+    if (scene.userData.fountain) { var fj = scene.userData.fountain.userData.jet; if (fj) { fj.scale.y = 1 + Math.sin(t * 6.2) * 0.16; fj.rotation.y += dt * 1.5; } }
+    if (shootStar) {
+      if (!shootStar.userData.next) shootStar.userData.next = t + 14;
+      if (!shootStar.visible && cycleDark > 0.7 && t > shootStar.userData.next) {
+        shootStar.visible = true; shootStar.userData.t0 = t;
+        shootStar.userData.a = new T.Vector3(Math.random() - 0.5, 0.9, Math.random() - 0.5).normalize().multiplyScalar(R + 40);
+        shootStar.userData.b = shootStar.userData.a.clone().add(new T.Vector3(14 + Math.random() * 8, -4 - Math.random() * 3, 6)).setLength(R + 40);
+      }
+      if (shootStar.visible) {
+        var sf = (t - shootStar.userData.t0) / 1.15;
+        if (sf >= 1) { shootStar.visible = false; shootStar.userData.next = t + 16 + Math.random() * 26; }
+        else {
+          shootStar.position.lerpVectors(shootStar.userData.a, shootStar.userData.b, sf);
+          shootStar.lookAt(camera.position);
+          shootStar.material.opacity = Math.sin(sf * Math.PI) * 0.9;
+        }
+      }
     }
     sunLight.position.copy(player.pos).addScaledVector(sunDirV, 42);
     sunLight.target.position.copy(player.pos);
@@ -110848,6 +111746,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   if (homeView && window.MutationObserver) new MutationObserver(function () { applySky(); }).observe(homeView, { attributes: true, attributeFilter: ["data-sky"] });
   if (window.MutationObserver) new MutationObserver(function () { applySeasonTint(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-season"] });
   document.addEventListener("arcade:langchange", function () {
+    repaintStrings();
+    repaintNpcStrings();
     /* Planet chrome follows the app language live; district/building
        names are re-read from the tiles (the app re-renders them), the
        signpost is rebuilt from the fresh names, and — P2 — every
@@ -110879,8 +111779,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       if (nearBuilding) setPrompt(nearBuilding);
       if (built) buildSignpost();
     }
-    repaintStrings();
-    repaintNpcStrings();
   });
 
   /* ================= public hooks (DESIGN §5 + §7 probes) ================= */
@@ -110908,6 +111806,17 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   };
   window.__planetProbe = {
     constants: { deadzone: PL_DEAD, topSpeed: PL_TOP_SPEED, turnRate: PL_TURN_RATE, lookSens: LOOK_SENS, lookRateDrag: LOOK_RATE_DRAG, lookRateFree: LOOK_RATE_FREE, lookClamp: LOOK_CLAMP, radius: R },
+    /* BN-254: design coverage + walker-rig inspection for probes. */
+    designs: function () {
+      var out = { buildings: {}, landmarks: [], props: {}, walkerLayers: 0, residentLayers: 0, residentCount: 0 };
+      if (catalog) catalog.districts.forEach(function (d) { (d.buildings || []).forEach(function (b) { out.buildings[b.id] = b.group && b.group.userData ? (b.group.userData.designKey || null) : null; }); });
+      if (scene) scene.children.forEach(function (o) { if (o.userData && o.userData.designKey && o.userData.designKey.indexOf("lm:") === 0) out.landmarks.push(o.userData.designKey); if (o.userData && o.userData.propGenre) out.props[o.userData.propGenre] = (out.props[o.userData.propGenre] || 0) + 1; });
+      if (playerRig && playerRig.userData.planes) out.walkerLayers = playerRig.userData.planes.length;
+      out.residentCount = residents.length;
+      if (residents.length && residents[0].sprite && residents[0].sprite.children) out.residentLayers = residents[0].sprite.children.length;
+      out.world = { cycleT: cycleT, dark: cycleDark, paths: PATH_COUNT, smoking: !!SMOKING, smokers: SMOKERS.length, lamps: LAMP_MATS.length, stars: !!starPoints, winMats: WIN_MATS.length, cloudShadows: CLOUD_SHADOWS.length, fountain: !!(scene && scene.userData.fountain) };
+      return out;
+    },
     simulate: function () { var T = PL_T(); return T ? plSimulate(T, R) : null; },
     /* P2 sweep hooks: place the player on a building's door pad
        (the launch-return sweep drives all titles without walking),
