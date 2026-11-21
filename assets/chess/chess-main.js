@@ -398,6 +398,59 @@ function orderMoves(state, moves) {
     return { move, score };
   }).sort((a, b) => b.score - a.score).map((e) => e.move);
 }
+let aiQSearch = true;
+let aiQNodes = 0, aiQBudget = 30000;
+/* BN-200: capture quiescence. The plain depth-limited search reads
+   the leaf position statically, so a capture sequence sitting on
+   the horizon is misevaluated — the classic way a shallow engine
+   grabs a defended pawn or hangs a piece it just "won". At the
+   horizon we now keep reading captures (and, when in check, all
+   evasions) until the position is quiet. Quiescence runs on its
+   OWN node budget (aiQBudget): the first version shared the main
+   budget and starved the iterative deepening in sharp positions —
+   measured as a depth-3 pick the depth-4 reference scored 600cp
+   worse than the old engine's — so the two budgets are separate
+   now and total think time stays bounded by their sum. Easy tier
+   opts out (aiQSearch=false while it scores): its one-ply horizon
+   is the intended beginner-tier weakness. */
+function qsearch(state, alpha, beta, ply) {
+  if (aiStopped) return 0;
+  aiQNodes += 1;
+  const standPat = () => (state.turn === "w" ? evaluateBoard(state) : -evaluateBoard(state));
+  if (aiQNodes >= aiQBudget) return standPat();
+  const inCheck = isInCheck(state, state.turn);
+  if (ply > 12) return standPat();
+  let best = -Infinity;
+  if (!inCheck) {
+    const stand = standPat();
+    if (stand >= beta) return beta;
+    if (stand > alpha) alpha = stand;
+    best = alpha;
+  }
+  /* Pseudo-legal movegen + post-apply king-safety filter (the same
+     legality test legalMoves uses) — far cheaper than a full
+     legalMoves at every quiescence node. Castling candidates from
+     pseudoMoves are pre-validated by addCastling itself. */
+  const pseudo = pseudoMoves(state, state.turn);
+  const caps = [];
+  for (const m of pseudo) if (inCheck || m.capture || m.promotion) caps.push(m);
+  const ordered = orderMoves(state, caps);
+  let anyLegal = false;
+  for (const move of ordered) {
+    const next = applyMove(state, move);
+    const king = findKing(next.board, state.turn);
+    if (king < 0 || isSquareAttacked(next.board, king, next.turn)) continue;
+    anyLegal = true;
+    const value = -qsearch(next, -beta, -alpha, ply + 1);
+    if (aiStopped) return 0;
+    if (value > best) best = value;
+    if (best > alpha) alpha = best;
+    if (alpha >= beta) break;
+  }
+  if (inCheck && !anyLegal) return -MATE_SCORE + ply;
+  if (!inCheck && !anyLegal && pseudo.length === 0) return 0; /* stalemate */
+  return best;
+}
 function search(state, depth, alpha, beta, ply) {
   if (aiStopped) return 0;
   aiNodes += 1;
@@ -406,6 +459,7 @@ function search(state, depth, alpha, beta, ply) {
   const moves = legalMoves(state);
   if (moves.length === 0) return isInCheck(state, state.turn) ? -MATE_SCORE + ply : 0;
   if (depth <= 0) {
+    if (aiQSearch) return qsearch(state, alpha, beta, ply);
     const white = evaluateBoard(state);
     return state.turn === "w" ? white : -white;
   }
@@ -420,6 +474,7 @@ function search(state, depth, alpha, beta, ply) {
   return best;
 }
 function rootSearch(state, depth) {
+  aiQNodes = 0; /* BN-200: each deepening iteration gets a fresh quiescence allowance */
   const moves = orderMoves(state, legalMoves(state));
   let best = null, alpha = -Infinity;
   for (const move of moves) {
@@ -437,9 +492,11 @@ function chooseAiMove(state, difficulty) {
   if (difficulty === "easy") {
     if (Math.random() < 0.3) return moves[Math.floor(Math.random() * moves.length)];
     aiNodes = 0; aiStopped = false; aiBudget = 4000;
+    aiQSearch = false; /* BN-200: easy keeps its one-ply horizon (intended weakness) */
     const scored = orderMoves(state, moves).map((move) => ({
       move, score: -search(applyMove(state, move), 0, -Infinity, Infinity, 1),
     }));
+    aiQSearch = true;
     scored.sort((a, b) => b.score - a.score);
     const top = scored[0];
     if (!top) return moves[0];
@@ -448,7 +505,8 @@ function chooseAiMove(state, difficulty) {
   }
   const maxDepth = difficulty === "medium" ? 2 : 3;
   aiBudget = difficulty === "medium" ? 25000 : 90000;
-  aiNodes = 0; aiStopped = false;
+  aiQBudget = difficulty === "medium" ? 12000 : 30000;
+  aiNodes = 0; aiQNodes = 0; aiStopped = false; aiQSearch = true;
   let best = null;
   for (let depth = 1; depth <= maxDepth; depth++) {
     const result = rootSearch(state, depth);
@@ -468,7 +526,8 @@ function searchRootBest(state, maxDepth, budget) {
   if (moves.length === 0) return null;
   if (moves.length === 1) return { move: moves[0], score: evalMoveScore(state, moves[0], Math.max(1, maxDepth)) };
   aiBudget = budget || 70000;
-  aiNodes = 0; aiStopped = false;
+  aiQBudget = 40000;
+  aiNodes = 0; aiQNodes = 0; aiStopped = false;
   let best = null;
   for (let depth = 1; depth <= maxDepth; depth++) {
     const result = rootSearch(state, depth);
@@ -483,7 +542,7 @@ function searchRootBest(state, maxDepth, budget) {
    best move's score. */
 function evalMoveScore(state, move, depth) {
   const next = applyMove(state, move);
-  aiNodes = 0; aiStopped = false; aiBudget = 70000;
+  aiNodes = 0; aiQNodes = 0; aiStopped = false; aiBudget = 70000; aiQBudget = 40000;
   const value = -search(next, Math.max(0, depth - 1), -Infinity, Infinity, 1);
   if (aiStopped) {
     const white = evaluateBoard(next);
@@ -2494,6 +2553,16 @@ const LS_VERSUS = "chess-public-versus-v1";
    shape, are written together, and are cleared together when the
    game ends or is reset to move zero. */
 const LS_RUN = "arcade-chess-run-v1";
+/* BN-201 game logger (2026-11-21, DESIGN ~/workspace/chess-dashboard/
+   DESIGN.md Phase 1): every FINISHED versus game is appended to
+   "arcade-chess-games-v1" as {ts, difficulty, result, ucis, eduUsed}
+   BEFORE the run keys are cleared in persist(). Cap 200, oldest
+   dropped. Device-local only by construction: the key is not in
+   module 29's S2_VALUE_KEYS and does not match the sync runs
+   pattern (/^arcade-.+-run-v1$/), so the transfer-code sync never
+   carries it. No points, no leaderboard fields. */
+const LS_GAMES = "arcade-chess-games-v1";
+const LS_GAMES_CAP = 200;
 function loadJSON(key, fallback) {
   try {
     const raw = window.localStorage.getItem(key);
@@ -3753,16 +3822,47 @@ function buildVersus() {
   const resultPtsNoteEl = versusRoot.querySelector("#vResultPtsNote");
 
   let tap, game;
+  /* BN-201: signature of the finished game already written to
+     LS_GAMES, so the render loop and persist() can both offer the
+     game to the logger without ever double-recording it. Reset
+     whenever the position leaves the finished state (undo, new
+     game), so a genuinely new finish always logs. */
+  let loggedGameSig = null;
+  function logFinishedGame(end) {
+    if (!game || game.moves.length === 0 || !end || !end.over) return;
+    const ucis = game.moves.map((m) => moveToUci(m));
+    const sig = ucis.join(" ") + "|" + versus.difficulty + "|" + versus.player;
+    if (loggedGameSig === sig) return;
+    loggedGameSig = sig;
+    const result = end.playerWon ? "win"
+      : (end.text.indexOf("引き分け") >= 0 ? "draw" : "loss");
+    let list = loadJSON(LS_GAMES, []);
+    if (!Array.isArray(list)) list = [];
+    list.push({
+      ts: Date.now(),
+      difficulty: versus.difficulty,
+      result: result,
+      ucis: ucis,
+      eduUsed: !!eduUsedThisGame,
+    });
+    while (list.length > LS_GAMES_CAP) list.shift();
+    saveJSON(LS_GAMES, list);
+  }
   function persist() {
     // A finished game — or one rewound to the start — is not a run
     // in progress: clear both keys so a later reload opens a fresh
     // board instead of resurrecting a dead run (the mini games'
     // saveRun does the same on game over).
     if (!game || game.moves.length === 0 || evaluateEnd(game.history, versus.player).over) {
+      /* BN-201: log the finished game BEFORE the cleanup below
+         deletes the run records (a rewound-to-start board has no
+         moves and is not a game — logFinishedGame guards that). */
+      if (game && game.moves.length > 0) logFinishedGame(evaluateEnd(game.history, versus.player));
       try { window.localStorage.removeItem(LS_RUN); } catch (e) {}
       try { window.localStorage.removeItem(LS_VERSUS); } catch (e) {}
       return;
     }
+    loggedGameSig = null;
     const payload = {
       v: 1,
       player: versus.player,
@@ -3842,6 +3942,11 @@ function buildVersus() {
         }
       } else if (versus.__ptsSig) versus.__ptsSig = null;
     }
+    /* BN-201 logger: the same finished-game moment as the points
+       payment above (persist() logs again before cleanup; the
+       signature inside logFinishedGame keeps it to one record). */
+    if (end.over) logFinishedGame(end);
+    else if (game && game.moves.length > 0) loggedGameSig = null;
     if (commentaryEl) {
       let commentaryText = START_COMMENTARY;
       if (bossGame && game.moves.length === 0) commentaryText = "最終ボス「アノラック」との決戦。教育モードは封印されています。";
@@ -4132,3 +4237,29 @@ modeVersusBtn.addEventListener("click", () => setMode("versus"));
 
 buildQuiz();
 setMode("quiz");
+
+/* BN-201: entry points for the Profile chess dashboard (module 92
+   in index.html). __chessOpenDrill(themeKey) lands on the quiz
+   home, or on one theme's band list when a valid theme key is
+   given (the dashboard's weak-theme links); __chessOpenVersus()
+   lands on the versus board. Neither touches any save key beyond
+   the quiz navigation state the app itself maintains. */
+window.__chessOpenDrill = function (themeKey) {
+  setMode("quiz");
+  if (themeKey && DRILL_THEMES[themeKey]) {
+    quizNav.level = "theme";
+    quizNav.theme = themeKey;
+    quizNav.band = null;
+    quizNav.group = null;
+    saveNav();
+    ensureDrillData();
+    renderQuizNav();
+  }
+  const root = document.getElementById("chessRoot");
+  if (root) root.scrollTop = 0;
+};
+window.__chessOpenVersus = function () {
+  setMode("versus");
+  const root = document.getElementById("chessRoot");
+  if (root) root.scrollTop = 0;
+};

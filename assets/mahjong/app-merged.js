@@ -12368,32 +12368,32 @@ var Zu = [{
   key: "naki",
   label: "何切る",
   desc: "14枚から一番いい打牌を1枚選ぶ。牌効率の練習。",
-  icon: "\uD83C\uDC04"
+  icon: "切"
 }, {
   key: "machi",
   label: "待ち当て",
   desc: "テンパイ形の待ち牌を全部選ぶ。",
-  icon: "\uD83C\uDFAF"
+  icon: "待"
 }, {
   key: "score",
   label: "点数計算",
   desc: "役・翻・符・親子・ロン/ツモから点数を当てる。",
-  icon: "\uD83E\uDDEE"
+  icon: "点"
 }, {
   key: "yaku",
   label: "役当て",
   desc: "完成形を見て、成立している役と合計翻数を当てる。",
-  icon: "\uD83C\uDFC6"
+  icon: "役"
 }, {
   key: "defense",
   label: "守備",
   desc: "筋・壁・現物。リーチ相手に当たらない切り方を学ぶ。",
-  icon: "\uD83D\uDEE1️"
+  icon: "守"
 }, {
   key: "sanma",
   label: "サンマ",
   desc: "三人麻雀の点数・抜きドラ・ドラ循環のルール。",
-  icon: "\uD83D\uDC65"
+  icon: "三"
 }];
 function b0(e) {
   let t = Array(34).fill(0);
@@ -34265,19 +34265,19 @@ var $y = "solo-local",
   },
   b8 = [{
     name: "あなた",
-    avatar: "\uD83C\uDC04",
+    avatar: "中",
     personality: "プレイヤー"
   }, {
     name: "ボット1",
-    avatar: "\uD83C\uDF38",
+    avatar: "花",
     personality: "攻撃的"
   }, {
     name: "ボット2",
-    avatar: "\uD83E\uDEA8",
+    avatar: "岩",
     personality: "バランス"
   }, {
     name: "ボット3",
-    avatar: "❄️",
+    avatar: "雪",
     personality: "守備的"
   }],
   bC = [{
@@ -34594,7 +34594,7 @@ function rp({
       }), n.furiten && B("span", {
         className: "absolute -top-2 -right-2.5 z-10 rounded bg-amber-400 px-1 text-[9px] font-black text-black shadow",
         "aria-label": "フリテン",
-        children: "⚠フリテン"
+        children: "フリテン"
       }), T("span", {
         className: "text-[10px] leading-tight text-[#cbd5e1]",
         children: ["残り", n.remain, "枚"]
@@ -36880,10 +36880,10 @@ function CC() {
           "aria-label": "ヒントを見る",
           onClick: () => de(!0),
           className: "px-4 py-2 rounded-full bg-[#374151] text-sm font-bold",
-          children: "\uD83D\uDCA1 ヒント"
+          children: "ヒント"
         }) : T("p", {
           className: "text-sm bg-amber-950/60 border border-amber-800 rounded-xl p-3",
-          children: ["\uD83D\uDCA1 ", u.hint]
+          children: [u.hint]
         })
       }), Z === null ? B("button", {
         "aria-label": "回答する",
@@ -36900,7 +36900,7 @@ function CC() {
           style: {
             fontFamily: "serif"
           },
-          children: Z ? "\uD83C\uDF89 正解！" : "✗ 不正解"
+          children: Z ? "正解！" : "✗ 不正解"
         }), B("p", {
           className: "text-sm mt-3 leading-relaxed",
           children: u.explanation
@@ -36958,7 +36958,7 @@ function CC() {
       children: [B("p", {
         className: "text-5xl",
         "aria-hidden": !0,
-        children: "\uD83C\uDC04"
+        children: "中"
       }), B("h1", {
         className: "text-3xl font-bold mt-3",
         style: {
@@ -37156,22 +37156,22 @@ function CC() {
         "aria-label": "麻雀クイズを開く",
         onClick: () => xe("quiz"),
         className: "w-full p-4 rounded-2xl bg-[#1e293b] text-left font-bold",
-        children: ["\uD83E\uDDE9 麻雀クイズ（何切る・待ち当て・点数計算・役当て・守備・サンマ ／ ", Zr.filter(u => g[u.id] === "correct").length, " / ", Zr.length, " 問正解）"]
+        children: ["麻雀クイズ（何切る・待ち当て・点数計算・役当て・守備・サンマ ／ ", Zr.filter(u => g[u.id] === "correct").length, " / ", Zr.length, " 問正解）"]
       }), B("button", {
         "aria-label": "ルール設定を開く",
         onClick: () => xe("settings"),
         className: "w-full p-4 rounded-2xl bg-[#1e293b] text-left font-bold",
-        children: "⚙ ルール設定（プリセット／個別トグル）"
+        children: "ルール設定（プリセット／個別トグル）"
       }), T("button", {
         "aria-label": "役ガイドを開く",
         onClick: () => xe("guide"),
         className: "w-full p-4 rounded-2xl bg-[#1e293b] text-left font-bold",
-        children: ["\uD83D\uDCD6 役ガイド・図鑑（", f.length, " 種和了済み）"]
+        children: ["役ガイド・図鑑（", f.length, " 種和了済み）"]
       }), B("button", {
         "aria-label": "対局記録を開く",
         onClick: () => xe("records"),
         className: "w-full p-4 rounded-2xl bg-[#1e293b] text-left font-bold",
-        children: "\uD83C\uDFC6 対局記録・相手別成績"
+        children: "対局記録・相手別成績"
       })
       ]
     })]
@@ -37393,7 +37393,7 @@ function CC() {
           "aria-label": "表示・補助設定を開く",
           onClick: () => Oe(!0),
           className: "w-9 h-9 rounded-full bg-black/55 backdrop-blur-sm ring-1 ring-white/20 shadow-lg text-base",
-          children: "⚙"
+          children: "設定"
         })]
       }), B(sp, {
         seats: jC,
@@ -37578,13 +37578,13 @@ function CC() {
                   "aria-label": "フリテンの理由を見る",
                   onClick: () => et(u.furitenReason),
                   className: "px-2.5 py-1 rounded-full bg-red-900/80 text-red-100 text-xs font-bold",
-                  children: "⚠ フリテン"
+                  children: "フリテン"
                 }), u.note && B("button", {
                   type: "button",
                   "aria-label": "和了できない理由を見る",
                   onClick: () => et(u.note),
                   className: "px-2.5 py-1 rounded-full bg-amber-900/80 text-amber-100 text-xs font-bold",
-                  children: "⚠ ロンできない理由"
+                  children: "ロンできない理由"
                 })]
               }), T("div", {
                 className: "flex flex-wrap gap-2 mt-2.5 justify-center",
@@ -37752,7 +37752,7 @@ function CC() {
                         t: z.tile
                       }), z.furiten && B("span", {
                         className: "absolute -top-2 -right-2.5 z-10 rounded bg-amber-400 px-1 text-[9px] font-black text-black shadow",
-                        children: "⚠フリテン"
+                        children: "フリテン"
                       }), T("span", {
                         className: "text-[10px] leading-tight text-[#cbd5e1]",
                         children: ["残り", z.remain, "枚"]
@@ -37760,7 +37760,7 @@ function CC() {
                     }, z.tile))
                   }), U.furitenTiles.length > 0 && B("span", {
                     className: "w-full text-[11px] font-bold text-amber-300",
-                    children: "⚠ フリテン聴牌になります（待ちが自分の捨て牌にあります）"
+                    children: "フリテン聴牌になります（待ちが自分の捨て牌にあります）"
                   })]
                 }, U.tile.t)), qy.length === 0 && B("p", {
                   className: "text-center text-xs font-bold text-red-300",
@@ -37861,7 +37861,7 @@ function CC() {
             "aria-label": "フリテン聴牌の通知",
             children: [T("p", {
               className: "text-[11px] font-bold leading-snug text-red-300",
-              children: ["⚠ フリテン聴牌中：自分の捨て牌に待ち牌（", rt.furitenWaits.map(u => ot[u]).join("・"), "）があるため、その牌ではロンできません（ツモなら和了できます）"]
+              children: ["フリテン聴牌中：自分の捨て牌に待ち牌（", rt.furitenWaits.map(u => ot[u]).join("・"), "）があるため、その牌ではロンできません（ツモなら和了できます）"]
             }), T("p", {
               className: "text-[11px] text-red-200 mt-1",
               children: ["待ち牌の残り：", rt.waitRemain.map(u => `${ot[u.tile]} 残り${u.remain}枚`).join(" ／ "), "（合計 ", rt.waitRemain.reduce((u, H) => u + H.remain, 0), " 枚）"]
@@ -37875,11 +37875,11 @@ function CC() {
           children: [rt.noYaku && B("span", {
             className: "px-2.5 py-1 rounded-full bg-red-900 text-red-200 text-[11px] font-bold",
             role: "status",
-            children: "⚠ 役なし"
+            children: "役なし"
           }), rt.minHanBlocked && B("span", {
             className: "px-2.5 py-1 rounded-full bg-red-900 text-amber-200 text-[11px] font-bold",
             role: "status",
-            children: "⚠ 飜縛り"
+            children: "飜縛り"
           })]
         }), Qe && B("p", {
           className: "px-2.5 py-1 rounded-full bg-red-950/85 ring-1 ring-red-800 text-red-200 text-[11px] font-bold",
@@ -37892,17 +37892,17 @@ function CC() {
         }), i.showGuide && Qe && tA.size > 0 && B("p", {
           className: "px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-orange-300 text-[11px] font-bold",
           role: "status",
-          children: "\uD83D\uDFE0 オレンジに光る牌を切ると、フリテンの聴牌になります"
+          children: "オレンジに光る牌を切ると、フリテンの聴牌になります"
         }), G.turn === 0 && G.phase === "discard" && i.showGuide && (It.minHanNote || !Vt.riichi && !It.canRiichi && It.riichiReason) && T("div", {
           className: "flex flex-wrap gap-1.5",
           children: [It.minHanNote && B("span", {
             className: "px-2.5 py-1 rounded-full bg-[#374151] text-amber-300 text-[11px] font-bold",
             role: "status",
-            children: "⚠ 飜縛り"
+            children: "飜縛り"
           }), !Vt.riichi && !It.canRiichi && It.riichiReason && B("span", {
             className: "px-2.5 py-1 rounded-full bg-[#374151] text-[#fca5a5] text-[11px] font-bold",
             role: "status",
-            children: "⚠ リーチ不可"
+            children: "リーチ不可"
           })]
         })]
       })]
@@ -38194,16 +38194,16 @@ function CC() {
               children: u
             }, H)), rt.noYaku && B("p", {
               className: "text-xs font-bold text-red-300 bg-red-950/50 rounded px-2 py-1",
-              children: "⚠ 役なし：この待ちでは役が付かないためロンできません（ドラだけでは役になりません）。リーチするか、役の付く待ちに変えましょう。"
+              children: "役なし：この待ちでは役が付かないためロンできません（ドラだけでは役になりません）。リーチするか、役の付く待ちに変えましょう。"
             }), rt.noYakuHints.map((u, H) => B("p", {
               className: "text-xs text-amber-200 bg-black/25 rounded px-2 py-1",
               children: u
             }, H)), rt.minHanBlocked && T("p", {
               className: "text-xs font-bold text-amber-300 bg-red-950/50 rounded px-2 py-1",
-              children: ["⚠ 飜縛り", ut.minHan, "飜：役とドラの合計が", ut.minHan, "飜に届かないため、この待ちでは和了できません。"]
+              children: ["飜縛り", ut.minHan, "飜：役とドラの合計が", ut.minHan, "飜に届かないため、この待ちでは和了できません。"]
             }), rt.furitenWaits.length > 0 && T("p", {
               className: "text-xs font-bold text-red-300 bg-red-950/50 rounded px-2 py-1",
-              children: ["⚠ フリテン：自分の捨て牌に待ち牌（", rt.furitenWaits.map(u => ot[u]).join("・"), "）があるため、その牌ではロンできません（ツモなら和了できます）。待ち牌の残り合計は ", rt.waitRemain.reduce((u, H) => u + H.remain, 0), " 枚です"]
+              children: ["フリテン：自分の捨て牌に待ち牌（", rt.furitenWaits.map(u => ot[u]).join("・"), "）があるため、その牌ではロンできません（ツモなら和了できます）。待ち牌の残り合計は ", rt.waitRemain.reduce((u, H) => u + H.remain, 0), " 枚です"]
             }), rt.shanten === 0 && rt.waitRemain.length > 0 && (Vt.hand.length === 13 - Vt.melds.length * 3 || Vt.riichi && !!G.drawnTile) && T("div", {
               className: "bg-black/25 rounded px-2 py-1.5",
               children: [B("p", {
@@ -38261,13 +38261,13 @@ function CC() {
               children: "手牌は卓の3D牌そのものです：タップで選択（もう一度タップで打牌）、または牌を押さえて河までドラッグすると、そのまま飛んで着地します。"
             }), B("p", {
               className: "text-xs text-emerald-300 mt-1.5 leading-relaxed",
-              children: "\uD83D\uDFE2 緑に光る牌は、リーチ中の相手全員の現物（その相手たちには絶対にロンされない牌）です"
+              children: "緑に光る牌は、リーチ中の相手全員の現物（その相手たちには絶対にロンされない牌）です"
             }), B("p", {
               className: "text-xs text-sky-300 mt-1.5 leading-relaxed",
-              children: "\uD83D\uDD35 青い小ドットはスジ：リーチ中の相手の河の牌と±3の関係にある牌です。スジが効くのは両面待ちに対してだけ（待ちの約6割が両面という目安）で、単騎・シャンポン・両面以外の待ちには効かず、絶対安全ではありません"
+              children: "青い小ドットはスジ：リーチ中の相手の河の牌と±3の関係にある牌です。スジが効くのは両面待ちに対してだけ（待ちの約6割が両面という目安）で、単騎・シャンポン・両面以外の待ちには効かず、絶対安全ではありません"
             }), B("p", {
               className: "text-xs text-orange-300 mt-1.5 leading-relaxed",
-              children: "\uD83D\uDFE0 オレンジに光る牌を切ると、フリテンの聴牌になります"
+              children: "オレンジに光る牌を切ると、フリテンの聴牌になります"
             })]
           }), T("div", {
             className: "mt-4",
@@ -38372,13 +38372,13 @@ var O8 = ["1萬", "2萬", "3萬", "4萬", "5萬", "6萬", "7萬", "8萬", "9萬"
   Dn = ["一萬", "二萬", "三萬", "四萬", "五萬", "六萬", "七萬", "八萬", "九萬", "一筒", "二筒", "三筒", "四筒", "五筒", "六筒", "七筒", "八筒", "九筒", "一索", "二索", "三索", "四索", "五索", "六索", "七索", "八索", "九索", "東", "南", "西", "北", "白", "發", "中"],
   _C = ["東", "南", "西", "北"],
   C8 = {
-    "ボット1": "\uD83C\uDF38",
-    "ボット2": "\uD83E\uDEA8",
-    "ボット3": "❄️"
+    "ボット1": "花",
+    "ボット2": "岩",
+    "ボット3": "雪"
   };
 function EC(e) {
-  if (e.isYou) return "\uD83C\uDC04";
-  return C8[e.name] ?? "\uD83D\uDC64";
+  if (e.isYou) return "中";
+  return C8[e.name] ?? "人";
 }
 var wC = {
     pon: th,
@@ -38531,7 +38531,7 @@ function LC({
       }), n.furiten && B("span", {
         className: "absolute -top-2 -right-2.5 z-10 rounded bg-amber-400 px-1 text-[9px] font-black text-black shadow",
         "aria-label": "フリテン",
-        children: "⚠フリテン"
+        children: "フリテン"
       }), T("span", {
         className: "text-[10px] leading-tight text-[#cbd5e1]",
         children: ["残り", n.remain, "枚"]
