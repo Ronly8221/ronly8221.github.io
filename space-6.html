@@ -7659,11 +7659,19 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             #planetPrompt .pp-count{font-size:11.5px;color:#ffd35c;font-weight:700}
             #planetPlayBtn{position:absolute;z-index:36;min-height:40px;padding:8px 16px;border:0;border-radius:999px;background:#ffd35c;color:#4a3200;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.45);transform:translate(-50%,-50%);pointer-events:auto}
             #planetPlayBtn[hidden]{display:none}
-            #planetSignpost{position:absolute;left:10px;right:10px;bottom:10px;padding:12px 14px;border-radius:16px;background:rgba(12,18,38,.9);color:#eef2ff;border:1px solid rgba(255,255,255,.16);pointer-events:auto}
+            /* BN-268: the plaza signpost leaves the bottom band —
+               it used to span the full width at the bottom, stacked
+               over the dash/jump buttons and crowding the BGM
+               chip's corner. It is now a compact panel at the
+               top-right, below the search form, clear of the exit
+               pill (top-centre), the minimap stack (top-left) and
+               the mini-game HUD (top-centre). Destination buttons
+               keep their 40px tap height. */
+            #planetSignpost{position:absolute;top:58px;right:10px;width:min(248px,64vw);padding:10px 11px 11px;border-radius:14px;background:rgba(12,18,38,.9);color:#eef2ff;border:1px solid rgba(255,255,255,.16);pointer-events:auto}
             #planetSignpost[hidden]{display:none}
-            #planetSignpost .sp-head{font-size:13px;font-weight:800;letter-spacing:.04em;color:#ffd35c;margin-bottom:8px}
-            #planetSignpost .sp-list{display:flex;flex-wrap:wrap;gap:7px}
-            #planetSignpost .sp-list button{min-height:40px;padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#eef2ff;font-size:12.5px;font-weight:700;cursor:pointer}
+            #planetSignpost .sp-head{font-size:12px;font-weight:800;letter-spacing:.04em;color:#ffd35c;margin-bottom:7px;line-height:1.45}
+            #planetSignpost .sp-list{display:flex;flex-wrap:wrap;gap:6px}
+            #planetSignpost .sp-list button{min-height:40px;padding:6px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#eef2ff;font-size:12px;font-weight:700;cursor:pointer}
             #planetBeaconArrow{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;color:#ffd35c;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))}
             #planetBeaconArrow[hidden]{display:none}
             #planetStick{position:absolute;left:16px;bottom:86px;width:118px;height:118px;border-radius:50%;background:rgba(10,16,32,.45);border:1px solid rgba(255,255,255,.2);touch-action:none}
@@ -7752,8 +7760,15 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             body.planet-full #planetGamesBtn{top:calc(192px + env(safe-area-inset-top))}
             body.planet-full #planetHint{bottom:calc(124px + env(safe-area-inset-bottom))}
             body.planet-full #planetNpcPrompt{bottom:calc(110px + env(safe-area-inset-bottom))}
-            body.planet-full #planetPrompt,body.planet-full #planetSignpost,body.planet-full #planetTalk{bottom:calc(12px + env(safe-area-inset-bottom))}
+            body.planet-full #planetPrompt,body.planet-full #planetTalk{bottom:calc(12px + env(safe-area-inset-bottom))}
+            body.planet-full #planetSignpost{top:calc(58px + env(safe-area-inset-top))}
             body.planet-full .coinfall-banner{z-index:6600}
+            /* BN-268: while the planet owns the screen, the BGM
+               chip (#ttChip, z 6400) must stay tappable — the
+               fullscreen stage is z 6500, so the chip rises above
+               it explicitly instead of depending on the stage's
+               ancestor stacking context to cap it. */
+            body.planet-full #ttChip{z-index:6700}
             @media (max-width:480px){ #planetCanvasWrap{height:58vh;min-height:320px} #planetSearch input{width:104px} }
           </style>
           <div id="planetStage" hidden>
@@ -62835,7 +62850,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     var id = open ? open.id : "";
     var want = (id && CORNER_POSES[id] && cornerEnabled()) ? CORNER_POSES[id] : "";
     if (!want) {
-      if (cornerEl) cornerEl.style.display = "none";
+      if (cornerEl) { cornerEl.style.display = "none"; if (cornerEl.style.bottom) cornerEl.style.bottom = ""; }
       if (cornerView) { cornerView = ""; if (MASCOT.pose) mascPose(""); }
       return;
     }
@@ -62857,6 +62872,17 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       mascPose(want);
     }
     cornerEl.style.display = "";
+    /* BN-268: the now-playing chip (#ttChip) owns the bottom-left
+       corner (z 6400) whenever music is playing; left at its base
+       offset the corner mascot's lower body sits under the chip
+       and loses its taps. Park it directly above the chip while
+       the chip is on screen — the same geometry rule as BN-267's
+       panel lift — and restore the base offset when it goes. */
+    var chipEl = document.getElementById("ttChip");
+    if (chipEl && !chipEl.hidden) {
+      var chipR = chipEl.getBoundingClientRect();
+      cornerEl.style.bottom = chipR.height > 0 ? Math.ceil(window.innerHeight - chipR.top + 10) + "px" : "";
+    } else if (cornerEl.style.bottom) cornerEl.style.bottom = "";
   }
   setInterval(cornerTick, 1000);
   window.__mascot.corner = function () { return { view: cornerView, shown: !!(cornerEl && cornerEl.style.display !== "none") }; };
@@ -81588,11 +81614,11 @@ window.__BN_VIEW__ = {
     ".tt-details{margin-top:16px;font-size:12px;color:#8b93a5}",
     ".tt-details summary{cursor:pointer;padding:8px 0}",
     ".tt-details p{line-height:1.6;word-break:break-all;margin:4px 0}",
-    "#ttChip{position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:6400;display:flex;align-items:center;gap:9px;background:rgba(16,20,32,.94);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px 5px 5px;box-shadow:0 10px 26px rgba(0,0,0,.45);cursor:pointer;max-width:min(78vw,430px)}",
+    "#ttChip{position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:6400;display:flex;align-items:center;gap:9px;background:rgba(16,20,32,.94);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px 5px 5px;box-shadow:0 10px 26px rgba(0,0,0,.45);cursor:pointer;max-width:min(78vw,430px);touch-action:manipulation}",
     "#ttChip[hidden]{display:none}",
     "#ttChip img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#222;flex:none}",
     "#ttChip .tt-chip-title{font-size:12.5px;font-weight:700;color:#eef1f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-    "#ttChip .tt-chip-btn{background:#1db954;border:none;color:#06130a;width:34px;height:34px;border-radius:50%;font-size:13px;cursor:pointer;flex:none}"
+    "#ttChip .tt-chip-btn{background:#1db954;border:none;color:#06130a;width:40px;height:40px;border-radius:50%;font-size:15px;cursor:pointer;flex:none}"
   ].join("\n");
   var styleEl = document.createElement("style");
   styleEl.id = "arcade-turntable-style";
@@ -112790,12 +112816,15 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
      puts its lower edge 10px above the chip's top, in the panel's
      own offsetParent space; clear the override when the chip is
      gone or already clear. Geometry-driven, so it holds in the
-     embedded view and the full-screen view alike. */
+     embedded view and the full-screen view alike.
+     BN-268: the signpost is no longer in this set — it moved to a
+     compact panel at the stage's top-right, out of the bottom
+     band entirely. */
   function liftBottomPanels() {
     var chip = document.getElementById("ttChip");
     var chipRect = null;
     if (chip && !chip.hidden) { var r = chip.getBoundingClientRect(); if (r.height > 0) chipRect = r; }
-    [promptEl, npcPromptEl, signEl, talkEl].forEach(function (el) {
+    [promptEl, npcPromptEl, talkEl].forEach(function (el) {
       if (!el) return;
       if (!chipRect) { if (el.style.bottom) el.style.bottom = ""; return; }
       var parent = el.offsetParent;
