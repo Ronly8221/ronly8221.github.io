@@ -4083,12 +4083,15 @@
       /* Slots: 5-line overlay, line-number indicators, win pulse,
          and the post-win gamble panel */
       .slo-lines { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; overflow: visible; }
-      .slo-line-path { fill: none; stroke: #ffb703; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(255, 183, 3, 0.85)); animation: sloLinePulse 0.8s ease-in-out infinite alternate; }
-      @keyframes sloLinePulse { from { opacity: 0.6; } to { opacity: 1; } }
+      .slo-line-path { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
+      .slo-line-path.l1 { stroke: #e63946; } .slo-line-path.l2 { stroke: #2563eb; } .slo-line-path.l3 { stroke: #16a34a; } .slo-line-path.l4 { stroke: #9333ea; } .slo-line-path.l5 { stroke: #ea580c; }
+      .slo-line-path.win { stroke-width: 5; opacity: 1; filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.28)); animation: sloLinePulse 0.8s ease-in-out infinite alternate; }
+      @keyframes sloLinePulse { from { opacity: 0.72; } to { opacity: 1; } }
       .slo-badges { position: absolute; top: 0; bottom: 0; width: 18px; z-index: 4; pointer-events: none; }
       .slo-badges.left { left: 2px; } .slo-badges.right { right: 2px; }
       .slo-badge { position: absolute; left: 0; width: 18px; height: 18px; transform: translateY(-50%); border-radius: 50%; background: rgba(61, 44, 90, 0.78); color: #ffffff; font-family: var(--font-display); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-      .slo-badge.win { background: #d99a06; box-shadow: 0 0 0 2px #ffe9a8, 0 0 10px rgba(255, 183, 3, 0.9); animation: sloBadgePulse 0.8s ease-in-out infinite alternate; }
+      .slo-badge.l1 { background: #e63946; } .slo-badge.l2 { background: #2563eb; } .slo-badge.l3 { background: #16a34a; } .slo-badge.l4 { background: #9333ea; } .slo-badge.l5 { background: #ea580c; }
+      .slo-badge.win { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px currentColor, 0 0 10px rgba(0, 0, 0, 0.35); animation: sloBadgePulse 0.8s ease-in-out infinite alternate; }
       @keyframes sloBadgePulse { from { scale: 1; } to { scale: 1.18; } }
       .slo-cell.win { background: radial-gradient(circle, rgba(255, 215, 64, 0.8), rgba(255, 215, 64, 0.12) 78%); border-radius: 10px; animation: sloCellPulse 0.55s ease-in-out infinite alternate; }
       @keyframes sloCellPulse { from { scale: 1; } to { scale: 1.13; } }
@@ -5923,6 +5926,16 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       .bv-row .dg { margin-left: auto; flex: 0 0 auto; color: #7286a8; font-size: 11px; font-weight: 800; white-space: nowrap; }
       .bv-panel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 52%; display: none; background: rgba(8, 12, 24, 0.97); border-top: 1px solid #26355a; z-index: 8; box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.5); }
       .bv-panel.open { display: flex; }
+      /* BN-292: minimise + refit (selection kept, restore tab;
+         wide screens shrink stage/list by panel/tab width). */
+      .bv-panel.minimized { display: none !important; }
+      .bv-min { position: absolute; top: 8px; right: 56px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid #26355a; background: #131c30; color: #cdd8ee; font-size: 15px; cursor: pointer; z-index: 2; }
+      .bv-rmin { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #26355a; background: #131c30; color: #cdd8ee; font-size: 16px; cursor: pointer; }
+      .bv-panel-tab { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 9; writing-mode: vertical-rl; max-height: 70%; overflow: hidden; border: 1px solid #26355a; border-right: 0; border-radius: 10px 0 0 10px; background: #131c30; color: #cdd8ee; font-family: inherit; font-size: 12px; font-weight: 800; padding: 14px 9px; cursor: pointer; }
+      .bv-stagewrap, .bv-list { transition: margin-right 280ms ease; }
+      .bv-word-conns { margin-top: 12px; border-top: 1px solid #101a30; padding-top: 8px; }
+      .bv-word-conns summary { font-size: 11px; font-weight: 800; letter-spacing: 0.04em; color: #7286a8; cursor: pointer; padding: 4px; }
+      .bv-word-conn { font-size: 11.5px; padding: 5px 4px; color: #9fb0cc; }
       /* Reader chrome (Brain round): .bv-pbody wraps helix+article so
          the panel can stack a header above them on phones; the header
          itself exists only in the phone reader (≤759px block). */
@@ -6049,6 +6062,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       }
       @media (min-width: 760px) {
         .bv-panel { left: auto; width: 408px; top: 0; max-height: none; border-top: 0; border-left: 1px solid #26355a; box-shadow: -14px 0 34px rgba(0, 0, 0, 0.5); }
+        .bv-root.bv-panel-open .bv-stagewrap, .bv-root.bv-panel-open .bv-list { margin-right: 408px; }
+        .bv-root.bv-panel-min .bv-stagewrap, .bv-root.bv-panel-min .bv-list { margin-right: 46px; }
+      }
+      @media (max-width: 759px) {
+        .bv-panel-tab { position: fixed; right: 0; top: 50%; z-index: 6700; }
+        .bv-panel .bv-min { display: none; }
       }
       @media (prefers-reduced-motion: reduce) {
         .bv-boot { display: none; }
@@ -32618,17 +32637,19 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         return rr.left - wr.left + rr.width / 2;
       }
       function paintWinLayer() {
-        var showBadges = phase !== "spin";
+        /* BN-291: thin payline guides for every active line, always
+           visible (bet / spin / stopped), coloured per line and
+           matching the edge badges; a winning line is drawn on top
+           of its guide, thicker and pulsing. */
         [badgesL, badgesR].forEach(function (box, side) {
           box.innerHTML = "";
-          if (!showBadges) return;
           var seen = {}; // lines sharing an edge row fan out side by side
           SLO_LINES.forEach(function (rows, li) {
             if (li + 1 > lineSel) return;
             var edgeRow = side === 0 ? rows[0] : rows[2];
             var n = seen[edgeRow] || 0; seen[edgeRow] = n + 1;
             var b = document.createElement("span");
-            b.className = "slo-badge" + (winInfo && winInfo.wins.some(function (w) { return w.line === li + 1; }) ? " win" : "");
+            b.className = "slo-badge l" + (li + 1) + (winInfo && winInfo.wins.some(function (w) { return w.line === li + 1; }) ? " win" : "");
             b.textContent = li + 1;
             b.style.top = rowCenterY(edgeRow) + "px";
             b.style.left = (side === 0 ? n * 20 : -n * 20) + "px";
@@ -32639,14 +32660,21 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         stripEls.forEach(function (el) {
           Array.prototype.forEach.call(el.querySelectorAll(".slo-cell.win"), function (c) { c.classList.remove("win"); });
         });
-        if (!winInfo || !winInfo.wins.length) return;
         var NS = "http://www.w3.org/2000/svg";
-        winInfo.wins.forEach(function (w) {
-          var rows = SLO_LINES[w.line - 1];
+        var winLines = {};
+        if (winInfo && winInfo.wins) winInfo.wins.forEach(function (w) { winLines[w.line] = true; });
+        SLO_LINES.forEach(function (rows, li) {
+          if (li + 1 > lineSel) return;
           var pl = document.createElementNS(NS, "polyline");
           pl.setAttribute("points", rows.map(function (rw, r) { return reelCenterX(r) + "," + rowCenterY(rw); }).join(" "));
-          pl.setAttribute("class", "slo-line-path");
+          pl.setAttribute("class", "slo-line-path l" + (li + 1) + (winLines[li + 1] ? " win" : " guide"));
+          pl.setAttribute("data-line", String(li + 1));
+          if (winLines[li + 1]) pl.setAttribute("data-win", "1");
           svgEl.appendChild(pl);
+        });
+        if (!winInfo || !winInfo.wins.length) return;
+        winInfo.wins.forEach(function (w) {
+          var rows = SLO_LINES[w.line - 1];
           rows.forEach(function (rw, r) {
             var cell = stripEls[r].children[posOff[r] + rw - 1];
             if (cell) cell.classList.add("win");
@@ -32916,7 +32944,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         });
       });
       wireBet({ row: row, isOpen: function () { return phase === "bet"; }, setSel: function (v) { betSel = v; }, render: render, getBal: function () { return czBal("slo"); } });
-      window.addEventListener("resize", function () { if (winInfo) paintWinLayer(); });
+      window.addEventListener("resize", function () { paintWinLayer(); });
       stripEls.forEach(function (el, r) { posOff[r] = SLO_STRIPS[r].length + posIdx[r]; });
       buildStrips();
       /* Apply a restored round: reels already sit on the saved
@@ -78052,6 +78080,9 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   "boot4": {"ja":"信号を流す","en":"Running the signals","ko":"신호 전송","zh":"传输信号","zht":"傳輸訊號","es":"Transmitir señales","fr":"Envoyer les signaux","de":"Signale fließen lassen","pt":"Transmitir sinais","it":"Trasmetti segnali"},
   "close": {"ja":"閉じる","en":"Close","ko":"닫기","zh":"关闭","zht":"關閉","es":"Cerrar","fr":"Fermer","de":"Schließen","pt":"Fechar","it":"Chiudi"},
   "connHead": {"ja":"つながり {0}件","en":"{0} connections","ko":"연결 {0}건","zh":"连接 {0} 条","zht":"連結 {0} 件","es":"{0} conexiones","fr":"{0} connexion(s)","de":"{0} Verbindungen","pt":"Conexões: {0}","it":"{0} connessioni"},
+  "wordConnHead": {"ja":"言葉つながり {0}件","en":"Word links {0}","ko":"단어 연결 {0}건","zh":"词语连接 {0} 条","zht":"詞語連結 {0} 件","es":"Enlaces de palabras: {0}","fr":"Liens de mots : {0}","de":"Wortverbindungen: {0}","pt":"Ligações de palavras: {0}","it":"Collegamenti di parole: {0}"},
+  "panelMin": {"ja":"最小化","en":"Minimise","ko":"최소화","zh":"最小化","zht":"最小化","es":"Minimizar","fr":"Réduire","de":"Minimieren","pt":"Minimizar","it":"Riduci"},
+  "panelRestore": {"ja":"詳細をひらく","en":"Open details","ko":"상세 열기","zh":"打开详情","zht":"開啟詳情","es":"Abrir detalles","fr":"Ouvrir les détails","de":"Details öffnen","pt":"Abrir detalhes","it":"Apri dettagli"},
   "counts": {"ja":"全{0}件 ・ 接続 {1} ・ 棚 {2} ・ 図解 {3} ・ オーファン {4}","en":"{0} entries · {1} links · {2} shelves · {3} diagrams · {4} orphans","ko":"전체 {0}건 ・ 연결 {1} ・ 선반 {2} ・ 도해 {3} ・ 고아 {4}","zh":"共{0}条 ・ 连接 {1} ・ 架子 {2} ・ 图解 {3} ・ 孤立项 {4}","zht":"共 {0} 件 ・ 連結 {1} ・ 書架 {2} ・ 圖解 {3} ・ 孤立 {4}","es":"Total {0} ・ Conexiones {1} ・ Estantes {2} ・ Diagramas {3} ・ Huérfanos {4}","fr":"Total {0} ・ Connexions {1} ・ Rayons {2} ・ Diagrammes {3} ・ Orphelins {4}","de":"Gesamt {0} ・ Verbindungen {1} ・ Regal {2} ・ Diagramme {3} ・ Waisen {4}","pt":"Total {0} ・ Conexões {1} ・ Estantes {2} ・ Diagramas {3} ・ Órfãos {4}","it":"Totale {0} ・ Connessioni {1} ・ Scaffali {2} ・ Diagrammi {3} ・ Orfani {4}"},
   "deg": {"ja":"つながり {0}","en":"{0} links","ko":"연결 {0}","zh":"连接 {0}","zht":"連結 {0}","es":"{0} conexiones","fr":"Connexions {0}","de":"Verbindungen {0}","pt":"Conexões {0}","it":"Connessioni {0}"},
   "diffEasy": {"ja":"易","en":"Easy","ko":"하","zh":"易","zht":"易","es":"Fácil","fr":"Facile","de":"Leicht","pt":"Fácil","it":"Facile"},
@@ -78175,8 +78206,21 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   var bx, by, bz, gx, gy, gvx, gvy, TW, projCache, mx, my;
   var dust = [];
   var gAnchor = [];
-  var stats = { nodes: 0, edges: 0, figs: 0, orphans: 0 };
-  var mode = "brain";
+  var stats = { nodes: 0, edges: 0, wordEdges: 0, figs: 0, orphans: 0 };
+  /* BN-292: view order + initial view in ONE place: opens on the
+     2D graph; switch reads graph | brain | list. */
+  var BV_VIEW_ORDER = ["graph", "brain", "list"];
+  var BV_DEFAULT_MODE = "graph";
+  var mode = BV_DEFAULT_MODE;
+  /* BN-292: a keyword edge whose only ground is a generic word is
+     NOT main — demoted to "word links". Same table in the generator
+     (gen-brain-data.mjs BN292_GENERIC, re-emits as kind 2). Concrete
+     nouns/terms (kind 0, unlisted) + diagram types (kind 1) stay
+     main. Reclassification only — no invented links. */
+  var BV_GENERIC_WORDS = new Set(("増える 増え 増やす 決まる 決まって 決め 決める なる できる ある いる する 使う 出る 変わる 変える 生まれる 生まれ 生き 作る 作れる 作り直す 見える 見え 見る 消える 消す 止まる 止め 続く 続ける 動く 動かす 回る 回す 回し 上がる 上げ 伸びる 伸び 落ち 落ちる 落とし 死ぬ 残る 残り 溶ける 溶かす 買う 買い 売る 売れ 入る 入れ 入れる 入り 切る 引く 引き 引っ張る 運ぶ 走る 起きる 始まる 始める 終わる 開く 開ける 閉じる 食べる 食う 読む 読める 読み 書く 書き 聞こえる 聴こえる 届く 届ける 守る 助ける 探す 見つかる 見つける 忘れ 選ぶ 超える 越える 跳ね 踊る 飛ぶ 鳴る 歩く 歩き 立つ 立ち 眠る 眠り 着る 着い 吐く 吸う 噛む 叩く 取る 取り 合う 合わせ 合わせる 並ぶ 並み 乗る 同じ 違う 自分 一番 全部 全て 全体 全員 先に 最初 最後 最大 最強 最適 最古 最も 世界一 存在 本当 本当は 本当に 実は 意味 条件 場所 必ず 以上 以下 年前 年後 スマ ルー リー ポー バー 人間 会社 今日 週間 数分 毎日 毎年 毎晩 毎秒 その後 もう一度 この世 他の 上の").split(" "));
+  function bvIsWordEdge(kind, word) { return kind === 2 || (kind === 0 && BV_GENERIC_WORDS.has(word)); }
+  var wordAdj = [], WORD_EDGES = [];
+  var panelMin = false;
   var cam = { x: 0, y: 0, zoom: 1 };
   var baseScale = 1, stageW = 0, stageH = 0, dpr = 1, dprRaw = 1, fitCX = 0, fitCY = 0;
   var selected = -1, hover = -1, focusShelf = -1;
@@ -78213,12 +78257,13 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   /* DOM refs (assigned in buildSkeleton) */
   var elCounts, elNote, elHint, elRail, elStage, elCanvas, ctx, elLabels, elGLabels, elTip, elBoot, elBootPhase, elBootCounts, elList, elPanel, elArticle, elHelix, viewBtns = {}, railBtns = [], labelEls = [], gLabelPool = [];
   var elSLabels, elRLabels, elHub, elArrange, sLabelEls = [], rLabelPool = [], rLabelBuilt = false, arrBtns = {};
+  var elPanelTab = null;
 
   /* ---------- skeleton DOM (built once, lazily on first open) ---------- */
   function buildSkeleton() {
     root.innerHTML =
       '<div class="bv-head"><span class="bv-title"></span><span class="bv-counts"></span>' +
-      '<span class="bv-views"><button type="button" class="bv-view-btn" data-bv-mode="brain"></button><button type="button" class="bv-view-btn" data-bv-mode="graph"></button><button type="button" class="bv-view-btn" data-bv-mode="list"></button></span>' +
+      '<span class="bv-views">' + BV_VIEW_ORDER.map(function (m) { return '<button type="button" class="bv-view-btn" data-bv-mode="' + m + '"></button>'; }).join("") + '</span>' +
       '<span class="bv-views bv-shellviews"><button type="button" class="bv-view-btn" data-shell="ghost"></button><button type="button" class="bv-view-btn" data-shell="opaque"></button><button type="button" class="bv-view-btn" data-shell="off"></button></span>' +
       '<button type="button" class="bv-walk-btn" id="bvWalkBtn"></button></div>' +
       '<div class="bv-walkbar" hidden><div class="bv-walk-top"><span class="bv-walk-info"></span><span class="bv-walk-goal"></span></div>' +
@@ -78236,7 +78281,8 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       '<div class="bv-boot" hidden><div class="bv-boot-card"><div class="bv-boot-name">BRAIN VIEW</div><div class="bv-boot-phase"></div><div class="bv-boot-phase bv-boot-counts"></div><div class="bv-boot-phase bv-boot-skip"></div></div></div>' +
       '</div>' +
       '<div class="bv-list" hidden></div>' +
-      '<div class="bv-panel"><button type="button" class="bv-close" aria-label="close">✕</button><div class="bv-rhead"><button type="button" class="bv-rback"></button><span class="bv-rtitle"></span><button type="button" class="bv-rclose" aria-label="close">✕</button></div><div class="bv-pbody"><div class="bv-helix"><svg width="40" height="300" aria-hidden="true"></svg></div><div class="bv-article"></div></div></div>' +
+      '<div class="bv-panel"><button type="button" class="bv-close" aria-label="close">✕</button><button type="button" class="bv-min" aria-label="minimise">—</button><div class="bv-rhead"><button type="button" class="bv-rback"></button><span class="bv-rtitle"></span><button type="button" class="bv-rmin" aria-label="minimise">—</button><button type="button" class="bv-rclose" aria-label="close">✕</button></div><div class="bv-pbody"><div class="bv-helix"><svg width="40" height="300" aria-hidden="true"></svg></div><div class="bv-article"></div></div></div>' +
+      '<button type="button" class="bv-panel-tab" hidden></button>' +
       '</div>' +
       /* BN-177: the data note lives BELOW the stage (it used to sit
          in the control stack above the canvas and pushed the stage
@@ -78286,6 +78332,11 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     elWalkEnd.addEventListener("click", function () { endWalk(false); });
     elWalkNext.addEventListener("click", function () { walkNext(); });
     elPanel.querySelector(".bv-close").addEventListener("click", clearSelection);
+    elPanelTab = root.querySelector(".bv-panel-tab");
+    elPanelTab.addEventListener("click", function () { setPanelMin(false); });
+    elPanel.querySelector(".bv-min").addEventListener("click", function () { setPanelMin(true); });
+    var rminBtn = root.querySelector(".bv-rmin");
+    if (rminBtn) rminBtn.addEventListener("click", function () { setPanelMin(true); });
     elRBack = root.querySelector(".bv-rback");
     elRTitle = root.querySelector(".bv-rtitle");
     elRBack.addEventListener("click", readerBack);
@@ -78349,12 +78400,11 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     BD = window.__BRAIN__;
     if (!BD || !topics.length) { failLoad(); return; }
     N = topics.length;
-    EDGES = BD.edges || [];
     buildGraph();
     if (BD.pos && BD.pos.length === N * 3) layoutBrain3D(); else layoutBrain();
     layoutGraphInit();
     layoutRings();
-    stats.nodes = N; stats.edges = EDGES.length;
+    stats.nodes = N; stats.edges = EDGES.length; stats.wordEdges = WORD_EDGES.length;
     stats.figs = topics.filter(function (t) { return !!t.fig; }).length;
     stats.orphans = deg.filter(function (d) { return d === 0; }).length;
     buildRail();
@@ -78371,10 +78421,22 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     genreOf = new Array(N);
     var i, e;
     if (BD.nodes && BD.nodes.length === N) { for (i = 0; i < N; i++) genreOf[i] = BD.nodes[i]; }
-    else { for (i = 0; i < N; i++) genreOf[i] = Math.max(0, GENRE_CODE.indexOf(topics[i].g)); EDGES = []; }
+    else { for (i = 0; i < N; i++) genreOf[i] = Math.max(0, GENRE_CODE.indexOf(topics[i].g)); }
+    /* BN-292: EDGES = main only; word edges -> WORD_EDGES/wordAdj,
+       used nowhere else (counts/lines/pulses/walk excluded). */
+    var allEdges = (BD.nodes && BD.nodes.length === N) ? (BD.edges || []) : [];
+    EDGES = []; WORD_EDGES = [];
+    allEdges.forEach(function (ee) { if (bvIsWordEdge(ee[2], ee[3])) WORD_EDGES.push(ee); else EDGES.push(ee); });
     adj = new Array(N); deg = new Array(N); isOrphan = new Array(N);
+    wordAdj = new Array(N);
     var crossW = new Array(N);
-    for (i = 0; i < N; i++) { adj[i] = []; deg[i] = 0; crossW[i] = new Float32Array(NS); }
+    for (i = 0; i < N; i++) { adj[i] = []; wordAdj[i] = []; deg[i] = 0; crossW[i] = new Float32Array(NS); }
+    WORD_EDGES.forEach(function (ee) {
+      var a = ee[0], b = ee[1];
+      if (a < 0 || b < 0 || a >= N || b >= N) return;
+      wordAdj[a].push({ to: b, kind: ee[2], word: ee[3] });
+      wordAdj[b].push({ to: a, kind: ee[2], word: ee[3] });
+    });
     for (var k = 0; k < EDGES.length; k++) {
       e = EDGES[k];
       var a = e[0], b = e[1];
@@ -79116,6 +79178,13 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     } else {
       html += '<p class="bv-a-body">' + esc(L("noConn")) + "</p>";
     }
+    if (wordAdj[i] && wordAdj[i].length) {
+      html += '<details class="bv-word-conns"><summary>' + esc(fmt("wordConnHead", wordAdj[i].length)) + "</summary>";
+      wordAdj[i].slice().forEach(function (nb) {
+        html += '<button type="button" class="bv-conn bv-word-conn" data-to="' + nb.to + '"><span><span class="cdot" style="background:' + nodeCss[nb.to] + '"></span>' + esc(topicTitle(nb.to)) + '</span><span class="g">' + esc(fmt("groundKw", nb.word)) + "</span></button>";
+      });
+      html += "</details>";
+    }
     var urls = t.u || [];
     if (urls.length) {
       html += '<h4 class="bv-conn-h">' + esc(L("linksHead")) + "</h4><div>";
@@ -79143,6 +79212,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     });
     markSuggested();
     elPanel.classList.add("open");
+    syncPanelChrome();
     /* Wave 5 (BN-179): the learning-language mode (module 77)
        listens for this to add companion-language paragraphs to
        the freshly rendered article. Presentation only. */
@@ -79168,10 +79238,31 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     if (!readerHist.length) return;
     selectNode(readerHist.pop(), "back");
   }
+  /* BN-292 minimise: keeps the selection (unlike close); panel
+     collapses to a restore tab; stage re-fits via root classes. */
+  function syncPanelChrome() {
+    if (!elPanel) return;
+    var open = elPanel.classList.contains("open");
+    root.classList.toggle("bv-panel-open", open && !panelMin);
+    root.classList.toggle("bv-panel-min", open && panelMin);
+    elPanel.classList.toggle("minimized", open && panelMin);
+    if (elPanelTab) {
+      elPanelTab.hidden = !(open && panelMin);
+      elPanelTab.textContent = L("panelRestore") + (selected >= 0 ? " — " + topicTitle(selected) : "");
+    }
+    resize();
+  }
+  function setPanelMin(min) {
+    if (!elPanel || !elPanel.classList.contains("open")) return;
+    panelMin = !!min;
+    syncPanelChrome();
+  }
   function clearSelection() {
     selected = -1;
     readerHist = [];
+    panelMin = false;
     if (elPanel) elPanel.classList.remove("open");
+    syncPanelChrome();
     if (savedListScroll !== null && elList) { elList.scrollTop = savedListScroll; savedListScroll = null; }
     if (helixTimer) { cancelAnimationFrame(helixTimer); helixTimer = 0; }
   }
@@ -80269,7 +80360,16 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     if (view.classList.contains("open")) enter();
   }
   function enter() {
-    if (!built) { buildSkeleton(); viewBtns.brain.classList.add("on"); }
+    if (!built) { buildSkeleton(); viewBtns[BV_DEFAULT_MODE].classList.add("on"); }
+    /* BN-292: every open starts on the 2D graph. In-session
+       switching is untouched; setMode only at open, when ready. */
+    if (dataReady && mode !== BV_DEFAULT_MODE) setMode(BV_DEFAULT_MODE);
+    else if (!dataReady && mode !== BV_DEFAULT_MODE) {
+      mode = BV_DEFAULT_MODE;
+      Object.keys(viewBtns).forEach(function (k) { viewBtns[k].classList.toggle("on", k === BV_DEFAULT_MODE); });
+      if (elList) elList.hidden = true;
+      if (elStage) elStage.style.display = "";
+    }
     lastGrab = performance.now();
     if (!dataReady && !loadFailed) startLoad();
     if (dataReady && lang() !== builtLang) onLangChanged();
@@ -80281,9 +80381,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   /* verification hook: live view state for headless probes */
   window.__BRAIN_VIEW__ = {
     getState: function () {
-      return { mode: mode, arrange: arrange, yaw: manualAng, pitch: manualPitch, roll: manualRoll, zoom: cam.zoom, camX: cam.x, camY: cam.y, selected: selected, panelOpen: elPanel ? elPanel.classList.contains("open") : false, focusShelf: focusShelf, gliding: glide.active, dataReady: dataReady, nodes: N, edges: EDGES.length, orphans: stats.orphans, pulses: pulses.length, search: { q: searchQuery, hits: searchHitsNow } };
+      return { mode: mode, arrange: arrange, yaw: manualAng, pitch: manualPitch, roll: manualRoll, zoom: cam.zoom, camX: cam.x, camY: cam.y, selected: selected, panelOpen: elPanel ? elPanel.classList.contains("open") : false, panelMin: panelMin, viewOrder: BV_VIEW_ORDER.slice(), focusShelf: focusShelf, gliding: glide.active, dataReady: dataReady, nodes: N, edges: EDGES.length, wordEdges: WORD_EDGES.length, orphans: stats.orphans, pulses: pulses.length, search: { q: searchQuery, hits: searchHitsNow } };
     },
-    resetView: resetView, clearSelection: clearSelection, selectNode: selectNode, setMode: setMode, toggleFocus: toggleFocus, setArrange: setArrange,
+    resetView: resetView, clearSelection: clearSelection, selectNode: selectNode, setMode: setMode, toggleFocus: toggleFocus, setArrange: setArrange, setPanelMin: setPanelMin,
+    getConnections: function (i) { return { main: (adj[i] || []).map(function (nb) { return { to: nb.to, kind: nb.kind, word: nb.word, title: topicTitle(nb.to) }; }), word: (wordAdj[i] || []).map(function (nb) { return { to: nb.to, kind: nb.kind, word: nb.word, title: topicTitle(nb.to) }; }) }; },
     setAngles: function (yaw, pitch, roll) { manualAng = yaw; manualPitch = pitch; manualRoll = roll || 0; camAnim = null; stopGlide(); },
     getShell: function () { var mx = 0; if (shellMesh) { for (var v = 0; v < shellMesh.nv; v++) { var dx = shellMesh.pos[v * 3] - 500, dy = shellMesh.pos[v * 3 + 1] - 247, dz = shellMesh.pos[v * 3 + 2]; var dd = Math.sqrt(dx * dx + dy * dy + dz * dz); if (dd > mx) mx = dd; } } return { mode: shellMode, alpha: +shellAlpha.toFixed(3), verts: shellMesh ? shellMesh.nv : 0, faces: shellMesh ? shellMesh.nf : 0, maxR: Math.round(mx) }; },
     setShell: function (m) { setShellMode(m); },
@@ -82842,6 +82943,141 @@ window.__BN_VIEW__ = {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", buildBand);
   else buildBand();
   setTimeout(buildBand, 1200);
+})();
+
+/* BN-293 — minimisable large frames, one shared component
+   (standing rule 2026-11-22; BN-292 brain panel is the model).
+   Collapse only display:none's children — selection, input
+   values and scroll are never destroyed; a slim restore bar
+   keeps the panel title; neighbours re-fit (flex/grid stretch
+   + resize / "arcade:refit" dispatch). Small chips and
+   confirmation dialogs are out of scope, never targeted.
+   Targets (inventoried large frames): .pts-card (profile /
+   shop / ranking), .set-sec (settings), .bn-panel (build
+   notes), .bv-rail (brain shelf rail). New pages opt in via
+   [data-fold] / data-fold-head. Panels <110px are skipped. */
+(function () {
+  "use strict";
+  var CHEV_D = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9.5 12 16.5 19 9.5"/></svg>';
+  var CHEV_U = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 14.5 12 7.5 19 14.5"/></svg>';
+  var CHEV_R = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 5 16.5 12 9.5 19"/></svg>';
+  var css = [
+    ".arc-fold-btn{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(130,145,180,.5);background:rgba(130,145,180,.16);color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;padding:0;-webkit-tap-highlight-color:transparent}",
+    ".arc-fold-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}",
+    ".arc-fold-btn[hidden]{display:none}",
+    ".arc-fold-bar{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;background:none;border:0;color:inherit;font:inherit;font-size:12.5px;font-weight:800;padding:7px 10px;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}",
+    ".arc-fold-bar svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}",
+    ".arc-fold-bar .arc-fold-bar-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".arc-fold-min>*:not(.arc-fold-bar){display:none!important}",
+    ".arc-fold-min{padding-top:2px!important;padding-bottom:2px!important;min-height:0!important}",
+    /* brain rail: on wide screens it is a 178px left column — the
+       minimised rail becomes a 44px column with a vertical bar,
+       so the stage takes the freed width (flex re-fit). */
+    "@media (min-width:760px){.bv-rail.arc-fold-min{flex:0 0 44px!important;overflow:hidden;padding:6px 0!important}.bv-rail.arc-fold-min .arc-fold-bar{writing-mode:vertical-rl;height:100%;width:auto;padding:10px 7px;align-items:center}}",
+    "@media (max-width:759px){.bv-rail.arc-fold-min{overflow:hidden}}"
+  ].join("\n");
+  var st = document.createElement("style");
+  st.id = "arcFoldStyle";
+  st.textContent = css;
+  (document.head || document.documentElement).appendChild(st);
+
+  function titleOf(el, head) {
+    var t = "";
+    if (head && head.textContent) t = head.textContent.replace(/\s+/g, " ").trim();
+    if (!t) t = (el.getAttribute("data-fold-title") || el.getAttribute("aria-label") || "").trim();
+    return t || "パネル";
+  }
+  function refit(el, min) {
+    try { window.dispatchEvent(new Event("resize")); } catch (e) {}
+    try { document.dispatchEvent(new CustomEvent("arcade:refit", { detail: { el: el, min: !!min } })); } catch (e) {}
+  }
+  function setMin(el, min) {
+    if (!el || !el._arcFold) return;
+    min = !!min;
+    if (min) {
+      /* titles can be filled in after enhance (async renders) —
+         re-read the heading at minimise time */
+      var t = titleOf(el, el._arcFold.head);
+      el._arcFold.bar.querySelector(".arc-fold-bar-t").textContent = t;
+      el._arcFold.bar.setAttribute("aria-label", t);
+    }
+    el.classList.toggle("arc-fold-min", min);
+    el._arcFold.btn.hidden = min;
+    el._arcFold.btn.setAttribute("aria-expanded", min ? "false" : "true");
+    el._arcFold.bar.hidden = !min;
+    refit(el, min);
+  }
+  function enhance(el, headSel, minH) {
+    if (!el || el._arcFold) return false;
+    /* a panel first seen small may still be rendering (skeleton
+       heights) — the skip is time-boxed, never permanent */
+    if (el._arcFoldSkipAt && Date.now() - el._arcFoldSkipAt < 4000) return false;
+    var h = el.offsetHeight;
+    if (h === 0) return false; /* hidden view: a later scan decides */
+    if (h < (minH || 110)) { el._arcFoldSkipAt = Date.now(); return false; }
+    var head = headSel ? el.querySelector(headSel) : null;
+    var title = titleOf(el, head);
+    try { if (window.getComputedStyle(el).position === "static") el.style.position = "relative"; } catch (e) {}
+    el.classList.add("arc-fold");
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "arc-fold-btn";
+    btn.setAttribute("aria-expanded", "true");
+    btn.setAttribute("aria-label", title);
+    btn.innerHTML = CHEV_D;
+    var bar = document.createElement("button");
+    bar.type = "button";
+    bar.className = "arc-fold-bar";
+    bar.hidden = true;
+    bar.setAttribute("aria-label", title);
+    bar.innerHTML = (el.classList.contains("bv-rail") ? CHEV_R : CHEV_U) + '<span class="arc-fold-bar-t"></span>';
+    bar.querySelector(".arc-fold-bar-t").textContent = title;
+    btn.addEventListener("click", function (ev) { ev.stopPropagation(); setMin(el, true); });
+    bar.addEventListener("click", function (ev) { ev.stopPropagation(); setMin(el, false); });
+    el.appendChild(btn);
+    el.appendChild(bar);
+    el._arcFold = { btn: btn, bar: bar, head: head };
+    return true;
+  }
+  var TARGETS = [
+    { sel: ".pts-card", head: ".pts-h" },
+    { sel: ".set-sec", head: ".set-sec-t" },
+    { sel: ".bn-panel", head: ".bn-phead" },
+    /* the rail is a 178px column on wide screens but only a thin
+       strip on phones — it is a named large frame, so its gate
+       is lower (BN-293: the fold must work at phone width too) */
+    { sel: ".bv-rail", head: "h5", minH: 24 }
+  ];
+  function scan() {
+    var i, j, els;
+    for (i = 0; i < TARGETS.length; i++) {
+      els = document.querySelectorAll(TARGETS[i].sel);
+      for (j = 0; j < els.length; j++) enhance(els[j], TARGETS[i].head, TARGETS[i].minH);
+    }
+    els = document.querySelectorAll("[data-fold]");
+    for (j = 0; j < els.length; j++) enhance(els[j], els[j].getAttribute("data-fold-head") || null);
+  }
+  var pending = false;
+  function queueScan() {
+    if (pending) return;
+    pending = true;
+    setTimeout(function () { pending = false; scan(); }, 180);
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(queueScan).observe(document.documentElement, { childList: true, subtree: true });
+  }
+  document.addEventListener("click", function () { setTimeout(scan, 350); }, true);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", scan);
+  else scan();
+  setTimeout(scan, 1200);
+  window.__arcadeFold = {
+    version: "bn293-1",
+    enhance: function (el, headSel) { return enhance(el, headSel || null); },
+    setMin: setMin,
+    isMin: function (el) { return !!(el && el.classList && el.classList.contains("arc-fold-min")); },
+    scan: scan,
+    targets: TARGETS.map(function (t) { return t.sel; })
+  };
 })();
 </script>
 <script>/* ============================================================
