@@ -7655,9 +7655,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             #planetPrompt[hidden]{display:none}
             #planetPrompt .pp-txt{flex:1;min-width:0}
             #planetPrompt .pp-name{font-size:15.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-            #planetPrompt .pp-sub{font-size:12.5px;color:#b9c4de;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            #planetPrompt .pp-sub{font-size:12.5px;color:#b9c4de;line-height:1.45;white-space:normal}
             #planetPrompt .pp-count{font-size:11.5px;color:#ffd35c;font-weight:700}
-            #planetPlayBtn{flex:none;min-height:48px;padding:10px 22px;border:0;border-radius:12px;background:#ffd35c;color:#4a3200;font-size:15px;font-weight:800;cursor:pointer}
+            #planetPlayBtn{position:absolute;z-index:36;min-height:40px;padding:8px 16px;border:0;border-radius:999px;background:#ffd35c;color:#4a3200;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.45);transform:translate(-50%,-50%);pointer-events:auto}
+            #planetPlayBtn[hidden]{display:none}
             #planetSignpost{position:absolute;left:10px;right:10px;bottom:10px;padding:12px 14px;border-radius:16px;background:rgba(12,18,38,.9);color:#eef2ff;border:1px solid rgba(255,255,255,.16);pointer-events:auto}
             #planetSignpost[hidden]{display:none}
             #planetSignpost .sp-head{font-size:13px;font-weight:800;letter-spacing:.04em;color:#ffd35c;margin-bottom:8px}
@@ -7713,7 +7714,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             #planetNpcPrompt[hidden]{display:none}
             #planetNpcPrompt .pp-txt{flex:1;min-width:0}
             #planetNpcPrompt .pp-name{font-size:14.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-            #planetNpcPrompt .pp-sub{font-size:12px;color:#cfc6ea;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            #planetNpcPrompt .pp-sub{font-size:12px;color:#cfc6ea;line-height:1.45;white-space:normal}
             #planetNpcTalkBtn{flex:none;min-height:48px;padding:10px 20px;border:0;border-radius:999px;background:#ffd35c;color:#4a3200;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
             #planetTalk{position:absolute;left:10px;right:10px;bottom:10px;padding:13px 15px 14px;border-radius:16px;background:rgba(12,18,38,.94);color:#eef2ff;border:1px solid rgba(255,211,92,.45);pointer-events:auto;box-shadow:0 10px 30px rgba(0,0,0,.4)}
             #planetTalk[hidden]{display:none}
@@ -23202,11 +23203,25 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
        i.e. the fixed fy = 0.829 tapped ~46px BELOW every tile, and the
        fx span also drifts with the hand's tile count / melds, so
        several tiles (edges, the drawn tile) could never be selected.
-       The mahjong app now publishes the true projected centre of every
-       hand tile on every scene sync (window.__mjHandTiles: [{i, nx,
-       ny}] in NDC), and mjTilePoint converts the NDC centre back to
-       client coordinates, inverting the app's own pointer un-rotation
-       (pseudo-landscape + shell rotation) exactly as its raycast does.
+       The mahjong app publishes a projected point for every hand
+       tile on every scene sync (window.__mjHandTiles: [{i, nx, ny}]
+       in NDC), and mjTilePoint converts it back to client
+       coordinates, inverting the app's own pointer un-rotation
+       (pseudo-landscape + shell rotation) exactly as its raycast
+       does. NOTE (2026-11-22, remote-fix round, supersedes the
+       2026-11-21 affine-calibration attempt): the published point
+       IS the tile's projected centre — verified two independent
+       ways in the probe environment: (1) the app's own raycaster,
+       given the published NDC of tile i, hits tile i first (after
+       a matrixWorld refresh), at both measured aspects; (2) the
+       bright tile-face pixels in the rendered frame centre on the
+       published row (rel y ≈ 206 vs published ≈ 206 at aspect
+       1.464). The affine remap briefly shipped in the assembled
+       BN-261+fix build was fit to the tiles' lower bodies/shadow
+       band instead of their faces and shifted every tap ~30px
+       BELOW the row — the raycast then hit nothing at all, which
+       is why several positions could never be selected. Do not
+       re-add a remap without raycast-level evidence.
        The old ratios stay only as a fallback for before the first
        sync. The cursor range follows the published tile count, so
        meld hands (11/8/5/2 tiles) clamp correctly too. */
@@ -23227,6 +23242,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       if (typeof window.__mjRotation === 'function') th += window.__mjRotation() || 0;
       return ((th % 360) + 360) % 360;
     }
+    /* The published points are used RAW (2026-11-22): they are the
+       app's own projection of each tile's layout position, and the
+       app's raycast inverts exactly that projection. See the long
+       note above mjHandLayout for the raycast + pixel evidence and
+       for why the aspect-affine remap that briefly replaced them
+       was wrong. No remap lives here anymore. */
     function mjTilePoint(i) {
       var c = mjCanvas(); if (!c) return null;
       var r = c.getBoundingClientRect(); if (!r.width || !r.height) return null;
@@ -23298,6 +23319,17 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     }
     function mjHandle(msg) {
       if (activeGame() !== 'mahjong') return;
+      /* Sync the bookkeeping FIRST (2026-11-22): mjPollState resets
+         mjSelected when the hand count changed since the last poll.
+         If that sync ran only in the trailing broadcast below, a
+         count change caused by a draw between polls would wipe the
+         selection this very keypress just made in the app — the
+         phone readout and the app would diverge. Syncing first
+         makes the trailing poll see no change and keep the new
+         selection. (Periodic polls only run while a phone is
+         connected, so without this the first keypress after any
+         hand change was always the victim.) */
+      mjPollState();
       if (msg.a === 'left' || msg.a === 'right') {
         mjCursor = Math.max(0, Math.min(mjHandCount() - 1, mjCursor + (msg.a === 'left' ? -1 : 1)));
         if (mjSelected >= 0) { mjTap(mjCursor); mjSelected = mjCursor; }
@@ -38627,6 +38659,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
        language). Same value as always: 1 pt per caught coin through
        this standard path; the per-event cap lives in module 28. */
     coinFall: { pts: 1, label: "コイン落下" },
+    /* BN-264 (2026-11-22): the coin-fall cap bonus. A full 30/30
+       event earns its whole catch yield again (+30) as a completion
+       bonus, paid once per event through the session-keyed earn in
+       module 28 (the paidKeys guard makes a double pay impossible).
+       A partial event keeps only the per-catch +1s — the proportional
+       share. Before this round the cap paid nothing at all. */
+    coinFallCap: { pts: 30, label: "コイン落下 上限達成" },
     weeklyQuest: { pts: 30, label: "ウィークリークエスト達成" },
     /* Wave 2 variant bonuses (2026-11-17): every one is bounded —
        the day-gated ones pay at most once per calendar day (the
@@ -40846,10 +40885,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       if (ev.credited >= EVENT_CAP) { removeCoin(c); return; }
       ev.caught++; ev.credited++;
       updateBanner();
-      if (ev.credited >= EVENT_CAP) reachCap();
     }
     payCatch(x, y, c.el);
     removeCoin(c);
+    /* BN-264: the cap settlement runs AFTER the catch's own +1, so
+       the +30 completion toast is the one left on screen. */
+    if (c.mode === "event" && ev.credited >= EVENT_CAP) reachCap();
   }
 
   function removeCoin(c) {
@@ -41088,7 +41129,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
   scheduleLobby(true);
 
   /* ---------- the event ---------- */
-  var ev = { active: false, caught: 0, credited: 0, endsAt: 0, spawnTimer: null, endTimer: null, nextTimer: null, onPlanet: false };
+  var ev = { active: false, caught: 0, credited: 0, endsAt: 0, spawnTimer: null, endTimer: null, nextTimer: null, onPlanet: false, session: 0, capPaid: false };
   function ensureBanner() {
     if (banner) return banner;
     banner = document.createElement("div");
@@ -41111,6 +41152,18 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
   }
   function reachCap() {
     if (banner) banner.querySelector(".cf-sub").textContent = "1回の上限に達しました";
+    /* BN-264: the cap pays. A full 30/30 clear earns its catch
+       yield again (+30 via EARN.coinFallCap) as a completion
+       bonus; the earn toast is the payout display. Paid at most
+       once per event — the capPaid flag here, and the earn is
+       session-keyed so the paidKeys guard independently refuses
+       a second pay. A partial event never reaches this: its
+       per-catch +1s are the proportional share. */
+    if (!ev.capPaid) {
+      ev.capPaid = true;
+      var P = window.ARCADE_points;
+      if (P && P.earn) P.earn("coinFallCap", { key: "cfcap:" + ev.session });
+    }
     clearTimeout(ev.spawnTimer);
     for (var i = coins.length - 1; i >= 0; i--) {
       if (coins[i].mode === "event") {
@@ -41123,6 +41176,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
   function startEvent() {
     if (ev.active || reducedMotion()) return false;
     ev.active = true; ev.caught = 0; ev.credited = 0; ev.endsAt = Date.now() + EVENT_MS;
+    ev.session = Date.now(); ev.capPaid = false;
     ensureBanner();
     banner.querySelector(".cf-sub").textContent = "タップ／ドラッグでキャッチ";
     updateBanner(); updateBannerBar();
@@ -41233,8 +41287,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       suppressUntil = Date.now() + 400;
       ev.caught++; ev.credited++;
       updateBanner();
-      if (ev.credited >= EVENT_CAP) reachCap();
       payCatch(x, y, null);
+      /* BN-264: cap settlement after the catch credit, so its
+         payout toast is the one left on screen. */
+      if (ev.credited >= EVENT_CAP) reachCap();
       return true;
     },
     planetCancel: function () { endPlanetCoin(); },
@@ -61842,6 +61898,15 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
 @media (prefers-reduced-motion: reduce){#mascotDock.soldering .masc-bench .mb-led,#mascotDock.soldering .masc-inner{animation:none!important}}
 #mascotDock .masc-bubble{display:inline-block;background:#fff;border:2.5px solid #3d2c5a;color:#e0483e;font-weight:900;font-size:17px;padding:3px 12px;border-radius:14px;margin-bottom:2px;opacity:0;transform:translateY(4px);transition:all .25s;box-shadow:0 4px 10px rgba(61,44,90,.25)}
 #mascotDock .masc-bubble.show{opacity:1;transform:none}
+/* BN-262 (owner, 2026-11-21): the planet-lobby label pill under the
+   mascot — small, quiet, gently bobbing; the icon softly pulses.
+   It is a real tap target (pointer-events:auto inside the
+   pointer-events:none dock) wired to the same planet entrance. */
+#mascotDock .masc-planet-label{display:inline-flex;align-items:center;gap:5px;margin-top:3px;padding:3px 9px;background:rgba(255,255,255,.94);border:2px solid #3d2c5a;border-radius:999px;color:#3d2c5a;font-size:10.5px;font-weight:800;line-height:1.25;white-space:nowrap;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 4px 10px rgba(61,44,90,.22);animation:mplBob 2.8s ease-in-out infinite}
+#mascotDock .masc-planet-label svg{width:14px;height:14px;flex:none;animation:mplPulse 2.8s ease-in-out infinite}
+@keyframes mplBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes mplPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@media (prefers-reduced-motion: reduce){#mascotDock .masc-planet-label,#mascotDock .masc-planet-label svg{animation:none!important}}
 #mascotDock svg{width:96px;height:96px;filter:drop-shadow(0 6px 8px rgba(61,44,90,.3))}
 .masc-blink{transform-origin:center;animation:mascBlink 4.6s infinite}
 @keyframes mascBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
@@ -62044,6 +62109,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   var LANGS = ["ja", "en", "ko", "zh", "zht", "es", "fr", "de", "pt", "it"];
   function lang() { try { var l = localStorage.getItem("arcade-lang") || "en"; return LANGS.indexOf(l) >= 0 ? l : "en"; } catch (e) { return "en"; } }
   var D = {
+    planetGo: { ja: "惑星ロビーへ", en: "Planet Lobby", ko: "행성 로비로", zh: "去行星大厅", zht: "去行星大廳", es: "Lobby planetario", fr: "Hall planétaire", de: "Planeten-Lobby", pt: "Lobby planetário", it: "Lobby planetario" },
     gacha: { ja: "カプセルガチャ", en: "Capsule Gacha", ko: "캡슐 가챠", zh: "扭蛋机", zht: "扭蛋機", es: "Gacha de cápsulas", fr: "Gacha à capsules", de: "Kapsel-Gacha", pt: "Gacha de cápsulas", it: "Gacha a capsule" },
     pull1: { ja: "1回回す（100コイン）", en: "Pull once (100 coins)", ko: "1회 돌리기 (100코인)", zh: "抽1次（100金币）", zht: "抽1次（100金幣）", es: "Tirar una vez (100 monedas)", fr: "Tirer une fois (100 pièces)", de: "Einmal ziehen (100 Münzen)", pt: "Girar uma vez (100 moedas)", it: "Gira una volta (100 monete)" },
     balance: { ja: "残高", en: "Balance", ko: "잔액", zh: "余额", zht: "餘額", es: "Saldo", fr: "Solde", de: "Guthaben", pt: "Saldo", it: "Saldo" },
@@ -62832,27 +62898,36 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     var dock = document.getElementById("mascotDock");
     if (!dock || mascEl) return;
     var st = ptsState();
-    dock.innerHTML = '<span class="masc-bubble" aria-hidden="true"></span><div class="masc-inner" data-stage="' + rankIdx(st.lifetime) + '" data-mascot="' + equippedMascotId() + '">' + equippedMascotSVG(rankIdx(st.lifetime)) + '</div><div class="masc-bench" id="mascBench" role="button" aria-label="あと1つベンチ">' + benchSVG() + "</div>";
+    dock.innerHTML = '<span class="masc-bubble" aria-hidden="true"></span><div class="masc-inner" data-stage="' + rankIdx(st.lifetime) + '" data-mascot="' + equippedMascotId() + '">' + equippedMascotSVG(rankIdx(st.lifetime)) + '</div><div class="masc-bench" id="mascBench" role="button" aria-label="あと1つベンチ">' + benchSVG() + '</div>' +
+      /* BN-262 (owner, 2026-11-21): a small labelled pill under the
+         mascot so the planet-lobby entrance reads at a glance —
+         flat line planet icon + "惑星ロビーへ" text (T("planetGo"),
+         all 10 locales), gently bobbing in seg-039 CSS. The pill
+         is its own tap target wired to the very same goPlanet()
+         as the mascot himself. No emoji, per the standing rule. */
+      '<div class="masc-planet-label" id="mascPlanetLabel" role="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="5.2"/><ellipse cx="12" cy="12" rx="10" ry="3.4" transform="rotate(-18 12 12)"/></svg><span class="mpl-text">' + T("planetGo") + "</span></div>";
     mascEl = dock; mascBubble = dock.querySelector(".masc-bubble");
     var benchEl = dock.querySelector(".masc-bench");
     if (benchEl) benchEl.addEventListener("click", function (e) { e.stopPropagation(); benchTap(); });
-    /* BN-195: tapping the mascot fires a random one-shot action
-       plus a short chirp on his own pluck voice. */
-    var innerTap = dock.querySelector(".masc-inner");
-    if (innerTap) innerTap.addEventListener("click", function () {
-      /* BN-253 (owner, 2026-11-21): tapping the lobby mascot flies
-         to the planet lobby, through the exact same path as the
-         display-mode panel's planet option (its button click, so
-         persistence in arcade-lobby-layout-v1 is identical). The
-         wave + chirp stay as the press feedback; the old random
-         one-shot / speech on tap is retired so the tap has exactly
-         one meaning. The bench keeps its own tap (stopPropagation
-         above), and idle greetings are untouched. */
+    /* BN-253 (owner, 2026-11-21): tapping the lobby mascot flies
+       to the planet lobby, through the exact same path as the
+       display-mode panel's planet option (its button click, so
+       persistence in arcade-lobby-layout-v1 is identical). The
+       wave + chirp stay as the press feedback; the old random
+       one-shot / speech on tap is retired so the tap has exactly
+       one meaning. The bench keeps its own tap (stopPropagation
+       above), and idle greetings are untouched. BN-262: the code
+       lives in goPlanet() so the label pill shares it exactly. */
+    function goPlanet() {
       mascPlay("wave");
       pluckVoice(740, 0, 0.22); pluckVoice(1180, 0.09, 0.18);
       var pb = document.querySelector('[data-lobby-opt="planet"]');
       if (pb) pb.click();
-    });
+    }
+    var innerTap = dock.querySelector(".masc-inner");
+    if (innerTap) innerTap.addEventListener("click", goPlanet);
+    var planetLabel = dock.querySelector(".masc-planet-label");
+    if (planetLabel) planetLabel.addEventListener("click", function (e) { e.stopPropagation(); goPlanet(); });
     mascTimer = setInterval(function () {
       if (!mascEl) return;
       var home = document.getElementById("homeView");
@@ -62873,6 +62948,10 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       var stage = rankIdx(st2.lifetime);
       var inner = mascEl.querySelector(".masc-inner");
       if (inner && (inner.getAttribute("data-stage") !== String(stage) || inner.getAttribute("data-mascot") !== equippedMascotId())) { inner.setAttribute("data-stage", String(stage)); inner.setAttribute("data-mascot", equippedMascotId()); inner.innerHTML = equippedMascotSVG(stage); }
+      /* BN-262: keep the planet label's language in step with the
+         current locale (it is set from T() at mount time). */
+      var mplText = mascEl.querySelector(".mpl-text");
+      if (mplText && mplText.textContent !== T("planetGo")) mplText.textContent = T("planetGo");
       if (!skitBusy && Math.random() < 0.30) runSkit();
       else if (Math.random() < 0.24) { mascotPerform(); if (Math.random() < 0.4) mascotSay("hello", 1500); }
       if (!skitBusy && Math.random() < 0.30) { mascEl.classList.add("soldering"); setTimeout(function () { if (mascEl) mascEl.classList.remove("soldering"); }, 3600); }
@@ -99585,9 +99664,20 @@ if (typeof module !== "undefined" && module.exports) module.exports = createHito
       ".hk-wrap *{box-sizing:border-box}",
       ".hk-inst{text-align:center;font-size:13px;opacity:.85;margin:4px 0 10px}",
       ".hk-hud{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:8px}",
-      ".hk-seg{display:inline-flex;border:1px solid var(--trim,#c8b06a);border-radius:999px;overflow:hidden}",
-      ".hk-seg button{background:transparent;color:inherit;border:0;padding:8px 10px;font-size:13px;cursor:pointer;min-height:36px}",
+      ".hk-seg{display:flex;width:100%;max-width:520px;border:1px solid var(--trim,#c8b06a);border-radius:999px;overflow:hidden}",
+      ".hk-seg button{background:transparent;color:inherit;border:0;padding:8px 4px;font-size:12.5px;cursor:pointer;min-height:36px;flex:1 1 0;white-space:nowrap}",
       ".hk-seg button.hk-on,.hk-seg button.on{background:var(--trim,#c8b06a);color:#1a1408;font-weight:700}",
+      /* BN-266: the ultra tier must READ as the ultra tier at a
+         glance — and must never be clipped away. The old seg was
+         an inline-flex pill with overflow hidden: at 390px the
+         four buttons (label + multiplier + lock icon) add up to
+         ~420px, so the ultra button was simply cut off and the
+         hardest difficulty was invisible. The seg is now a
+         full-width flex row whose buttons shrink to fit, and the
+         ultra button carries its own crimson-black identity in
+         every state (locked, available, selected). */
+      ".hk-seg button[data-tier='ultra']{background:linear-gradient(145deg,#401016,#20060a);color:#ffab9e;box-shadow:inset 0 0 0 1px rgba(255,96,72,.6);font-weight:700}",
+      ".hk-seg button[data-tier='ultra'].hk-on,.hk-seg button[data-tier='ultra'].on{background:linear-gradient(145deg,#8c1d18,#5c0f14);color:#ffe9a8;box-shadow:inset 0 0 0 1.5px #ffb03a,0 0 12px rgba(255,80,50,.45)}",
       ".hk-clearOverlay[hidden],.hk-assisted[hidden]{display:none!important}",
       ".hk-chip{border:1px solid var(--trim,#c8b06a);border-radius:999px;padding:7px 12px;font-size:13px;background:rgba(0,0,0,.25)}",
       ".hk-assisted{display:none;width:100%;text-align:center;font-size:12px;color:#ffb3a0;border:1px solid rgba(255,120,90,.5);border-radius:8px;padding:6px 8px}",
@@ -99597,6 +99687,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createHito
       ".hk-btn:active{transform:scale(.97)}",
       ".hk-boardWrap{position:relative;margin:0 auto;background:linear-gradient(160deg,#141b2d,#0d1220),repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 2px,transparent 2px 4px),repeating-linear-gradient(90deg,rgba(255,255,255,.014) 0 2px,transparent 2px 4px);border:2px solid var(--trim,#c8b06a);border-radius:14px;padding:10px;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 1px rgba(200,176,106,.25),inset 0 0 42px rgba(0,0,0,.35)}",
       ".hk-lockNote{text-align:center;font-size:12.5px;color:#cbbd93;margin-top:8px}",
+      /* BN-266: multi-line lock notes lay each tier's line out as
+         an inline-flex row (icon + text together, centred). */
+      ".hk-lockNote.hasLines{display:flex;flex-direction:column;gap:2px;align-items:center}",
+      ".hk-lockLine{display:inline-flex;align-items:center;gap:5px}",
+      ".hk-lockLine .ic{width:13px;height:13px;flex:none}",
       ".hk-board{display:grid;gap:5px;touch-action:none;position:relative;z-index:1}",
       ".hk-cell{aspect-ratio:1/1;border-radius:7px;background:#232c44;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);position:relative;display:flex;align-items:center;justify-content:center;transition:background .12s}",
       ".hk-cell.hk-blocked{background:transparent;box-shadow:none;pointer-events:none}",
@@ -99658,12 +99753,18 @@ if (typeof module !== "undefined" && module.exports) module.exports = createHito
       b.setAttribute("data-hk-locked", locked ? "1" : "0");
     });
     if (els.lockNote) {
-      var next = null;
-      for (var i = 0; i < HK_STAGES.length; i++) if (tierLocked(HK_STAGES[i].tier)) { next = HK_STAGES[i]; break; }
-      if (next) {
-        els.lockNote.hidden = false;
-        els.lockNote.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.2" r="1.3"/></svg>' + " " + S(next.tier) + " — " + S("condTier").replace("{n}", String(next.at - totalClears()));
-      } else els.lockNote.hidden = true;
+      /* BN-266: EVERY locked tier gets its own progress line, so
+         the ultra tier's remaining clears are readable on the spot
+         even while an earlier tier is still the "next" one (the
+         old note named only the first locked stage — a fresh
+         player saw Normal's countdown and nothing about Ultra). */
+      var LOCK_ICON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.2" r="1.3"/></svg>';
+      var lines = [];
+      HK_STAGES.forEach(function (s) {
+        if (tierLocked(s.tier)) lines.push('<span class="hk-lockLine">' + LOCK_ICON + "<span>" + S(s.tier) + " — " + S("condTier").replace("{n}", String(s.at - totalClears())) + "</span></span>");
+      });
+      if (lines.length) { els.lockNote.hidden = false; els.lockNote.classList.add("hasLines"); els.lockNote.innerHTML = lines.join(""); }
+      else { els.lockNote.hidden = true; els.lockNote.classList.remove("hasLines"); }
     }
   }
 
@@ -106162,7 +106263,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   var css = [
     ".gameview canvas{touch-action:none}",
     "#chessRoot .board-wrap,#chessRoot .board-grid{touch-action:none !important}",
-    ".sim-board,.gom-board,.chk-board,.shg-board,.mns-board,.g48-board,.rev-board,.c4-board,.sdk-board,.mem-grid,.mog-field,.pcb-board,.bj-table,.rou-table,.bac-table,.sic-grid,.big-wheel-wrap,.chaos-board{touch-action:none}",
+    ".sim-board,.gom-board,.chk-board,.shg-board,.mns-board,.g48-board,.rev-board,.c4-board,.sdk-board,.mem-grid,.mog-field,.pcb-board,.bj-table,.rou-table,.bac-table,.sic-grid,.big-wheel-wrap,.chaos-board,.vp-cab,#crSpots,#lotTiers,#lotDigits{touch-action:none}",
     "@media (max-width:759px){",
     ".bv-rail-btns{touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}",
     "#brainView .bv-root{overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}",
@@ -106189,7 +106290,17 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     shooterView: "#shoCanvas", fishingView: "#fishCanvas", pachinkoView: "#pachiCanvas",
     keibaView: "#kbCanvas", keirinView: "#krCanvas", kyoteiView: "#ktCanvas",
     autoraceView: "#arCanvas", kartgpView: "#kartCanvas", chaosboardView: ".chaos-board",
-    holdemView: ".hd-board"
+    holdemView: ".hd-board",
+    /* BN-250 sweep remainder (measured 2026-11-21, fixed 2026-11-22):
+       these three titles were missing from both this map and the
+       stylesheet above, so their play fields kept touch-action:auto
+       and a vertical swipe starting on the field scrolled the view
+       (videopoker .vp-cab Δ+158, craps #crSpots Δ+205, lottery
+       #lotTiers Δ+205). The stylesheet stamps all four elements;
+       the map entries give the centring pass its play element
+       (lottery's tiers area is stylesheet-only: it is a results
+       strip, not the centring target). */
+    videopokerView: ".vp-cab", crapsView: "#crSpots", lotteryView: "#lotDigits"
   };
   var SCROLLER = {
     chessView: "#chessRoot", rubikView: "#rubikRoot",
@@ -110387,6 +110498,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   var promptSub = document.getElementById("planetPromptSub");
   var promptCount = document.getElementById("planetPromptCount");
   var playBtn = document.getElementById("planetPlayBtn");
+  /* BN-267: the play button leaves the proximity panel — it becomes
+     a small floating button that sits beside the player character
+     (positioned every frame by updatePlayBtnPos, in the canvas
+     wrap's coordinate space — the same space the beacon arrow
+     uses). It leaves the panel entirely. */
+  if (playBtn && wrap) { wrap.appendChild(playBtn); playBtn.hidden = true; }
   var signEl = document.getElementById("planetSignpost");
   var signList = document.getElementById("planetSignpostList");
   var arrowEl = document.getElementById("planetBeaconArrow");
@@ -110533,10 +110650,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     expansion: [
       { ja: "新しい建物が増えるのを見るのは楽しいね。", en: "Watching new buildings appear never gets old.", ko: "새 건물이 늘어나는 걸 보는 건 즐거워.", zh: "看着新建筑一栋栋出现，很有意思。", zht: "看著新建築一棟棟出現，很有意思。", es: "Ver aparecer edificios nuevos nunca aburre.", fr: "Voir de nouveaux bâtiments apparaître, ça ne lasse jamais.", de: "Zuzusehen, wie neue Gebäude entstehen, wird nie langweilig.", pt: "Ver prédios novos surgindo nunca enjoa.", it: "Vedere apparire nuovi edifici non stanca mai." },
       { ja: "この星は、まだまだ広がっていくよ。", en: "This little star is still growing.", ko: "이 별은 아직도 넓어지고 있어.", zh: "这颗小星球还在不断长大。", zht: "這顆小星球還在不斷長大。", es: "Esta estrellita sigue creciendo.", fr: "Cette petite étoile continue de grandir.", de: "Dieser kleine Stern wächst immer noch.", pt: "Esta estrelinha ainda está crescendo.", it: "Questa piccola stella sta ancora crescendo." }
-    ],
-    retro: [
-      { ja: "レトロな建物の音は、なんだか懐かしいんだ。", en: "The sounds from the retro buildings feel nostalgic.", ko: "레트로 건물의 소리는 왠지 그리워.", zh: "复古建筑那边的声音，让人怀旧。", zht: "復古建築那邊的聲音，讓人懷舊。", es: "Los sonidos de los edificios retro dan nostalgia.", fr: "Les sons des bâtiments rétro sont pleins de nostalgie.", de: "Die Klänge der Retro-Gebäude fühlen sich nostalgisch an.", pt: "Os sons dos prédios retrô dão nostalgia.", it: "I suoni degli edifici retrò sanno di nostalgia." },
-      { ja: "昔のゲームの匂いがする場所だね。", en: "That corner smells like old games, in a good way.", ko: "옛날 게임 냄새가 나는 곳이야.", zh: "那个角落有老游戏的味道。", zht: "那個角落有老遊戲的味道。", es: "Ese rincón huele a juegos de antes, en el buen sentido.", fr: "Ce coin sent les vieux jeux, dans le bon sens.", de: "Diese Ecke riecht nach alten Spielen, im guten Sinn.", pt: "Aquele canto cheira a jogos antigos, no bom sentido.", it: "Quell'angolo sa di vecchi giochi, nel senso buono." }
     ]
   };
   var MOOD10 = [
@@ -110680,6 +110793,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     var districts = [];
     Array.prototype.forEach.call(groups, function (g) {
       var genre = g.getAttribute("data-genre");
+      /* BN-263 (owner, 2026-11-21): the planet has no retro
+         district. The retro console stays a normal-lobby title
+         only, so its genre group never becomes a district here —
+         no retro building, landmark, props, ground biome or
+         full-map warp target. (The GitHub build's standing retro
+         exclusion is a separate, host-side rule and is untouched;
+         the retro genre's design data below was removed with the
+         district, and GENRE_COLORS keeps its entry only as a
+         harmless colour fallback.) */
+      if (genre === "retro") return;
       var nameEl = g.querySelector(".genre-name");
       var tiles = [];
       Array.prototype.forEach.call(g.querySelectorAll(".game-tile"), function (t) {
@@ -110724,7 +110847,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
 
   /* ================= THREE scene ================= */
   var renderer = null, scene = null, camera = null, player = null, inp = null;
-  var playerSprite = null, playerRig = null, blobShadow = null, beaconMesh = null, beaconTarget = null;
+  var playerRig = null, blobShadow = null, beaconMesh = null, beaconTarget = null;
   var coinMesh = null, coinSpin = null, coinDir = null, coinH = 0, coinActive = false;
   var camPos = null, camTargetV = null, sunLight = null, hemi = null;
   var yawTarget = 0, yawOffset = 0, pitchTarget = 0, pitchOffset = 0;
@@ -110741,7 +110864,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   /* P3 state: residents + dialogue + polish */
   var residents = [], nearResident = null;
   var talkOpen = false, talkResident = null, talkReco = null, talkZoom = 0;
-  var squashT = 0, groundMat = null, iconTexture = null, seasonNow = "";
+  var squashT = 0, groundMat = null, seasonNow = "";
   /* BN-258 realism pack: unified shadow casters + photo ground */
   var SHADOW_CASTERS = [], PROP_COUNT = {}, PLAZA_DISC_MAT = null, photoApplied = false, casterTick = 0;
   var gamblingWinMats = [];
@@ -110839,7 +110962,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     if (T.SRGBColorSpace) tx.colorSpace = T.SRGBColorSpace;
     return tx;
   }
-  var castTexCache = {};
   var remoteVec = { x: 0, y: 0 }, remoteVecAt = 0;
 
   function std(T, color, rough) { return new T.MeshStandardMaterial({ color: color, roughness: rough == null ? 0.9 : rough, metalness: 0 }); }
@@ -111218,11 +111340,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     p2b: { pal: { a: 0x7cc4ff, b: 0x4a9ecf, c: 0xfdf6e3, d: 0x33304a }, parts: [
       ["box", 2.1, 1.5, 1.9, 0, 0.75, 0, "a"], ["box", 2.3, 0.3, 0.5, 0, 1.68, 0.6, "b"],
       ["tor", 0.27, 0.07, -0.2, 2.05, 0.6, "c", 0], ["tor", 0.27, 0.07, 0.2, 2.05, 0.6, "c", 0],
-      ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] },
-    retro: { pal: { a: 0xe0503c, b: 0xb83a2c, c: 0x9fd8ff, d: 0x26262e, y: 0xffd166, g: 0x3ddc84 }, parts: [
-      ["box", 1.7, 2.1, 1.6, 0, 1.05, 0, "a"],
-      ["box", 1.5, 0.32, 0.06, 0, 1.92, 0.83, "y"], ["box", 1.1, 0.85, 0.06, 0, 1.35, 0.83, "c"],
-      ["box", 1.3, 0.1, 0.5, 0, 0.78, 0.85, "b"], ["coin", 0.07, -0.3, 0.86, 1.05, "y"], ["coin", 0.07, 0.05, 0.86, 1.05, "g"], ["coin", 0.07, 0.4, 0.86, 1.05, 0xe85d8a]], noDoor: 1 }
+      ["win", -0.6, 0.7, 0.99], ["win", 0.6, 0.7, 0.99]] }
   };
   var LANDMARK_DESIGNS = {
         board: { pal: { a: 0x5b3a8e, b: 0x3c2560, c: 0xe9c46a, w: 0xf3ead8, d: 0x26262e }, parts: [
@@ -111254,11 +111372,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       ["cyl", 0.28, 0.32, 1.8, -0.75, 2.35, -0.45, "b", 12], ["cyl", 0.28, 0.32, 1.8, 0.75, 2.35, -0.45, "b", 12],
       ["tor", 0.55, 0.13, 0, 0.95, 1.06, "c", 0],
       ["box", 0.16, 1.9, 0.16, 1.15, 2.4, 0.6, "c"], ["box", 1.3, 0.14, 0.14, 0.55, 3.3, 0.6, "c"], ["box", 0.2, 0.35, 0.2, 0.05, 3.05, 0.6, "d"],
-      ["win", -0.7, 0.7, 1.03]], doorZ: 1.03 },
-    retro: { pal: { a: 0xe0503c, b: 0xb83a2c, c: 0x9fd8ff, d: 0x26262e, y: 0xffd166 }, parts: [
-      ["box", 1.9, 2.4, 1.7, 0, 1.2, 0, "a"],
-      ["box", 1.7, 0.36, 0.06, 0, 2.2, 0.88, "y"], ["box", 1.25, 0.95, 0.06, 0, 1.55, 0.88, "c"],
-      ["box", 1.45, 0.1, 0.5, 0, 0.9, 0.9, "b"], ["coin", 0.08, -0.32, 0.98, 1.1, "y"], ["coin", 0.08, 0.06, 0.98, 1.1, 0x3ddc84]], noDoor: 1 }
+      ["win", -0.7, 0.7, 1.03]], doorZ: 1.03 }
   };
   var DISTRICT_PROPS = {
         board: [
@@ -111302,45 +111416,234 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       { pal: { c: 0xc8b06a, d: 0x26262e }, parts: [["box", 0.12, 0.8, 0.12, 0, 0.4, 0, "d"], ["tor", 0.34, 0.09, 0, 0.95, 0, "c", 0]] },
       { pal: { a: 0xb03a2e, d: 0x565d66 }, parts: [["box", 0.56, 0.26, 0.3, 0, 0.13, 0, "a"], ["box", 0.3, 0.06, 0.06, 0, 0.3, 0, "d"]] },
       { pal: { a: 0x2563eb, w: 0xf7f6f0 }, parts: [["cyl", 0.16, 0.16, 0.34, 0, 0.17, 0, "a", 12], ["disc", 0.17, 0, 0.36, 0, "w"]] }
-    ],
-    retro: [
-      { pal: { a: 0x3a3f4c, c: 0x9fd8ff, y: 0xffd166 }, parts: [["box", 0.55, 0.75, 0.5, 0, 0.38, 0, "a"], ["box", 0.4, 0.3, 0.04, 0, 0.52, 0.26, "c"], ["box", 0.45, 0.1, 0.04, 0, 0.82, 0.26, "y"]] },
-      { pal: { d: 0x26262e }, parts: [["cyl", 0.03, 0.03, 1.2, 0, 0.6, 0, "d", 6], ["sph", 0.06, 0, 1.24, 0, 0xe0483e, 0]] },
-      { pal: { a: 0x3a3f4c, c: 0xffd166 }, parts: [["box", 0.4, 0.07, 0.3, 0, 0.04, 0, "a"], ["box", 0.4, 0.07, 0.3, 0.03, 0.11, 0.02, "a"], ["box", 0.4, 0.07, 0.3, -0.02, 0.18, 0, "c"]] },
-      { pal: { d: 0x26262e }, parts: [["tor", 0.3, 0.07, 0, 0.09, 0, "d", 1], ["tor", 0.22, 0.06, 0.05, 0.24, 0, "d", 1]] }
     ]
   };
-  /* BN-254 walker rigs: a flat billboard reads paper-thin in 3D,
-     so every walker (player + residents) is a 3-layer rig —
-     front art, a slightly larger dark silhouette, and a greyed
-     mirrored back — that turns to face its travel direction.
-     The layers give real thickness from the side and a readable
-     back for every cast member and every equipped mascot,
-     because the rig only ever depends on the walker's texture.
-     BN-195's motion values (bob, strafe lean, landing squash)
-     are applied to the rig group unchanged. */
-  var walkerPlaneGeo = null;
-  function makeWalkerRig(T, scale) {
-    var grp = new T.Group();
-    if (!walkerPlaneGeo) walkerPlaneGeo = new T.PlaneGeometry(1, 1);
-    function plane(tint, z, flip, grow) {
-      var m = new T.Mesh(walkerPlaneGeo, new T.MeshBasicMaterial({ map: iconTexture, transparent: true, depthWrite: false, color: tint, side: T.DoubleSide }));
-      m.position.z = z;
-      if (flip) m.rotation.y = Math.PI;
-      if (grow) m.scale.setScalar(grow);
-      grp.add(m);
-      return m;
-    }
-    var back = plane(0x9a97a3, -0.085, true, 1);
-    var mid = plane(0x35313e, -0.045, false, 1.06);
-    var front = plane(0xffffff, 0, false, 1);
-    grp.userData.planes = [front, mid, back];
-    grp.scale.setScalar(scale);
-    return grp;
+  /* ================= BN-265: walkers are real 3D =================
+     The BN-254 3-layer billboard rig is retired: every walker
+     (the player and every resident) is now a real 3D chibi animal
+     assembled from primitives — body, head, muzzle, ears, tail,
+     arms and legs with pivots — and animated procedurally: a
+     walk cycle swings arms and legs from the walker's own
+     walkPhase, idle breathes and sways the tail, and a resident's
+     wave raises a real arm. The palettes and signature features
+     are distilled from module 39's cast SVG art, so every one of
+     the 8 collectible cast members keeps its identity in 3D:
+     raccoon = bandit mask + ringed tail, cat = pointed ears +
+     pink nose, otter = thick tapered tail, owl = face discs +
+     beak + tufts, penguin = bowtie + beak + flippers, fox =
+     tall ears + bushy cream-tipped tail, mole = shades + pink
+     star nose, hedgehog = spine shell. The 2D SVG art still
+     serves every 2D surface (dock, shop, gacha) untouched.
+     Orientation still goes through rigOrient (travel direction,
+     never the camera), and BN-195's motion values (bob, strafe
+     lean, landing squash) apply to the rig group unchanged. */
+  var CAST3D = {
+    "masc-raccoon": { body: 0xb3a894, dark: 0x8f8474, deep: 0x6f675c, belly: 0xf2ecdf, mask: 0x5d574f, nose: 0x7a4a35, ears: "round", earInner: 0x6f675c, tail: "ringed" },
+    "masc-cat": { body: 0x9aa3ad, dark: 0x7c858f, belly: 0xf4f1ea, nose: 0xd96a76, ears: "point", earInner: 0xe8a0a8, tail: "thin" },
+    "masc-otter": { body: 0x7d5a3c, dark: 0x5f422a, belly: 0xdcbd93, nose: 0x3a2a1c, ears: "round", earInner: 0x5f422a, tail: "thick" },
+    "masc-owl": { body: 0x8a6f4d, dark: 0x6f573c, belly: 0xf0e4cb, face: 0xf7efdb, nose: 0xe08a3c, beak: true, feet: 0xe08a3c, ears: "tuft", tail: "fan", wings: true },
+    "masc-penguin": { body: 0x333b47, dark: 0x222933, belly: 0xf7f4ec, nose: 0xef8f3c, beak: true, feet: 0xef8f3c, ears: "none", tail: "stub", bowtie: true, wings: true },
+    "masc-fox": { body: 0xe07f3e, dark: 0xc05f27, belly: 0xfdf3e3, nose: 0x4a2c17, ears: "point", earInner: 0xf2b183, tail: "bushy" },
+    "masc-mole": { body: 0x6a6259, dark: 0x4f463f, belly: 0xa89a86, nose: 0xe88ca0, ears: "round", earInner: 0x4f463f, tail: "pinkstub", shades: true },
+    "masc-hedgehog": { body: 0x8a6f4d, dark: 0x54402a, spine: 0x6b5138, belly: 0xf0dfc2, face: 0xf0dfc2, nose: 0x4a3423, ears: "round", earInner: 0x54402a, tail: "none", spines: true }
+  };
+  var W3_GEO = null;
+  function w3Geo(T) {
+    if (W3_GEO) return W3_GEO;
+    W3_GEO = {
+      sph: new T.SphereGeometry(1, 20, 16),
+      cone: new T.ConeGeometry(1, 1, 14),
+      cyl: new T.CylinderGeometry(0.38, 1, 1, 12),
+      box: new T.BoxGeometry(1, 1, 1)
+    };
+    return W3_GEO;
   }
-  function rigSetMap(rig, tex) {
-    if (!rig || !tex) return;
-    rig.userData.planes.forEach(function (p) { p.material.map = tex; p.material.needsUpdate = true; });
+  function w3Mesh(T, geo, material, sx, sy, sz, x, y, z) {
+    var m = new T.Mesh(geo, material);
+    m.scale.set(sx, sy, sz); m.position.set(x, y, z);
+    return m;
+  }
+  /* Builds one 3D walker. Unit space: feet at y=0, facing +Z,
+     total height ~1.1. tint (villager variants) multiplies the
+     fur colours only, so eyes / nose / mask stay readable. */
+  function makeWalker3D(T, castId, tint) {
+    var spec = CAST3D[castId] || CAST3D["masc-raccoon"];
+    var G = w3Geo(T);
+    var tintC = tint ? new T.Color(tint) : null;
+    /* The SVG palettes are flat-display colours; under the planet's
+       sun (directional 1.4 + hemisphere 0.65 through ACES) the same
+       values blow out toward white — the first BN-265 captures read
+       as a white bear, not the tan raccoon of the icon. Measured
+       against captures: 1.0 and 0.85 washed out, 0.3 crushed the
+       mask into the fur; 0.45 keeps the tan reading with the mask
+       distinct. The factor is uniform, so the relationships
+       between the colours are preserved exactly. (The pale figure
+       on the plaza podium is the Q3 stone statue — makeCharacter,
+       a separate static build — not a walker.) */
+    function col(hex, fur) { var c = new T.Color(hex).multiplyScalar(0.45); if (tintC && fur) c.multiply(tintC); return c; }
+    function mat(hex, rough, fur) { return new T.MeshStandardMaterial({ color: col(hex, fur), roughness: rough == null ? 0.92 : rough, metalness: 0 }); }
+    var M = {
+      body: mat(spec.body, 0.95, true), dark: mat(spec.dark, 0.95, true),
+      belly: mat(spec.belly, 0.95, true), nose: mat(spec.nose, 0.5),
+      ink: mat(0x2a1e14, 0.35), white: mat(0xffffff, 0.3),
+      feet: mat(spec.feet || spec.dark, 0.95, true)
+    };
+    if (spec.mask) M.mask = mat(spec.mask, 0.95, true);
+    if (spec.spine) M.spine = mat(spec.spine, 1, true);
+    if (spec.face) M.face = mat(spec.face, 0.95, true);
+    if (spec.earInner) M.earIn = mat(spec.earInner, 0.95, true);
+    var root = new T.Group();
+    /* legs: pivot groups at the hips */
+    function makeLeg(side) {
+      var g = new T.Group(); g.position.set(0.13 * side, 0.20, 0);
+      g.add(w3Mesh(T, G.sph, M.body, 0.085, 0.15, 0.085, 0, -0.09, 0));
+      g.add(w3Mesh(T, G.sph, M.feet, 0.098, 0.05, 0.14, 0, -0.20, 0.035));
+      root.add(g);
+      return g;
+    }
+    var legL = makeLeg(-1), legR = makeLeg(1);
+    /* upper: torso + arms + head + tail (breathing scales this) */
+    var upper = new T.Group(); upper.position.y = 0.14; root.add(upper);
+    var bodyMat = spec.spines ? M.spine : M.body;
+    upper.add(w3Mesh(T, G.sph, bodyMat, 0.30, 0.28, 0.26, 0, 0.25, 0));
+    upper.add(w3Mesh(T, G.sph, M.belly, spec.spines ? 0.215 : 0.20, spec.spines ? 0.235 : 0.22, 0.13, 0, 0.21, 0.125));
+    if (spec.spines) {
+      [[0.3, 0.9], [1.6, 0.75], [3.1, 0.9], [4.7, 0.75], [5.9, 0.9], [2.3, 1.5], [4.0, 1.5]].forEach(function (ap) {
+        var dir = new T.Vector3(Math.sin(ap[1]) * Math.cos(ap[0]), Math.cos(ap[1]), Math.sin(ap[1]) * Math.sin(ap[0]) - 0.4).normalize();
+        var cone = w3Mesh(T, G.cone, M.spine, 0.04, 0.10, 0.04, dir.x * 0.27, 0.25 + dir.y * 0.26, dir.z * 0.24);
+        cone.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir);
+        upper.add(cone);
+      });
+    }
+    /* tail */
+    var tailG = new T.Group(); tailG.position.set(0, 0.14, -0.235); upper.add(tailG);
+    if (spec.tail === "ringed") {
+      for (var ti = 0; ti < 5; ti++) {
+        var f = ti / 4;
+        tailG.add(w3Mesh(T, G.sph, ti % 2 ? mat(spec.deep, 0.95, true) : M.body, 0.088 - f * 0.026, 0.088 - f * 0.026, 0.088 - f * 0.026, 0, 0.02 + f * 0.30, -0.03 - Math.sin(f * 1.9) * 0.16));
+      }
+    } else if (spec.tail === "bushy") {
+      var bush = w3Mesh(T, G.sph, M.body, 0.15, 0.27, 0.15, 0, 0.16, -0.09); bush.rotation.x = -0.5; tailG.add(bush);
+      tailG.add(w3Mesh(T, G.sph, M.belly, 0.125, 0.125, 0.125, 0, 0.36, -0.185));
+    } else if (spec.tail === "thin") {
+      tailG.add(w3Mesh(T, G.sph, M.body, 0.05, 0.05, 0.05, 0, 0.02, -0.05));
+      tailG.add(w3Mesh(T, G.sph, M.dark, 0.048, 0.048, 0.048, 0, 0.14, -0.13));
+      tailG.add(w3Mesh(T, G.sph, M.body, 0.045, 0.045, 0.045, 0, 0.27, -0.15));
+    } else if (spec.tail === "thick") {
+      var th = w3Mesh(T, G.cyl, M.dark, 0.10, 0.44, 0.10, 0, -0.02, -0.12); th.rotation.x = 1.15; tailG.add(th);
+    } else if (spec.tail === "stub" || spec.tail === "pinkstub") {
+      tailG.add(w3Mesh(T, G.sph, spec.tail === "stub" ? M.dark : M.nose, 0.09, 0.06, 0.07, 0, 0, -0.03));
+    } else if (spec.tail === "fan") {
+      var fan = w3Mesh(T, G.box, M.dark, 0.16, 0.10, 0.03, 0, -0.02, -0.04); fan.rotation.x = 0.5; tailG.add(fan);
+    }
+    /* arms: pivot groups at the shoulders */
+    function makeArm(side) {
+      var g = new T.Group(); g.position.set(0.295 * side, 0.42, 0);
+      if (spec.wings) {
+        g.add(w3Mesh(T, G.sph, M.dark, 0.05, 0.19, 0.115, 0, -0.13, 0));
+      } else {
+        g.add(w3Mesh(T, G.sph, M.body, 0.08, 0.155, 0.08, 0, -0.12, 0));
+        g.add(w3Mesh(T, G.sph, M.belly, 0.075, 0.07, 0.075, 0, -0.26, 0));
+      }
+      upper.add(g);
+      return g;
+    }
+    var armL = makeArm(-1), armR = makeArm(1);
+    /* head */
+    var headG = new T.Group(); headG.position.set(0, 0.50, 0); upper.add(headG);
+    if (spec.spines) {
+      headG.add(w3Mesh(T, G.sph, M.spine, 0.30, 0.275, 0.27, 0, 0.15, -0.04));
+      [[0.3, 0.9], [1.1, 0.7], [2.2, 0.75], [3.4, 0.7], [4.5, 0.75], [5.6, 0.7], [0.9, 1.6], [2.6, 1.5], [4.2, 1.6], [5.9, 1.5]].forEach(function (ap) {
+        var dir = new T.Vector3(Math.sin(ap[1]) * Math.cos(ap[0]), Math.cos(ap[1]), Math.sin(ap[1]) * Math.sin(ap[0]) - 0.35).normalize();
+        var cone = w3Mesh(T, G.cone, M.spine, 0.034, 0.085, 0.034, dir.x * 0.26, 0.14 + dir.y * 0.25, dir.z * 0.25);
+        cone.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir);
+        headG.add(cone);
+      });
+    }
+    var headMat = spec.spines ? M.face : (spec.face && castId === "masc-hedgehog" ? M.face : M.body);
+    headG.add(w3Mesh(T, G.sph, headMat, 0.285, 0.26, 0.26, 0, 0.14, 0));
+    if (castId === "masc-owl") {
+      headG.add(w3Mesh(T, G.sph, M.face, 0.118, 0.118, 0.055, -0.098, 0.165, 0.195));
+      headG.add(w3Mesh(T, G.sph, M.face, 0.118, 0.118, 0.055, 0.098, 0.165, 0.195));
+    }
+    if (spec.mask) headG.add(w3Mesh(T, G.sph, M.mask, 0.30, 0.125, 0.265, 0, 0.175, 0.01));
+    if (!spec.beak) headG.add(w3Mesh(T, G.sph, spec.face ? M.face : M.belly, 0.175, 0.115, 0.13, 0, 0.045, 0.15));
+    if (spec.beak) {
+      var bk = w3Mesh(T, G.cone, M.nose, 0.055, 0.13, 0.055, 0, 0.075, 0.26); bk.rotation.x = 1.85; headG.add(bk);
+    } else {
+      headG.add(w3Mesh(T, G.sph, M.nose, castId === "masc-mole" ? 0.066 : 0.05, castId === "masc-mole" ? 0.046 : 0.037, 0.037, 0, 0.095, 0.265));
+    }
+    /* eyes: white + pupil + highlight, seated proud of the
+       surface they sit on (mask band / owl discs / bare head) */
+    var eyeZ = spec.mask ? 0.258 : (castId === "masc-owl" ? 0.245 : 0.222);
+    [-1, 1].forEach(function (side) {
+      headG.add(w3Mesh(T, G.sph, M.white, 0.052, 0.058, 0.03, 0.105 * side, 0.175, eyeZ));
+      headG.add(w3Mesh(T, G.sph, M.ink, 0.030, 0.034, 0.02, 0.105 * side, 0.175, eyeZ + 0.026));
+      headG.add(w3Mesh(T, G.sph, M.white, 0.011, 0.011, 0.008, 0.105 * side - 0.012, 0.195, eyeZ + 0.04));
+    });
+    if (spec.shades) {
+      var sh = w3Mesh(T, G.box, mat(0x2b2f36, 0.3), 0.34, 0.08, 0.025, 0, 0.235, 0.215); sh.rotation.x = -0.08; headG.add(sh);
+    }
+    /* ears */
+    if (spec.ears === "round") {
+      [-1, 1].forEach(function (side) {
+        headG.add(w3Mesh(T, G.sph, M.body, 0.095, 0.095, 0.06, 0.185 * side, 0.36, -0.01));
+        if (M.earIn) headG.add(w3Mesh(T, G.sph, M.earIn, 0.05, 0.05, 0.03, 0.185 * side, 0.36, 0.035));
+      });
+    } else if (spec.ears === "point") {
+      [-1, 1].forEach(function (side) {
+        var ear = w3Mesh(T, G.cone, M.body, 0.095, 0.26, 0.095, 0.165 * side, 0.42, 0); ear.rotation.z = -0.18 * side; headG.add(ear);
+        if (M.earIn) { var ie = w3Mesh(T, G.cone, M.earIn, 0.05, 0.15, 0.05, 0.155 * side, 0.40, 0.035); ie.rotation.z = -0.18 * side; headG.add(ie); }
+      });
+    } else if (spec.ears === "tuft") {
+      [-1, 1].forEach(function (side) {
+        var tf = w3Mesh(T, G.cone, M.body, 0.055, 0.17, 0.055, 0.21 * side, 0.40, 0); tf.rotation.z = -0.55 * side; headG.add(tf);
+      });
+    } else if (spec.ears === "none") {
+      headG.add(w3Mesh(T, G.cone, M.dark, 0.04, 0.08, 0.04, 0, 0.415, 0));
+    }
+    if (spec.bowtie) {
+      var btM = mat(0xc23333, 0.7);
+      var b1 = w3Mesh(T, G.cone, btM, 0.05, 0.085, 0.025, -0.048, -0.115, 0.185); b1.rotation.z = 1.85; headG.add(b1);
+      var b2 = w3Mesh(T, G.cone, btM, 0.05, 0.085, 0.025, 0.048, -0.115, 0.185); b2.rotation.z = -1.85; headG.add(b2);
+      headG.add(w3Mesh(T, G.sph, mat(0x9c2727, 0.7), 0.028, 0.028, 0.028, 0, -0.115, 0.19));
+    }
+    var partCount = 0;
+    root.traverse(function (n) { if (n.isMesh) partCount++; });
+    root.userData = {
+      kind: "walker3d", castId: castId, partCount: partCount,
+      parts: { armL: armL, armR: armR, legL: legL, legR: legR, tail: tailG, head: headG, upper: upper },
+      anim: { amp: 0, seed: Math.random() * 6.28 }
+    };
+    return root;
+  }
+  /* Per-frame walker animation: the walk cycle is driven by the
+     walker's own walkPhase (advanced by the movement code), the
+     idle by the planet clock. amp smooths walk<->idle so limbs
+     never pop. wave raises the right arm (residents). */
+  function animateWalker3D(rig, o) {
+    var u = rig && rig.userData;
+    if (!u || u.kind !== "walker3d" || !u.parts) return;
+    var P = u.parts, a = u.anim;
+    a.amp += ((o.moving ? 1 : 0) - a.amp) * Math.min(1, o.dt * 7);
+    var sw = Math.sin(o.phase) * 0.62 * a.amp;
+    var idleSway = Math.sin(o.t * 1.8 + a.seed) * 0.045 * (1 - a.amp);
+    P.armL.rotation.x = sw + idleSway;
+    P.armR.rotation.x = -sw + idleSway;
+    P.legL.rotation.x = -sw * 0.9;
+    P.legR.rotation.x = sw * 0.9;
+    if (o.wave) {
+      P.armR.rotation.x = 0;
+      P.armR.rotation.z = 2.3 + Math.sin(o.t * 13 + a.seed) * 0.25;
+    } else if (P.armR.rotation.z !== 0) {
+      P.armR.rotation.z = 0;
+    }
+    if (P.tail) {
+      P.tail.rotation.y = Math.sin(o.t * 1.6 + a.seed) * (0.14 + 0.10 * a.amp);
+      P.tail.rotation.x = Math.sin(o.phase) * 0.08 * a.amp;
+    }
+    if (P.upper) P.upper.scale.y = 1 + (o.moving ? 0 : Math.sin(o.t * 2.1 + a.seed) * 0.016);
+    if (P.head) P.head.rotation.y = (1 - a.amp) * Math.sin(o.t * 0.6 + a.seed) * 0.07;
   }
   var _roSide = null, _roTan = null, _roQ = null, _roAxis = null;
   function rigOrient(T, obj, up, fwd, roll) {
@@ -111636,10 +111939,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       var winMat = new T.MeshStandardMaterial({ color: 0xffe9a8, emissive: 0xffbe45, emissiveIntensity: 0.85, roughness: 0.4 });
       gamblingWinMats.push(winMat);
       box(0.34, 0.4, 0.06, winMat, -0.6, 1.05, 0.97); box(0.34, 0.4, 0.06, winMat, 0.6, 1.05, 0.97);
-    } else if (genre === "retro") {
-      box(1.35, 2.0, 1.1, std(T, col.getHex(), 0.85), 0, 1.0, 0);
-      var scr = new T.Mesh(new T.BoxGeometry(0.95, 0.7, 0.06), new T.MeshStandardMaterial({ color: 0x9fd8ff, emissive: 0x3f8fd2, emissiveIntensity: 0.7, roughness: 0.35 }));
-      scr.position.set(0, 1.45, 0.57); scr.rotation.x = -0.16; grp.add(scr);
     } else if (genre === "learn") {
       box(2.1, 1.5, 1.7, std(T, wall.getHex()), 0, 0.75, 0);
       var roof = new T.Mesh(new T.ConeGeometry(1.75, 0.85, 4), std(T, col.getHex(), 0.85)); roof.rotation.y = Math.PI / 4; roof.position.y = 1.93; grp.add(roof);
@@ -111983,13 +112282,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       scene.add(motes);
     }
 
-    /* player: the equipped mascot as a billboard (BN-185 chibi raccoon art) */
-    var tex = new T.TextureLoader().load("assets/icon-512.png");
-    iconTexture = tex;
-    if (T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
-    playerRig = makeWalkerRig(T, 1.65);
-    rigSetMap(playerRig, tex);
-    playerSprite = playerRig.userData.planes[0];
+    /* player: the equipped cast member as a real 3D walker
+       (BN-265; was the BN-185 icon billboard, then the BN-254
+       3-layer rig). Built straight from the equipped id — the
+       3D builder needs no textures, so there is no async swap. */
+    playerRig = makeWalker3D(T, equippedCastId(), 0);
     scene.add(playerRig);
     var blobGeo = new T.CircleGeometry(0.55, 18); blobGeo.rotateX(-Math.PI / 2);
     blobShadow = new T.Mesh(blobGeo, walkerShadowMat(T));
@@ -112063,7 +112360,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     makeChatBubble(T);
     buildCritters(T);
     buildEventCoins(T);
-    upgradeWalkerTexture();
+    refreshPlayerWalker();
   }
 
   /* ---- module 28 ambient-coin host (P2, DESIGN §5) ---- */
@@ -112095,58 +112392,28 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   }
   /* ================= P3 residents (DESIGN §4) ================= */
   function readPointsStore() { try { return JSON.parse(localStorage.getItem("arcade-points-v1") || "null") || {}; } catch (e) { return {}; } }
-  /* Cast art as a billboard texture: the BN-195 rig SVG rendered
-     standalone. The rig's variant parts (happy eyes, the mouth
-     set, props, blink lids) are shown/hidden by seg-039 CSS in
-     the DOM; a standalone render must reproduce the IDLE state,
-     so the same defaults are injected as an SVG <style>: lids
-     shut to scaleY(0), happy eyes + non-smile mouths + props
-     hidden, blush off. Falls back to the icon texture on any
-     failure, so a resident can never be a broken image. */
-  var CAST_IDLE_CSS = ".mp-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0)}.mp-eyes-happy{display:none}.mp-mouth path,.mp-mouth circle,.mp-mouth ellipse{display:none}.mp-mouth .m-smile{display:block}.mp-prop>g{display:none}.mp-arms-ctrl,.mp-arms-kart,.mp-arm-chin,.mp-arm-mj{display:none}.mp-blush{opacity:0}";
-  function loadCastTexture(T, castId, done) {
-    var hit = castTexCache[castId];
-    if (hit) { if (hit.tex) done(hit.tex); else hit.cbs.push(done); return; }
-    var entry = { tex: null, cbs: [done] };
-    castTexCache[castId] = entry;
-    function finish(tex) { entry.tex = tex; var cbs = entry.cbs; entry.cbs = []; cbs.forEach(function (cb) { try { cb(tex); } catch (e) {} }); }
-    var api = window.__mascotCast;
-    if (!api || !api.svg) { finish(null); return; }
-    var svg = null;
-    try { svg = api.svg(castId, 0); } catch (e) {}
-    if (!svg) { finish(null); return; }
-    if (svg.indexOf("xmlns") < 0) svg = svg.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
-    svg = svg.replace("<svg", '<svg width="200" height="236"');
-    var gt = svg.indexOf(">");
-    if (gt > 0) svg = svg.slice(0, gt + 1) + "<style>" + CAST_IDLE_CSS + "</style>" + svg.slice(gt + 1);
-    var img = new Image();
-    var settled = false;
-    var to = setTimeout(function () { if (!settled) { settled = true; finish(null); } }, 2500);
-    img.onload = function () {
-      if (settled) return; settled = true; clearTimeout(to);
-      try {
-        var tex = new T.Texture(img); tex.needsUpdate = true;
-        if (T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
-        finish(tex);
-      } catch (e) { finish(null); }
-    };
-    img.onerror = function () { if (!settled) { settled = true; clearTimeout(to); finish(null); } };
-    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-  }
+  /* BN-265: the SVG-texture walker path (loadCastTexture and its
+     CAST_IDLE_CSS) is retired — walkers are real 3D now and need
+     no textures. The cast SVG art still serves the 2D surfaces
+     through module 39. */
   function equippedCastId() {
     try { if (window.__mascotCast && window.__mascotCast.equippedId) return window.__mascotCast.equippedId(); } catch (e) {}
     var st = readPointsStore();
     var id = st && st.equipped && st.equipped.mascot;
     return (typeof id === "string" && id) ? id : "masc-raccoon";
   }
-  /* The walker IS the equipped mascot (Q5): swap the P1 icon
-     billboard for the equipped cast member's own art once it
-     loads; the icon stays as the fallback. */
-  function upgradeWalkerTexture() {
+  /* BN-265: the player walker IS the equipped cast member —
+     rebuild it in place when the equipped id has changed (the
+     tick re-poses and re-scales the rig every frame, so a swap
+     is seamless). */
+  function refreshPlayerWalker() {
     var T = PL_T(); if (!T || !playerRig) return;
-    loadCastTexture(T, equippedCastId(), function (tex) {
-      if (tex && playerRig) rigSetMap(playerRig, tex);
-    });
+    var id = equippedCastId();
+    if (playerRig.userData.castId === id) return;
+    var parent = playerRig.parent;
+    if (parent) parent.remove(playerRig);
+    playerRig = makeWalker3D(T, id, 0);
+    if (parent) parent.add(playerRig); else if (scene) scene.add(playerRig);
   }
   function buildResidents() {
     var T = PL_T(); if (!T || !catalog || !scene) return;
@@ -112173,14 +112440,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       var rr = d.capR * 0.78 * Math.sqrt(rng()), th = rng() * Math.PI * 2;
       var dir = d.center.clone().multiplyScalar(Math.cos(rr)).addScaledVector(t1, Math.sin(rr) * Math.cos(th)).addScaledVector(t2, Math.sin(rr) * Math.sin(th)).normalize();
       var walker = { pos: dir.clone().multiplyScalar(R), fwd: t1.clone(), hop: 0, hopV: 0, grounded: true, walkPhase: rng() * 6 };
-      var sp = makeWalkerRig(T, 1.5);
-      if (pick.tint) sp.userData.planes[0].material.color.setHex(pick.tint);
+      var sp = makeWalker3D(T, pick.id, pick.tint || 0);
+      sp.scale.setScalar(1.5);
       scene.add(sp);
       var blob = new T.Mesh(blobGeo, walkerShadowMat(T));
       scene.add(blob);
       var r = { id: pick.id, villager: !!pick.villager, tint: pick.tint || 0, home: d.genre, district: d, key: key, walker: walker, sprite: sp, blob: blob, rng: rng, t1: t1, t2: t2, target: null, pauseT: rng() * 2, waveT: 0, waveCd: 0, phase: rng() * 6.28, homeDir: dir.clone(), moodIdx: Math.floor(npcHashStr("mood:" + day + ":" + key) * MOOD10.length) % MOOD10.length, asleep: false, moving: false, chatHold: 0, smokeT: 0 };
       residents.push(r);
-      loadCastTexture(T, pick.id, function (tex) { if (tex) rigSetMap(sp, tex); });
     });
   }
   function pickResidentTarget(r) {
@@ -112260,10 +112526,14 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       }
       r.moving = moving;
       var bob = moving ? Math.abs(Math.sin(r.walker.walkPhase)) * 0.07 : Math.sin(t * 1.8 + r.phase) * 0.02;
-      r.sprite.position.copy(up).multiplyScalar(R + bob + 0.78);
+      /* BN-265: feet-at-origin 3D walker — ground offset 0.02
+         (the billboard's +0.78 centre offset is gone). */
+      r.sprite.position.copy(up).multiplyScalar(R + bob + 0.02);
       if (r.waveT > 0) { r.waveT -= dt; r.roll = Math.sin((1.1 - Math.max(0, r.waveT)) * 16) * 0.2; }
       else if (r.roll) r.roll *= Math.max(0, 1 - dt * 8);
       rigOrient(T, r.sprite, up, r.walker.fwd, r.roll || 0);
+      /* BN-265: the resident's own walk cycle / idle / wave arm. */
+      animateWalker3D(r.sprite, { phase: r.walker.walkPhase, moving: !!moving, dt: dt, t: t, wave: r.waveT > 0 });
       sunBlobPlace(T, r.blob, up, 1.5, 0.06);
     });
   }
@@ -112410,26 +112680,44 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     return { grp: grp, spin: spin, dir: null, h: 0, active: false };
   }
   function buildEventCoins(T) { for (var i = 0; i < 3; i++) evCoins.push(makeCoinGroup(T)); }
-  function planetEventBegin() {
-    if (!built || !player || !evCoins.length) return false;
+  /* BN-264: one placement routine for a single event coin, shared
+     by the event start and the respawn below. */
+  function placeEventCoin(c, i) {
     var T = PL_T();
     var up = player.pos.clone().normalize();
     var side = new T.Vector3().crossVectors(up, player.fwd);
     if (side.lengthSq() < 1e-6) side.set(1, 0, 0); else side.normalize();
-    evCoins.forEach(function (c, i) {
-      var arc = (1.7 + Math.random() * 1.1) / R;
-      var az = (i / evCoins.length) * Math.PI * 2 + Math.random() * 0.8;
-      c.dir = up.clone().multiplyScalar(Math.cos(arc))
-        .addScaledVector(player.fwd, Math.sin(arc) * Math.cos(az))
-        .addScaledVector(side, Math.sin(arc) * Math.sin(az)).normalize();
-      c.h = 3.2; c.active = true; c.grp.visible = true;
-    });
+    var arc = (1.7 + Math.random() * 1.1) / R;
+    var az = ((i == null ? Math.random() * evCoins.length : i) / evCoins.length) * Math.PI * 2 + Math.random() * 0.8;
+    c.dir = up.clone().multiplyScalar(Math.cos(arc))
+      .addScaledVector(player.fwd, Math.sin(arc) * Math.cos(az))
+      .addScaledVector(side, Math.sin(arc) * Math.sin(az)).normalize();
+    c.h = 3.2; c.active = true; c.grp.visible = true;
+  }
+  function planetEventBegin() {
+    if (!built || !player || !evCoins.length) return false;
+    evCoins.forEach(function (c, i) { c.respawnAt = null; placeEventCoin(c, i); });
     return true;
   }
-  function planetEventEnd() { evCoins.forEach(function (c) { c.active = false; if (c.grp) c.grp.visible = false; }); }
+  function planetEventEnd() { evCoins.forEach(function (c) { c.active = false; c.respawnAt = null; if (c.grp) c.grp.visible = false; }); }
   function updateEventCoins(T, dt, t) {
     evCoins.forEach(function (c) {
-      if (!c.active || !c.dir) return;
+      if (!c.active || !c.dir) {
+        /* BN-264: a collected event coin RESPAWNS near the player
+           while the planet event is still running and the 30-cap
+           is unreached. Before this round the planet had exactly
+           3 event coins and no respawn, so a planet event could
+           credit at most 3 of the 30 the cap (and its BN-264
+           completion bonus) is built on — the cap was unreachable
+           on the planet. The DOM lobby event is unchanged. */
+        if (!c.active && c.dir && c.respawnAt != null && elapsed >= c.respawnAt) {
+          var st = null;
+          try { st = (window.__coinFall && window.__coinFall.eventState) ? window.__coinFall.eventState() : null; } catch (e) {}
+          if (st && st.active && st.onPlanet && st.credited < st.cap) placeEventCoin(c, null);
+          c.respawnAt = null;
+        }
+        return;
+      }
       if (c.h > 0.55) c.h = Math.max(0.55, c.h - dt * 2.4);
       c.grp.position.copy(c.dir).multiplyScalar(R + c.h + (c.h <= 0.55 ? Math.sin(t * 2.4 + c.dir.x * 10) * 0.07 : 0));
       if (camera) c.grp.quaternion.copy(camera.quaternion);
@@ -112496,6 +112784,52 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     closeTalk();
     if (b.btnEl) b.btnEl.click(); /* the tile's own path (DESIGN §3.4) */
   });
+  /* BN-267: keep the bottom panels clear of the turntable chip
+     (#ttChip — the fixed BGM bar at the viewport's bottom-left).
+     For each bottom-anchored panel, compute the bottom offset that
+     puts its lower edge 10px above the chip's top, in the panel's
+     own offsetParent space; clear the override when the chip is
+     gone or already clear. Geometry-driven, so it holds in the
+     embedded view and the full-screen view alike. */
+  function liftBottomPanels() {
+    var chip = document.getElementById("ttChip");
+    var chipRect = null;
+    if (chip && !chip.hidden) { var r = chip.getBoundingClientRect(); if (r.height > 0) chipRect = r; }
+    [promptEl, npcPromptEl, signEl, talkEl].forEach(function (el) {
+      if (!el) return;
+      if (!chipRect) { if (el.style.bottom) el.style.bottom = ""; return; }
+      var parent = el.offsetParent;
+      if (!parent) return;
+      var need = parent.getBoundingClientRect().bottom - (chipRect.top - 10);
+      if (need > 14) el.style.bottom = Math.ceil(need) + "px";
+      else if (el.style.bottom) el.style.bottom = "";
+    });
+  }
+  /* BN-267: the small play button floats beside the player
+     character — the character's head projected to screen space
+     (same projection the beacon arrow uses), offset to the right
+     at shoulder height, clamped inside the view and above the
+     bottom panel zone. Visible only while a building/board is in
+     proximity reach and no dialogue or mini-game owns the screen. */
+  var playBtnV = null;
+  function updatePlayBtnPos() {
+    if (!playBtn) return;
+    if (!nearBuilding || talkOpen || (typeof mg !== "undefined" && mg.id) || !camera || !playerRig) { playBtn.hidden = true; return; }
+    var T = PL_T(); if (!T) { playBtn.hidden = true; return; }
+    if (!playBtnV) playBtnV = new T.Vector3();
+    playBtnV.copy(playerRig.position);
+    var up = playBtnV.clone().normalize();
+    playBtnV.addScaledVector(up, 1.35).project(camera);
+    if (playBtnV.z > 1) { playBtn.hidden = true; return; }
+    var w = wrap.clientWidth, h = wrap.clientHeight;
+    var sx = (playBtnV.x * 0.5 + 0.5) * w + 58;
+    var sy = (-playBtnV.y * 0.5 + 0.5) * h - 4;
+    sx = Math.max(52, Math.min(w - 52, sx));
+    sy = Math.max(44, Math.min(h - 120, sy));
+    playBtn.style.left = sx + "px";
+    playBtn.style.top = sy + "px";
+    playBtn.hidden = false;
+  }
 
   /* ================= P3 remote input (module 12 planet pad) =================
      The dedicated planet pad sends a held vector + jump + act;
@@ -112637,7 +112971,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       for (var ei = 0; ei < evCoins.length; ei++) {
         var ec = evCoins[ei];
         if (ec.active && rc.intersectObject(ec.grp, true).length && window.__coinFall && window.__coinFall.planetEventCollect) {
-          if (window.__coinFall.planetEventCollect(e.clientX, e.clientY)) { ec.active = false; ec.grp.visible = false; }
+          if (window.__coinFall.planetEventCollect(e.clientX, e.clientY)) { ec.active = false; ec.grp.visible = false; ec.respawnAt = elapsed + 1.2; /* BN-264 respawn (see updateEventCoins) */ }
           break;
         }
       }
@@ -112673,11 +113007,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   function setPrompt(b) {
     var changed = !!b && (!nearBuilding || nearBuilding.id !== b.id);
     nearBuilding = b;
-    if (!b) { promptEl.hidden = true; return; }
+    if (!b) { promptEl.hidden = true; if (playBtn) playBtn.hidden = true; return; }
     promptName.textContent = b.name;
     promptSub.textContent = b.sub;
     promptCount.textContent = STR.plays(b.plays);
     promptEl.hidden = false;
+    liftBottomPanels();
     if (!visits.buildings[b.id]) visits.buildings[b.id] = 1;
     if (changed) emitVisit("building-approach", { id: b.id, genre: b.genre });
   }
@@ -113076,7 +113411,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       if (player.hop <= 0) { player.hop = 0; player.hopV = 0; player.grounded = true; jumpsUsed = 0; squashT = 0.22; }
     }
     var bob = (res.moving && player.grounded) ? Math.abs(Math.sin(player.walkPhase)) * 0.09 : Math.sin(t * 1.8) * 0.02;
-    playerRig.position.copy(pUp).multiplyScalar(R + player.hop + bob + 0.86);
+    /* BN-265: the 3D walker is built feet-at-origin, so the rig
+       sits on the ground (the billboard's +0.86 centre offset is
+       gone); hop and bob still ride on top exactly as before. */
+    playerRig.position.copy(pUp).multiplyScalar(R + player.hop + bob + 0.02);
     var leanTarget = 0;
     if (res.moving && inp.lastMoveDir) {
       var meshSide = new T.Vector3().crossVectors(pUp, player.fwd).normalize();
@@ -113092,6 +113430,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     if (warpFx > 0) warpFx = Math.max(0, warpFx - dt * 1.8);
     var popF = warpFx > 0 ? (1 - 0.3 * warpFx) : 1;
     playerRig.scale.set(1.65 * (1 + 0.13 * sq) * popF, 1.65 * (1 - 0.22 * sq) * popF, 1.65 * popF);
+    /* BN-265: procedural walk cycle / idle for the 3D walker. */
+    animateWalker3D(playerRig, { phase: player.walkPhase, moving: !!(res.moving && player.grounded), dt: dt, t: t, wave: false });
     /* BN-256 footprints + footstep sounds at each walk-phase
        π crossing while grounded and moving. */
     if (res.moving && player.grounded) {
@@ -113257,7 +113597,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       plateTimer = 0.3;
       var sorted = allPlates.slice().sort(function (a, b) { return a.dir.dot(pUp) > b.dir.dot(pUp) ? -1 : 1; });
       sorted.forEach(function (b, idx) { b.plate.visible = idx < 10 && b.dir.dot(pUp) > 0.86; });
+      liftBottomPanels(); /* BN-267: the BGM chip can come and go while standing still */
     }
+    updatePlayBtnPos(); /* BN-267: the small play button tracks the character */
     /* BN-256 minimap redraw at 5 Hz */
     mmTimer -= dt;
     if (mmTimer <= 0) { mmTimer = 0.2; drawMinimap(); if (bigMapOpen) drawBigMap(); }
@@ -113301,7 +113643,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     stage.hidden = false;
     if (hintEl) hintEl.hidden = !!rec.hintSeen;
     active = true;
-    if (built) { sizeRenderer(); upgradeWalkerTexture(); refreshVinyl260(); startLoop(); return; }
+    if (built) { sizeRenderer(); refreshPlayerWalker(); refreshVinyl260(); startLoop(); return; }
     if (building) return;
     building = true;
     whenTHREE(function (ok) {
@@ -113987,7 +114329,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
           var P = window.ARCADE_points; if (P && P.earn) P.earn("coinFall", { key: "mgc:" + mg.session + ":" + got });
           if (elapsed - (mg.data.chainT || -9) < 4) mg.data.chain++; else mg.data.chain = 1;
           mg.data.chainT = elapsed;
-          if (mg.data.chain > 0 && mg.data.chain % 5 === 0) mgPay(5, "combo");
+          /* BN-264: the combo tag carries the milestone (combo5,
+             combo10, ...) — with a bare "combo" tag every milestone
+             in one game shared ONE earn key, so the paidKeys guard
+             silently refused every combo bonus after the first. */
+          if (mg.data.chain > 0 && mg.data.chain % 5 === 0) mgPay(5, "combo" + mg.data.chain);
           mgBeep(1180 + mg.data.chain * 60, 0.07, 0.03);
         }
       });
@@ -114080,9 +114426,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       var out = { buildings: {}, landmarks: [], props: {}, walkerLayers: 0, residentLayers: 0, residentCount: 0 };
       if (catalog) catalog.districts.forEach(function (d) { (d.buildings || []).forEach(function (b) { out.buildings[b.id] = b.group && b.group.userData ? (b.group.userData.designKey || null) : null; }); });
       if (scene) scene.children.forEach(function (o) { if (o.userData && o.userData.designKey && o.userData.designKey.indexOf("lm:") === 0) out.landmarks.push(o.userData.designKey); if (o.userData && o.userData.propGenre) out.props[o.userData.propGenre] = (out.props[o.userData.propGenre] || 0) + 1; });
-      if (playerRig && playerRig.userData.planes) out.walkerLayers = playerRig.userData.planes.length;
+      /* BN-265: walkers are real 3D now — report the cast ids,
+         part counts and live limb rotations instead of the old
+         billboard layer counts. */
+      out.walkerLayers = 0; out.residentLayers = 0;
+      if (playerRig && playerRig.userData) {
+        out.walker3d = playerRig.userData.kind === "walker3d";
+        out.walkerCast = playerRig.userData.castId || null;
+        out.walkerParts = playerRig.userData.partCount || 0;
+        if (playerRig.userData.parts) out.walkerLimb = { armL: playerRig.userData.parts.armL.rotation.x, legR: playerRig.userData.parts.legR.rotation.x };
+      }
       out.residentCount = residents.length;
-      if (residents.length && residents[0].sprite && residents[0].sprite.children) out.residentLayers = residents[0].sprite.children.length;
+      out.residentCasts = residents.map(function (r) { return r.sprite && r.sprite.userData ? (r.sprite.userData.castId || null) : null; });
+      out.residentParts = residents.map(function (r) { return r.sprite && r.sprite.userData ? (r.sprite.userData.partCount || 0) : 0; });
       out.world = { cycleT: cycleT, dark: cycleDark, paths: PATH_COUNT, smoking: !!SMOKING, smokers: SMOKERS.length, lamps: LAMP_MATS.length, stars: !!starPoints, winMats: WIN_MATS.length, cloudShadows: CLOUD_SHADOWS.length, fountain: !!(scene && scene.userData.fountain) };
       return out;
     },
@@ -114103,6 +114459,23 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     promptId: function () { return nearBuilding ? nearBuilding.id : null; },
     coinState: function () {
       return { meshActive: coinActive, hostAlive: !!(window.__coinFall && window.__coinFall.planetAlive && window.__coinFall.planetAlive()) };
+    },
+    /* BN-264: planet event-coin inspector (respawn verification). */
+    eventCoins: function () {
+      return evCoins.map(function (c) { return { active: !!c.active, visible: !!(c.grp && c.grp.visible), hasDir: !!c.dir }; });
+    },
+    /* BN-264: collect the first active event coin with EXACTLY the
+       bookkeeping the canvas tap handler performs (the raycast hit
+       itself is covered by the BN-257 suite); lets probes exercise
+       the respawn path deterministically. */
+    collectEventCoin: function () {
+      for (var i = 0; i < evCoins.length; i++) {
+        var c = evCoins[i];
+        if (c.active && window.__coinFall && window.__coinFall.planetEventCollect) {
+          if (window.__coinFall.planetEventCollect(0, 0)) { c.active = false; c.grp.visible = false; c.respawnAt = elapsed + 1.2; return true; }
+        }
+      }
+      return false;
     },
     /* P3 hooks: place the player beside a resident, read the NPC
        prompt / dialogue state, and inspect the polish surfaces. */
