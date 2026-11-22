@@ -5192,6 +5192,31 @@
       #gquizView .gamebar .gtag { color: #71809f; }
       #gquizView .back-btn { background: #ffffff; color: #3d2c5a; border: 1px solid #ccd6f2; box-shadow: 0 4px 10px rgba(60, 80, 160, 0.16); }
       #gquizView .stage { background: #fdf3e7; }
+      /* ===== Pitch Quiz （音感クイズ) — BN-261 ===== */
+      #pitchquizView .gamebar { background: rgba(253, 250, 255, 0.95); border-bottom: 1px solid #ddd3f5; flex-wrap: wrap; row-gap: 4px; }
+      #pitchquizView .gamebar .gname { color: #352a5e; }
+      #pitchquizView .gamebar .gtag { color: #7a6fa8; }
+      #pitchquizView .back-btn { background: #ffffff; color: #352a5e; border: 1px solid #d3c8f2; box-shadow: 0 4px 10px rgba(70, 50, 160, 0.16); }
+      #pitchquizView .stage { background: #f0ecfd; }
+      .glyph-pq { overflow: hidden; }
+      .play-btn.pq { background: linear-gradient(160deg, #7c5cd6, #4c2f9e); color: #ffffff; }
+      .pq-hearts { display: inline-flex; gap: 2px; align-items: center; vertical-align: middle; }
+      .pq-heart { display: inline-flex; line-height: 0; }
+      .pq-heart.off { opacity: 0.45; }
+      .pq-play { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 10px auto 4px; background: none; border: 0; cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+      .pq-play-disc { width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(150deg, #7c5cd6, #4c2f9e); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px rgba(76, 47, 158, 0.35), inset 0 -6px 10px rgba(0, 0, 0, 0.25), inset 0 4px 6px rgba(255, 255, 255, 0.25); transition: transform 0.15s ease; }
+      .pq-play:active .pq-play-disc { transform: scale(0.95); }
+      .pq-play-label { font-size: 13px; font-weight: 800; color: #4c2f9e; }
+      .pq-choice { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+      .pq-choice-name { font-size: 20px; font-weight: 800; line-height: 1.1; }
+      .pq-choice-sol { font-size: 12px; font-weight: 700; opacity: 0.75; }
+      .pq-freq { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 16px; }
+      .pq-tier-head { font-weight: 800; font-size: 13px; color: #5a4a8a; margin: 14px 0 6px; text-align: center; }
+      .pq-tier-tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .pq-tier-tbl td { padding: 6px 10px; border-bottom: 1px solid #e4ddf7; color: #4a4070; }
+      .pq-tier-tbl .pq-tier-score { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; width: 64px; }
+      .pq-tier-tbl tr.me td { background: #efe6ff; color: #352a5e; font-weight: 800; }
+      .pq-tier-tbl tr.me .pq-tier-score { color: #7c3aed; }
       .glyph-gq { background: linear-gradient(145deg, #ffb347, #ff8a5c); color: #fff; display: flex; align-items: center; justify-content: center; }
       .glyph-gq .gq-q { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 26px; line-height: 1; }
       .gq-cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
@@ -7463,7 +7488,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             </div>
           </section>
           <section class="genre-group" data-genre="learn">
-            <h2 class="genre-head"><span class="genre-name">まなぶ</span><span class="genre-count">5</span></h2>
+            <h2 class="genre-head"><span class="genre-name">まなぶ</span><span class="genre-count">6</span></h2>
             <div class="tile-grid" data-genre-grid="learn">
   <section class="game-tile" aria-label="線画あそび" style="--i:6">
               <div class="glyph glyph-hl" aria-hidden="true" data-i18n-skip><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path pathLength="100" d="M17 3 30 10.5v13L17 31 4 23.5v-13Z"/><path pathLength="100" d="M4 10.5 17 18l13-7.5"/><path pathLength="100" d="M17 18v13"/></svg></div>
@@ -7485,6 +7510,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
               <p class="sub">9ジャンル・1回5問の総合クイズ！</p>
               <span class="tile-count" data-count-for="gquiz" hidden></span>
               <button type="button" class="play-btn gq" id="openGenQuiz">クイズで遊ぶ</button>
+            </section>
+  <section class="game-tile" aria-label="音感クイズ" style="--i:26">
+              <div class="glyph glyph-pq" aria-hidden="true" data-i18n-skip><svg width="100%" height="100%" viewBox="0 0 38 38" aria-hidden="true"><rect x="0" y="0" width="38" height="38" rx="7" fill="#2e2358"/><path d="M3 10.5h32M3 15h32M3 19.5h32M3 24h32M3 28.5h32" stroke="rgba(190,180,255,.25)" stroke-width="1"/><ellipse cx="14.5" cy="26.5" rx="4.8" ry="3.5" transform="rotate(-18 14.5 26.5)" fill="#f2c53d"/><rect x="18.6" y="9" width="2" height="17.5" fill="#f2c53d"/><path d="M20.6 9c4.4.8 6.4 3.4 6.2 7.6-1-3.2-3-5-6.2-5.6Z" fill="#f2c53d"/><path d="M25.5 21a8 8 0 0 1 0 11M29 18.5a12 12 0 0 1 0 16" stroke="#3fd2c5" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="30.5" cy="7.5" r="1.3" fill="#fdf6e3"/></svg></div>
+              <h2>音感クイズ</h2>
+              <p class="sub">音を聞いて音名を当てる絶対音感クイズ！</p>
+              <span class="tile-count" data-count-for="pitchquiz" hidden></span>
+              <button type="button" class="play-btn pq" id="openPitchQuiz">音感クイズで遊ぶ</button>
             </section>
   <section class="game-tile" aria-label="分解ボード" style="--i:30">
               <div class="glyph glyph-board" aria-hidden="true" data-i18n-skip><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="4" y="4" width="30" height="30" rx="4" fill="#0e5c3a"/><rect x="13" y="13" width="12" height="12" rx="1.5" fill="#123528" stroke="#c8b06a" stroke-width="1.2"/><path d="M16 13v-5M22 13v-5M16 30v-5M22 30v-5M13 16h-5M13 22h-5M30 16h-5M30 22h-5" stroke="#c8b06a" stroke-width="1.6"/><circle class="bd-led" cx="29" cy="9" r="2.6" fill="#ff4040"/><path d="M4 9h6M9 34v-6" stroke="#2f9e63" stroke-width="1.2"/></svg></div>
@@ -9835,6 +9867,63 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           </div>
           <div class="stage-msg" id="gquizMsg" role="alert">
             <span>クイズを読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
+            <button type="button" class="reload-btn" data-reload>再読み込み</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pitch Quiz （音感クイズ): BN-261 — hear a note, name it, two choices -->
+      <div class="gameview" id="pitchquizView" aria-label="音感クイズ画面">
+        <div class="gamebar">
+          <button type="button" class="back-btn" data-back aria-label="ARCADEへ戻る">← ARCADEへ戻る</button>
+          <span class="gname" id="pqViewTitle">音感クイズ</span>
+          <span class="gtag" id="pqViewTag">音を聞いて音名を当てる2択クイズ</span>
+        </div>
+        <div class="stage">
+          <div class="w1-root lq-root" id="pitchRoot" data-i18n-skip>
+            <div class="w1-hud">
+              <span class="w1-chip"><span id="pqProgLabel">問題</span> <b id="pqProg">– / 5</b></span>
+              <span class="w1-chip"><span id="pqScoreLabel">スコア</span> <b id="pqScore">0</b></span>
+              <span class="w1-chip"><span class="pq-hearts" id="pqHearts"></span></span>
+            </div>
+            <div class="lq-main">
+              <div class="lq-panel" id="pqStartPanel">
+                <div class="lq-card">
+                  <h3 id="pqStartTitle">音感クイズ</h3>
+                  <p class="lq-desc" id="pqStartDesc"></p>
+                  <p class="lq-desc" id="pqBestLine" style="font-weight:700"></p>
+                  <p class="lq-center"><button type="button" class="w1-bigbtn" id="pqStartBtn">スタート</button></p>
+                </div>
+              </div>
+              <div class="lq-panel" id="pqQuizPanel" hidden>
+                <div class="lq-track"><div class="lq-fill" id="pqProgFill"></div></div>
+                <div class="lq-card">
+                  <p class="lq-q" id="pqQLabel">この音はどっち？</p>
+                  <button type="button" class="pq-play" id="pqPlayBtn" aria-label="音を聞く">
+                    <span class="pq-play-disc"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path d="M9 18.5a3 3 0 1 1-2-2.83V5.2c0-.4.26-.76.64-.9l11-3.66A1 1 0 0 1 20 1.6v11.7a3 3 0 1 1-2-2.83V4.55l-9 3Z" fill="#ffffff"/></svg></span>
+                    <span class="pq-play-label">音を聞く</span>
+                  </button>
+                  <div class="lq-choices" id="pqChoices"></div>
+                  <div class="lq-feedback" id="pqFeedback" hidden>
+                    <span class="lq-mark" id="pqMark"></span>
+                    <p class="pq-freq" id="pqFreq"></p>
+                  </div>
+                  <button type="button" class="w1-bigbtn lq-next" id="pqNextBtn" hidden>次へ</button>
+                </div>
+              </div>
+              <div class="lq-panel" id="pqResultPanel" hidden>
+                <div class="lq-card">
+                  <h3 id="pqResultTitle">結果</h3>
+                  <p class="lq-bigscore"><span id="pqResultScore">0</span><small> / 5</small></p>
+                  <p class="lq-desc" id="pqResultMsg" style="margin-bottom:0"></p>
+                  <div id="pqTierTable"></div>
+                  <p class="lq-center"><button type="button" class="w1-bigbtn" id="pqAgainBtn">もう一度</button></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stage-msg" id="pitchquizMsg" role="alert">
+            <span>音感クイズを読み込めませんでした。通信状態を確認して、再読み込みしてください。</span>
             <button type="button" class="reload-btn" data-reload>再読み込み</button>
           </div>
         </div>
@@ -13119,6 +13208,8 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
                    ready: function () { return !!window.__langquiz; } },
           gquiz: { view: document.getElementById("gquizView"), msg: document.getElementById("gquizMsg"),
                    ready: function () { return !!window.__gquiz; } },
+          pitchquiz: { view: document.getElementById("pitchquizView"), msg: document.getElementById("pitchquizMsg"),
+                   ready: function () { return !!window.__pitch; } },
           board: { view: document.getElementById("boardView"), msg: document.getElementById("boardMsg"),
                    ready: function () { return !!window.__board; } }
         };
@@ -13594,6 +13685,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
           if (key === "shooter" && window.__shooter) window.__shooter.enter();
           if (key === "langquiz" && window.__langquiz) window.__langquiz.enter();
           if (key === "gquiz" && window.__gquiz) window.__gquiz.enter();
+          if (key === "pitchquiz" && window.__pitch) window.__pitch.enter();
           if (key === "board" && window.__board) window.__board.enter();
           checkReady(key);
           window.scrollTo(0, 0);
@@ -13747,6 +13839,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         document.getElementById("openShooter").addEventListener("click", function () { openGame("shooter"); });
         document.getElementById("openLangQuiz").addEventListener("click", function () { openGame("langquiz"); });
         document.getElementById("openGenQuiz").addEventListener("click", function () { openGame("gquiz"); });
+        document.getElementById("openPitchQuiz").addEventListener("click", function () { openGame("pitchquiz"); });
         document.getElementById("openBoard").addEventListener("click", function () { openGame("board"); });
         /* The library tile now lands directly on the brain view
            (owner decision, 2026-11-16): the shelf/search screen stays
@@ -35018,7 +35111,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
        registry, so a title played on another device counts here
        even when this build shows no tile for it. Utility views
        (points shop / ranking) are not titles and are excluded. */
-    var CANONICAL_TITLES = ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "library", "fishing", "board", "pcbfarm", "kartgp"];
+    var CANONICAL_TITLES = ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "pitchquiz", "library", "fishing", "board", "pcbfarm", "kartgp"];
     // Self-healing (builder #6, 12.11a): any tile actually present in this
     // build's grid joins the registry, so the denominator can never again
     // silently lag the grid the way it did when the Phase-8 titles shipped
@@ -38510,6 +38603,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     pcbfarm: { scoreDiv: 4, cap: 30, label: "基盤ファーム" },
     langquiz: { pts: 10, perBonus: 1, label: "語学クイズ完走" },
     quizComplete: { pts: 10, perBonus: 1, label: "クイズ完走" },
+    /* BN-261: pitch quiz completion — same shape as quizComplete
+       (base 10 on the first finished round ever, +1 per distinct
+       note solved for the first time; the gating lives in the
+       engine through quizMarkPaid("pitch", …)). */
+    pitchQuiz: { pts: 10, perBonus: 1, label: "音感クイズ完走" },
     boardComplete: { pts: 10, perBonus: 1, label: "分解ボード完走" },
     snake: { scoreDiv: 10, cap: 30, label: "スネーク" },
     breakout: { scoreDiv: 10, cap: 30, label: "ブロック崩し" },
@@ -39625,12 +39723,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
      reopen payment), the same treatment as the fishing dex. */
   var QUIZ_PAID_KEY = "arcade-quiz-paid-v1";
   function loadQuizPaid() {
-    var d = { solved: { chess: [], lang: [], gquiz: [], board: [], boardFZ: [], boardPico: [] }, base: { lang: false, gquiz: false, board: false, boardFZ: false, boardPico: false } };
+    var d = { solved: { chess: [], lang: [], gquiz: [], board: [], boardFZ: [], boardPico: [], pitch: [] }, base: { lang: false, gquiz: false, board: false, boardFZ: false, boardPico: false, pitch: false } };
     try {
       var s = JSON.parse(localStorage.getItem(QUIZ_PAID_KEY) || "null");
       if (s && typeof s === "object") {
-        if (s.solved && typeof s.solved === "object") ["chess", "lang", "gquiz", "board", "boardFZ", "boardPico"].forEach(function (k) { if (Array.isArray(s.solved[k])) d.solved[k] = s.solved[k].filter(function (x) { return typeof x === "string"; }); });
-        if (s.base && typeof s.base === "object") { d.base.lang = !!s.base.lang; d.base.gquiz = !!s.base.gquiz; d.base.board = !!s.base.board; d.base.boardFZ = !!s.base.boardFZ; d.base.boardPico = !!s.base.boardPico; }
+        if (s.solved && typeof s.solved === "object") ["chess", "lang", "gquiz", "board", "boardFZ", "boardPico", "pitch"].forEach(function (k) { if (Array.isArray(s.solved[k])) d.solved[k] = s.solved[k].filter(function (x) { return typeof x === "string"; }); });
+        if (s.base && typeof s.base === "object") { d.base.lang = !!s.base.lang; d.base.gquiz = !!s.base.gquiz; d.base.board = !!s.base.board; d.base.boardFZ = !!s.base.boardFZ; d.base.boardPico = !!s.base.boardPico; d.base.pitch = !!s.base.pitch; }
       }
     } catch (e) {}
     return d;
@@ -41949,11 +42047,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
     try { cloud = JSON.parse(ent.v); } catch (e) {}
     if (!cloud || typeof cloud !== "object") return;
     var local = loadQuizPaid(), changed = false;
-    ["chess", "lang", "gquiz", "board", "boardFZ", "boardPico"].forEach(function (k) {
+    ["chess", "lang", "gquiz", "board", "boardFZ", "boardPico", "pitch"].forEach(function (k) {
       var arr = cloud.solved && Array.isArray(cloud.solved[k]) ? cloud.solved[k] : [];
       arr.forEach(function (id) { if (typeof id === "string" && local.solved[k].indexOf(id) < 0) { local.solved[k].push(id); changed = true; } });
     });
-    if (cloud.base && typeof cloud.base === "object") ["lang", "gquiz", "board", "boardFZ", "boardPico"].forEach(function (k) { if (cloud.base[k] && !local.base[k]) { local.base[k] = true; changed = true; } });
+    if (cloud.base && typeof cloud.base === "object") ["lang", "gquiz", "board", "boardFZ", "boardPico", "pitch"].forEach(function (k) { if (cloud.base[k] && !local.base[k]) { local.base[k] = true; changed = true; } });
     if (changed) saveQuizPaid(local);
   }
   /* The shop NEW-badge record ({ n: flagged ids, c: dismissed
@@ -43978,6 +44076,12 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
   "マナー・知識・科学など9ジャンルの総合クイズ（1回5問）": ["A general quiz across 9 categories — manners, knowledge, science and more (5 questions per round)", "매너·지식·과학 등 9개 장르의 종합 퀴즈 (1회 5문제)", "礼仪、知识、科学等9个类别的综合测验（每次5题）", "禮儀、知識、科學等9個類別的綜合測驗（每次5題）", "Un quiz general de 9 categorías: modales, conocimiento, ciencia y más (5 preguntas por ronda)", "Un quiz général en 9 catégories : manières, savoirs, sciences et plus (5 questions par manche)", "Ein allgemeines Quiz in 9 Kategorien — Manieren, Wissen, Wissenschaft und mehr (5 Fragen pro Runde)", "Um quiz geral em 9 categorias — boas maneiras, conhecimento, ciência e mais (5 perguntas por rodada)", "Un quiz generale in 9 categorie: buone maniere, conoscenze, scienza e altro (5 domande per round)"],
   "クイズで遊ぶ": ["Play the Quiz", "퀴즈로 놀기", "玩测验", "玩測驗", "Jugar al quiz", "Jouer au quiz", "Quiz spielen", "Jogar o quiz", "Gioca al quiz"],
   "クイズ完走": ["Quiz Complete", "퀴즈 완주", "测验完成", "測驗完成", "Quiz completado", "Quiz terminé", "Quiz abgeschlossen", "Quiz concluído", "Quiz completato"],
+  "音感クイズ": ["Pitch Quiz", "절대음감 퀴즈", "音感测验", "音感測驗", "Quiz de oído", "Quiz d'oreille", "Gehör-Quiz", "Quiz de ouvido", "Quiz dell'orecchio"],
+  "音感クイズで遊ぶ": ["Play Pitch Quiz", "절대음감 퀴즈로 놀기", "玩音感测验", "玩音感測驗", "Jugar al quiz de oído", "Jouer au quiz d'oreille", "Gehör-Quiz spielen", "Jogar o quiz de ouvido", "Gioca al quiz dell'orecchio"],
+  "音感クイズ画面": ["Pitch Quiz screen", "절대음감 퀴즈 화면", "音感测验画面", "音感測驗畫面", "Pantalla del quiz de oído", "Écran du quiz d'oreille", "Bildschirm Gehör-Quiz", "Tela do quiz de ouvido", "Schermata quiz dell'orecchio"],
+  "音を聞いて音名を当てる絶対音感クイズ！": ["Hear the note and name its pitch!", "소리를 듣고 음이름을 맞히는 절대음감 퀴즈!", "听音辨名，挑战绝对音感！", "聽音辨名，挑戰絕對音感！", "¡Escucha la nota y acierta su nombre!", "Écoute la note et devine son nom !", "Höre den Ton und errate seinen Namen!", "Ouça a nota e acerte o nome!", "Ascolta la nota e indovina il nome!"],
+  "音感クイズ完走": ["Pitch Quiz Complete", "절대음감 퀴즈 완주", "音感测验完成", "音感測驗完成", "Quiz de oído completado", "Quiz d'oreille terminé", "Gehör-Quiz abgeschlossen", "Quiz de ouvido concluído", "Quiz dell'orecchio completato"],
+  "音感クイズを読み込めませんでした。通信状態を確認して、再読み込みしてください。": ["Couldn't load Pitch Quiz. Check your connection and reload.", "절대음감 퀴즈를 불러오지 못했습니다. 연결 상태를 확인하고 새로고침해 주세요.", "无法加载音感测验。请检查网络连接并重新加载。", "無法載入音感測驗。請檢查網路連線並重新載入。", "No se pudo cargar el quiz de oído. Revisa tu conexión y recarga.", "Impossible de charger le quiz d'oreille. Vérifie ta connexion et recharge.", "Das Gehör-Quiz konnte nicht geladen werden. Prüfe die Verbindung und lade neu.", "Não foi possível carregar o quiz de ouvido. Verifique a conexão e recarregue.", "Impossibile caricare il quiz dell'orecchio. Controlla la connessione e ricarica."],
   "総合クイズ： 完走 10 コイン ＋ 正解1問 1 コイン（難易度倍率の対象外）": ["General Quiz: 10 coins for finishing + 1 coin per correct answer (not affected by the difficulty multiplier)", "종합 퀴즈: 완주 10 코인 + 정답 1문제당 1 코인 (난이도 배율 대상 아님)", "综合测验：完成 10 金币 + 每答对1题 1 金币（不受难度倍率影响）", "綜合測驗：完成 10 金幣 + 每答對1題 1 金幣（不受難度倍率影響）", "Quiz general: 10 monedas por terminar + 1 monedas por acierto (sin multiplicador de dificultad)", "Quiz général : 10 pièces pour terminer + 1 pièces par bonne réponse (hors multiplicateur de difficulté)", "Allgemeines Quiz: 10 Münzen fürs Beenden + 1 Münze pro richtiger Antwort (kein Schwierigkeits-Multiplikator)", "Quiz geral: 10 moedas por concluir + 1 moedas por acerto (sem multiplicador de dificuldade)", "Quiz generale: 10 monete al completamento + 1 monete per risposta corretta (nessun moltiplicatore di difficoltà)"],
   "クイズを読み込めませんでした。通信状態を確認して、再読み込みしてください。": ["The quiz couldn't be loaded. Check your connection and reload.", "퀴즈를 불러오지 못했습니다. 연결을 확인하고 새로고침하세요.", "无法加载测验。请检查网络连接并重新加载。", "無法載入測驗。請檢查網絡連接並重新載入。", "No se pudo cargar el quiz. Revisa tu conexión y recarga.", "Le quiz n'a pas pu être chargé. Vérifie ta connexion et recharge.", "Das Quiz konnte nicht geladen werden. Prüfe die Verbindung und lade neu.", "Não foi possível carregar o quiz. Verifique a conexão e recarregue.", "Impossibile caricare il quiz. Controlla la connessione e ricarica."],
   "9ジャンル・1回5問": ["9 categories · 5 questions per round", "9개 장르 · 1회 5문제", "9个类别 · 每次5题", "9個類別 · 每次5題", "9 categorías · 5 preguntas por ronda", "9 catégories · 5 questions par manche", "9 Kategorien · 5 Fragen pro Runde", "9 categorias · 5 perguntas por rodada", "9 categorie · 5 domande per round"],
@@ -53872,7 +53976,7 @@ PATTERNS.push(
        is only for the impossible case that module 19 did not run. */
     var TITLES = (window.__canonicalTitles && window.__canonicalTitles.length)
       ? window.__canonicalTitles.slice()
-      : ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "library", "fishing", "board", "turntable", "pcbfarm", "kartgp"];
+      : ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi", "rubik", "mines", "g2048", "memory", "sudoku", "cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "blackjack", "roulette", "slots", "baccarat", "videopoker", "holdem", "craps", "casinowar", "sicbo", "bigsix", "lottery", "pachinko", "keiba", "keirin", "kyotei", "autorace", "sportsbet", "retro", "hairline", "langquiz", "gquiz", "pitchquiz", "library", "fishing", "board", "turntable", "pcbfarm", "kartgp"];
     var titlesPlayed = 0, titlesTotal = TITLES.length;
     function titlesNow() {
       var c = {};
@@ -55725,6 +55829,7 @@ Object.assign(D, {
   "カテゴリを選ぶと、その分野の問題だけが出ます。": ["Pick a category and only questions from that field appear.", "카테고리를 고르면 그 분야의 문제만 나옵니다.", "选择类别后，只会出该领域的问题。", "選擇類別後，只會出該領域的問題。", "Elige una categoría y solo aparecen preguntas de ese campo.", "Choisissez une catégorie et seules les questions de ce domaine apparaissent.", "Wählen Sie eine Kategorie, und nur Fragen aus diesem Gebiet erscheinen.", "Escolha uma categoria e só aparecem perguntas daquele campo.", "Scegli una categoria e compaiono solo domande di quel campo."],
   "完走 10 コイン ＋ 正解1問 1 コイン入ります。": ["Finishing pays 10 coins, plus 1 coin per correct answer.", "완주 10 코인 + 정답 1문제당 1 코인가 들어갑니다.", "完赛可得 10 金币，每答对 1 题 +1 金币。", "完賽可得 10 金幣，每答對 1 題 +1 金幣。", "Terminar paga 10 monedas, más 1 monedas por respuesta correcta.", "Terminer rapporte 10 pièces, plus 1 pièces par bonne réponse.", "Das Beenden zahlt 10 Münzen, plus 1 Münzen pro richtige Antwort.", "Concluir paga 10 moedas, mais 1 moedas por resposta certa.", "Completare paga 10 monete, più 1 monete per risposta giusta."],
   "総合クイズのルール": ["General Quiz Rules", "종합 퀴즈 규칙", "综合测验规则", "綜合測驗規則", "Reglas del quiz general", "Règles du quiz général", "Allgemeine Quiz-Regeln", "Regras do quiz geral", "Regole del quiz generale"],
+  "音感クイズのルール": ["Pitch Quiz Rules", "절대음감 퀴즈 규칙", "音感测验规则", "音感測驗規則", "Reglas del quiz de oído", "Règles du quiz d'oreille", "Gehör-Quiz-Regeln", "Regras do quiz de ouvido", "Regole del quiz dell'orecchio"],
   "いろいろな分野の問題に答えて、最後まで完走します。": ["Answer questions from many fields and finish the whole run.", "여러 분야의 문제에 답해 끝까지 완주합니다.", "回答各个领域的问题，坚持到最后。", "回答各個領域的問題，堅持到最後。", "Responde preguntas de muchos campos y completa todo el recorrido.", "Répondez à des questions de nombreux domaines et terminez tout le parcours.", "Beantworten Sie Fragen aus vielen Gebieten und schaffen Sie den ganzen Lauf.", "Responda perguntas de muitos campos e complete todo o percurso.", "Rispondi a domande di molti campi e completa tutto il percorso."],
   "ルーレットのルール": ["Roulette Rules", "룰렛 규칙", "轮盘规则", "輪盤規則", "Reglas de la ruleta", "Règles de la roulette", "Roulette-Regeln", "Regras da roleta", "Regole della roulette"],
   "玉が止まるポケットを当てます。": ["Guess the pocket where the ball stops.", "공이 멈추는 포켓을 맞춥니다.", "猜中球停下的格口。", "猜中球停下的格口。", "Adivina la casilla donde se detiene la bola.", "Devinez la case où la bille s'arrête.", "Erraten Sie das Fach, in dem die Kugel stoppt.", "Adivinhe a caçapa onde a bola para.", "Indovina la tasca dove si ferma la pallina."],
@@ -58031,6 +58136,389 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
   };
 })();
     </script>
+  <script>/* ================= Pitch Quiz （音感クイズ) — BN-261 =================
+   Learn-genre tile next to the general quiz. The playable form of
+   the 2026-11-21 pitch-quiz reel: a single note plays, the player
+   picks its name out of two, feedback is instant (colour + the
+   note's exact frequency on the reveal), three hearts, five
+   questions, and a score-tier table at the end. Decoys start a
+   whole tone away and close in; the last question is always a
+   semitone trap, exactly like the reel.
+   Notes are synthesized with WebAudio at exact equal-temperament
+   frequencies (A4 = 440 Hz): f = 440 * 2^((midi-69)/12).
+   Payment mirrors the general quiz (2026-11-14 first-solve rule):
+   the completion base pays on the first finished round ever, and
+   each distinct note pays +1 the first time it is ever answered
+   correctly (arcade pitch paid record, quiz id "pitch"). The
+   in-progress run rides arcade-pitch-run-v1 like the other games. */
+(function () {
+  "use strict";
+  var root = document.getElementById("pitchRoot");
+  if (!root) return;
+  var $ = function (id) { return document.getElementById(id); };
+  var LANGS = ["ja", "en", "ko", "zh", "zht", "es", "fr", "de", "pt", "it"];
+  var PROG_KEY = "arcade-pitch-best-v1";
+  var RUN_KEY = "arcade-pitch-run-v1";
+  var TOTAL = 5, HEARTS = 3;
+  var POOL_MIN = 60, POOL_MAX = 72; /* C4..C5 */
+  var UI = {
+    title: { ja: "音感クイズ", en: "Pitch Quiz" },
+    tag: { ja: "音を聞いて音名を当てる2択クイズ", en: "Hear it, name it — a two-choice pitch quiz" },
+    startTitle: { ja: "音感クイズ", en: "Pitch Quiz" },
+    desc: { ja: "単音が鳴るから、2つの音名のうち正しい方を選んで。1回5問、ハートは3つ。正解が分かると、その音の正確な周波数も表示されるよ。最後の問題は半音差の罠つき。", en: "A single note plays — pick the right name of the two. Five questions, three hearts. Every reveal shows the note's exact frequency. The last question hides a semitone trap." },
+    start: { ja: "スタート", en: "Start" },
+    question: { ja: "問題", en: "Question" },
+    score: { ja: "スコア", en: "Score" },
+    listenQ: { ja: "この音はどっち？", en: "Which note is this?" },
+    play: { ja: "音を聞く", en: "Play the note" },
+    replay: { ja: "もう一度聞く", en: "Listen again" },
+    correct: { ja: "正解！", en: "Correct!" },
+    wrong: { ja: "残念…", en: "Not quite…" },
+    freqIs: { ja: "{name} = {freq} Hz", en: "{name} = {freq} Hz" },
+    next: { ja: "次へ", en: "Next" },
+    finish: { ja: "結果を見る", en: "See results" },
+    result: { ja: "結果", en: "Results" },
+    again: { ja: "もう一度", en: "Play again" },
+    best: { ja: "ベスト {n} / 5", en: "Best {n} / 5" },
+    gameover: { ja: "ハートがなくなった…", en: "Out of hearts…" },
+    paid: { ja: "+{n} コイン", en: "+{n} coins" },
+    tierHead: { ja: "スコア別の称号", en: "Titles by score" },
+    qUnit: { ja: "問", en: "Q" }
+  };
+  var TIERS = [
+    { ja: "絶対音感クラス", en: "Perfect Pitch" },
+    { ja: "音楽家の耳", en: "Musician's Ear" },
+    { ja: "鋭い耳", en: "Sharp Ear" },
+    { ja: "育ちざかりの耳", en: "Developing Ear" },
+    { ja: "耳トレ見習い", en: "Ear in Training" },
+    { ja: "耳トレ初心者", en: "Ear Training Beginner" }
+  ];
+  var LETTER = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  var SOL = {
+    ja: ["ド", "ド♯", "レ", "レ♯", "ミ", "ファ", "ファ♯", "ソ", "ソ♯", "ラ", "ラ♯", "シ"],
+    en: ["Do", "Do#", "Re", "Re#", "Mi", "Fa", "Fa#", "Sol", "Sol#", "La", "La#", "Ti"]
+  };
+  function lang() {
+    var l = "en";
+    try { l = (window.arcadeLang && window.arcadeLang()) || localStorage.getItem("arcade-lang") || "en"; } catch (e) {}
+    return LANGS.indexOf(l) >= 0 ? l : "en";
+  }
+  function T(k) { var m = UI[k]; return m ? (m[lang()] || m.en || m.ja || k) : k; }
+  function freq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+  function noteName(midi) { return LETTER[midi % 12] + (Math.floor(midi / 12) - 1); }
+  function solName(midi) { var s = SOL[lang()] || SOL.en; return s[midi % 12]; }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  /* Audio: the shared context (window.__arcadeAC, fitted by the
+     audio core). Question tones are a soft piano-ish stack — sine
+     fundamental + quiet 2nd/3rd partials under an exponential
+     decay — so the pitch is exact but not a bare laboratory beep.
+     Feedback cues reuse the house tone() idiom at family levels. */
+  var AC = null;
+  function ac() {
+    if (!AC) { try { AC = window.__arcadeAC || (window.__arcadeAC = new (window.AudioContext || window.webkitAudioContext)()); } catch (e) { AC = null; } }
+    if (AC && AC.state === "suspended") { try { AC.resume(); } catch (e) {} }
+    return AC;
+  }
+  function tone(freqV, dur, type, vol, delay, slideTo) {
+    var c = ac(); if (!c) return;
+    try {
+      var t = c.currentTime + (delay || 0);
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = type || "sine";
+      o.frequency.setValueAtTime(freqV, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30, slideTo), t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(c.destination);
+      o.start(t); o.stop(t + dur + 0.05);
+    } catch (e) {}
+  }
+  function sfx(name) {
+    if (name === "correct") { tone(784, 0.09, "triangle", 0.07); tone(1175, 0.14, "triangle", 0.06, 0.07); }
+    else if (name === "wrong") { tone(196, 0.16, "sawtooth", 0.05); tone(147, 0.18, "sawtooth", 0.045, 0.07); }
+    else if (name === "finish") { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.16, "triangle", 0.06, i * 0.085); }); }
+  }
+  function playNote(midi) {
+    var c = ac(); if (!c) return;
+    var f = freq(midi), t = c.currentTime + 0.02;
+    [[1, 0.16, "sine"], [2, 0.05, "sine"], [3, 0.018, "triangle"]].forEach(function (p) {
+      try {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = p[2];
+        o.frequency.setValueAtTime(f * p[0], t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(p[1], t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.35);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 1.45);
+      } catch (e) {}
+    });
+    if (round) round.plays = (round.plays || 0) + 1;
+  }
+
+  function loadBest() {
+    try { var b = JSON.parse(localStorage.getItem(PROG_KEY) || "null"); if (b && typeof b.best === "number") return { best: b.best | 0, plays: b.plays | 0 }; } catch (e) {}
+    return { best: 0, plays: 0 };
+  }
+  function saveBest(b) { try { localStorage.setItem(PROG_KEY, JSON.stringify(b)); } catch (e) {} }
+
+  /* Decoy distance in semitones per question index: whole tones
+     early, closing in, and the last question is always the
+     semitone trap from the reel. */
+  function decoyDist(idx) {
+    if (idx <= 1) return 2;
+    if (idx === 2) return Math.random() < 0.5 ? 2 : 3;
+    if (idx === 3) return Math.random() < 0.5 ? 1 : 2;
+    return 1;
+  }
+  function buildRound() {
+    var targets = [], guard = 0;
+    while (targets.length < TOTAL && guard++ < 300) {
+      var m = POOL_MIN + Math.floor(Math.random() * (POOL_MAX - POOL_MIN + 1));
+      if (targets.indexOf(m) < 0) targets.push(m);
+    }
+    var list = targets.map(function (m, i) {
+      var dist = decoyDist(i);
+      var dir = Math.random() < 0.5 ? -1 : 1;
+      var d = m + dir * dist;
+      if (d < POOL_MIN || d > POOL_MAX) d = m - dir * dist;
+      return { m: m, d: d, ord: Math.random() < 0.5 ? 0 : 1 };
+    });
+    return { list: list, idx: 0, score: 0, hearts: HEARTS, answered: false, picked: -1, correctNotes: [], plays: 0, over: false };
+  }
+  function saveRun() {
+    try {
+      if (state !== "quiz" || !round) { localStorage.removeItem(RUN_KEY); return; }
+      localStorage.setItem(RUN_KEY, JSON.stringify(round));
+    } catch (e) {}
+  }
+  function loadRun() {
+    try {
+      var r = JSON.parse(localStorage.getItem(RUN_KEY) || "null");
+      if (!r || !Array.isArray(r.list) || r.list.length !== TOTAL || typeof r.idx !== "number" || r.idx >= TOTAL) return null;
+      for (var i = 0; i < r.list.length; i++) {
+        var q = r.list[i];
+        if (!q || typeof q.m !== "number" || typeof q.d !== "number" || q.m < POOL_MIN || q.m > POOL_MAX || q.d < POOL_MIN || q.d > POOL_MAX || q.m === q.d) return null;
+      }
+      if (typeof r.score !== "number" || typeof r.hearts !== "number") return null;
+      if (!Array.isArray(r.correctNotes)) r.correctNotes = [];
+      return r;
+    } catch (e) { return null; }
+  }
+
+  var els = {
+    prog: $("pqProg"), progLabel: $("pqProgLabel"), score: $("pqScore"), scoreLabel: $("pqScoreLabel"),
+    hearts: $("pqHearts"),
+    startPanel: $("pqStartPanel"), startTitle: $("pqStartTitle"), desc: $("pqStartDesc"), startBtn: $("pqStartBtn"),
+    bestLine: $("pqBestLine"),
+    quizPanel: $("pqQuizPanel"), progFill: $("pqProgFill"), qLabel: $("pqQLabel"), playBtn: $("pqPlayBtn"),
+    choices: $("pqChoices"), feedback: $("pqFeedback"), mark: $("pqMark"), freqLine: $("pqFreq"),
+    nextBtn: $("pqNextBtn"),
+    resultPanel: $("pqResultPanel"), resultTitle: $("pqResultTitle"), resultScore: $("pqResultScore"),
+    resultMsg: $("pqResultMsg"), tierTable: $("pqTierTable"), againBtn: $("pqAgainBtn"),
+    titleEl: $("pqViewTitle"), tagEl: $("pqViewTag")
+  };
+  var state = "start", round = null;
+  var HEART_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.9 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6C10.9 6.1 12.3 5 14.3 5c3.4 0 5.3 3.9 3.7 6.7C19.5 16.1 12 21 12 21z" fill="#e5484d"/></svg>';
+  var HEART_OFF_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.9 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6C10.9 6.1 12.3 5 14.3 5c3.4 0 5.3 3.9 3.7 6.7C19.5 16.1 12 21 12 21z" fill="#c9c2d8"/></svg>';
+
+  function show(panel) {
+    els.startPanel.hidden = panel !== "start";
+    els.quizPanel.hidden = panel !== "quiz";
+    els.resultPanel.hidden = panel !== "result";
+  }
+  function renderTexts() {
+    if (els.titleEl) els.titleEl.textContent = T("title");
+    if (els.tagEl) els.tagEl.textContent = T("tag");
+    els.progLabel.textContent = T("question"); els.scoreLabel.textContent = T("score");
+    els.startTitle.textContent = T("startTitle"); els.desc.textContent = T("desc");
+    els.startBtn.textContent = T("start"); els.nextBtn.textContent = T("next");
+    els.resultTitle.textContent = T("result"); els.againBtn.textContent = T("again");
+    els.qLabel.textContent = T("listenQ");
+    document.getElementById("pitchquizView").setAttribute("aria-label", T("title"));
+    var b = loadBest();
+    els.bestLine.textContent = b.plays > 0 ? T("best").replace("{n}", String(b.best)) : "";
+    renderHearts();
+  }
+  function renderHearts() {
+    var h = round ? round.hearts : HEARTS, out = "";
+    for (var i = 0; i < HEARTS; i++) out += '<span class="pq-heart' + (i < h ? "" : " off") + '">' + (i < h ? HEART_SVG : HEART_OFF_SVG) + "</span>";
+    els.hearts.innerHTML = out;
+  }
+  function renderHud() {
+    if (!round) { els.prog.textContent = "– / " + TOTAL; els.score.textContent = "0"; }
+    else {
+      els.prog.textContent = Math.min(round.idx + 1, TOTAL) + " / " + TOTAL;
+      els.score.textContent = String(round.score);
+      els.progFill.style.width = Math.round((round.idx / TOTAL) * 100) + "%";
+    }
+    renderHearts();
+  }
+  function choiceMidi(cur, pos) { return pos === cur.ord ? cur.m : cur.d; }
+  function renderQ() {
+    renderHud();
+    var cur = round.list[round.idx];
+    els.feedback.hidden = true; els.nextBtn.hidden = true;
+    els.playBtn.querySelector(".pq-play-label").textContent = T("play");
+    els.choices.innerHTML = "";
+    [0, 1].forEach(function (pos) {
+      var midi = choiceMidi(cur, pos);
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "lq-choice pq-choice";
+      b.setAttribute("data-midi", String(midi));
+      var nm = document.createElement("span"); nm.className = "pq-choice-name"; nm.textContent = noteName(midi);
+      var sol = document.createElement("span"); sol.className = "pq-choice-sol"; sol.textContent = solName(midi);
+      b.appendChild(nm); b.appendChild(sol);
+      b.addEventListener("click", function () { answer(midi, b); });
+      els.choices.appendChild(b);
+    });
+    if (round.answered) { restoreAnswered(); return; }
+    setTimeout(function () { if (state === "quiz" && round && !round.answered) playNote(cur.m); }, 300);
+  }
+  function markChoices(cur, pickedMidi) {
+    var btns = els.choices.children;
+    for (var i = 0; i < btns.length; i++) {
+      var midi = choiceMidi(cur, i);
+      btns[i].disabled = true;
+      if (midi === cur.m) btns[i].classList.add("correct");
+      else if (midi === pickedMidi) btns[i].classList.add("wrong");
+    }
+  }
+  function showFeedback(cur, ok) {
+    els.mark.textContent = ok ? "○ " + T("correct") : "✕ " + T("wrong");
+    els.mark.className = "lq-mark " + (ok ? "ok" : "ng");
+    els.feedback.className = "lq-feedback " + (ok ? "ok" : "ng");
+    var nm = lang() === "ja" ? noteName(cur.m) + "（" + solName(cur.m) + "）" : noteName(cur.m) + " (" + solName(cur.m) + ")";
+    els.freqLine.textContent = T("freqIs").replace("{name}", nm).replace("{freq}", freq(cur.m).toFixed(1));
+    els.feedback.hidden = false;
+    var last = round.idx + 1 >= TOTAL || round.hearts <= 0;
+    els.nextBtn.textContent = last ? T("finish") : T("next");
+    els.nextBtn.hidden = false;
+  }
+  function restoreAnswered() {
+    var cur = round.list[round.idx];
+    markChoices(cur, round.picked);
+    showFeedback(cur, round.picked === cur.m);
+    els.playBtn.querySelector(".pq-play-label").textContent = T("replay");
+  }
+  function answer(midi, btn) {
+    if (!round || round.answered) return;
+    var cur = round.list[round.idx];
+    var ok = midi === cur.m;
+    round.answered = true; round.picked = midi;
+    if (ok) {
+      round.score++;
+      var id = "m" + cur.m;
+      if (round.correctNotes.indexOf(id) < 0) round.correctNotes.push(id);
+    } else {
+      round.hearts = Math.max(0, round.hearts - 1);
+    }
+    sfx(ok ? "correct" : "wrong");
+    markChoices(cur, midi);
+    showFeedback(cur, ok);
+    renderHud(); saveRun();
+  }
+  function next() {
+    if (!round || !round.answered) return;
+    if (round.idx + 1 >= TOTAL || round.hearts <= 0) { finishRound(); return; }
+    round.idx++; round.answered = false; round.picked = -1;
+    saveRun(); renderQ();
+  }
+  function tierFor(score) { return TIERS[TOTAL - Math.max(0, Math.min(TOTAL, score))]; }
+  function renderTierTable(score) {
+    els.tierTable.innerHTML = "";
+    var head = document.createElement("p");
+    head.className = "pq-tier-head"; head.textContent = T("tierHead");
+    els.tierTable.appendChild(head);
+    var tbl = document.createElement("table");
+    tbl.className = "pq-tier-tbl";
+    for (var s = TOTAL; s >= 0; s--) {
+      var tr = document.createElement("tr");
+      if (s === score) tr.className = "me";
+      var td1 = document.createElement("td"); td1.className = "pq-tier-score"; td1.textContent = s + " / " + TOTAL;
+      var td2 = document.createElement("td"); td2.textContent = (lang() === "ja" ? TIERS[TOTAL - s].ja : TIERS[TOTAL - s].en);
+      tr.appendChild(td1); tr.appendChild(td2);
+      tbl.appendChild(tr);
+    }
+    els.tierTable.appendChild(tbl);
+  }
+  function finishRound() {
+    sfx("finish");
+    state = "result";
+    try { localStorage.removeItem(RUN_KEY); } catch (e) {}
+    var b = loadBest();
+    b.plays++;
+    if (round.score > b.best) b.best = round.score;
+    saveBest(b);
+    show("result"); renderHud();
+    els.resultScore.textContent = String(round.score);
+    var tier = lang() === "ja" ? tierFor(round.score).ja : tierFor(round.score).en;
+    var msg = tier;
+    if (round.hearts <= 0 && round.idx + 1 < TOTAL) msg = T("gameover") + " " + tier;
+    /* First-solve-only payment, same rule as the general quiz:
+       base pays on the first finished round ever; each distinct
+       note pays the first time it is ever answered correctly. */
+    var paid = 0;
+    if (window.ARCADE_points && window.ARCADE_points.quizMarkPaid) {
+      var newN = window.ARCADE_points.quizMarkPaid("pitch", round.correctNotes || []);
+      if (!window.ARCADE_points.quizBaseDone("pitch")) {
+        window.ARCADE_points.quizMarkBase("pitch");
+        paid = window.ARCADE_points.earn("pitchQuiz", { bonus: newN });
+      } else if (newN > 0) {
+        paid = window.ARCADE_points.earn("pitchQuiz", { amount: 0, bonus: newN });
+      }
+    }
+    if (paid > 0) msg += "（" + T("paid").replace("{n}", String(paid)) + "）";
+    els.resultMsg.textContent = msg;
+    renderTierTable(round.score);
+    round = null;
+  }
+  function startRound() {
+    round = buildRound();
+    state = "quiz"; saveRun(); show("quiz"); renderQ();
+  }
+  els.startBtn.addEventListener("click", startRound);
+  els.nextBtn.addEventListener("click", next);
+  els.playBtn.addEventListener("click", function () {
+    if (!round) return;
+    playNote(round.list[round.idx].m);
+    els.playBtn.querySelector(".pq-play-label").textContent = T("replay");
+  });
+  els.againBtn.addEventListener("click", function () { state = "start"; round = null; show("start"); renderTexts(); renderHud(); });
+  window.__pitch = {
+    enter: function () {
+      renderTexts();
+      var r = loadRun();
+      if (r) { round = r; state = "quiz"; show("quiz"); renderQ(); return; }
+      state = "start"; round = null; show("start"); renderHud();
+    },
+    debug: function () {
+      var q = null;
+      if (round && state === "quiz") {
+        var cur = round.list[round.idx];
+        q = {
+          midi: cur.m, freq: freq(cur.m), decoy: cur.d,
+          dist: Math.abs(cur.m - cur.d),
+          choices: [choiceMidi(cur, 0), choiceMidi(cur, 1)],
+          correctMidi: cur.m
+        };
+      }
+      return {
+        state: state,
+        idx: round ? round.idx : -1,
+        score: round ? round.score : 0,
+        hearts: round ? round.hearts : HEARTS,
+        answered: round ? !!round.answered : false,
+        plays: round ? (round.plays || 0) : 0,
+        q: q,
+        best: loadBest()
+      };
+    }
+  };
+})();
+</script>
   <style>
   /* ===== Meet the Board （分解ボード) — Learn genre, 2026-11-15 ===== */
   .glyph-board { background: linear-gradient(150deg, #127a46, #0a4a2a); color: #dff7e8; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 18px rgba(10, 74, 42, 0.40), inset 0 -5px 8px rgba(0, 0, 0, 0.35), inset 0 4px 6px rgba(255, 255, 255, 0.22); }
@@ -61035,6 +61523,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       shooterView: ["宇宙シューティングのルール", "宇宙船を操って敵を撃ち、できるだけ長く生き残ります。", "ドラッグ／矢印キーで移動します。ショットは自動です。", "難易度で敵の出現ペースと弾の速さが変わります。", "スコア25点ごとに 1 コイン（最大30 コイン、難易度倍率あり）。"],
       langquizView: ["語学クイズのルール", "語学の問題に答えて、最後まで完走します。", "選択肢をタップして答えます。カテゴリで出題範囲を選べます。", "カテゴリを選ぶと、その分野の問題だけが出ます。", "完走 10 コイン（初回の完走のときだけ）＋ 初めて正解した問題1問につき 1 コイン入ります。同じ問題の解き直しでは入りません（難易度倍率の対象外）。"],
       gquizView: ["総合クイズのルール", "いろいろな分野の問題に答えて、最後まで完走します。", "選択肢をタップして答えます。カテゴリで出題範囲を選べます。", "カテゴリを選ぶと、その分野の問題だけが出ます。", "完走 10 コイン（初回の完走のときだけ）＋ 初めて正解した問題1問につき 1 コイン入ります。同じ問題の解き直しでは入りません（難易度倍率の対象外）。"],
+      pitchquizView: ["音感クイズのルール", "鳴った単音の音名を、2つの選択肢から当てます。1回5問、ハートは3つです。", "丸いボタンをタップすると音が鳴ります（何度でも聞き直せます）。音名のボタンをタップして答えます。", "おとりの音は最初は全音差で、だんだん近づき、最後の問題は半音差です。正解が分かると、その音の正確な周波数（A4＝440.0Hz）が表示されます。間違えるとハートが1つ減り、なくなるとその場で終了です。", "ラウンド終了 10 コイン（初めてラウンドを終えたときだけ）＋ 初めて正解した音1つにつき 1 コイン入ります。同じ音の解き直しでは入りません（難易度倍率の対象外）。"],
       boardView: ["分解ボードのルール", "ボードは3種類（開発ボード／Flipper Zero／Raspberry Pi Pico）。ボードを選んで、全部品をタップし、それぞれのクイズに正解します。", "部品をタップすると光って、解説カードとクイズが開きます。一部の部品には第2問もあります。「分解」スライダーで部品を引き離して眺めることもできます。", "逆クイズモードでは、光っている部品の名前を当てます。間違えても、解説をヒントに何度でも挑戦できます。正解した部品は光ったまま残ります。", "ボードごとに、全問正解 10 コイン（初めてそのボードを全問正解したときだけ）＋ 初めて正解した問題1問につき 1 コイン入ります。同じ問題の解き直しでは入りません（難易度倍率の対象外）。"],
       rouletteView: ["ルーレットのルール", "玉が止まるポケットを当てます。", "テーブルにチップ（10／25／50／100 コイン）を置いて賭け、スピンします。コインを使わないフリーベットでも遊べます。", "配当は賭け種により 1:1〜35:1（数字1点は35:1、赤黒・偶奇は1:1）。", "「前回と同じ賭け」ボタン： 前のスピンとまったく同じ置き方を、残高が足りるときに1タップで置き直せます。自動では置かれません。", "当たれば配当が入り、利益分は累計にも入ります。", "チップは置いた瞬間に残高から引かれます。置いたチップはタップで1枚外せます。"],
       slotsView: ["パチスロのルール", "3リールの絵柄をそろえます。内部抽選が先にあり、当選したスピンでは当たり図柄が引き込まれて止まります。", "レバーを引く（またはスピン）→ 各リールのSTOPボタンで止めます。押さなければ自動で止まります。ベットとラインは次のスピンにも引き継がれます。", "還元率は全数検証で約91.0%。ペカッランプは当選スピンでだけ光ります（はずれでは光りません）。", "配当はラインごとです。当選金はギャンブルで2倍に挑戦できます。"],
@@ -61157,6 +61646,7 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
       shooterView: { l: 1, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><path d="M28 44l8-18 8 18-8-4z" fill="#5b8def"/><path d="M36 30v-6" stroke="#f0b93e" stroke-width="2.5"/><circle cx="84" cy="16" r="6" fill="#e0563a"/><circle cx="98" cy="30" r="5" fill="#a04fd0"/><path d="M84 24v6M98 37v5" stroke="#e0563a" stroke-width="2"/><path d="M14 54h92" stroke="#3c4c63" stroke-dasharray="2 5"/></svg>' },
       langquizView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><path d="M26 12h52a8 8 0 0 1 8 8v14a8 8 0 0 1-8 8H48l-12 10v-10h-10a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8z" fill="#fdfaff" stroke="#b9c4d8"/><text x="40" y="34" font-size="13" fill="#2456c8">あ</text><text x="62" y="34" font-size="13" fill="#c23b2e">A</text><circle cx="96" cy="48" r="8" fill="#43a95c"/><path d="M92 48l3 3 5-6" stroke="#fff" stroke-width="2" fill="none"/></svg>' },
       gquizView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><circle cx="48" cy="26" r="15" fill="#5b8def"/><text x="48" y="33" font-size="17" text-anchor="middle" fill="#fff">?</text><g fill="#fdfaff" stroke="#b9c4d8"><rect x="72" y="12" width="30" height="10" rx="5"/><rect x="72" y="27" width="30" height="10" rx="5"/><rect x="72" y="42" width="30" height="10" rx="5"/></g><circle cx="78" cy="17" r="2" fill="#43a95c"/><circle cx="78" cy="32" r="2" fill="#8a93a5"/><circle cx="78" cy="47" r="2" fill="#8a93a5"/></svg>' },
+      pitchquizView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><circle cx="34" cy="32" r="16" fill="#7c5cd6"/><path d="M30 40a4.5 4.5 0 1 1-1.8-3.6V21.4c0-.5.3-1 .8-1.2l10-3.4c.7-.2 1.4.3 1.4 1v10.6a4.5 4.5 0 1 1-1.8-3.6V21l-7.6 2.6Z" fill="#fff"/><g fill="#fdfaff" stroke="#b9c4d8"><rect x="62" y="14" width="44" height="14" rx="7"/><rect x="62" y="36" width="44" height="14" rx="7"/></g><text x="84" y="24.5" font-size="9" text-anchor="middle" fill="#352a5e">A4</text><text x="84" y="46.5" font-size="9" text-anchor="middle" fill="#8a93a5">B4</text><circle cx="69" cy="21" r="2.4" fill="#43a95c"/></svg>' },
       boardView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><rect x="20" y="10" width="80" height="44" rx="4" fill="#173a2e"/><rect x="48" y="20" width="24" height="18" fill="#23262b" stroke="#c0c6d0"/><path d="M52 20v-6M60 20v-6M68 20v-6M52 44v-6M60 44v-6M68 44v-6M48 25H42M48 32H42M72 25h6M72 32h6" stroke="#c0c6d0"/><circle cx="32" cy="44" r="3.5" fill="#e0563a"/><circle cx="88" cy="18" r="3" fill="#f0b93e"/><path d="M24 18h14M82 46h14" stroke="#d4af37"/></svg>' },
       rouletteView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><circle cx="60" cy="32" r="23" fill="#7a1f1f"/><circle cx="60" cy="32" r="23" fill="none" stroke="#b8912a" stroke-width="2.5"/><circle cx="60" cy="32" r="15" fill="none" stroke="#d8b25a"/><circle cx="60" cy="32" r="6" fill="#b8912a"/><path d="M60 9v10M60 45v10M37 32h10M73 32h10M44 16l7 7M69 41l7 7M76 16l-7 7M51 41l-7 7" stroke="#d8b25a" stroke-width="1.6"/><circle cx="76" cy="18" r="3.2" fill="#f5f5f5"/></svg>' },
       slotsView: { l: 0, d: '<svg viewBox="0 0 120 64" aria-hidden="true"><rect x="28" y="10" width="64" height="38" rx="6" fill="#3b2a10" stroke="#b8912a" stroke-width="2"/><g font-size="15" text-anchor="middle" font-weight="800"><rect x="34" y="17" width="16" height="24" fill="#fdf6e0"/><text x="42" y="35" fill="#c23b2e">7</text><rect x="52" y="17" width="16" height="24" fill="#fdf6e0"/><text x="60" y="35" fill="#c23b2e">7</text><rect x="70" y="17" width="16" height="24" fill="#fdf6e0"/><text x="78" y="35" fill="#c23b2e">7</text></g><circle cx="98" cy="16" r="4" fill="#e0563a"/><path d="M98 20v12" stroke="#b8912a" stroke-width="3"/></svg>' },
@@ -90247,7 +90737,7 @@ window.__BN_VIEW__ = {
       { g: "board", label: "genreBoard", keys: ["chess", "mahjong", "reversi", "connect4", "gomoku", "checkers", "shogi"] },
       { g: "puzzle", label: "genrePuzzle", keys: ["rubik", "mines", "g2048", "memory", "sudoku"] },
       { g: "action", label: "genreAction", keys: ["cubefall", "snake", "breakout", "mole", "simon", "flappy", "shooter", "billiards", "kartgp"] },
-      { g: "learn", label: "genreLearn", keys: ["langquiz", "gquiz"] },
+      { g: "learn", label: "genreLearn", keys: ["langquiz", "gquiz", "pitchquiz"] },
       { g: "expansion", label: "genreExpansion", keys: ["fishing", "pcbfarm"] }
     ];
     function trioGroupOf(key) {
@@ -110667,6 +111157,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.68, 0, "b"],
       ["tor", 0.32, 0.09, 0, 2.1, 0.6, "c", 0], ["box", 0.15, 0.15, 0.06, 0, 1.62, 0.6, "c"],
       ["win", -0.65, 0.7, 0.99], ["win", 0.65, 0.7, 0.99]] },
+    pitchquiz: { pal: { a: 0x3b2a6d, b: 0x2a1e4f, c: 0xf2c53d, w: 0xfdf6e3, d: 0x3fd2c5 }, parts: [
+      ["box", 2.2, 1.6, 1.9, 0, 0.8, 0, "a"], ["box", 2.4, 0.14, 2.1, 0, 1.68, 0, "b"],
+      ["coin", 0.5, -0.45, 1.02, 0.99, "c"],
+      ["sph", 0.17, 0.52, 0.5, 0.99, "c", 0], ["cyl", 0.035, 0.035, 0.62, 0.67, 0.82, 0.99, "c", 6],
+      ["win", 0.68, 1.15, 0.99]] },
     board: { pal: { a: 0x14532d, b: 0x0e3a20, c: 0xc8b06a, w: 0xf3ead8, d: 0x1c1c22 }, parts: [
       ["box", 2.2, 1.4, 1.9, 0, 0.7, 0, "a"], ["box", 2.2, 0.08, 1.9, 0, 1.72, -0.42, "c"],
       ["box", 0.8, 0.25, 0.8, 0.3, 1.55, 0.2, "d"],
