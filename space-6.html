@@ -7763,12 +7763,19 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             body.planet-full #planetPrompt,body.planet-full #planetTalk{bottom:calc(12px + env(safe-area-inset-bottom))}
             body.planet-full #planetSignpost{top:calc(58px + env(safe-area-inset-top))}
             body.planet-full .coinfall-banner{z-index:6600}
-            /* BN-268: while the planet owns the screen, the BGM
-               chip (#ttChip, z 6400) must stay tappable — the
-               fullscreen stage is z 6500, so the chip rises above
-               it explicitly instead of depending on the stage's
-               ancestor stacking context to cap it. */
-            body.planet-full #ttChip{z-index:6700}
+            /* BN-269: while the planet owns the screen, the BGM
+               chip (#ttChip) is not shown at all (owner decision
+               2026-11-21: hide the music chip in the planet
+               lobby). The bottom-left belongs to the stick alone.
+               The chip is only a now-playing surface — playback
+               itself continues (module 67), and control lives on
+               the turntable screen and the plaza record player
+               (BN-260). display:none also removes the chip from
+               hit-testing entirely. BN-268's explicit z-index
+               raise is removed with it: a hidden element has no
+               stacking left to raise. In the grid lobby the chip
+               keeps its BN-268 behaviour (bottom-left, tappable). */
+            body.planet-full #ttChip{display:none}
             @media (max-width:480px){ #planetCanvasWrap{height:58vh;min-height:320px} #planetSearch input{width:104px} }
           </style>
           <div id="planetStage" hidden>
@@ -112810,30 +112817,14 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     closeTalk();
     if (b.btnEl) b.btnEl.click(); /* the tile's own path (DESIGN §3.4) */
   });
-  /* BN-267: keep the bottom panels clear of the turntable chip
-     (#ttChip — the fixed BGM bar at the viewport's bottom-left).
-     For each bottom-anchored panel, compute the bottom offset that
-     puts its lower edge 10px above the chip's top, in the panel's
-     own offsetParent space; clear the override when the chip is
-     gone or already clear. Geometry-driven, so it holds in the
-     embedded view and the full-screen view alike.
-     BN-268: the signpost is no longer in this set — it moved to a
-     compact panel at the stage's top-right, out of the bottom
-     band entirely. */
-  function liftBottomPanels() {
-    var chip = document.getElementById("ttChip");
-    var chipRect = null;
-    if (chip && !chip.hidden) { var r = chip.getBoundingClientRect(); if (r.height > 0) chipRect = r; }
-    [promptEl, npcPromptEl, talkEl].forEach(function (el) {
-      if (!el) return;
-      if (!chipRect) { if (el.style.bottom) el.style.bottom = ""; return; }
-      var parent = el.offsetParent;
-      if (!parent) return;
-      var need = parent.getBoundingClientRect().bottom - (chipRect.top - 10);
-      if (need > 14) el.style.bottom = Math.ceil(need) + "px";
-      else if (el.style.bottom) el.style.bottom = "";
-    });
-  }
+  /* BN-269: BN-267's chip lift is gone. It existed to keep the
+     bottom panels (prompt / NPC prompt / talk) clear of the BGM
+     chip (#ttChip), but the chip is now display:none whenever
+     the planet is open (seg-001: body.planet-full #ttChip), and
+     these panels only exist while the planet is open — so the
+     lift could never engage again. The panels keep their CSS
+     bottom offsets, which are their designed positions above
+     the stick / dash / jump band. */
   /* BN-267: the small play button floats beside the player
      character — the character's head projected to screen space
      (same projection the beacon arrow uses), offset to the right
@@ -113041,7 +113032,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
     promptSub.textContent = b.sub;
     promptCount.textContent = STR.plays(b.plays);
     promptEl.hidden = false;
-    liftBottomPanels();
     if (!visits.buildings[b.id]) visits.buildings[b.id] = 1;
     if (changed) emitVisit("building-approach", { id: b.id, genre: b.genre });
   }
@@ -113626,7 +113616,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       plateTimer = 0.3;
       var sorted = allPlates.slice().sort(function (a, b) { return a.dir.dot(pUp) > b.dir.dot(pUp) ? -1 : 1; });
       sorted.forEach(function (b, idx) { b.plate.visible = idx < 10 && b.dir.dot(pUp) > 0.86; });
-      liftBottomPanels(); /* BN-267: the BGM chip can come and go while standing still */
     }
     updatePlayBtnPos(); /* BN-267: the small play button tracks the character */
     /* BN-256 minimap redraw at 5 Hz */
