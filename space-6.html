@@ -61692,7 +61692,1396 @@ window.__gqData.BANK.push({"id":"s51","cat":"science","q":{"ja":"フィボナッ
     GEN_KEY: GEN_KEY
   };
 })();
+/* ================= Wave 1 foundation: settings change history + offline badge — BN-309 =================
+   Wave 1 (PROGRAMME-ideas-2026-11-21, foundation items "設定の変更
+   履歴" and "オフライン保証バッジ"), small round 2 of the Wave 1
+   programme (split plan in STATUS-BN308).
+
+   SETTINGS CHANGE HISTORY. Module 64 owns the settings record
+   (localStorage "arcade-settings-v1") and every write path goes
+   through its save() — reached via __arcadeSetMaster /
+   __arcadeSetComfort / __arcadeSetBus, the panel controls, or a
+   cloud-sync adoption (__arcadeSettingsReload). Instead of
+   patching module 64's save path, this module is an independent
+   watcher (the option the BN-308 handoff left open, chosen after
+   measuring the write paths):
+     - It wraps the three public setters once they exist (this
+       module loads before module 64 in assemble order, so it
+       polls until they appear) and records after each call.
+     - A 1.5s diff watcher over the raw settings record catches
+       every other writer (sync adoption, panel paths that bypass
+       the wrappers) — same technique as module 77's sync watcher.
+   Each entry: {id, ts, source, changes:[{field, from, to}]} with
+   ts from the shared effective clock (__arcadeClock, BN-301).
+   History lives in "arcade-settings-history-v1", newest first,
+   capped at MAX_ENTRIES (50). Field values are formatted for
+   display (percentages, on/off, bus levels). The baseline at load
+   is never recorded — only changes after this module starts.
+
+   OFFLINE BADGE. A small badge in the settings panel stating,
+   from measured facts only, whether the already-loaded app can
+   keep playing offline:
+     - coreLoaded: the shell + settings surfaces actually running
+       (window.__arcadeSettingsState present) and document loaded.
+     - storageOk: localStorage readable (one read probe, no write).
+     - online: navigator.onLine, refreshed on online/offline events.
+     - sw: serviceWorker support / registration — reported only as
+       measured (the GitHub PWA registers one, module 77; the
+       in-app build has none, and the badge says the core is a
+       single self-contained file instead of inventing a cache).
+   Verdict: coreLoaded && storageOk -> "loaded content plays
+   offline" (network features such as rankings / multiplayer are
+   named as the exception). Otherwise the badge says it cannot
+   confirm yet. Public surfaces: window.__settingsHistory and
+   window.__offlineBadge (bn309-1). Strings are ja/en (the full
+   10-language pass belongs to the Wave 1 language round, same
+   precedent as BN-308). */
+(function () {
+  "use strict";
+  var SETTINGS_KEY = "arcade-settings-v1";
+  var HISTORY_KEY = "arcade-settings-history-v1";
+  var MAX_ENTRIES = 50;
+  var SHOW_ENTRIES = 10;
+
+  function now() {
+    try {
+      if (window.__arcadeClock && typeof window.__arcadeClock.effectiveNow === "function") return window.__arcadeClock.effectiveNow();
+    } catch (e) {}
+    return Date.now();
+  }
+  function lang() {
+    var l = "ja";
+    try { l = (window.arcadeLang && window.arcadeLang()) || localStorage.getItem("arcade-lang") || "ja"; } catch (e) {}
+    return l === "en" ? "en" : "ja";
+  }
+  var UI = {
+    histTitle: { ja: "設定の変更履歴", en: "Settings change history" },
+    histNote: { ja: "いつ何を変えたかをこの端末に記録します（最新50件）。記録は端末の中だけにあり、外部へは送られません。", en: "Changes are recorded on this device only (latest 50). Nothing is sent anywhere." },
+    histNone: { ja: "まだ変更の記録がありません", en: "No changes recorded yet" },
+    histClear: { ja: "履歴を消す", en: "Clear history" },
+    histCleared: { ja: "履歴を消しました", en: "History cleared" },
+    offTitle: { ja: "オフラインで遊べるか", en: "Offline play" },
+    offOk: { ja: "読み込み済みの内容はオフラインでも遊べます", en: "Loaded content plays offline" },
+    offNg: { ja: "まだ確認できません（読み込み完了後に判定します）", en: "Not confirmed yet (checked after loading finishes)" },
+    offDetailCore: { ja: "本体は読み込み済み・保存も使えます。ランキングや対戦など通信が必要な機能はつながった時にだけ動きます。", en: "The app core is loaded and storage works. Features that need a network (rankings, multiplayer) only work while connected." },
+    offNowOnline: { ja: "現在: オンライン", en: "Now: online" },
+    offNowOffline: { ja: "現在: オフライン", en: "Now: offline" },
+    offSwYes: { ja: "Service Worker: 登録あり（GitHub版の控え）", en: "Service Worker: registered (GitHub build cache)" },
+    offSwNo: { ja: "Service Worker: なし（本体は単一ファイルで自己完結）", en: "Service Worker: none (the core is one self-contained file)" },
+    srcPanel: { ja: "設定画面", en: "settings panel" },
+    srcSync: { ja: "同期・その他", en: "sync / other" }
+  };
+  var FIELD_LABELS = {
+    vol: { ja: "全体の音量", en: "Master volume" },
+    muted: { ja: "ミュート", en: "Mute" },
+    theme: { ja: "テーマ", en: "Theme" },
+    textSize: { ja: "文字の大きさ", en: "Text size" },
+    noFlash: { ja: "点滅オフ", en: "Flashing off" },
+    vibrate: { ja: "振動", en: "Vibration" },
+    colorCare: { ja: "色覚への配慮", en: "Color vision aid" },
+    mascotCorner: { ja: "マスコットの応援", en: "Mascot companion" },
+    "buses.bgm": { ja: "BGM音量", en: "BGM volume" },
+    "buses.sfx": { ja: "効果音の音量", en: "SFX volume" },
+    "buses.voice": { ja: "ボイス音量", en: "Voice volume" },
+    "buses.ambient": { ja: "環境音の音量", en: "Ambience volume" }
+  };
+  function T(k) { var m = UI[k]; return m ? (m[lang()] || m.ja) : k; }
+  function fieldLabel(f) { var m = FIELD_LABELS[f]; return m ? (m[lang()] || m.ja) : f; }
+
+  /* ---------------- history store ---------------- */
+  function loadEntries() {
+    try {
+      var raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.entries)) return parsed.entries.filter(function (e) { return e && typeof e.ts === "number" && Array.isArray(e.changes); });
+    } catch (e) {}
+    return [];
+  }
+  function saveEntries(entries) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify({ v: 1, entries: entries.slice(0, MAX_ENTRIES) })); } catch (e) {}
+  }
+  function readSettings() {
+    try {
+      var raw = localStorage.getItem(SETTINGS_KEY);
+      if (!raw) return null;
+      var p = JSON.parse(raw);
+      return (p && typeof p === "object") ? p : null;
+    } catch (e) { return null; }
+  }
+  function fmtVal(field, v) {
+    if (v === undefined || v === null) return "—";
+    if (field === "vol" || field.indexOf("buses.") === 0) return String(v) + "%";
+    if (typeof v === "boolean") return v ? (lang() === "en" ? "on" : "オン") : (lang() === "en" ? "off" : "オフ");
+    return String(v);
+  }
+  var FIELDS = ["vol", "muted", "theme", "textSize", "noFlash", "vibrate", "colorCare", "mascotCorner", "buses.bgm", "buses.sfx", "buses.voice", "buses.ambient"];
+  function getField(p, f) {
+    if (!p) return undefined;
+    if (f.indexOf("buses.") === 0) return p.buses ? p.buses[f.slice(6)] : undefined;
+    return p[f];
+  }
+  function diff(prev, next) {
+    var out = [];
+    if (!next) return out;
+    FIELDS.forEach(function (f) {
+      var a = getField(prev, f), b = getField(next, f);
+      /* a field absent on the "from" side means the record (or a
+         newer schema field) was just created — that is a baseline,
+         not a user change, and is never recorded */
+      if (a === undefined) return;
+      if (String(a) !== String(b)) out.push({ field: f, from: fmtVal(f, a), to: fmtVal(f, b) });
+    });
+    return out;
+  }
+  var lastKnown = readSettings();
+  function record(source) {
+    var cur = readSettings();
+    if (!cur || !lastKnown) { lastKnown = cur; return null; }
+    var changes = diff(lastKnown, cur);
+    lastKnown = cur;
+    if (!changes.length) return null;
+    var entry = {
+      id: "h" + now().toString(36) + "-" + Math.floor(Math.random() * 1679616).toString(36),
+      ts: now(),
+      source: String(source || "watch"),
+      changes: changes
+    };
+    var entries = loadEntries();
+    entries.unshift(entry);
+    saveEntries(entries);
+    refreshSettingsUI();
+    return entry;
+  }
+  function list() { return loadEntries(); }
+  function clear() { saveEntries([]); refreshSettingsUI(); }
+  function status() {
+    var entries = loadEntries();
+    return { version: "bn309-1", count: entries.length, newestTs: entries.length ? entries[0].ts : 0, maxEntries: MAX_ENTRIES, historyKey: HISTORY_KEY, settingsKey: SETTINGS_KEY };
+  }
+
+  /* wrap the public setters once module 64 appears */
+  var wrapped = false;
+  function wrapSetters() {
+    if (wrapped) return true;
+    var names = ["__arcadeSetMaster", "__arcadeSetComfort", "__arcadeSetBus"];
+    var ready = names.every(function (n) { return typeof window[n] === "function"; });
+    if (!ready) return false;
+    names.forEach(function (n) {
+      var orig = window[n];
+      window[n] = function () {
+        var r = orig.apply(this, arguments);
+        try { record("panel"); } catch (e) {}
+        return r;
+      };
+    });
+    wrapped = true;
+    return true;
+  }
+  var wrapTries = 0;
+  var wrapTimer = setInterval(function () {
+    wrapTries++;
+    if (wrapSetters() || wrapTries > 240) clearInterval(wrapTimer);
+  }, 500);
+  /* diff watcher: catches sync adoptions and any other writer */
+  setInterval(function () { try { record("watch"); } catch (e) {} }, 1500);
+
+  /* ---------------- offline badge (measured only) ---------------- */
+  function storageOk() {
+    try { return !!localStorage && localStorage.getItem(SETTINGS_KEY) !== undefined; } catch (e) { return false; }
+  }
+  function offlineStatus() {
+    var coreLoaded = false;
+    try { coreLoaded = typeof window.__arcadeSettingsState === "function" && document.readyState !== "loading"; } catch (e) {}
+    var sw = { supported: false, registered: false };
+    try {
+      sw.supported = "serviceWorker" in navigator;
+      if (sw.supported && navigator.serviceWorker.getRegistration) {
+        /* registration state is async; the cached flag below is
+           filled by the promise and read on the next refresh */
+        if (typeof offlineStatus._swReg === "boolean") sw.registered = offlineStatus._swReg;
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          offlineStatus._swReg = !!reg;
+          if (offlineStatus._swReg !== sw.registered) refreshSettingsUI();
+        }).catch(function () {});
+      }
+    } catch (e) {}
+    var ok = !!(coreLoaded && storageOk());
+    return {
+      version: "bn309-1",
+      ok: ok,
+      coreLoaded: coreLoaded,
+      storageOk: storageOk(),
+      online: (typeof navigator.onLine === "boolean") ? navigator.onLine : true,
+      swSupported: sw.supported,
+      swRegistered: sw.registered
+    };
+  }
+  window.addEventListener("online", function () { refreshSettingsUI(); });
+  window.addEventListener("offline", function () { refreshSettingsUI(); });
+
+  /* ---------------- settings panel sections ---------------- */
+  function fmtDate(ts) {
+    try {
+      var d = new Date(ts);
+      return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+    } catch (e) { return ""; }
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
+  }
+  function injectSettings() {
+    var panel = document.getElementById("settingsPanel");
+    if (!panel) return false;
+    if (!document.getElementById("bn309OfflineSec")) {
+      var off = document.createElement("div");
+      off.className = "set-sec";
+      off.id = "bn309OfflineSec";
+      off.setAttribute("data-fold", "bn309-offline");
+      off.innerHTML = '<div class="set-sec-t"></div>' +
+        '<p class="set-note" id="bn309OffVerdict" style="margin-top:0;font-weight:700"></p>' +
+        '<p class="set-note" id="bn309OffDetail" style="margin-top:4px"></p>' +
+        '<p class="set-note" id="bn309OffMeta" style="margin-top:4px"></p>';
+      off.querySelector(".set-sec-t").textContent = T("offTitle");
+      panel.appendChild(off);
+    }
+    if (!document.getElementById("bn309HistorySec")) {
+      var sec = document.createElement("div");
+      sec.className = "set-sec";
+      sec.id = "bn309HistorySec";
+      sec.setAttribute("data-fold", "bn309-history");
+      sec.innerHTML = '<div class="set-sec-t"></div>' +
+        '<p class="set-note" style="margin-top:0"></p>' +
+        '<div id="bn309HistList" style="margin-top:8px"></div>' +
+        '<div class="set-row" style="margin-top:10px;gap:8px;flex-wrap:wrap">' +
+        '<button type="button" class="set-act" id="bn309HistClear"></button></div>' +
+        '<p class="set-note" id="bn309HistMsg" style="margin-top:6px"></p>';
+      sec.querySelector(".set-sec-t").textContent = T("histTitle");
+      sec.querySelector(".set-note").textContent = T("histNote");
+      sec.querySelector("#bn309HistClear").textContent = T("histClear");
+      sec.querySelector("#bn309HistClear").addEventListener("click", function () {
+        clear();
+        var msg = document.getElementById("bn309HistMsg");
+        if (msg) msg.textContent = T("histCleared");
+      });
+      panel.appendChild(sec);
+    }
+    refreshSettingsUI();
+    return true;
+  }
+  function refreshSettingsUI() {
+    var offVerdict = document.getElementById("bn309OffVerdict");
+    if (offVerdict) {
+      var st = offlineStatus();
+      offVerdict.textContent = st.ok ? T("offOk") : T("offNg");
+      var detail = document.getElementById("bn309OffDetail");
+      if (detail) detail.textContent = st.ok ? T("offDetailCore") : "";
+      var meta = document.getElementById("bn309OffMeta");
+      if (meta) meta.textContent = (st.online ? T("offNowOnline") : T("offNowOffline")) + " / " + (st.swRegistered ? T("offSwYes") : T("offSwNo"));
+    }
+    var listEl = document.getElementById("bn309HistList");
+    if (listEl) {
+      var entries = loadEntries().slice(0, SHOW_ENTRIES);
+      if (!entries.length) {
+        listEl.innerHTML = '<p class="set-note" style="margin:0">' + esc(T("histNone")) + "</p>";
+      } else {
+        listEl.innerHTML = entries.map(function (e) {
+          var src = e.source === "panel" ? T("srcPanel") : T("srcSync");
+          var lines = e.changes.map(function (c) {
+            return '<div style="font-size:12.5px;line-height:1.5;color:#dfe5f2">' + esc(fieldLabel(c.field)) + ": " + esc(c.from) + " → " + esc(c.to) + "</div>";
+          }).join("");
+          return '<div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.07)">' +
+            '<div style="font-size:11.5px;color:#9aa3b8">' + esc(fmtDate(e.ts)) + " ・ " + esc(src) + "</div>" + lines + "</div>";
+        }).join("");
+      }
+      var clearBtn = document.getElementById("bn309HistClear");
+      if (clearBtn) clearBtn.disabled = !loadEntries().length;
+    }
+  }
+  var injTries = 0;
+  var injTimer = setInterval(function () {
+    injTries++;
+    if (injectSettings() || injTries > 120) clearInterval(injTimer);
+  }, 500);
+  document.addEventListener("click", function (ev) {
+    if (ev && ev.target && ev.target.closest && ev.target.closest(".settings-gear-btn,.settings-mini")) setTimeout(injectSettings, 60);
+  }, true);
+
+  window.__settingsHistory = {
+    version: "bn309-1",
+    record: record,
+    list: list,
+    clear: clear,
+    status: status,
+    diff: diff,
+    HISTORY_KEY: HISTORY_KEY
+  };
+  window.__offlineBadge = {
+    version: "bn309-1",
+    status: offlineStatus
+  };
+})();
 </script>
+  <script>/* ================= Wave 1 foundation: accessibility sweep + gaps — BN-310 =================
+   Wave 1 (PROGRAMME-ideas-2026-11-21, foundation item "アクセシ
+   ビリティ一式"), small round 3 of the Wave 1 split plan
+   (STATUS-BN308, item #3). This module does NOT re-implement what
+   already exists — it inventories the standing assets, measures
+   the gaps on the live DOM, and fills only the gaps.
+
+   ALREADY PRESENT (inventoried, untouched):
+     - Comfort settings (module 64): text size 3 steps, flashing
+       off, colour-vision care, vibration, material themes; the
+       classes land on <html> (a11y-lg / a11y-xl / no-flash /
+       a11y-cbc) and module 66 carries the token bundles, the
+       colour-care "state is never colour alone" rules and the
+       44px tap-target floor for shared chrome.
+     - A global :focus-visible ring (seg-001: 3px #8b5cf6) —
+       measured live: the first Tab stop computes exactly that
+       outline, so keyboard focus IS visible on standard chrome.
+     - Module 22's FX layer captures prefers-reduced-motion at
+       load and collapses its bursts / floats / shakes to nothing;
+       ~32 per-title @media (prefers-reduced-motion) blocks in
+       seg-001 still the animations their authors registered.
+     - Tiles are <section aria-label> wrapping a real <button
+       class="play-btn">, glyphs are aria-hidden, most icon
+       buttons already carry aria-label, images all carry alt,
+       no positive tabindex anywhere (measured).
+
+   GAPS MEASURED on the live DOM (2026-11-23, headless audit):
+     1. Reduced motion is opt-in per author: with the media query
+        emulated, 31 elements were still running CSS animations
+        (snowfall .sf-p sfFall 11-24s, .glyph-p2b glyphFloat,
+        transitions on tiles). No cross-cutting rule existed.
+     2. #planetSearch input had `outline:none` with NO :focus
+        replacement; #notesView .bn-card:focus-visible removed
+        the outline for a border-colour change alone.
+     3. 14 of 23 <canvas> elements had neither role nor
+        aria-label; 87 view containers had no role at all; the
+        settings panel had no dialog semantics; only 1 aria-live
+        region existed in the whole app and nothing announced
+        view changes; 13+ inputs (settings sliders, turntable
+        seek/volume, versus code fields, goal fields) had no
+        accessible name (their visible <label> is a sibling, not
+        associated); <html lang> stayed "ja" whatever UI language
+        was selected.
+     4. Pointer-only game surfaces (planet stick, whack-a-mole
+        moles, mascot hotspots) use role="button" on <div>s with
+        no tabindex. They are intentionally NOT pulled into the
+        tab order: the planet has a full keyboard path (WASD /
+        arrows / F, BN-277), moles are transient game targets,
+        and the mascot's destination is reachable by button.
+        Recorded here as a deliberate exclusion, not an oversight.
+
+   FILLED HERE (additive only, every fix marked data-bn310):
+     - Cross-cutting reduced-motion CSS (media query + the
+       html.a11y-rm mirror class, kept in sync by matchMedia
+       listener so JS consumers can read one class).
+     - Focus replacements for the two outline:none gaps above.
+     - A sweep (initial + MutationObserver for lazy bundles)
+       that labels canvases (role="img" + the owning view's
+       name), gives view containers role="region" + name, the
+       settings panel role="dialog", and names unlabelled
+       inputs from their row's visible label / placeholder /
+       a small id map. Nothing already labelled is touched.
+     - A visually-hidden aria-live announcer: __openArcadeView
+       is wrapped (polled, like BN-309's setter wraps) and the
+       newly opened view's name is announced.
+     - <html lang> follows the UI language (arcadeLang()),
+       mapped to BCP-47 (zh -> zh-Hans, zht -> zh-Hant).
+   Public surface: window.__a11y = {version, reducedMotion,
+   announce, audit, sweep} (bn310-1). Strings ja/en only (the
+   10-language automation is BN-325, same precedent as BN-308). */
+(function () {
+  "use strict";
+  var VERSION = "bn310-1";
+  var fixed = { canvas: 0, view: 0, input: 0, button: 0, dialog: 0 };
+
+  /* ---------- 1. injected CSS: focus replacements + RM ---------- */
+  var CSS = [
+    "#planetSearch input:focus-visible{outline:3px solid #8b5cf6 !important;outline-offset:2px;}",
+    "#notesView .bn-card:focus-visible{outline:3px solid #ffd75e;outline-offset:2px;}",
+    "@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}}",
+    "html.a11y-rm *,html.a11y-rm *::before,html.a11y-rm *::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}",
+    ".bn310-sr{position:absolute !important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}"
+  ].join("\n");
+  try {
+    var st = document.createElement("style");
+    st.id = "bn310Style"; st.textContent = CSS;
+    (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
+
+  /* ---------- 2. reduced-motion state (live) ---------- */
+  var mq = null;
+  try { mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null; } catch (e) {}
+  function applyRM() {
+    try { document.documentElement.classList.toggle("a11y-rm", !!(mq && mq.matches)); } catch (e) {}
+  }
+  if (mq) {
+    applyRM();
+    if (typeof mq.addEventListener === "function") mq.addEventListener("change", applyRM);
+    else if (typeof mq.addListener === "function") mq.addListener(applyRM);
+  }
+
+  /* ---------- 3. live announcer + view-change hook ---------- */
+  var live = null, lastAnnounced = "";
+  function ensureLive() {
+    if (live && live.parentNode) return live;
+    if (!document.body) return null;
+    live = document.createElement("div");
+    live.id = "bn310Live"; live.className = "bn310-sr";
+    live.setAttribute("role", "status"); live.setAttribute("aria-live", "polite");
+    document.body.appendChild(live);
+    return live;
+  }
+  function announce(text) {
+    var t = String(text == null ? "" : text).trim();
+    if (!t || t === lastAnnounced) return;
+    var el = ensureLive(); if (!el) return;
+    lastAnnounced = t;
+    el.textContent = "";
+    setTimeout(function () { try { el.textContent = t; } catch (e) {} }, 40);
+  }
+  function viewName(view) {
+    if (!view) return "";
+    var g = view.querySelector ? view.querySelector(".gname") : null;
+    if (g && g.textContent.trim()) return g.textContent.trim();
+    if (view.id === "homeView") return "ロビー";
+    return "";
+  }
+  function announceOpenView() {
+    try {
+      var open = document.querySelectorAll("[id$='View'].open, .view.open");
+      for (var i = 0; i < open.length; i++) {
+        var n = viewName(open[i]);
+        if (n) { announce(n); return; }
+      }
+    } catch (e) {}
+  }
+  var hookTimer = setInterval(function () {
+    if (window.__openArcadeView && !window.__openArcadeView.__bn310) {
+      var orig = window.__openArcadeView;
+      var wrapped = function (key) {
+        var r = orig.apply(this, arguments);
+        setTimeout(announceOpenView, 60);
+        return r;
+      };
+      wrapped.__bn310 = true;
+      window.__openArcadeView = wrapped;
+      clearInterval(hookTimer);
+    }
+  }, 400);
+  setTimeout(function () { clearInterval(hookTimer); }, 30000);
+
+  /* ---------- 4. the sweep (additive, idempotent) ---------- */
+  var INPUT_ID_LABELS = {
+    ttSeek: "再生位置", ttVol: "音量",
+    mjmpCode: "対戦コード", planetSearchInput: "建物を検索"
+  };
+  var BUTTON_ID_LABELS = { w5InstallBtn: "アプリをインストール" };
+  function mark(el, kind) { try { el.setAttribute("data-bn310", kind); fixed[kind] = (fixed[kind] || 0) + 1; } catch (e) {} }
+  function fixCanvas(c) {
+    if (c.getAttribute("role") || c.getAttribute("aria-label")) return;
+    var v = null;
+    try { v = c.closest ? c.closest("[id$='View']") : null; } catch (e) {}
+    var n = v ? viewName(v) : "";
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", (n ? n + "の" : "") + "ゲーム画面");
+    mark(c, "canvas");
+  }
+  function fixView(v) {
+    if (v.getAttribute("role")) return;
+    var n = viewName(v);
+    v.setAttribute("role", "region");
+    if (n && !v.getAttribute("aria-label")) v.setAttribute("aria-label", n);
+    mark(v, "view");
+  }
+  function fixInput(inp) {
+    if (!inp || inp.type === "hidden") return;
+    if (inp.getAttribute("aria-label") || inp.getAttribute("aria-labelledby")) return;
+    try {
+      if (inp.id && document.querySelector('label[for="' + inp.id + '"]')) return;
+      if (inp.closest && inp.closest("label")) return;
+    } catch (e) {}
+    var label = "";
+    try {
+      var row = inp.closest ? inp.closest(".set-row, .set-row-stack, .tt-vol, .tt-progress, .lb-form, li, div") : null;
+      if (row) {
+        var lab = row.querySelector("label, .set-lab");
+        if (lab && lab.textContent.trim()) label = lab.textContent.trim();
+      }
+    } catch (e) {}
+    if (!label && INPUT_ID_LABELS[inp.id]) label = INPUT_ID_LABELS[inp.id];
+    if (!label && inp.className && String(inp.className).indexOf("bmp-code") >= 0) label = "対戦コード";
+    if (!label && inp.placeholder) label = inp.placeholder;
+    if (!label) return;
+    inp.setAttribute("aria-label", label.slice(0, 60));
+    mark(inp, "input");
+  }
+  function fixButton(b) {
+    if ((b.textContent || "").trim()) return;
+    if (b.getAttribute("aria-label") || b.getAttribute("aria-labelledby") || b.title) return;
+    if (BUTTON_ID_LABELS[b.id]) { b.setAttribute("aria-label", BUTTON_ID_LABELS[b.id]); mark(b, "button"); }
+  }
+  function fixSettings() {
+    var p = document.getElementById("settingsPanel");
+    if (p && !p.getAttribute("role")) {
+      p.setAttribute("role", "dialog");
+      if (!p.getAttribute("aria-label")) p.setAttribute("aria-label", "設定");
+      mark(p, "dialog");
+    }
+  }
+  function sweepNode(root) {
+    if (!root || !root.querySelectorAll) return;
+    try {
+      var i, list;
+      list = root.querySelectorAll("canvas"); for (i = 0; i < list.length; i++) fixCanvas(list[i]);
+      list = root.querySelectorAll("[id$='View'], .view[id]"); for (i = 0; i < list.length; i++) fixView(list[i]);
+      list = root.querySelectorAll("input, select, textarea"); for (i = 0; i < list.length; i++) fixInput(list[i]);
+      list = root.querySelectorAll("button"); for (i = 0; i < list.length; i++) fixButton(list[i]);
+      if (root === document) fixSettings();
+    } catch (e) {}
+  }
+  var sweepQueued = false;
+  function queueSweep() {
+    if (sweepQueued) return; sweepQueued = true;
+    setTimeout(function () { sweepQueued = false; sweepNode(document); ensureLive(); }, 350);
+  }
+  try {
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].addedNodes && muts[i].addedNodes.length) { queueSweep(); return; }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+  if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(queueSweep, 600);
+  else document.addEventListener("DOMContentLoaded", function () { setTimeout(queueSweep, 600); });
+  setTimeout(function () { sweepNode(document); ensureLive(); }, 3000);
+
+  /* ---------- 5. <html lang> follows the UI language ---------- */
+  var LANGMAP = { ja: "ja", en: "en", ko: "ko", zh: "zh-Hans", zht: "zh-Hant", es: "es", fr: "fr", de: "de", pt: "pt", it: "it" };
+  function syncLang() {
+    try {
+      var l = (typeof window.arcadeLang === "function" && window.arcadeLang()) || localStorage.getItem("arcade-lang") || "ja";
+      var m = LANGMAP[l] || l;
+      if (m && document.documentElement.lang !== m) document.documentElement.lang = m;
+    } catch (e) {}
+  }
+  syncLang();
+  setInterval(syncLang, 1500);
+  /* module 31's setLang dispatches this after updating its state —
+     sync immediately instead of waiting for the poll. */
+  try { document.addEventListener("arcade:langchange", function () { setTimeout(syncLang, 30); }); } catch (e) {}
+
+  /* ---------- public surface ---------- */
+  window.__a11y = {
+    version: VERSION,
+    reducedMotion: function () { return !!(mq && mq.matches); },
+    announce: announce,
+    sweep: function () { sweepNode(document); },
+    audit: function () {
+      return {
+        version: VERSION,
+        reducedMotion: !!(mq && mq.matches),
+        rmClass: document.documentElement.classList.contains("a11y-rm"),
+        lang: document.documentElement.lang,
+        liveRegion: !!document.getElementById("bn310Live"),
+        viewHooked: !!(window.__openArcadeView && window.__openArcadeView.__bn310),
+        fixed: { canvas: fixed.canvas || 0, view: fixed.view || 0, input: fixed.input || 0, button: fixed.button || 0, dialog: fixed.dialog || 0 }
+      };
+    }
+  };
+})();
+</script>
+  <script>/* ================= Wave 1: today's bout + explicit practice entrance — BN-311 =================
+   Wave 1 (PROGRAMME-ideas-2026-11-21, all-titles items "今日の1局
+   （日替わりシード）" and "練習モード明示入口"), small round 4 of
+   the Wave 1 split plan (STATUS-BN308, item #4).
+
+   INVENTORY (existing daily / practice assets — NOT re-implemented):
+     - Module 19's daily pick: a badge on one tile, chosen by raw
+       day-of-year. It carries no condition and no dedicated entry,
+       and it reads the device clock directly.
+     - Module 76's daily trio: three titles from three genres with
+       a +30 clear bonus; module 93's daily missions: three seeded
+       missions at +10 each. Both are multi-title chores with their
+       own payouts — this round adds no second payout on top.
+     - Per-title "practice" today is fragmented: billiards has a
+       coach mode, several board titles have an education mode
+       (which is the BN-294 assist path), rubik has casual runs.
+       There was no single, clearly-labelled practice entrance,
+       and nothing on the game screen itself said "this is
+       practice" for the titles without such a mode.
+
+   TODAY'S BOUT (今日の1局). One title per day, picked from the
+   playable bout pool (39 titles: board / action / puzzle / learn
+   tiles — gambling, retro, the library, the hairline gallery and
+   the turntable are not single bouts and are excluded) by a
+   date-seeded draw over the EFFECTIVE date (window.__arcadeClock
+   .todayStr(), the BN-301 contract — never a raw Date for the day
+   key). The same seed also picks the bout's difficulty (easy /
+   normal / hard). Yesterday's title cannot repeat. The lobby card
+   (mounted directly above the tile grid, the module-76 trio
+   precedent) enters the bout in one tap: for the 29 titles with a
+   known difficulty store it writes the seeded difficulty to that
+   title's own localStorage key BEFORE opening and then clicks the
+   title's own difficulty button after opening, so the game's own
+   apply path runs; for the remaining titles the condition is the
+   normal rules and the in-game banner says exactly that — no
+   setting is faked. A banner inside the opened view names the
+   bout and its condition. Clearing = a scoring play (a positive
+   earn in that title, the trio signal) or a 20-second session in
+   it. The bout itself pays NO coins: it is an entrance, not a
+   second daily payout stacked on the trio / missions.
+
+   PRACTICE (練習モード). The same card carries an explicit
+   practice entrance: pick any pool title, tap 練習で入る. The
+   game screen shows a persistent practice banner ("練習中 —
+   コインは動きません") with an end button, so practice is
+   visible at the entrance AND on the screen. While practice is
+   active for the open title, this module's chain-preserving
+   wrappers around ARCADE_points.earn / earnScore / earnPlace
+   return 0 WITHOUT calling the original — the same "education
+   plays pay nothing" semantics module 93 already documents — so
+   the balance never moves, missions / trio never advance, and the
+   BN-294 daily assist slot is never consumed (assistTryConsume is
+   wrapped the same way and refuses while practising). Practice
+   covers reward-only titles only; gambling titles are excluded
+   because their spend path is real money-in-play, not a reward,
+   and faking a free bet would break the published-odds contract.
+   Practice ends from the banner button, or automatically when a
+   different view (or the lobby) is open. State: the bout record
+   in "arcade-bn311-v1"; the live practice flag is session-only
+   (sessionStorage mirror) so a reload never leaves an invisible
+   suppression behind. Public surface: window.__bn311 (bn311-1).
+   Strings ja/en only (10-language automation is BN-325, the
+   BN-308 precedent). No emoji. */
+(function () {
+  "use strict";
+  var VERSION = "bn311-1";
+  var STORE_KEY = "arcade-bn311-v1";
+  var PRACTICE_SS_KEY = "arcade-bn311-practice";
+
+  /* Titles whose difficulty persists in a known localStorage key
+     (the __mountDiffBar keys and the per-title DIFF_KEYs). */
+  var DIFF_KEYS = {
+    snake: "arcade-snake-diff-v1", breakout: "arcade-breakout-diff-v1",
+    mines: "arcade-mines-diff-v1", g2048: "arcade-g2048-diff-v1",
+    reversi: "arcade-reversi-diff-v1", connect4: "arcade-connect4-diff-v1",
+    memory: "arcade-memory-diff-v1", mole: "arcade-mole-diff-v1",
+    simon: "arcade-simon-diff-v1", flappy: "arcade-flappy-diff-v1",
+    shooter: "arcade-shooter-diff-v1", gomoku: "arcade-gomoku-diff-v1",
+    fishing: "arcade-fishing-diff-v1", checkers: "arcade-checkers-diff-v1",
+    shogi: "arcade-shogi-diff-v1", sudoku: "arcade-sudoku-diff-v1",
+    cubefall: "arcade-cubefall-diff-v1", pcbfarm: "arcade-pcbfarm-diff-v1",
+    kartgp: "arcade-kartgp-diff-v1", chaosboard: "arcade-chaos-diff-v1",
+    hitokaki: "arcade-hitokaki-diff-v1", arrowpuzzle: "arcade-arrowpuzzle-diff-v1",
+    tictactoe: "arcade-tictactoe-diff-v1", smashdown: "arcade-smashdown-diff-v1",
+    tunnelrush: "arcade-tunnelrush-diff-v1", rusharmy: "arcade-rusharmy-diff-v1",
+    holes: "arcade-holes-diff-v1", patapin: "arcade-patapin-diff-v1",
+    qrmaze: "arcade-qrmaze-diff"
+  };
+  var EXCLUDE_KEYS = { retro: 1, library: 1, hairline: 1, turntable: 1 };
+  var DIFFS = ["easy", "normal", "hard"];
+
+  function lang() {
+    var l = "ja";
+    try { l = (window.arcadeLang && window.arcadeLang()) || localStorage.getItem("arcade-lang") || "ja"; } catch (e) {}
+    return l === "en" ? "en" : "ja";
+  }
+  var UI = {
+    cardTitle: { ja: "今日の1局", en: "Today's Bout" },
+    cardNote: { ja: "日付のシードで決まる、今日の対局です。難易度まで含めて入口からそのまま入れます。この1局自体にコイン報酬はありません（3本勝負とミッションの報酬は従来どおり別です）。", en: "One bout picked by the date seed, difficulty included — enter it as-is from here. The bout itself pays no coins (the trio and mission rewards stay as they were)." },
+    diffLabel: { ja: "難易度", en: "Difficulty" },
+    diffEasy: { ja: "やさしい", en: "Easy" },
+    diffNormal: { ja: "ふつう", en: "Normal" },
+    diffHard: { ja: "むずかしい", en: "Hard" },
+    normalRules: { ja: "通常ルール", en: "Normal rules" },
+    play: { ja: "この1局を遊ぶ", en: "Play this bout" },
+    playAgain: { ja: "もう一度遊ぶ", en: "Play again" },
+    cleared: { ja: "今日の1局はクリア済みです", en: "Today's bout is cleared" },
+    notYet: { ja: "まだクリアしていません（得点になるプレイか、20秒以上のプレイでクリア）", en: "Not cleared yet (clear it with a scoring play or a 20+ second session)" },
+    practiceTitle: { ja: "練習モード", en: "Practice mode" },
+    practiceNote: { ja: "練習ではコインは動きません。ミッションや3本勝負も進まず、本日のアシスト枠（1日1回）も消費しません。賭けのあるタイトルは練習の対象外です。", en: "In practice, coins never move. Missions and the trio do not advance, and today's assist slot (once a day) is not consumed. Titles with betting are not offered for practice." },
+    practicePick: { ja: "練習するタイトル", en: "Title to practise" },
+    practiceStart: { ja: "練習で入る", en: "Enter in practice" },
+    practiceBanner: { ja: "練習中", en: "Practising" },
+    practiceBannerNote: { ja: "コインは動きません", en: "coins do not move" },
+    practiceEnd: { ja: "練習を終える", en: "End practice" },
+    boutBanner: { ja: "今日の1局", en: "Today's Bout" },
+    close: { ja: "閉じる", en: "Close" }
+  };
+  function T(k) { var m = UI[k]; return m ? (m[lang()] || m.ja) : k; }
+  function diffName(d) { return d === "easy" ? T("diffEasy") : d === "hard" ? T("diffHard") : T("diffNormal"); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  /* ---------------- dates / seeds ---------------- */
+  function todayStr() {
+    try { if (window.__arcadeClock && window.__arcadeClock.todayStr) return window.__arcadeClock.todayStr(); } catch (e) {}
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function seededRand(seedStr) {
+    var h = 2166136261;
+    for (var i = 0; i < seedStr.length; i++) { h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+    var a = h >>> 0 || 1;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* ---------------- catalogue (from the live tiles) ---------------- */
+  var catalog = null;
+  function buildCatalog() {
+    var out = [];
+    var spans = document.querySelectorAll("[data-count-for]");
+    for (var i = 0; i < spans.length; i++) {
+      var key = spans[i].getAttribute("data-count-for");
+      if (!key || EXCLUDE_KEYS[key]) continue;
+      var tile = spans[i].closest ? spans[i].closest(".game-tile") : null;
+      if (!tile) continue;
+      var grp = tile.closest ? tile.closest(".genre-group") : null;
+      var genre = grp ? (grp.getAttribute("data-genre") || "") : "";
+      if (genre === "gambling" || genre === "retro" || genre === "expansion") continue;
+      var h = tile.querySelector("h2");
+      out.push({ key: key, name: h ? h.textContent.trim() : key, genre: genre });
+    }
+    return out;
+  }
+  function catalogReady() {
+    if (catalog && catalog.length) return catalog;
+    var c = buildCatalog();
+    if (c.length) catalog = c;
+    return catalog || [];
+  }
+  function catEntry(key) {
+    var c = catalogReady();
+    for (var i = 0; i < c.length; i++) if (c[i].key === key) return c[i];
+    return null;
+  }
+
+  /* ---------------- bout store ---------------- */
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) { var p = JSON.parse(raw); if (p && typeof p === "object") return p; }
+    } catch (e) {}
+    return {};
+  }
+  function saveStore(s) { try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) {} }
+  function genBout() {
+    var ds = todayStr();
+    var s = loadStore();
+    if (s.date === ds && s.key && catEntry(s.key)) return s;
+    var pool = catalogReady();
+    if (!pool.length) return s;
+    var rnd = seededRand("bn311:" + ds);
+    var idx = Math.floor(rnd() * pool.length);
+    if (pool.length > 1 && s.key === pool[idx].key) idx = (idx + 1) % pool.length;
+    var diff = DIFFS[Math.floor(rnd() * 3)];
+    s = { date: ds, key: pool[idx].key, diff: diff, cleared: false, clearedVia: "", practicePlays: (s.practicePlays | 0) || 0 };
+    saveStore(s);
+    return s;
+  }
+
+  /* ---------------- view helpers ---------------- */
+  function openViewEl() { return document.querySelector('[id$="View"].open'); }
+  function currentGameKey() {
+    var el = openViewEl();
+    return el ? el.id.replace(/View$/, "") : "";
+  }
+  function viewElFor(key) { return document.getElementById(key + "View"); }
+  function openTileKey(key) {
+    var sp = document.querySelector('[data-count-for="' + key + '"]');
+    var tile = sp && sp.closest ? sp.closest(".game-tile") : null;
+    var b = tile ? tile.querySelector(".play-btn") : null;
+    if (b) { b.click(); return true; }
+    if (window.__openArcadeView) { window.__openArcadeView(key); return true; }
+    return false;
+  }
+
+  /* ---------------- in-game banners ---------------- */
+  var CSS = [
+    ".bn311-card{margin:0 0 12px;background:linear-gradient(135deg,#2a1a52,#14263f);border:1px solid #5b3ea8;border-radius:15px;padding:12px 14px;color:#e8ecf6;box-shadow:0 14px 34px rgba(0,0,0,.45)}",
+    ".bn311-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}",
+    ".bn311-title{font-size:16.5px;font-weight:800}",
+    ".bn311-date{color:#b9a8f5;font-size:12.5px}",
+    ".bn311-state{margin-left:auto;font-size:12.5px;font-weight:700;color:#ffd97a}",
+    ".bn311-state.done{color:#6fe3a1}",
+    ".bn311-note{color:#aebadd;font-size:12.5px;line-height:1.55;margin:7px 0 9px}",
+    ".bn311-bout{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 0;border-top:1px dashed rgba(150,140,220,.25)}",
+    ".bn311-chip{flex:none;font-size:11px;font-weight:700;color:#0d1322;background:#b9a8f5;border-radius:999px;padding:2.5px 9px}",
+    ".bn311-chip.diff{background:#ffd97a}",
+    ".bn311-name{flex:1;min-width:120px;font-weight:800;font-size:15.5px}",
+    ".bn311-go{flex:none;min-height:44px;background:#7a5cff;border:1px solid #9a82ff;color:#fff;border-radius:11px;padding:7px 15px;font-size:13.5px;font-weight:700;cursor:pointer}",
+    ".bn311-go.again{background:#1b2745;border-color:#33477a;color:#aebadd}",
+    ".bn311-practice{border-top:1px dashed rgba(150,140,220,.25);padding-top:9px;margin-top:2px}",
+    ".bn311-practice-t{font-weight:800;font-size:14.5px}",
+    ".bn311-prow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}",
+    ".bn311-select{flex:1;min-width:160px;min-height:44px;background:#1b2745;color:#e8ecf6;border:1px solid #33477a;border-radius:11px;padding:7px 10px;font-size:13.5px}",
+    ".bn311-banner{position:sticky;top:8px;z-index:80;display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:8px;padding:9px 12px;border-radius:12px;background:#241d0d;border:1px solid #8a6d2f;color:#ffe9b0;box-shadow:0 8px 22px rgba(0,0,0,.45);font-size:13.5px}",
+    ".bn311-banner.bout{background:#1d1440;border-color:#5b3ea8;color:#e6defc}",
+    ".bn311-banner b{font-weight:800}",
+    ".bn311-banner .bn311-end{margin-left:auto;min-height:36px;background:#7a5cff;border:1px solid #9a82ff;color:#fff;border-radius:9px;padding:5px 12px;font-size:12.5px;font-weight:700;cursor:pointer}",
+    ".bn311-banner .bn311-x{min-height:36px;background:transparent;border:1px solid rgba(255,255,255,.35);color:inherit;border-radius:9px;padding:5px 10px;font-size:12.5px;cursor:pointer}"
+  ].join("\n");
+  try {
+    var st = document.createElement("style");
+    st.id = "bn311Style"; st.textContent = CSS;
+    (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
+
+  function removeBanner(key) {
+    var el = document.getElementById("bn311Banner-" + key);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+  function showBanner(key, kind) {
+    var view = viewElFor(key);
+    if (!view) return false;
+    removeBanner(key);
+    var entry = catEntry(key);
+    var bar = document.createElement("div");
+    bar.className = "bn311-banner" + (kind === "bout" ? " bout" : "");
+    bar.id = "bn311Banner-" + key;
+    bar.setAttribute("data-bn311-banner", kind);
+    if (kind === "practice") {
+      bar.innerHTML = "<b>" + esc(T("practiceBanner")) + ": " + esc(entry ? entry.name : key) + "</b><span>" + esc(T("practiceBannerNote")) + "</span>";
+      var end = document.createElement("button");
+      end.type = "button"; end.className = "bn311-end"; end.textContent = T("practiceEnd");
+      end.addEventListener("click", function () { endPractice(); goBackFrom(key); });
+      bar.appendChild(end);
+    } else {
+      var bout = genBout();
+      var cond = DIFF_KEYS[key] ? T("diffLabel") + ": " + diffName(bout.diff) : T("normalRules");
+      bar.innerHTML = "<b>" + esc(T("boutBanner")) + ": " + esc(entry ? entry.name : key) + "</b><span>" + esc(cond) + "</span>";
+      var x = document.createElement("button");
+      x.type = "button"; x.className = "bn311-x"; x.textContent = T("close");
+      x.addEventListener("click", function () { removeBanner(key); });
+      bar.appendChild(x);
+    }
+    view.insertBefore(bar, view.firstChild);
+    return true;
+  }
+  function goBackFrom(key) {
+    var view = viewElFor(key);
+    var back = view ? view.querySelector(".back-btn") : null;
+    if (back) { back.click(); return; }
+    if (window.__openArcadeView) window.__openArcadeView("home");
+  }
+
+  /* ---------------- practice state (session-only) ---------------- */
+  var practice = null;
+  try {
+    var ss = sessionStorage.getItem(PRACTICE_SS_KEY);
+    if (ss) { var pp = JSON.parse(ss); if (pp && pp.key) practice = pp; }
+  } catch (e) {}
+  function practiceActiveFor(key) { return !!(practice && practice.key === key); }
+  function setPractice(p) {
+    practice = p;
+    try {
+      if (p) sessionStorage.setItem(PRACTICE_SS_KEY, JSON.stringify(p));
+      else sessionStorage.removeItem(PRACTICE_SS_KEY);
+    } catch (e) {}
+    cardSig = "";
+  }
+  function endPractice() {
+    if (practice) removeBanner(practice.key);
+    setPractice(null);
+  }
+
+  /* ---------------- entering a bout / practice ---------------- */
+  function applyDifficulty(key, diff, tries) {
+    var dk = DIFF_KEYS[key];
+    if (dk) { try { localStorage.setItem(dk, diff); } catch (e) {} }
+    if (!dk) return;
+    var view = viewElFor(key);
+    if (!view) { if ((tries || 0) < 8) setTimeout(function () { applyDifficulty(key, diff, (tries || 0) + 1); }, 300); return; }
+    var btn = null;
+    var btns = view.querySelectorAll("[data-diff]");
+    for (var i = 0; i < btns.length; i++) if (btns[i].getAttribute("data-diff") === diff) { btn = btns[i]; break; }
+    if (btn && !btn.classList.contains("on")) btn.click();
+    else if (!btn && (tries || 0) < 8) setTimeout(function () { applyDifficulty(key, diff, (tries || 0) + 1); }, 300);
+  }
+  function startDaily() {
+    var bout = genBout();
+    if (practice) endPractice();
+    applyDifficulty(bout.key, bout.diff, 0);
+    openTileKey(bout.key);
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (showBanner(bout.key, "bout") || tries > 10) clearInterval(iv);
+    }, 300);
+    return bout;
+  }
+  function startPractice(key) {
+    if (!catEntry(key)) return null;
+    if (practice) endPractice();
+    var s = loadStore();
+    s.practicePlays = (s.practicePlays | 0) + 1;
+    saveStore(s);
+    setPractice({ key: key, since: Date.now() });
+    openTileKey(key);
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (showBanner(key, "practice") || tries > 10) clearInterval(iv);
+    }, 300);
+    return practice;
+  }
+
+  /* ---------------- economy hooks (chain-preserving) ---------------- */
+  var hooksDone = false;
+  function installHooks() {
+    var P = window.ARCADE_points;
+    if (!P || hooksDone || typeof P.earn !== "function") return;
+    hooksDone = true;
+    var origEarn = P.earn, origScore = P.earnScore, origPlace = P.earnPlace, origAssist = P.assistTryConsume;
+    P.earn = function (id, opts) {
+      if (practice && currentGameKey() === practice.key) return 0;
+      var ret = origEarn.apply(P, arguments);
+      try { if (ret > 0) noteScored(currentGameKey()); } catch (e) {}
+      return ret;
+    };
+    if (typeof origScore === "function") {
+      P.earnScore = function (id, score, diff) {
+        if (practice && currentGameKey() === practice.key) return 0;
+        var ret = origScore.apply(P, arguments);
+        try { if (ret > 0) noteScored(currentGameKey()); } catch (e) {}
+        return ret;
+      };
+    }
+    if (typeof origPlace === "function") {
+      P.earnPlace = function (id, place, opts) {
+        if (practice && currentGameKey() === practice.key) return 0;
+        var ret = origPlace.apply(P, arguments);
+        try { if (ret > 0) noteScored(currentGameKey()); } catch (e) {}
+        return ret;
+      };
+    }
+    if (typeof origAssist === "function") {
+      P.assistTryConsume = function (key) {
+        if (practice && currentGameKey() === practice.key) return false;
+        return origAssist.apply(P, arguments);
+      };
+    }
+  }
+  function noteScored(key) {
+    var s = loadStore();
+    if (s.date !== todayStr() || s.key !== key || s.cleared) return;
+    s.cleared = true; s.clearedVia = "earn";
+    saveStore(s);
+    cardSig = "";
+    renderCard();
+    try { if (window.__a11y) window.__a11y.announce(T("cleared")); } catch (e) {}
+  }
+  /* session path: 20+ seconds in today's title also clears it */
+  var sessKey = "", sessSince = 0;
+  function sessionWatch() {
+    var k = currentGameKey();
+    var now = Date.now();
+    if (k !== sessKey) { sessKey = k; sessSince = now; return; }
+    if (!k || practice) return;
+    var s = loadStore();
+    if (s.date === todayStr() && s.key === k && !s.cleared && now - sessSince >= 20000) {
+      s.cleared = true; s.clearedVia = "session";
+      saveStore(s);
+      cardSig = "";
+      renderCard();
+    }
+  }
+
+  /* ---------------- lobby card ---------------- */
+  var card = null, cardSig = "", practiceSel = "";
+  function cardSignature() {
+    var s = genBout();
+    return [s.date, s.key, s.diff, s.cleared ? 1 : 0, practice ? practice.key : "", lang()].join("|");
+  }
+  function renderCard() {
+    if (!card) return;
+    var pool = catalogReady();
+    if (!pool.length) return;
+    var sig = cardSignature();
+    if (sig === cardSig) return;
+    cardSig = sig;
+    var bout = genBout();
+    var entry = catEntry(bout.key) || { name: bout.key, genre: "" };
+    var d = new Date();
+    var cond = DIFF_KEYS[bout.key] ? T("diffLabel") + ": " + diffName(bout.diff) : T("normalRules");
+    var html = '<div class="bn311-head"><span class="bn311-title">' + esc(T("cardTitle")) + '</span>' +
+      '<span class="bn311-date">' + (d.getMonth() + 1) + "/" + d.getDate() + '</span>' +
+      '<span class="bn311-state' + (bout.cleared ? " done" : "") + '">' + esc(bout.cleared ? T("cleared") : T("notYet")) + "</span></div>" +
+      '<p class="bn311-note">' + esc(T("cardNote")) + "</p>" +
+      '<div class="bn311-bout"><span class="bn311-chip diff">' + esc(cond) + '</span>' +
+      '<span class="bn311-name">' + esc(entry.name) + "</span>" +
+      '<button type="button" class="bn311-go' + (bout.cleared ? " again" : "") + '" data-bn311-play="1">' + esc(bout.cleared ? T("playAgain") : T("play")) + "</button></div>" +
+      '<div class="bn311-practice"><span class="bn311-practice-t">' + esc(T("practiceTitle")) + "</span>" +
+      '<p class="bn311-note">' + esc(T("practiceNote")) + "</p>" +
+      '<div class="bn311-prow"><select class="bn311-select" id="bn311PracticeSel" aria-label="' + esc(T("practicePick")) + '">';
+    pool.forEach(function (e) {
+      html += '<option value="' + esc(e.key) + '"' + (practiceSel === e.key ? " selected" : "") + ">" + esc(e.name) + "</option>";
+    });
+    html += '</select><button type="button" class="bn311-go" data-bn311-practice="1">' + esc(T("practiceStart")) + "</button></div></div>";
+    card.innerHTML = html;
+    var sel = document.getElementById("bn311PracticeSel");
+    if (sel) sel.addEventListener("change", function () { practiceSel = sel.value; });
+    var playBtn = card.querySelector("[data-bn311-play]");
+    if (playBtn) playBtn.addEventListener("click", function () { startDaily(); });
+    var prBtn = card.querySelector("[data-bn311-practice]");
+    if (prBtn) prBtn.addEventListener("click", function () {
+      var s2 = document.getElementById("bn311PracticeSel");
+      startPractice(s2 ? s2.value : (pool[0] && pool[0].key));
+    });
+  }
+  function mountCard() {
+    if (card) return true;
+    var grid = document.getElementById("tileGrid");
+    if (!grid || !grid.parentElement) return false;
+    if (!catalogReady().length) return false;
+    card = document.createElement("div");
+    card.className = "bn311-card";
+    card.id = "bn311Card";
+    grid.parentElement.insertBefore(card, grid);
+    cardSig = "";
+    renderCard();
+    return true;
+  }
+
+  /* ---------------- lifecycle watch ---------------- */
+  function watch() {
+    if (!hooksDone) installHooks();
+    if (!card) mountCard();
+    sessionWatch();
+    var open = currentGameKey();
+    if (practice && open !== practice.key) endPractice();
+    if (card) renderCard();
+  }
+
+  window.__bn311 = {
+    version: VERSION,
+    today: function () { var s = genBout(); var e = catEntry(s.key); return { date: s.date, key: s.key, name: e ? e.name : s.key, diff: s.diff, diffKey: DIFF_KEYS[s.key] || null, cleared: !!s.cleared, clearedVia: s.clearedVia || "" }; },
+    startDaily: startDaily,
+    startPractice: startPractice,
+    endPractice: endPractice,
+    practice: function () { return practice ? { key: practice.key, since: practice.since } : null; },
+    pool: function () { return catalogReady().map(function (e) { return e.key; }); },
+    audit: function () {
+      var s = genBout();
+      return {
+        version: VERSION, date: s.date, key: s.key, diff: s.diff,
+        diffKey: DIFF_KEYS[s.key] || null, cleared: !!s.cleared,
+        poolSize: catalogReady().length,
+        practiceActive: !!practice, practiceKey: practice ? practice.key : "",
+        hooksInstalled: hooksDone,
+        cardMounted: !!card
+      };
+    }
+  };
+
+  function boot() {
+    catalogReady();
+    genBout();
+    installHooks();
+    mountCard();
+    setInterval(watch, 700);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+  setInterval(function () { if (!catalog) { catalogReady(); genBout(); mountCard(); } }, 1200);
+})();
+</script>
+  <script>/* ================= Wave 1: result-screen finishing — BN-312 =================
+   Wave 1 (PROGRAMME-ideas-2026-11-21, all-titles items "結果画面
+   統一（もう一回1タップ）" and "結果画面に「あと少し」"), small
+   round 5 of the Wave 1 split plan (STATUS-BN308, item #5).
+   Built ON TOP of the BN-295/297 result surfaces — the adaptive
+   scrim (__arcadeResultScrim, module 66) stays the single source
+   for the surfaces and their cards; this module adds only what
+   the inventory found missing, and never duplicates what a
+   title already has.
+
+   INVENTORY (measured from the sources, BN-312):
+     - "もう一回" 1-tap: PRESENT on the w1 family (the shared
+       overlay's primary button becomes もう一度 at the end),
+       CUBEFALL (#cf-btn-restart inside the panel), the chaos
+       board (#chaosAgainBtn), pool versus (#poolVsAgain
+       もう一局) and tic-tac-toe (its rematch button). The
+       standalone wave titles (81-88, 99) each carry their own
+       again button inside their end overlay.
+       MISSING on exactly one BN-297 surface: the AI-vs-AI
+       spectate result (.spec-result .box) had NO button at
+       all — the only way back into a match was the start
+       button outside the result box.
+     - "あと少し" on the result itself: MISSING everywhere.
+       Module 94's nearest-goal card shows the closest goals in
+       the LOBBY, read from the real systems; no result card
+       said how close THIS run came to anything.
+
+   WHAT THIS MODULE DOES (common finishing, injected into the
+   BN-297 cards only):
+     1. Replay guarantee: every registered result card ends up
+        with exactly one prominent replay control reachable in
+        ONE tap from the result. A title's own replay button is
+        kept as-is (tagged data-bn312-replay="existing" and
+        given the shared minimum size); only the spectate box
+        gains an injected button (data-bn312-replay="injected")
+        that clicks the view's own start button (#specStart —
+        the title's own start path, nothing is re-implemented).
+        If no honest trigger exists, no dead button is added.
+     2. "あと少し" line (data-bn312-near): computed ONLY from
+        truthful sources, in this order —
+        (a) the score and best printed on the result card
+            itself (the title's own numbers), or the score on
+            the card plus a documented best store (flappy /
+            cubefall): "ベストまで あと N", or "ベストに到達"
+            when the run matched the best;
+        (b) module 94's nearest goal (__bn210.nearest(): next
+            rank / unlock / achievement, read live from their
+            own systems — the same true remainders);
+        (c) a generic, number-free next goal ("次の目標:
+            自己ベスト更新") — never an invented number.
+        Lower-is-better records (times) are NOT guessed from
+        card text; they fall through to (b)/(c).
+     3. The line and any injected button live INSIDE the card,
+        under the BN-297 layer order (board < win line < card),
+        so the translucent-result rule is untouched. Re-renders
+        of a card (its text changing) re-run the finishing via
+        a text signature, so stale lines never survive.
+   Public surface: window.__bn312 (bn312-1) with audit() /
+   scan() / surfaces. Strings ja/en only (10-language
+   automation is BN-325, the BN-308 precedent). No emoji. */
+(function () {
+  "use strict";
+  var VERSION = "bn312-1";
+
+  function lang() {
+    var l = "ja";
+    try { l = (window.arcadeLang && window.arcadeLang()) || localStorage.getItem("arcade-lang") || "ja"; } catch (e) {}
+    return l === "en" ? "en" : "ja";
+  }
+  var UI = {
+    again: { ja: "もう一回", en: "Play again" },
+    nearBest: { ja: "ベストまで あと {n}", en: "{n} to your best" },
+    nearBestReached: { ja: "ベストに到達しました（更新またはタイ）", en: "You reached your best (new record or tie)" },
+    nearGoal: { ja: "あと少し: {label} — {left}", en: "Almost there: {label} — {left}" },
+    nearGeneric: { ja: "次の目標: 自己ベスト更新", en: "Next goal: beat your best" }
+  };
+  function T(k, vars) {
+    var m = UI[k]; var s = m ? (m[lang()] || m.ja) : k;
+    if (vars) Object.keys(vars).forEach(function (key) { s = s.split("{" + key + "}").join(String(vars[key])); });
+    return s;
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  var CSS = [
+    ".bn312-near{font-size:13px;font-weight:700;line-height:1.5;text-align:center;opacity:.92}",
+    ".bn312-replay{min-height:44px;padding:9px 22px;border-radius:999px;font-size:14.5px;font-weight:800;cursor:pointer;touch-action:manipulation}",
+    "button.bn312-injected{background:#7a5cff;border:1px solid #9a82ff;color:#fff}",
+    ".bn312-near:empty{display:none}"
+  ].join("\n");
+  try {
+    var st = document.createElement("style");
+    st.id = "bn312Style"; st.textContent = CSS;
+    (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
+
+  /* ---------------- replay detection ---------------- */
+  var REPLAY_TEXT = /もう一度|もう一回|もう一局|再戦|再挑戦|リトライ|Play again|PLAY AGAIN|Retry|RETRY/;
+  var REPLAY_ID = /again|rematch/i;
+  function findReplay(card) {
+    if (!card) return null;
+    var btns = card.querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      if (b.classList.contains("bn312-injected")) continue;
+      if (REPLAY_TEXT.test(b.textContent || "") || REPLAY_ID.test(b.id || "") || REPLAY_ID.test(b.className || "")) return b;
+    }
+    return null;
+  }
+  function findTrigger(root, name) {
+    if (name === "spec") {
+      var go = document.getElementById("specStart");
+      return go || null;
+    }
+    return null;
+  }
+
+  /* ---------------- "あと少し" computation ---------------- */
+  function numAfter(text, re) {
+    var m = re.exec(text || "");
+    if (!m) return null;
+    var v = parseInt(String(m[1]).replace(/,/g, ""), 10);
+    return isNaN(v) ? null : v;
+  }
+  var BEST_STORES = {
+    flappy: "arcade-flappy-best",
+    cubefall: "cubefall3d-highscore"
+  };
+  function viewKeyOf(root) {
+    var v = root.closest ? root.closest('[id$="View"]') : null;
+    return v ? v.id.replace(/View$/, "") : "";
+  }
+  function nearFor(root, card) {
+    var text = card ? (card.textContent || "") : "";
+    var score = numAfter(text, /(?:スコア|score)\s*[:：]?\s*([\d,]+)/i);
+    var best = numAfter(text, /(?:ベスト|ハイスコア|ベストスコア|best|high\s*score)\s*[:：]?\s*([\d,]+)/i);
+    if (best == null && score != null) {
+      var key = BEST_STORES[viewKeyOf(root)];
+      if (key) { try { var bv = parseInt(localStorage.getItem(key) || "", 10); if (!isNaN(bv)) best = bv; } catch (e) {} }
+    }
+    if (score != null && best != null && best > 0) {
+      if (best > score) return { kind: "best", text: T("nearBest", { n: best - score }), score: score, best: best };
+      return { kind: "bestReached", text: T("nearBestReached"), score: score, best: best };
+    }
+    try {
+      if (window.__bn210 && typeof window.__bn210.nearest === "function") {
+        var rows = window.__bn210.nearest();
+        if (rows && rows.length) return { kind: "goal", text: T("nearGoal", { label: rows[0].label, left: rows[0].leftText }) };
+      }
+    } catch (e) {}
+    return { kind: "generic", text: T("nearGeneric") };
+  }
+
+  /* ---------------- surfaces (the BN-297 registry) ---------------- */
+  function visible(el) { return !!(el && el.getClientRects().length); }
+  var SURFACES = [
+    { name: "w1",
+      find: function () { return Array.prototype.slice.call(document.querySelectorAll(".w1-overlay.bn295-end")); },
+      on: function (root) { return !root.classList.contains("off"); },
+      card: function (root) { return root.querySelector(".w1-ov-card"); } },
+    { name: "cubefall",
+      find: function () { var e = document.getElementById("cf-ov-over"); return e ? [e] : []; },
+      on: function (root) { return !root.classList.contains("hidden"); },
+      card: function (root) { return root.querySelector(".panel"); } },
+    { name: "chaos",
+      find: function () { return Array.prototype.slice.call(document.querySelectorAll(".chaos-result")); },
+      on: function (root) { return !root.hidden; },
+      card: function (root) { return root.querySelector(".chaos-result-card"); } },
+    { name: "spec",
+      find: function () { return Array.prototype.slice.call(document.querySelectorAll(".spec-result")); },
+      on: function () { return true; },
+      card: function (root) { return root.querySelector(".box"); } },
+    { name: "pool",
+      find: function () { var e = document.getElementById("poolVsResult"); return e ? [e] : []; },
+      on: function (root) { return !root.hidden; },
+      card: function (root) { return root.querySelector(".bn297-card") || root; } },
+    { name: "ttt",
+      find: function () { return Array.prototype.slice.call(document.querySelectorAll(".ttt-endOverlay")); },
+      on: function (root) { return root.classList.contains("ttt-show"); },
+      card: function (root) { return root.querySelector(".bn297-card") || root; } }
+  ];
+
+  var lastAudit = [];
+  function signature(card) {
+    var t = card ? (card.textContent || "") : "";
+    var h = 0;
+    for (var i = 0; i < t.length; i++) { h = (Math.imul(h, 31) + t.charCodeAt(i)) | 0; }
+    return t.length + ":" + h;
+  }
+  function finish(root, s) {
+    var card = s.card(root);
+    if (!card || !card.getClientRects().length) return null;
+    var sig = signature(card);
+    if (root._bn312Sig === sig && card.querySelector("[data-bn312-near]")) {
+      return root._bn312Info || null;
+    }
+    /* replay: keep the title's own, or inject only with a real trigger */
+    var replayKind = "none", replayBtn = findReplay(card);
+    if (replayBtn) {
+      replayKind = "existing";
+      replayBtn.setAttribute("data-bn312-replay", "existing");
+      replayBtn.classList.add("bn312-replay");
+    } else {
+      var old = card.querySelector("button.bn312-injected");
+      if (old) { replayKind = "injected"; replayBtn = old; }
+      else {
+        var trig = findTrigger(root, s.name);
+        if (trig) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "bn312-replay bn312-injected";
+          b.setAttribute("data-bn312-replay", "injected");
+          b.textContent = T("again");
+          b.addEventListener("click", function () { var t2 = findTrigger(root, s.name); if (t2) t2.click(); });
+          card.appendChild(b);
+          replayKind = "injected"; replayBtn = b;
+        }
+      }
+    }
+    /* near line: one, refreshed when the card text changes */
+    var near = nearFor(root, card);
+    var line = card.querySelector("[data-bn312-near]");
+    if (!line) {
+      line = document.createElement("div");
+      line.className = "bn312-near";
+      line.setAttribute("data-bn312-near", "1");
+      if (replayBtn && replayBtn.parentNode === card) card.insertBefore(line, replayBtn);
+      else card.appendChild(line);
+    }
+    line.textContent = near.text;
+    line.setAttribute("data-bn312-near-kind", near.kind);
+    var info = { surface: s.name, replay: replayKind, nearKind: near.kind, nearText: near.text };
+    root._bn312Sig = signature(card);
+    root._bn312Info = info;
+    root.setAttribute("data-bn312", "1");
+    root.setAttribute("data-bn312-replay-state", replayKind);
+    return info;
+  }
+  function scan() {
+    var out = [];
+    SURFACES.forEach(function (s) {
+      s.find().forEach(function (root) {
+        if (!s.on(root) || !visible(root)) return;
+        var info = finish(root, s);
+        if (info) out.push(info);
+      });
+    });
+    if (out.length) lastAudit = out;
+    return out;
+  }
+  var pending = false;
+  function queueScan() {
+    if (pending) return;
+    pending = true;
+    setTimeout(function () { pending = false; scan(); }, 250);
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(queueScan).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden", "style"] });
+  }
+  document.addEventListener("click", function () { setTimeout(scan, 450); }, true);
+  setInterval(scan, 1500);
+
+  window.__bn312 = {
+    version: VERSION,
+    surfaces: SURFACES.map(function (s) { return s.name; }),
+    scan: scan,
+    nearForText: function (score, best) {
+      if (score != null && best != null && best > 0) {
+        if (best > score) return { kind: "best", text: T("nearBest", { n: best - score }) };
+        return { kind: "bestReached", text: T("nearBestReached") };
+      }
+      return null;
+    },
+    audit: function () {
+      var cur = scan();
+      return {
+        version: VERSION,
+        surfaces: SURFACES.map(function (s) { return s.name; }),
+        active: cur,
+        lastSeen: lastAudit,
+        stylePresent: !!document.getElementById("bn312Style")
+      };
+    }
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", scan);
+  else scan();
+  setTimeout(scan, 1200);
+})();
+</script>
+  <script></script>
   <script></script>
   <style>
   /* ===== Meet the Board （分解ボード) — Learn genre, 2026-11-15 ===== */
