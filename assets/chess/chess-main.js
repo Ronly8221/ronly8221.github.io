@@ -2539,6 +2539,20 @@ const PUZZLES = [
     keyLine: "The quiet rook move leaves the king only two flights — and both are covered.",
     explanation: [ "初手は 1.Ra7。チェックではありませんが、ルークが7段目全体を押さえ、黒キングの逃げ場は e8 と c8 の2つだけになります。", "1...Ke8 には 2.Qb8#。クイーンがバックランクを押さえて詰ませます。d7 はルーク、f7 はビショップがカバーしています。", "1...Kc8 には 2.Qc7#。クイーンがキングのそばまで寄って詰ませます。c7 のクイーンは a7 のルークに守られています。黒の応手はこの2通りだけで、どちらでも詰みます。" ],
   },
+  {
+    id: "2026-11-23-mate2-queen-knight-split",
+    title: "第42問 — 2手で詰み",
+    intro: "白の手番。クイーンのチェックから、キングの逃げ方で詰ませる駒が変わります。両方の逃げ道を読んでください。",
+    source: "毎日のクイズ 2026-11-23 出題分（python-chess で検証済み）",
+    theme: "クイーンのチェックと詰み分け（行き先でクイーン／ナイトが詰ませる）",
+    fen: "1k2N3/8/8/K7/8/8/8/6Q1 w - - 0 1",
+    playerColor: "w",
+    mateIn: 2,
+    hints: [ "まずクイーンでチェックをかけて、キングの逃げ道を2つに絞りましょう", "キングが右へ逃げたらクイーン、左の隅へ逃げたらナイトが詰ませます", "初手は Qb6+ です" ],
+    solutionUci: ["g1b6", "b8c8", "b6c7"],
+    keyLine: "One check, two mates: the king chooses who delivers mate.",
+    explanation: [ "初手は 1.Qb6+。クイーンのチェックで黒キングの逃げ道は Kc8 と Ka8 の2つだけになります。", "1...Kc8 には 2.Qc7#。クイーンがすぐそばまで寄って詰ませます。白キングとナイトが逃げ道を塞いでいます。", "もう一方の 1...Ka8 には 2.Nc7# で、どちらの応手でも詰みます。e8 のナイトが隅のキングを仕留めるのがこの問題のポイントです。" ],
+  },
 ];
 
 /* ---------- localStorage helpers ---------- */
@@ -3777,12 +3791,12 @@ function buildVersus() {
     + '<button type="button" class="seg-btn small" data-diff="hard">つよい</button>'
     + "</div></div>"
     + '<p class="vs-note" style="margin-top:8px;font-size:12px;color:var(--dim)">手番や強さを変えると、対局は最初からになります。</p>'
-    + '<div class="edu-toggle-row"><button type="button" class="edu-toggle" id="vEduToggle" aria-pressed="false">教育モード OFF</button><span class="edu-toggle-note">ONにすると、自分の手番で常に最善手・評価・相手の狙いを表示します。</span><span class="edu-pts-note">教育モードではコインが増えも減りもしません（一度でもONにした対局はそのまま中立です）</span></div>'
-    + '<p class="edu-used-note" id="vEduUsed" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>'
+    + '<div class="edu-toggle-row"><button type="button" class="edu-toggle" id="vEduToggle" aria-pressed="false">教育モード OFF</button><span class="edu-toggle-note">ONにすると、自分の手番で常に最善手・評価・相手の狙いを表示します。</span><span class="edu-pts-note">教育モードを使った対局は、1日1回までポイント対象です（2回目以降のアシスト対局は対象外）</span></div>'
+    + '<p class="edu-used-note" id="vEduUsed" hidden>アシスト使用中：ポイントは本日のアシスト対象（1日1回）の対象かどうかで決まります。</p>'
     + '<div class="board-tools"><span class="board-tools-label">盤面表示</span><div class="seg-group view-seg" role="group" aria-label="盤面表示切替"><button type="button" class="seg-btn small" data-view="2d" aria-pressed="true">2D</button><button type="button" class="seg-btn small" data-view="3d" aria-pressed="false">3D</button></div><span style="font-size:11px;color:var(--dim)">3Dはドラッグで回転・ピンチで拡大</span></div>'
     + '<div id="vBoardOuter" style="position:relative;margin-top:12px"><div class="board-wrap" id="vBoard"></div></div>'
     + '<div class="msg bold" id="vStatus" aria-live="polite" style="min-height:0"></div>'
-    + '<p class="edu-result-note" id="vResultPtsNote" hidden>この対局は教育モードを使ったため、コインが増えも減りもしません。</p>'
+    + '<p class="edu-result-note" id="vResultPtsNote" hidden>アシスト使用中：ポイントは本日のアシスト対象（1日1回）の対象かどうかで決まります。</p>'
     + '<div class="commentary" aria-label="実況コメント"><p class="commentary-label">COMMENTARY</p><p class="commentary-text" id="vCommentary" aria-live="polite"></p></div>'
     + '<section class="edu-panel" id="vEdu" hidden aria-label="教育モード">'
     + '<div class="edu-head"><span class="edu-title">教育モード</span><span class="edu-engine-note">最善手は内蔵エンジン（3手読み）基準です</span></div>'
@@ -3927,18 +3941,20 @@ function buildVersus() {
     /* ARCADE points: pay once per finished versus game (the move
        count + result text is the run signature, so re-renders of the
        same finished game never pay twice). Difficulty multiplies.
-       A game that used education mode at any point (eduUsedThisGame)
-       never pays — see the latch where the toggle is handled. */
-    if (window.ARCADE_points && !eduUsedThisGame) {
+       BN-294: a game that used education mode (eduUsedThisGame)
+       settles through the economy's daily assist slot — the first
+       assist play of the day pays, later ones do not. The egg-hunt
+       "clean win" events stay unassisted-only, as before. */
+    if (window.ARCADE_points) {
       if (end.over) {
         var ptsSig = game.moves.length + "|" + end.text;
         if (versus.__ptsSig !== ptsSig) {
           versus.__ptsSig = ptsSig;
           var diffKey = versus.difficulty === "easy" ? "easy" : versus.difficulty === "hard" ? "hard" : "normal";
-          if (window.__huntEvent) window.__huntEvent(end.playerWon ? (bossGame ? "anorakWin" : "chessCleanWin") : "");
-          if (end.playerWon && sixerGame && window.__huntEvent) window.__huntEvent("sixerWin");
-          if (end.playerWon) window.ARCADE_points.earn("chessWin", { diff: diffKey });
-          else if (end.text.indexOf("引き分け") >= 0) window.ARCADE_points.earn("chessDraw", { diff: diffKey });
+          if (!eduUsedThisGame && window.__huntEvent) window.__huntEvent(end.playerWon ? (bossGame ? "anorakWin" : "chessCleanWin") : "");
+          if (!eduUsedThisGame && end.playerWon && sixerGame && window.__huntEvent) window.__huntEvent("sixerWin");
+          if (end.playerWon) window.ARCADE_points.earn("chessWin", { diff: diffKey, assist: !!eduUsedThisGame });
+          else if (end.text.indexOf("引き分け") >= 0) window.ARCADE_points.earn("chessDraw", { diff: diffKey, assist: !!eduUsedThisGame });
         }
       } else if (versus.__ptsSig) versus.__ptsSig = null;
     }
@@ -3966,6 +3982,11 @@ function buildVersus() {
     /* --- education panel --- */
     eduUsedEl.hidden = !(eduUsedThisGame && !end.over);
     resultPtsNoteEl.hidden = !(eduUsedThisGame && end.over);
+    if (eduUsedThisGame && window.__bn294LatchedText) {
+      var bn294Txt = window.__bn294LatchedText();
+      if (!end.over) eduUsedEl.textContent = bn294Txt;
+      else resultPtsNoteEl.textContent = bn294Txt;
+    }
     eduToggleBtn.textContent = eduOn ? "教育モード ON" : "教育モード OFF";
     eduToggleBtn.disabled = bossGame;
     eduToggleBtn.setAttribute("aria-pressed", eduOn ? "true" : "false");
