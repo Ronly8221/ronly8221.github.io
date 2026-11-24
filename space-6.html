@@ -8141,8 +8141,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
             #planetPrompt .pp-name{font-size:15.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             #planetPrompt .pp-sub{font-size:12.5px;color:#b9c4de;line-height:1.45;white-space:normal}
             #planetPrompt .pp-count{font-size:11.5px;color:#ffd35c;font-weight:700}
-            #planetPlayBtn{position:absolute;z-index:36;min-height:40px;padding:8px 16px;border:0;border-radius:999px;background:#ffd35c;color:#4a3200;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.45);transform:translate(-50%,-50%);pointer-events:auto}
-            #planetPlayBtn[hidden]{display:none}
+            #planetPlayBtn{flex:none;min-height:44px;padding:10px 20px;border:0;border-radius:999px;background:#ffd35c;color:#4a3200;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:nowrap;pointer-events:auto}
             /* BN-268: the plaza signpost leaves the bottom band —
                it used to span the full width at the bottom, stacked
                over the dash/jump buttons and crowding the BGM
@@ -117615,12 +117614,18 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   var promptSub = document.getElementById("planetPromptSub");
   var promptCount = document.getElementById("planetPromptCount");
   var playBtn = document.getElementById("planetPlayBtn");
-  /* BN-267: the play button leaves the proximity panel — it becomes
-     a small floating button that sits beside the player character
-     (positioned every frame by updatePlayBtnPos, in the canvas
-     wrap's coordinate space — the same space the beacon arrow
-     uses). It leaves the panel entirely. */
-  if (playBtn && wrap) { wrap.appendChild(playBtn); playBtn.hidden = true; }
+  /* BN-354: the play button lives INSIDE the proximity panel
+     (#planetPrompt) as its flex child — the same pattern as the
+     NPC prompt's talk button, which never lost its action.
+     BN-267 had moved it out of the panel to float beside the
+     character, but the floating button was suppressed whenever
+     a mini-game owned the screen (and was easy to miss beside
+     the character), so the panel — the surface the player
+     actually reads — showed a building with no way to play it
+     (owner report 2026-11-24, 「遊ぶボタンどこ行った？」).
+     In the panel, the button is visible exactly when the panel
+     is, in every state; its visibility is the panel's, so no
+     code below toggles playBtn.hidden any more. */
   var signEl = document.getElementById("planetSignpost");
   var signList = document.getElementById("planetSignpostList");
   var arrowEl = document.getElementById("planetBeaconArrow");
@@ -120294,31 +120299,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
      lift could never engage again. The panels keep their CSS
      bottom offsets, which are their designed positions above
      the stick / dash / jump band. */
-  /* BN-267: the small play button floats beside the player
-     character — the character's head projected to screen space
-     (same projection the beacon arrow uses), offset to the right
-     at shoulder height, clamped inside the view and above the
-     bottom panel zone. Visible only while a building/board is in
-     proximity reach and no dialogue or mini-game owns the screen. */
-  var playBtnV = null;
-  function updatePlayBtnPos() {
-    if (!playBtn) return;
-    if (!nearBuilding || talkOpen || (typeof mg !== "undefined" && mg.id) || !camera || !playerRig) { playBtn.hidden = true; return; }
-    var T = PL_T(); if (!T) { playBtn.hidden = true; return; }
-    if (!playBtnV) playBtnV = new T.Vector3();
-    playBtnV.copy(playerRig.position);
-    var up = playBtnV.clone().normalize();
-    playBtnV.addScaledVector(up, 1.35).project(camera);
-    if (playBtnV.z > 1) { playBtn.hidden = true; return; }
-    var w = wrap.clientWidth, h = wrap.clientHeight;
-    var sx = (playBtnV.x * 0.5 + 0.5) * w + 58;
-    var sy = (-playBtnV.y * 0.5 + 0.5) * h - 4;
-    sx = Math.max(52, Math.min(w - 52, sx));
-    sy = Math.max(44, Math.min(h - 120, sy));
-    playBtn.style.left = sx + "px";
-    playBtn.style.top = sy + "px";
-    playBtn.hidden = false;
-  }
+  /* BN-354: BN-267's floating play button (updatePlayBtnPos,
+     which hid the button beside the character whenever a
+     mini-game was live, a dialogue was open, or the character
+     projected off-screen) is gone. The button is back inside
+     the proximity panel — see the note at its declaration. */
 
   /* ================= P3 remote input (module 12 planet pad) =================
      The dedicated planet pad sends a held vector + jump + act;
@@ -120518,7 +120503,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   function setPrompt(b) {
     var changed = !!b && (!nearBuilding || nearBuilding.id !== b.id);
     nearBuilding = b;
-    if (!b) { promptEl.hidden = true; if (playBtn) playBtn.hidden = true; return; }
+    if (!b) { promptEl.hidden = true; return; } /* BN-354: the play button follows the panel */
     promptName.textContent = b.name;
     promptSub.textContent = b.sub;
     promptCount.textContent = STR.plays(b.plays);
@@ -120529,6 +120514,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
   playBtn.addEventListener("click", function () {
     if (!nearBuilding) return;
     if (!fsmCan("play")) return; /* BN-299 */
+    /* BN-354: the button no longer hides during a mini-game, so
+       a tap while one is live ends the mini-game first — the
+       same cleanup as its own quit button (no payout, no
+       penalty) — instead of leaving it running behind the
+       launched title. The button's behaviour is the same in
+       every state: tap it and the building's title opens. */
+    if (typeof mg !== "undefined" && mg.id) mgQuitGame();
     if (!fsmGo("launch", "playPrompt")) return; /* BN-299: launch owns the input from here */
     fsmLaunchId = nearBuilding.id;
     var b = nearBuilding;
@@ -121311,7 +121303,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = createPata
       layoutPlates271(pUp);
     }
     easePlates271(dt);
-    updatePlayBtnPos(); /* BN-267: the small play button tracks the character */
     /* BN-256 minimap redraw at 5 Hz */
     mmTimer -= dt;
     if (mmTimer <= 0) { mmTimer = 0.2; drawMinimap(); if (bigMapOpen) drawBigMap(); }
