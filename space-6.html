@@ -193,6 +193,29 @@
         #bootOverlay .boot-ring .ring-fg, #bootOverlay .boot-bar-fill, #bootOverlay .boot-letter { transition: none; }
       }
       .liquid-morphing { z-index: 5; }
+      /* BN-352: the hidden attribute is the show/hide contract for
+         result overlays and input panels across every title. A class
+         rule that sets display (flex/grid/block) outranks the UA
+         [hidden] rule, which is how the billiards WIN overlay stayed
+         on screen forever while the next rack ran behind it (its
+         Again button DID fire — the overlay simply never hid).
+         This global guard makes hidden always win, for shell CSS
+         and for module-injected CSS alike. */
+      [hidden] { display: none !important; }
+
+      /* BN-353: every touch-operated control claims its own gesture.
+         The owner reported screens sliding down while he operated a
+         slider (Bytebeat Lab). The claim used to be per-title: the
+         Bytebeat / Nobel Lab sliders had touch-action:none, but the
+         settings volume sliders, turntable seek/volume, both Hold'em
+         raise sliders, the board explode slider, the remote hub's
+         sensitivity slider and the pool power slider had none, so a
+         drag on them panned the page. One global rule now claims
+         every range input in every title (present and future);
+         module 108 adds the JS half for webviews that ignore
+         touch-action. Scoped to the control only — page-wide locks
+         stay forbidden (BN-330 reachability). */
+      input[type="range"] { touch-action: none; }
 
       /* ---------- Home ---------- */
       .home { flex: 1; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; overscroll-behavior: none; }
@@ -1925,7 +1948,7 @@
       .hub-kart-a { flex: none; width: 88px; height: 88px; border-radius: 50%; border: 3px solid #1f2937; background: #e0483e; color: #ffffff; font-size: 34px; font-weight: 900; box-shadow: 0 4px 0 #1f2937; touch-action: none; cursor: pointer; }
       .hub-kart-a:active { transform: translateY(2px); box-shadow: 0 1px 0 #1f2937; }
       .hub-kart-sliderwrap { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-      .hub-kart-slider { writing-mode: vertical-lr; direction: rtl; width: 34px; height: 168px; accent-color: #e0483e; touch-action: pan-x; cursor: pointer; }
+      .hub-kart-slider { writing-mode: vertical-lr; direction: rtl; width: 34px; height: 168px; accent-color: #e0483e; touch-action: none; cursor: pointer; }
       .hub-kart-sliderlabel { font-size: 12px; font-weight: 800; color: #6b7280; }
       .hub-kart-side { display: flex; flex-direction: column; gap: 10px; flex: 1; max-width: 200px; }
       .hub-kart-side .hub-btn { padding: 12px 8px; font-size: 14px; }
@@ -25982,7 +26005,10 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       saveRun();
     }
     function victory() {
+      if (state === "over") return; // BN-352: idempotent end
       state = "over";
+      if (spinPanel) spinPanel.hidden = true;
+      bihEl.hidden = true;
       vicShots.textContent = shots;
       vicEl.hidden = false;
       if (typeof window.celebrateBurst === "function") {
@@ -27707,6 +27733,7 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       vs.turn = vs.breaker;
       vsResultEl.hidden = true;
       vicEl.hidden = true;
+      if (spinPanel) spinPanel.hidden = true;
       buildTray(); updateHud();
       updateVsHud(); refreshCallBar();
       vsLine(vs.breaker === "you" ? "あなたのブレイクです。ヘッドラインの後ろに手玉を置いてください" : "AIのブレイクです");
@@ -27743,6 +27770,11 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
       b.x = TW * 0.72; b.y = TH / 2;
     }
     function endRack(winner, why) {
+      /* BN-352: ending is idempotent (the BN-279 settlement rule
+         applied to the result surface) — a second end path firing
+         after the rack is over must not re-show, re-pay or
+         re-celebrate over the result the player is looking at. */
+      if (vs.over) return;
       vs.over = true;
       vs.winner = winner;
       state = "over";
@@ -27761,6 +27793,13 @@ html[data-mjtile="mjt-night"] #tileGrid .mj-front { background: linear-gradient(
         if (vs.guideUsed && window.__bn294LatchedText) vsResultPtsNote.textContent = window.__bn294LatchedText();
       }
       vsResultEl.hidden = false;
+      /* BN-352 contract (b): while the result is up, no live-game
+         input surface stays visible or tappable — the spin panel
+         and the ball-in-hand banner close with the rack, the call
+         bar hides via refreshCallBar (vs.over), and refreshDeck
+         locks the deck (vs.over). */
+      if (spinPanel) spinPanel.hidden = true;
+      bihEl.hidden = true;
       refreshPoolGuide();
       refreshCallBar();
       updateVsHud();
@@ -124828,6 +124867,77 @@ window.__PHOTO_GROUND__ = "data:image/jpeg;base64," +
     playerSeen: function () { return JSON.parse(JSON.stringify(store.player)); },
     seedInfo: function () { return { seeded: store.seeded, seedGames: store.seedGames, perTitle: 100 }; },
     reset: function () { try { localStorage.removeItem(KEY); } catch (e) {} seedBatch(); }
+  };
+})();
+</script>
+<script>
+"use strict";
+/* BN-353: operating a control must never scroll the page.
+   The owner reported the Bytebeat Lab screen sliding down while he
+   dragged its sliders ("勝手にスワイプされて下に行っちゃう").
+   Investigation found the gesture-claim coverage was per-title and
+   patchy: the Bytebeat and Nobel Lab sliders carried
+   touch-action:none, but the settings volume sliders, the turntable
+   seek/volume, both Hold'em raise sliders, the board explode
+   slider, the remote hub's sensitivity slider and pool power slider
+   carried none at all, and the hub kart throttle was pan-x (a
+   vertical slider the browser may still pan vertically from).
+   seg-001 now claims every input[type=range] in one global rule.
+   This module is the belt-and-braces half for webviews that ignore
+   or partially honour touch-action: while a touch gesture that
+   STARTED on a claimed control is active, its touchmove is
+   swallowed so no ancestor scroller can move. The claim is scoped
+   to the gesture and to the control it started on — a gesture that
+   starts anywhere else scrolls exactly as before (BN-330
+   reachability is untouched), and nothing is locked page-wide. */
+(function () {
+  var CONTROL_SEL = 'input[type="range"], [data-drag-claim]';
+  var active = {}; // touch identifier -> claimed (bool)
+
+  function claimedByCss(el) {
+    // Mirror the browser's own rule: the effective touch-action is
+    // the intersection of the target and its ancestors up to the
+    // scroller. If any of them says "none", the gesture belongs to
+    // the control, not to the page.
+    var n = el;
+    while (n && n !== document.body) {
+      try {
+        var ta = window.getComputedStyle(n).touchAction;
+        if (ta === "none") return true;
+        if (ta && ta !== "auto") return false; // an explicit pan-* boundary
+      } catch (e) {}
+      n = n.parentElement;
+    }
+    return false;
+  }
+
+  document.addEventListener("touchstart", function (e) {
+    for (var i = 0; i < e.changedTouches.length; i++) {
+      var t = e.changedTouches[i];
+      var el = t.target || e.target;
+      var claimed = false;
+      if (el && el.closest && el.closest(CONTROL_SEL)) claimed = true;
+      else if (el) claimed = claimedByCss(el);
+      active[t.identifier] = claimed;
+    }
+  }, { passive: true, capture: true });
+
+  document.addEventListener("touchmove", function (e) {
+    for (var i = 0; i < e.changedTouches.length; i++) {
+      if (active[e.changedTouches[i].identifier]) { e.preventDefault(); return; }
+    }
+  }, { passive: false, capture: true });
+
+  function release(e) {
+    for (var i = 0; i < e.changedTouches.length; i++) delete active[e.changedTouches[i].identifier];
+  }
+  document.addEventListener("touchend", release, { passive: true, capture: true });
+  document.addEventListener("touchcancel", release, { passive: true, capture: true });
+
+  window.__gestureClaim = {
+    active: active,
+    claimedByCss: claimedByCss,
+    controlSel: CONTROL_SEL
   };
 })();
 </script>
